@@ -127,11 +127,11 @@
                 <div class="wrapper-feed-profile">
                     <div class="profile-background" *ngIf="!showLoading">
                         <ng-container
-                            *ngIf="isLoading || (resProfile && resProfile.isLoadingCover); else elseisLoading">
+                            *ngIf="isLoading || (!!resProfile && !!resProfile.isLoadingCover); else elseisLoading">
                             <div class="cover-img preload-background"></div>
                         </ng-container>
                         <ng-template #elseisLoading>
-                            <ng-container *ngIf="resProfile">
+                            <ng-container *ngIf="!!resProfile">
                                 <ng-container
                                     *ngIf="!resProfile.coverSignURL && !resProfile.coverURL; else elseCoverImage">
                                     <ng-container *ngIf="isNotAccess; else elseisNotAccess">
@@ -310,7 +310,7 @@
                     </div>
 
                     <div *ngIf="!showLoading" class="wrapper-feed-menu" id="feed-to">
-                        <div class="wrapper-counter-follow" [phxPreload]="resProfile"
+                        <div class="wrapper-counter-follow" [phxPreload]="!!resProfile"
                             [preloadClass]="'wrapper-counter-follow'" [preloadPaddIng]="'30pt'">
                             <span class="follower">
                                 {{resProfile && resProfile.following !== undefined ? resProfile.following : 0}}
@@ -327,7 +327,7 @@
                                 [active]="activeLink == link.label">
                                 {{link.label}}
                             </a>
-                            <ng-container *ngIf="!isNotAccess">
+                            <ng-container *ngIf="!isNotAccess && isLogin()">
                                 <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'"
                                     class="dropdown">
                                     <span class="material-icons">
@@ -337,12 +337,12 @@
                                 <mat-menu #menu="matMenu" xPosition="before">
                                     <div>
                                         <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
-                                            (click)="reportUser()">
+                                            (click)="reportUser(resProfile)">
                                             <mat-icon>warning</mat-icon>
                                             <span>รายงานผู้ใช้นี้</span>
                                         </button>
                                         <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
-                                            (click)="blockUser()">
+                                            (click)="blockUser(resProfile)">
                                             <mat-icon>block</mat-icon>
                                             <span>บล็อกผู้ใช้นี้</span>
                                         </button>
@@ -364,15 +364,16 @@
                     </ng-container>
                     <ng-template #elseTemplateLoad>
                         <ng-container
-                            *ngIf="resPost && resPost.posts && resPost.posts.length > 0 && !showLoading; else elsePost ">
+                            *ngIf="!!resPost && !!resPost.posts && resPost.posts.length > 0 && !showLoading; else elsePost">
                             <ng-container *ngFor="let itemPost of resPost.posts; let index = index">
                                 <post-data [itemPost]="itemPost" [user]="userImage" [isComments]="isLogin()"
                                     [mainPostLink]="itemPost && itemPost.name ? 'profile/'+name+'/post/' : 'profile/'+name+'/post/' "
                                     [isUserPage]="false" (action)="actionComment($event,index)" [isShowUser]="true"
-                                    (comment)="createComment($event,index)" [pageUser]="pageUser" [isPage]="isNotAccess"
-                                    [isNotAccess]="isNotAccess" (userpage)="getAaaPost($event,index)"
-                                    (delete)="deletePost($event,index)" (update)="editPost($event,index)"
-                                    (engagement)="engagement($event)"></post-data>
+                                    [isMemberShip]="isMemberShip" (comment)="createComment($event,index)"
+                                    [pageUser]="pageUser" [isPage]="isNotAccess" [isNotAccess]="isNotAccess"
+                                    (userpage)="getAaaPost($event,index)" (delete)="deletePost($event,index)"
+                                    (update)="editPost($event,index)" (engagement)="engagement($event)"
+                                    (hide)="hidePost($event,index)" (report)="reportPost($event,index)"></post-data>
                             </ng-container>
                             <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true" [isShowCard2]="true">
                             </Preload-card>

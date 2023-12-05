@@ -14,22 +14,27 @@ import { MicroframeworkLoader, MicroframeworkSettings } from 'microframework-w3t
 import { useExpressServer } from 'routing-controllers';
 import { authorizationChecker } from '../auth/authorizationChecker';
 import { currentUserChecker } from '../auth/currentUserChecker';
-import {env}  from '../env';
+import { env } from '../env';
 import cors from 'cors';
 import compression from 'compression';
-
-export const expressLoader: MicroframeworkLoader = async(settings: MicroframeworkSettings | undefined) => {
+import { rateLimiterMiddleware } from '../api/middlewares/RateLimitPersecMiddleware';
+import requestIp from 'request-ip';
+export const expressLoader: MicroframeworkLoader = async (settings: MicroframeworkSettings | undefined) => {
     if (settings) {
         const connection = settings.getData('connection');
-        /**
-         * We create a new express server instance.
-         * We could have also use useExpressServer here to attach controllers to an existing express instance.
-         */
         const app = express();
         app.use(cors());
+        app.use(requestIp.mw());
         app.use(compression());
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '50mb' }));
+        app.use(env.reteLimit.API_PATH_UNIQUEID_CHECK, rateLimiterMiddleware);
+        app.use(env.reteLimit.API_PATH_FORGET, rateLimiterMiddleware);
+        app.use(env.reteLimit.API_PATH_REGISTER, rateLimiterMiddleware);
+        app.use(env.reteLimit.API_PATH_HISTORY_SEARCH, rateLimiterMiddleware);
+        app.use(env.reteLimit.API_PATH_HASHTAG_TREND, rateLimiterMiddleware);
+        // Rate limiting 
+        app.set('trust proxy', 1);
         app.listen(env.app.port);
         const expressApp: Application = useExpressServer(app, {
             cors: true,

@@ -5,28 +5,26 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter, Output, OnDestroy } from '@angular/core';
 import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement, RecommendFacade, AboutPageFacade, SeoService, ProfileFacade, PostActionService, UserAccessFacade } from '../../../services/services';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
-import { DialogReboonTopic } from '../../shares/dialog/DialogReboonTopic.component';
 import { FileHandle } from '../../shares/directive/directives';
 import * as $ from 'jquery';
 import { Asset } from '../../../models/Asset';
 import { CommentPosts } from '../../../models/CommentPosts';
-import { Router, ActivatedRoute, NavigationEnd, ActivationEnd } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { SearchFilter } from '../../../models/SearchFilter';
-import { RePost } from '../../../models/RePost';
-import { MESSAGE } from '../../../AlertMessage';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
-import { DialogAlert, DialogPost, DialogShare } from '../../shares/shares';
+import { DialogAlert, DialogCheckBox, DialogConfirmInput, DialogDropdown, DialogPost, DialogShare } from '../../shares/shares';
 import { UserEngagement } from '../../../models/models';
 import { DirtyComponent } from 'src/app/dirty-component';
 import { filter } from 'rxjs/internal/operators/filter';
+import { Meta } from '@angular/platform-browser';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -92,6 +90,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   private recommendFacade: RecommendFacade;
   private aboutPageFacade: AboutPageFacade;
   private seoService: SeoService;
+  private meta: Meta;
   private profileFacade: ProfileFacade;
   private postActionService: PostActionService;
   private userAccessFacade: UserAccessFacade;
@@ -144,6 +143,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public selectedIndex: number;
   public shareDialog: boolean;
   public mainPostLink: string;
+  public groups: any = [];
+  public resJoinObjective: any;
+  public isMemberShip: boolean = false;
 
   public CheckPost: boolean = true;
   public isPostLoading: boolean = false;
@@ -151,6 +153,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public resListPage: any;
   public pageId: any;
+
+  private checkLike: boolean = false;
 
   canDeactivate(): boolean {
     return this.isDirty;
@@ -181,6 +185,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     recommendFacade: RecommendFacade,
     aboutPageFacade: AboutPageFacade,
     seoService: SeoService,
+    meta: Meta,
     profileFacade: ProfileFacade,
     postActionService: PostActionService,
     userAccessFacade: UserAccessFacade
@@ -201,6 +206,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.recommendFacade = recommendFacade;
     this.aboutPageFacade = aboutPageFacade;
     this.seoService = seoService;
+    this.meta = meta;
     this.profileFacade = profileFacade;
     this.isFiles = false;
     this.isPost = false;
@@ -347,6 +353,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.getRecommend();
 
     if (this.isLogin()) {
+      this.isMemberShip = this.authenManager.getUserMember();
       this.getProfileImage();
     }
     this.observManager.subscribe(REFRESH_DATA, (result: any) => {
@@ -354,6 +361,43 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         // this.resPost.posts.unshift(result);
       }
     });
+  }
+
+  public getGroupList() {
+    // this.aboutPageFacade.getGroups().then((res) => {
+    //   if (res) {
+    //     this.groups = res.data;
+    //     this.checkGroup();
+    //     this.checkProvince();
+    //   }
+    // })
+  }
+
+  public checkGroup() {
+    if (!this.resDataPage.group) {
+      let dialog = this.dialog.open(DialogDropdown, {
+        disableClose: true,
+        data: {
+          text: 'กรุณาเลือกกลุ่ม',
+          group: this.groups,
+          pageId: this.resDataPage.id,
+          bottomColorText2: "black"
+        }
+      });
+    }
+  }
+
+  public checkProvince() {
+    if (!this.resDataPage.province) {
+      let dialog = this.dialog.open(DialogDropdown, {
+        disableClose: true,
+        data: {
+          text: 'กรุณาเลือกจังหวัด',
+          pageId: this.resDataPage.id,
+          bottomColorText2: "black"
+        }
+      });
+    }
   }
 
   private stopLoading(): void {
@@ -445,6 +489,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       if (err.error.status === 0) {
         if (err.error.message === 'Unable got Page') {
           this.showAlertDialog('ไม่พบเพจ');
+          this.isLoading = false;
         }
       }
     });
@@ -552,11 +597,16 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           if (this.resDataPost.length === 0) {
             this.msgPageNotFound = true;
             this.labelStatus = 'ไม่พบโพสต์';
+            this.isLoading = false;
           } else {
             this.showProfilePage(res[0].pageId);
             this.isMaxLoadingPost = true;
             let postIndex: number = 0
             let galleryIndex = 0;
+            if (this.resDataPost.length === 1) {
+              this.meta.updateTag({ name: 'title', content: this.resDataPost[0].title });
+              this.meta.updateTag({ name: 'description', content: this.resDataPost[0].detail });
+            }
             for (let post of this.resDataPost) {
               let arrayHashTag = [];
               if (post.hashTags.length > 0) {
@@ -640,6 +690,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     if (pageId) {
       this.pageFacade.getAccess(pageId).then((res) => {
         if (res) {
+          this.getGroupList();
           this.pageId = res.data.id;
           for (let dataPage of res.data) {
             if (dataPage.level === 'OWNER') {
@@ -795,12 +846,17 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             }
             this.boxPost.clearDataAll();
             this.stopLoading();
+            this.isPostLoading = false;
             this.isClickPostPreLoad = false;
           }
         }
       }).catch((err: any) => {
         this.stopLoading();
         console.log(err);
+        if (err.error.message === 'You cannot post type memberShip.') {
+          this.showAlertDialog('โพสต์ประเภทสมาชิกสามารถสร้างได้โดยสมาชิกเท่านั้น');
+          this.isPostLoading = false;
+        }
       })
     }
   }
@@ -904,6 +960,57 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
+  public searchObjective(value: string) {
+    this.isLoading = true;
+    this.resObjective = [];
+    const keywordFilter: any = {
+      filter: {
+        limit: SEARCH_LIMIT,
+        offset: SEARCH_OFFSET,
+        relation: [],
+        whereConditions: {
+          pageId: this.resDataPage.id,
+        },
+        count: false,
+        orderBy: {
+          createdDate: "DESC",
+        }
+      },
+    };
+    Object.assign(keywordFilter, { hashTag: value });
+    this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
+      if (result.data.length > 0) {
+        if (result.joinObjective.length > 0) {
+          for (const data of result.joinObjective) {
+            let obj = {
+              category: data.pageObjective.category,
+              hashTag: data.pageObjective.hashTag.name,
+              iconURL: data.pageObjective.iconURL,
+              pageId: data.pageId,
+              objectiveId: data.objectiveId,
+              joiner: data.joiner,
+              join: true,
+              personal: data.pageObjective.personal,
+              title: data.pageObjective.title,
+              _id: data._id,
+            }
+            result.data.push(obj);
+          }
+        }
+        if (result.status === 1) {
+          this.resObjective = result.data;
+        }
+      }
+      this.isLoading = false;
+    }).catch((err: any) => {
+      console.log(err)
+      if (err.error.message === 'Cannot Search PageObjective') {
+        this.resObjective = [];
+        this.isLoading = false;
+      }
+    });
+  }
+
   public showProfilePage(url): void {
     this.pageFacade.getProfilePage(url).then(async (res) => {
       if (res) {
@@ -945,6 +1052,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             this.seoService.setMetaInfo(this.router.url, this.resDataPage.name, this.resDataPage.name, this.resDataPage.imageURL, this.resDataPage.name);
           }
           this.searchAboutPage();
+          this.searchObjective("");
 
           setTimeout(() => {
             this.isLoading = false;
@@ -972,6 +1080,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         if (err.error.message === 'Unable got Page') {
           this.msgPageNotFound = true;
           this.labelStatus = 'ไม่พบเพจ';
+          this.isLoading = false;
         }
         this.stopLoading();
       }
@@ -1090,47 +1199,69 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public postLike(data: any, index: number) {
-    if (!this.isLogin()) {
-      // this.showAlertLoginDialog("/page/" + this.resDataPage.id);
-    } else {
-      if (this.resPost.posts.length == 0) {
-        this.resDataPost[index].isLike = true;
-        this.resDataPost[index].likeCount = 1;
-        this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
-          if (res.isLike) {
-            if (data.postData._id === res.posts.id) {
-              this.resDataPost[index].likeCount = res.likeCount;
-              this.resDataPost[index].isLike = res.isLike;
-            }
-          } else {
-            // unLike 
-            if (data.postData._id === res.posts.id) {
-              this.resDataPost[index].likeCount = res.likeCount;
-              this.resDataPost[index].isLike = res.isLike;
-            }
-          }
-        }).catch((err: any) => {
-          console.log(err)
-        });
+    if (!this.checkLike) {
+      this.checkLike = true;
+      if (!this.isLogin()) {
+        this.checkLike = false;
+        // this.showAlertLoginDialog("/page/" + this.resDataPage.id);
       } else {
-        this.resPost.posts[index].isLike = true;
-        this.resPost.posts[index].likeCount = 1;
-        this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
-          if (res.isLike) {
-            if (data.postData._id === res.posts.id) {
-              this.resPost.posts[index].likeCount = res.likeCount;
-              this.resPost.posts[index].isLike = res.isLike;
+        if (this.resPost.posts.length == 0) {
+          this.resDataPost[index].isLike = true;
+          this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
+            if (res.isLike) {
+              if (data.postData._id === res.posts.id) {
+                this.resDataPost[index].likeCount = res.likeCount;
+                this.resDataPost[index].isLike = res.isLike;
+              }
+              this.checkLike = false;
+            } else {
+              // unLike 
+              if (data.postData._id === res.posts.id) {
+                this.resDataPost[index].likeCount = res.likeCount;
+                this.resDataPost[index].isLike = res.isLike;
+              }
+              this.checkLike = false;
             }
-          } else {
-            // unLike 
-            if (data.postData._id === res.posts.id) {
-              this.resPost.posts[index].likeCount = res.likeCount;
-              this.resPost.posts[index].isLike = res.isLike;
+          }).catch((err: any) => {
+            console.log(err)
+            this.resDataPost[index].isLike = false;
+            if (err.error.message === 'You cannot like this post type MFP.') {
+              this.showDialogEngagementMember();
+              this.checkLike = false;
+            } else if (err.error.message === 'Page cannot like this post type MFP.') {
+              this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
+              this.checkLike = false;
             }
-          }
-        }).catch((err: any) => {
-          console.log(err)
-        });
+          });
+        } else {
+          this.resPost.posts[index].isLike = true;
+          this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
+            if (res.isLike) {
+              if (data.postData._id === res.posts.id) {
+                this.resPost.posts[index].likeCount = res.likeCount;
+                this.resPost.posts[index].isLike = res.isLike;
+              }
+              this.checkLike = false;
+            } else {
+              // unLike 
+              if (data.postData._id === res.posts.id) {
+                this.resPost.posts[index].likeCount = res.likeCount;
+                this.resPost.posts[index].isLike = res.isLike;
+              }
+              this.checkLike = false;
+            }
+          }).catch((err: any) => {
+            console.log(err)
+            this.resPost.posts[index].isLike = false;
+            if (err.error.message === 'You cannot like this post type MFP.') {
+              this.showDialogEngagementMember();
+              this.checkLike = false;
+            } else if (err.error.message === 'Page cannot like this post type MFP.') {
+              this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
+              this.checkLike = false;
+            }
+          });
+        }
       }
     }
   }
@@ -1156,6 +1287,24 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
+  public reportPost(post: any, index: any) {
+    let typeReport = 'post';
+    let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
+    this.pageFacade.getManipulate(typeReport).then((res) => {
+      if (res) {
+        detail = [];
+        for (let data of res.data) {
+          detail.push(data.detail);
+        }
+        this._openDialogReport(post, typeReport, detail);
+      }
+    }).catch((err) => {
+      if (err.error.status === 0) {
+        this._openDialogReport(post, typeReport, detail);
+      }
+    });
+  }
+
   public hidePost(post: any, index: number) {
     const confirmEventEmitter = new EventEmitter<any>();
     confirmEventEmitter.subscribe(() => {
@@ -1169,7 +1318,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     let dialog = this.showDialogWarming("คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่ ", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.resPost.posts.splice(index, 1);
+        this.pageFacade.hidePost(post._id).then((res) => {
+          if (res) {
+            this.resPost.posts.splice(index, 1);
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }
@@ -1187,6 +1342,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     dialogRef.afterClosed().subscribe(result => {
       if (!!result) {
         this.resPost.posts[index] = result;
+        this.searchPostPageType(data, true);
       }
       this.stopLoading();
     });
@@ -1384,6 +1540,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public createComment(comment: any, index?: number) {
+    const url: string = decodeURI(this.router.url);
+    const pathPost = url.split('/')[1];
     let commentPosts = new CommentPosts
     if (comment.userAsPage.id !== undefined && comment.userAsPage.id !== null) {
       commentPosts.commentAsPage = comment.userAsPage.id
@@ -1391,9 +1549,12 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     commentPosts.comment = comment.value
     commentPosts.asset = undefined
     this.postCommentFacade.create(commentPosts, comment.pageId).then((res: any) => {
-      this.resPost.posts[index].commentCount++
-      this.resPost.posts[index].isComment = true
-      this.resPost.posts[index]
+      if (pathPost === 'post') {
+        this.resDataPost[0].commentCount++
+      } else {
+        this.resPost.posts[index].commentCount++
+        this.resPost.posts[index].isComment = true
+      }
     }).catch((err: any) => {
     })
   }
@@ -1418,8 +1579,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public async actionComment(action: any, index: number) {
     if (action.mod === 'SHARE') {
-      this.mainPostLink = window.location.origin + '/page/' + this.resDataPage.pageUsername + '/post/';
-      this.linkmain = (this.mainPostLink + this.resPost.posts[index]._id);
+      this.mainPostLink = window.location.origin + '/post/';
+      this.linkmain = (this.mainPostLink + (this.resPost.posts.length > 0 ? this.resPost.posts[index]._id : this.resDataPost[index]._id));
       this.dialogShare();
     } else {
       this.isLoginCh();
@@ -1554,17 +1715,17 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public clickSystemDevelopment(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    // });
   }
 
   public engagement(event) {
@@ -1576,30 +1737,77 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     })
   }
 
-  public blockUser() {
+  public blockUser(page) {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: 'คุณต้องการบล็อกผู้ใช้นี้ใช่หรือไม่',
+        text: 'คุณต้องการบล็อกเพจนี้ใช่หรือไม่',
       },
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        // this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
+        let data = {
+          subjectId: page.id,
+          subjectType: 'PAGE',
+        }
+        this.pageFacade.blockPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }
 
-  public reportUser() {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
+  public reportUser(page) {
+    let typeReport = 'page';
+    let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
+    this.pageFacade.getManipulate(typeReport).then((res) => {
+      if (res) {
+        detail = [];
+        for (let data of res.data) {
+          detail.push(data.detail);
+        }
+        this._openDialogReport(page, typeReport, detail);
+      }
+    }).catch((err) => {
+      if (err.error.status === 0) {
+        this._openDialogReport(page, typeReport, detail);
+      }
+    });
+  }
+
+  private _openDialogReport(page, typeReport, detail) {
+    let title = '';
+    if (typeReport === 'post') {
+      title = 'รายงานโพสต์';
+    } else if (typeReport === 'page') {
+      title = 'รายงานเพจ';
+    }
+    let dialog = this.dialog.open(DialogCheckBox, {
+      disableClose: false,
       data: {
-        text: 'คุณต้องการรายงานผู้ใช้นี้ใช่หรือไม่',
-      },
+        title: title,
+        subject: detail,
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+      }
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        // this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
+        let data = {
+          typeId: page.id,
+          type: typeReport.toUpperCase(),
+          topic: res.topic,
+          message: res.detail ? res.detail : '',
+        }
+        this.pageFacade.reportPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }

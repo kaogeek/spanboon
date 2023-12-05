@@ -1,0 +1,149 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th, Panupap-Somprasong <panupap.s@absolute.co.th>
+ */
+
+.profile-membership {
+  position: relative;
+  height: auto;
+  max-width: 420pt;
+  width: 90vw;
+  background-color: $white;
+  box-shadow: 0px 1px 3px 0px #d3d3d4;
+  transition: 0.3s;
+  overflow: hidden;
+
+  > .wrapper-profile {
+    > .header {
+      display: flex;
+      justify-content: center;
+      margin-top: 60px;
+
+      > .image {
+        border: 2px solid $brandcolor2;
+        border: 2px solid #ee7623;
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        > img {
+          width: 60px;
+          height: 60px;
+          margin-top: 10px;
+        }
+      }
+    }
+
+    > .username {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px 0 30px 0;
+      border-bottom: 1px solid rgb(0, 0, 0, 0.04);
+
+      > span {
+        @include font-size-8($font-head-500);
+      }
+    }
+
+    > .detail-user {
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+
+      > .detail {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+
+        > span {
+          &:first-child {
+            @include font-size-9($font-head-500);
+          }
+
+          &:last-child {
+            @include font-size-10($font-head-100);
+            opacity: 0.6;
+
+            &.approved {
+              color: #4caf50;
+              opacity: 1;
+            }
+            &.pending-payment {
+              color: #fb8c00;
+              opacity: 1;
+            }
+            &.pending-approval {
+              color: #fb8c00;
+              opacity: 1;
+            }
+            &.reject {
+              color: #f44336;
+              opacity: 1;
+            }
+            &.recheck {
+              color: #ffeb3b;
+              opacity: 1;
+            }
+            &.achived {
+              color: #ffeb3b;
+              opacity: 1;
+            }
+          }
+        }
+      }
+    }
+
+    > .bottom {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 0 20px 0;
+
+      > .button-unbind {
+        cursor: pointer;
+        width: 90%;
+        border: 1px solid #e5e5e5;
+        border-radius: 20px;
+        padding: 10px;
+        background: #fff;
+        @include font-size-9($font-head-500);
+
+        &.confirm {
+          width: 45%;
+          background-color: $brandcolor2;
+          color: #fff;
+
+          @media (max-width: 510px) {
+            width: 90%;
+          }
+        }
+
+        &.cancel {
+          width: 45%;
+
+          @media (max-width: 510px) {
+            width: 90%;
+          }
+        }
+      }
+
+      &.choice {
+        gap: 20px;
+
+        @media (max-width: 510px) {
+          flex-direction: column;
+          gap: 10px;
+        }
+      }
+    }
+  }
+}

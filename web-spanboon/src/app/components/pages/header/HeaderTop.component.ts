@@ -13,11 +13,12 @@ import { MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { MESSAGE } from '../../../../app/AlertMessage';
 import { environment } from 'src/environments/environment';
-import { DialogAlert } from '../../components';
-import { DialogListFacebook } from '../../components';
 import { PageSoialFB } from 'src/app/models/PageSocialFB';
 import { TwitterService } from '../../../services/services';
 import { PageSocialTW } from 'src/app/models/PageSocialTW';
+import { DialogListFacebook } from '../../shares/dialog/DialogListFacebook.component';
+import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
+import { DialogAboutUs } from '../../shares/dialog/DialogAboutUs.component';
 
 const DEFAULT_USER_ICON: string = '../../../assets/components/pages/icons8-female-profile-128.png';
 const REDIRECT_PATH: string = '/main';
@@ -49,10 +50,12 @@ export class HeaderTop extends AbstractPage implements OnInit {
     read: [],
     unread: [],
     all: [],
+    objective: [],
     countRead: 0,
     countUnread: 0,
     countAll: 0
   };
+  public notificationObjectList: any;
   public isLoadNotification: boolean = false;
   public limitNotification = 30;
   public sumNotification = 30;
@@ -74,6 +77,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   public isclickmenu: boolean;
   public isFrist: boolean;
   public isCheck: boolean = undefined;
+  public isAbout: boolean = true;
   private activatedRoute: ActivatedRoute;
   public redirection: string;
   public accessTokenLink = '';
@@ -85,6 +89,8 @@ export class HeaderTop extends AbstractPage implements OnInit {
   //    // initially setter gets called with undefined
   //   this.resSize(); 
   // }  
+
+  private loginText: string = 'loginSuccess';
 
   constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager,
     editProfileFacade: EditProfileUserPageFacade, dialog: MatDialog, private renderer: Renderer2, _ngZone: NgZone,
@@ -143,6 +149,12 @@ export class HeaderTop extends AbstractPage implements OnInit {
   }
 
   ngOnInit() {
+    this.observManager.subscribe(this.loginText, (res) => {
+      if (res) {
+        this._getNotification(this.limitNotification, res.data.offset, '', '', {}, { 'createdDate': -1 }, false, 'push');
+        this._getNotification(this.limitNotification, res.data.offset, '', '', { isRead: false }, { 'createdDate': -1 }, false, 'push');
+      }
+    });
     this.checkLoginAndRedirection();
     this.reloadUserImage();
     let doRunAccessToken = false;
@@ -157,7 +169,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
     }
     if (this.isLogin()) {
       this._getNotification(this.limitNotification, 0, '', '', {}, { 'createdDate': -1 }, false, 'push');
-      this._getNotification(this.limitNotification, 0, '', '', { isRead: false }, { 'createdDate': -1 }, false, 'push');
+      // this._getNotification(this.limitNotification, 0, '', '', { isRead: false }, { 'createdDate': -1 }, false, 'push');
       this.observManager.subscribe('scrollLoadNotification', (res) => {
         if (res) {
           if (res.data.isReadAll) {
@@ -175,6 +187,12 @@ export class HeaderTop extends AbstractPage implements OnInit {
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.observManager.complete('authen.check');
+    this.observManager.complete('authen.logout');
+    this.observManager.complete('authen.registered');
+    this.observManager.complete('menu.click');
+    this.observManager.complete('scrollLoadNotification');
+    this.observManager.complete(this.loginText);
   }
 
   isPageDirty(): boolean {
@@ -408,7 +426,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
     this.authenManager.logout(body).then(() => {
       this.router.navigateByUrl(REDIRECT_PATH);
     }).catch((err) => {
-      alert(err.error.message);
+      // alert(err.error.message);
     });
   }
 
@@ -420,19 +438,31 @@ export class HeaderTop extends AbstractPage implements OnInit {
     }
   }
 
-  private _getNotification(limit: number, offset: number, select: any, relation: any, whereConditions: any, orderBy: any, count: boolean, arrange?: 'unshift' | 'push') {
+  private async _getNotification(limit: number, offset: number, select: any, relation: any, whereConditions: any, orderBy: any, count: boolean, arrange?: 'unshift' | 'push') {
     let val = {
       limit: limit,
       offset: offset,
       select: select,
       relation: relation,
-      whereConditions: whereConditions,
+      whereConditions: {
+        "type": { "$ne": "OBJECTIVE" }
+      },
       orderBy: orderBy,
       count: count
     };
 
-    this.notificationFacade.search(val).then(async (res) => {
+    await this.notificationFacade.search(val).then(async (res) => {
       if (res) {
+        if (res.notiObjective.length > 0) {
+          let num = 0;
+          this.notificationObjectList = res.notiObjective;
+          for (const data of this.notificationObjectList) {
+            if (data.isRead === false) {
+              num++;
+            }
+          }
+          this.notificationObjectList.count = num;
+        }
         for await (let data of res.data) {
           if (arrange === 'unshift') {
             if ((whereConditions['isRead'] === true)) this.notificationList['read'].unshift(this._setValueNotification(data, (whereConditions['isRead'] === true))), (this.notificationList.countRead = res.count);
@@ -442,7 +472,11 @@ export class HeaderTop extends AbstractPage implements OnInit {
             if ((whereConditions['isRead'] === true)) this.notificationList['read'].push(this._setValueNotification(data, (whereConditions['isRead'] === true))), (this.notificationList.countRead = res.count);
             if ((whereConditions['isRead'] === false)) this.notificationList['unread'].push(this._setValueNotification(data, (whereConditions['isRead'] === false))), (this.notificationList.countUnread = res.count);
             if ((!whereConditions['isRead'])) this.notificationList['all'].push(this._setValueNotification(data, (!whereConditions['isRead']))), (this.notificationList.countAll = res.count);
+            // if ((!whereConditions['isRead'])) this.notificationList['objective'].push(this._setValueNotification(data, (!whereConditions['isRead']), true));
           }
+        }
+        for await (let data of res.notiObjective) {
+          this.notificationList['objective'].push(data);
         }
 
         this.observManager.createSubject('notification');
@@ -457,13 +491,27 @@ export class HeaderTop extends AbstractPage implements OnInit {
     });
   }
 
-  private _setValueNotification(data: any, isRead: boolean) {
+  private _setValueNotification(data: any, isRead: boolean, isObj?) {
     const title = "การแจ้งเตือนใหม่";
-    if (isRead) {
+    if (isObj) {
       return {
         title: title,
         body: data.notification.title,
         image: !!data!.sender && data.sender.imageURL ? this.apiBaseURL + data.sender.imageURL + '/image' : '',
+        status: data.notification.type,
+        isRead: data.notification.isRead,
+        id: data.notification.id,
+        link: data.notification.link,
+        createdDate: data.notification.createdDate,
+        fromUser: data.notification.fromUser,
+        toUser: data.notification.toUser
+      }
+    }
+    if (isRead) {
+      return {
+        title: title,
+        body: data.notification.title,
+        image: !!data!.sender && data.sender.imageURL ? this.apiBaseURL + data.sender.imageURL + '/image' : data.notification.imageURL ? this.apiBaseURL + data.notification.imageURL + '/image' : '',
         status: data.notification.type,
         isRead: data.notification.isRead,
         id: data.notification.id,
@@ -484,15 +532,11 @@ export class HeaderTop extends AbstractPage implements OnInit {
     }
   }
 
-  // public notija() {
-  //   this.notificationFacade.findNotification('63b693401a69db32be899d25').then((res) => {
-  //     if (res) {
-  //       console.log("res findNotification", res);
-  //     }
-  //   }).catch((error) => {
-  //     if (error) {
-  //       console.log("error", error);
-  //     }
-  //   });
-  // }
+  public clickShowSearch(data) {
+    if (data === 'hide') {
+      this.isAbout = false;
+    } else {
+      this.isAbout = true;
+    }
+  }
 }

@@ -44,13 +44,18 @@ export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
                             as: 'hashTag'
                         }
                     },
+                    {
+                        $unwind: {
+                            path: '$pageObjectiveJoiner',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    }
                 ];
-                const objectiveList = await this.pageObjectiveService.aggregate(objectiveAgg);
+                const objectiveList: any = await this.pageObjectiveService.aggregate(objectiveAgg);
                 if (objectiveList === undefined || objectiveList.length <= 0) {
                     resolve(undefined);
                 }
                 const objective = objectiveList[0];
-
                 // search first post of objective and join gallery
                 const postAgg = [
                     { $match: { objective: objectiveId, deleted: false } },

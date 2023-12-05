@@ -9,7 +9,6 @@ import { EventEmitter, Input, OnInit, ViewChild } from '@angular/core';
 import { Component } from "@angular/core";
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { PageSocialTW } from '../../../../models/PageSocialTW';
 import { environment } from '../../../../../environments/environment';
 import { AssetFacade, AuthenManager, ObservableManager, PageFacade, SeoService, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
@@ -161,6 +160,10 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                     this.pageId = replaceCommentURL.split('/')[0];
                     const splitTextId = replaceCommentURL.split('?tab=')[1];
                     this.isLoadImage = true;
+                    if (window.innerWidth <= 768) {
+                        this.isMobile = true;
+                    }
+
                     if (splitTextId === 'connect') {
                         this.selected = 'การเชื่อมต่อ';
                     } else if (splitTextId === 'account') {
@@ -168,6 +171,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                     } else if (splitTextId === 'roles') {
                         this.selected = 'บทบาทในเพจ';
                     }
+
                     if (this.pageId !== undefined && this.pageId !== '' && this.isLoadImage) {
                         this.getAccessPage(this.pageId);
                     }
@@ -248,33 +252,10 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
 
     public getAccessPage(pageId: string) {
         this.isLoadImage = false;
-        this.seoService.updateTitle("จัดการเพจ");
         this.pageFacade.getProfilePage(pageId).then((res) => {
-            if (res.data && res.data.imageURL !== '' && res.data.imageURL !== null && res.data.imageURL !== undefined) {
-                this.assetFacade.getPathFile(res.data.imageURL).then((image: any) => {
-                    if (image.status === 1) {
-                        if (!this.validBase64Image(image.data)) {
-                            res.data.imageURL = null
-                        } else {
-                            res.data.imageURL = image.data
-                        }
-                        this.resListPage = res.data;
-                        setTimeout(() => {
-                            this.isPreload = false;
-                        }, 1000);
-                    }
-
-                }).catch((err: any) => {
-                    if (err.error.message === "Unable got Asset") {
-                        res.data.imageURL = ''
-                        this.resListPage = res.data
-                    }
-                });
-            } else {
-                this.resListPage = res.data;
-                setTimeout(() => {
-                    this.isPreload = false;
-                }, 3000);
+            if (res) {
+                this._setValue(res.data);
+                this.seoService.updateTitle("จัดการเพจ - " + res.data.pageUsername);
             }
         }).catch((err: any) => {
             console.log('err ', err)
@@ -295,6 +276,42 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             this.router.navigateByUrl('page/' + this.resListPage.pageUsername);
         } else {
             this.router.navigateByUrl('page/' + this.resListPage.id);
+        }
+    }
+
+    public upDatePageData(event: any) {
+        if (event) {
+            this._setValue(event);
+        }
+    }
+
+    private _setValue(data: any) {
+        if (!!data!.imageURL) {
+            this.assetFacade.getPathFile(data.imageURL).then((image: any) => {
+                if (image.status === 1) {
+                    if (!this.validBase64Image(image.data)) {
+                        data.imageURL = null;
+                    } else {
+                        data.imageURL = image.data;
+                    }
+
+                    this.resListPage = data;
+                    setTimeout(() => {
+                        this.isPreload = false;
+                    }, 1000);
+                }
+
+            }).catch((err: any) => {
+                if (err.error.message === "Unable got Asset") {
+                    data.imageURL = '';
+                    this.resListPage = event;
+                }
+            });
+        } else {
+            this.resListPage = data;
+            setTimeout(() => {
+                this.isPreload = false;
+            }, 3000);
         }
     }
 }

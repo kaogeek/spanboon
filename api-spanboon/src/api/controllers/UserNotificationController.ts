@@ -16,10 +16,17 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { Notification } from '../models/Notification';
 import { NotificationResponse } from './responses/NotificationResponse';
 import { USER_TYPE } from '../../constants/NotificationType';
-
+// import { PageObjectiveService } from '../services/PageObjectiveService';
 @JsonController('/notification')
 export class UserNotificationController {
-    constructor(private notificationService: NotificationService, private userService: UserService, private pageService: PageService) { }
+    constructor(
+        private notificationService: NotificationService,
+        private userService: UserService,
+        private pageService: PageService,
+        // private pageObjectiveService: PageObjectiveService
+    ) {
+
+    }
 
     // Find UserNotifications API
     /**
@@ -173,12 +180,254 @@ export class UserNotificationController {
     @Post('/search')
     @Authorized('user')
     public async searchUserNotifications(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
-        let findAllCountNotification = undefined;
         if (filter === undefined) {
             filter = new SearchFilter();
         }
-
+        const limits = filter.limit;
+        const skips = filter.offset;
         const userObjId = new ObjectID(req.user.id);
+        const invites: any = await this.notificationService.aggregate(
+            [
+                {
+                    $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'invite' },
+                },
+                {
+                    $sort: { createdDate: -1 }
+                },
+                {
+                    $lookup: {
+                        from: 'PageObjectiveJoiner',
+                        let: { joinObjectiveId: '$joinObjectiveId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$joinObjectiveId', '$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PageObjective',
+                                    let: { objectiveId: '$objectiveId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$objectiveId', '$_id']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'Page',
+                                                let: { pageId: '$pageId' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: {
+                                                                $eq: ['$$pageId', '$_id']
+                                                            }
+                                                        }
+                                                    }
+                                                ],
+                                                as: 'page'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$page',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+
+                                    ],
+                                    as: 'pageObjective'
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$pageObjective',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                        ],
+                        as: 'pageObjectiveJoiner'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$pageObjectiveJoiner',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+
+                {
+                    $limit: limits
+                },
+                {
+                    $skip: skips
+                },
+            ]
+        );
+
+        const joinNoti: any = await this.notificationService.aggregate(
+            [
+                {
+                    $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'join' }
+                },
+                {
+                    $sort: { createdDate: -1 }
+                },
+                {
+                    $lookup: {
+                        from: 'PageObjectiveJoiner',
+                        let: { joinObjectiveId: '$joinObjectiveId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$joinObjectiveId', '$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PageObjective',
+                                    let: { objectiveId: '$objectiveId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$objectiveId', '$_id']
+                                                }
+                                            }
+                                        },
+
+                                        {
+                                            $unwind: {
+                                                path: '$page',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+
+                                    ],
+                                    as: 'pageObjective'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Page',
+                                    let: { joiner: '$joiner' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$joiner', '$_id']
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$pageObjective',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                        ],
+                        as: 'pageObjectiveJoiner'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$pageObjectiveJoiner',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $limit: limits
+                },
+                {
+                    $skip: skips
+                },
+            ]
+        );
+        const pageObjectives: any = [];
+        if (invites.length > 0) {
+            for (const notiPage of invites) {
+                // && notiPage.InviteNotification.isRead === false 
+                if (notiPage !== undefined && notiPage.pageObjectiveJoiner !== undefined) {
+                    const result: any = {};
+                    result['id'] = notiPage._id;
+                    result.title = notiPage.title;
+                    result.fromUser = notiPage.fromUser;
+                    result.toUser = notiPage.toUser;
+                    result.isRead = notiPage.isRead;
+                    result.toUserType = notiPage.toUserType;
+                    result.fromUserType = notiPage.fromUserType;
+                    result.link = notiPage.link;
+                    result.type = notiPage.type;
+                    result.deleted = notiPage.deleted;
+                    result.data = notiPage.data;
+                    result.mode = notiPage.mode;
+                    result.createdDate = notiPage.createdDate;
+                    result.objectiveId = notiPage.pageObjectiveJoiner.objectiveId;
+                    result.pageId = notiPage.pageObjectiveJoiner.pageObjective.page._id;
+                    result.joinerId = notiPage.pageObjectiveJoiner.joiner;
+                    result.imageUrl = notiPage.pageObjectiveJoiner.pageObjective.page.s3ImageURL ? notiPage.pageObjectiveJoiner.pageObjective.page.s3ImageURL : notiPage.pageObjectiveJoiner.pageObjective.page.imageURL;
+                    result.join = notiPage.pageObjectiveJoiner.join;
+                    result.approve = notiPage.pageObjectiveJoiner.approve;
+                    pageObjectives.push(result);
+                } else {
+                    continue;
+                }
+            }
+        }
+        if (joinNoti.length > 0) {
+            for (const notiPage of joinNoti) {
+                //  
+                if (notiPage !== undefined && notiPage.pageObjectiveJoiner !== undefined) {
+                    const result: any = {};
+                    result['id'] = notiPage._id;
+                    result.title = notiPage.title;
+                    result.fromUser = notiPage.fromUser;
+                    result.toUser = notiPage.toUser;
+                    result.isRead = notiPage.isRead;
+                    result.toUserType = notiPage.toUserType;
+                    result.fromUserType = notiPage.fromUserType;
+                    result.link = notiPage.link;
+                    result.type = notiPage.type;
+                    result.deleted = notiPage.deleted;
+                    result.data = notiPage.data;
+                    result.mode = notiPage.mode;
+                    result.createdDate = notiPage.createdDate;
+                    result.objectiveId = notiPage.pageObjectiveJoiner.objectiveId;
+                    result.pageId = notiPage.pageObjectiveJoiner.pageId;
+                    result.joinerId = notiPage.pageObjectiveJoiner.joiner;
+                    result.imageUrl = notiPage.pageObjectiveJoiner.page.s3ImageURL ? notiPage.pageObjectiveJoiner.page.s3ImageURL : notiPage.pageObjectiveJoiner.page.imageURL;
+                    result.join = notiPage.pageObjectiveJoiner.join;
+                    result.approve = notiPage.pageObjectiveJoiner.approve;
+                    pageObjectives.push(result);
+                } else {
+                    continue;
+                }
+            }
+        }
+        const stackIds: any = [];
+        if (pageObjectives.length > 0) {
+            for (let i = 0; i < pageObjectives.length; i++) {
+                stackIds.push(pageObjectives[i].id);
+            }
+        }
         if (filter.whereConditions !== null && filter.whereConditions !== undefined) {
             if (typeof filter.whereConditions === 'object') {
                 filter.whereConditions.toUser = userObjId;
@@ -194,18 +443,40 @@ export class UserNotificationController {
         } else {
             filter.whereConditions = { toUser: userObjId, toUserType: USER_TYPE.USER };
         }
-        if (filter.whereConditions.isRead !== undefined && filter.whereConditions.isRead !== null && filter.whereConditions.isRead !== '') {
-            findAllCountNotification = await this.notificationService.find({ toUser: userObjId, isRead: filter.whereConditions.isRead });
-        } else {
-            findAllCountNotification = await this.notificationService.find({ toUser: userObjId });
-        }
-        const userNotificationsList: any = await this.notificationService.search(filter);
-        const notiResp = await this.parseNotificationsToResponses(userNotificationsList);
-        const query = {toUser:userObjId};
-        const newValues = {$set:{isRead:true}};
-        const updateReadNoti = await this.notificationService.updateMany(query,newValues);
-        if (userNotificationsList && updateReadNoti) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length);
+
+        /*        
+        "$and": [
+            {"mode": {"$ne": "invite"}},
+            {"mode": {"$ne": "join"}}
+        ]     */
+
+        const notifications: any = await this.notificationService.aggregate([
+            {
+                $match: {
+                    $and: [
+                        { mode: { $ne: 'invite' } },
+                        { mode: { $ne: 'join' } },
+                    ],
+                    toUser: filter.whereConditions.toUser,
+                    deleted: filter.whereConditions.deleted
+                }
+            },
+            {
+                $sort: { createdDate: filter.orderBy.createdDate }
+            },
+            {
+                $limit: filter.limit
+            },
+            {
+                $skip: filter.offset
+            }
+        ]);
+        const notiResp = await this.parseNotificationsToResponses(notifications);
+        const query = { toUser: userObjId, _id: { $nin: stackIds } };
+        const newValues = { $set: { isRead: true } };
+        const updateReadNoti = await this.notificationService.updateMany(query, newValues);
+        if (notifications && updateReadNoti) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, notiResp.length, pageObjectives);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot search UserNotifications', undefined);
@@ -378,4 +649,5 @@ export class UserNotificationController {
 
         return response;
     }
+
 } 

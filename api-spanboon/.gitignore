@@ -48,3 +48,8 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+.env.production
+.env.qa
+
+/pk-APKA2ETX3SHA62PN6BX4.pem

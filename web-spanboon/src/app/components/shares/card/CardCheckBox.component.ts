@@ -175,8 +175,8 @@ export class CardCheckBox {
     }
 
     public loadMoreData($event) {
-        this.loadMore.emit(this.title);
         this.checkDivided();
+        this.loadMore.emit(this.title);
     }
 
 

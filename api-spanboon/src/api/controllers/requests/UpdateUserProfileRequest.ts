@@ -14,4 +14,7 @@ export class UpdateUserProfileRequest {
     public birthdate: Date;
     public gender: number;
     public customGender: string;
+    public province:string;
+    public membership:boolean;
+    public token:any;
 }

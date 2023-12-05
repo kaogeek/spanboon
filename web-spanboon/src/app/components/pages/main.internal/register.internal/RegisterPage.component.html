@@ -38,6 +38,7 @@
             </div>
             <div class="user">
                 <div class="user-grop">
+                    <span>*</span>
                     <input type="text" #displayName="ngModel" name="displayName" id="displayName"
                         placeholder="ชื่อที่ต้องการแสดง" class="input-text" [(ngModel)]="data.displayName" required
                         shake [shake]="active">
@@ -54,22 +55,24 @@
         </div>
         <div class="form-register">
             <div class="form-group">
-                <input type="text" name="firstName" placeholder="ชื่อ" class="input-text-group"
-                    [(ngModel)]="data.firstName">
+                <input type="text" id="firstName" name="firstName" placeholder="ชื่อ" class="input-text-group"
+                    [(ngModel)]="data.firstName" shake [shake]="activeFirstName" required>
 
-                <input type="text" name="lastName" placeholder="นามสกุล" class="input-text-group"
-                    [(ngModel)]="data.lastName">
-                <ng-container *ngIf="mode === 'facebook' || mode === 'google' || mode === 'twitter'; else elseEmail">
+                <input type="text" id="lastName" name="lastName" placeholder="นามสกุล" class="input-text-group"
+                    [(ngModel)]="data.lastName" shake [shake]="activeLastName" required>
+                <ng-container
+                    *ngIf="mode === 'facebook' || mode === 'google' || mode === 'twitter' || mode === 'mfp'; else elseEmail">
                     <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
-                        [readonly]="data.email ? true : false" [class.readonly]="data.email"
-                        [value]="!!data!.email ? data.email : ''" required>
+                        [readonly]="data.email || objectMerge.email ? true : false"
+                        [class.readonly]="data.email || objectMerge.email"
+                        [value]="!!data!.email ? data.email : objectMerge.email" required>
                 </ng-container>
                 <ng-template #elseEmail>
-                    <input type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
-                        [shake]="activeEmail" [(ngModel)]="data.email" [email]="true" required>
+                    <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
+                        [shake]="activeEmail" [(ngModel)]="data.email ? data.email : objectMerge.email" [email]="true"
+                        required>
                 </ng-template>
             </div>
-
             <ng-container *ngIf="mode === 'normal' ">
                 <div class="title-label" *ngIf="mode === 'normal' ">รหัสผ่านอย่างน้อย 6 ตัว</div>
                 <input type="password" id="password" name="password" minlength="6" placeholder="รหัสผ่าน"
@@ -79,7 +82,23 @@
                     placeholder="ใส่รหัสผ่าน อีกครั้ง" class="input-text" [(ngModel)]="repassword" required
                     [shake]="activeRePass">
             </ng-container>
+            <div for="province" class="title-label">จังหวัด</div>
+            <mat-form-field appearance="none">
+                <mat-select [(ngModel)]="data.province" name="province" placeholder='จังหวัด' required>
+                    <mat-option *ngFor="let province of provinces" [value]="province">
+                        {{province}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
 
+            <!-- 
+                <mat-form-field appearance="none">
+                    <mat-select  [ngModel]="province" (ngModelChane)="province" placeholder = 'จังหวัด' multiple required>
+                    <mat-option *ngFor="let province of provinces" [value]="province.value">
+                        {{province.viewValue}}
+                    </mat-option>
+                    </mat-select>
+                </mat-form-field> -->
             <div for="birthday" class="title-label">วันเกิด</div>
             <mat-form-field appearance="none">
                 <input #birthday matInput class="mat-birthday" [class.active]="!isCheckDate" [matDatepicker]="dp3"

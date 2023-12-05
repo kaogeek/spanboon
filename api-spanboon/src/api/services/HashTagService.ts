@@ -32,6 +32,10 @@ export class HashTagService {
         return await this.hashTagRepository.updateOne(query, newValue);
     }
 
+    public async updateMany(query: any, newValue: any): Promise<any> {
+        return await this.hashTagRepository.updateMany(query, newValue);
+    }
+
     // delete hashTag
     public async delete(query: any, options?: any): Promise<any> {
         return this.hashTagRepository.deleteOne(query, options);
@@ -56,5 +60,29 @@ export class HashTagService {
         } else {
             return this.hashTagRepository.find(condition);
         }
+    }
+
+    public searchHash(data: any, range: number): Promise<any> {
+        const limit = range;
+        const offset = 0;
+        const select = undefined;
+        const whereConditions = { name: data };
+        const count = {};
+        const orderingSort = { 'count': -1 };
+        const condition: any = SearchUtil.createFindCondition(limit, offset, select, whereConditions, count, orderingSort);
+        return this.hashTagRepository.find(condition);
+
+    }
+
+    public searchHashSec(range:number): Promise<any> {
+        const limit = range;
+        const offset = 0;
+        const select = undefined;
+        const whereConditions = undefined;
+        const count = {};
+        const orderingSort = { 'count': -1 };
+        const condition: any = SearchUtil.createFindCondition(limit, offset, select, whereConditions, count, orderingSort);
+        return this.hashTagRepository.find(condition);
+
     }
 }

@@ -1,0 +1,36 @@
+<div class="page-official-wrapper">
+    <!-- <div class="page-official-header">
+        <div class="page-official-header-txt">รายชื่อเพจที่เป็นทางการและไม่เป็นทางการ</div>
+    </div> -->
+    <div class="page-official-body">
+        <div class="tbl-page-wrapper">
+            <mat-form-field class="search-page">
+                <input matInput (keyup)="filterPage($event.target.value)" placeholder="ค้นหา">
+            </mat-form-field>
+
+            <mat-slide-toggle [checked]="isOfficial" (change)="onOfficialChange()">
+                {{isOfficial ? 'Official': 'Not Official'}}
+            </mat-slide-toggle>
+
+            <table class="tbl-page" mat-table matSort [dataSource]="dataSource">
+                <!-- Name Column -->
+                <ng-container matColumnDef="pageName">
+                    <th mat-header-cell mat-sort-header *matHeaderCellDef>ชื่อเพจ</th>
+                    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                </ng-container>
+
+                <!-- CreatedDate Column -->
+                <ng-container matColumnDef="createdDate">
+                    <th mat-header-cell mat-sort-header *matHeaderCellDef> วันที่สร้าง </th>
+                    <td mat-cell *matCellDef="let element"> {{element.createdDate | date: 'dd/MM/yyyy'}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            <div class="page-official-footer">
+                <mat-paginator showFirstLastButtons></mat-paginator>
+            </div>
+        </div>
+    </div>
+</div>

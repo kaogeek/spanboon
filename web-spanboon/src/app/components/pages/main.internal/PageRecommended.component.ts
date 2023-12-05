@@ -147,7 +147,6 @@ export class PageRecommended extends AbstractPage implements OnInit {
       console.log('err ', err)
     });
   }
-
   public clickLoadmore() {
 
   }

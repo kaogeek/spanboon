@@ -9,7 +9,7 @@ import { Component, OnInit, ViewChild, EventEmitter, ElementRef, Output } from '
 import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade, Engagement, UserEngagementFacade, PostActionService, SeoService } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import * as $ from 'jquery';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, Meta } from '@angular/platform-browser';
 import { FileHandle } from '../../shares/directive/directives';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
@@ -27,6 +27,7 @@ import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogPost } from '../../shares/dialog/DialogPost.component';
 import { filter } from 'rxjs/internal/operators/filter';
 import { DialogShare } from '../../shares/dialog/DialogShare.component';
+import { DialogCheckBox } from '../../shares/dialog/DialogCheckBox.component';
 
 const PAGE_NAME: string = 'profile';
 const URL_PATH: string = '/profile/';
@@ -63,6 +64,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   private userEngagementFacade: UserEngagementFacade;
   private postActionService: PostActionService;
   private seoService: SeoService;
+  private meta: Meta;
   public dialog: MatDialog;
 
   public isLoading: boolean;
@@ -95,6 +97,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public selectedIndex: number;
   public pathPostId: string;
   public linkPost: string;
+  public isMemberShip: boolean = false;
 
   public postId: any
   public userCloneDatas: any
@@ -103,6 +106,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public isPostLoading: boolean = false;
 
   private coverImageoldValue = 50;
+  private checkLike: boolean = false;
 
   mySubscription: any;
   files: FileHandle[] = [];
@@ -125,7 +129,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
     sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, routeActivated: ActivatedRoute, postFacade: PostFacade, recommendFacade: RecommendFacade,
-    engagementService: Engagement, userEngagementFacade: UserEngagementFacade, postActionService: PostActionService, seoService: SeoService) {
+    engagementService: Engagement, userEngagementFacade: UserEngagementFacade, postActionService: PostActionService, seoService: SeoService, meta: Meta) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
     this.sanitizer = sanitizer;
@@ -142,6 +146,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.userEngagementFacade = userEngagementFacade;
     this.postActionService = postActionService;
     this.seoService = seoService;
+    this.meta = meta;
     this.msgUserNotFound = false;
     this.isFiles = false;
     this.showLoading = true;
@@ -239,8 +244,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.setTab();
     this.checkLoginAndRedirection();
     this.getRecommend();
-    this.openLoading();
+    // this.openLoading();
     if (this.isLogin()) {
+      this.isMemberShip = this.authenManager.getUserMember();
       this.getProfileImage();
     }
     // this.searchPostById('6051c688fb3585b175ab4765')
@@ -250,7 +256,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
     this.observManager.subscribe(REFRESH_DATA, (result: any) => {
       if (result) {
-        this.resPost.posts.unshift(result);
+        // this.resPost.posts.unshift(result);
+        this.resProfile.displayName = result.displayName;
       }
     });
   }
@@ -409,26 +416,41 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             }
             this.boxPost.clearDataAll();
             this.isClickPostPreLoad = false;
+            this.isPostLoading = false;
           }
         }
       }).catch((err: any) => {
         console.log(err);
+        this.isPostLoading = false;
+        this.showAlertDialog('โพสต์ประเภทสมาชิกสามารถสร้างได้โดยสมาชิกเท่านั้น');
       })
     }
   }
 
   public postLike(post, index: number) {
-    if (!this.isLogin()) {
-      this.showAlertLoginDialog("/profile/" + this.resProfile.id);
-    } else {
-      this.resPost.posts[index].isLike = true;
-      this.resPost.posts[index].likeCount = 1;
-      this.postFacade.like(post.postData._id, post.userAsPage.id).then((res: any) => {
-        this.resPost.posts[index].isLike = res.isLike
-        this.resPost.posts[index].likeCount = res.likeCount
-      }).catch((err: any) => {
-        console.log(err)
-      });
+    if (!this.checkLike) {
+      this.checkLike = true;
+      if (!this.isLogin()) {
+        this.showAlertLoginDialog("/profile/" + this.resProfile.id);
+        this.checkLike = false;
+      } else {
+        this.resPost.posts[index].isLike = true;
+        this.postFacade.like(post.postData._id, post.userAsPage.id).then((res: any) => {
+          this.resPost.posts[index].isLike = res.isLike
+          this.resPost.posts[index].likeCount = res.likeCount
+          this.checkLike = false;
+        }).catch((err: any) => {
+          console.log(err)
+          this.resPost.posts[index].isLike = false;
+          if (err.error.message === 'You cannot like this post type MFP.') {
+            this.showDialogEngagementMember();
+            this.checkLike = false;
+          } else if (err.error.message === 'Page cannot like this post type MFP.') {
+            this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
+            this.checkLike = false;
+          }
+        });
+      }
     }
   }
 
@@ -459,7 +481,15 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.profileFacade.getProfile(url).then((res) => {
       if (res) {
         this.seoService.updateTitle(res.data.name ? res.data.name : res.data.displayName);
-        if (res.status === 1 && res.data) {
+        if (this.resPost.length > 0) {
+          if (this.resPost.posts.length === 1) {
+            this.meta.updateTag({ name: 'title', content: this.resPost.posts[0].title });
+            this.meta.updateTag({ name: 'description', content: this.resPost.posts[0].detail });
+          }
+        }
+        if (!!res.data) {
+          this.position = res.data.coverPosition;
+          this.resProfile = res.data;
           let user = {
             displayName: res.data.displayName,
             firstName: res.data.firstName,
@@ -470,8 +500,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             username: res.data.username
           }
           this.resEditProfile = user;
-          this.position = res.data.coverPosition;
-          this.resProfile = res.data;
           if (this.resProfile && this.resProfile.name) {
             this.name = this.resProfile.name
           } else if (this.resProfile && this.resProfile.uniqueId) {
@@ -493,19 +521,22 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             this.resProfile.isLoadingCover = false;
           }
 
-          setTimeout(() => {
-            this.isLoading = false;
-          }, 2000);
         }
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 2000);
       }
 
-    }).catch((err: any) => {
-      if (err.error.status === 0) {
-        if (err.error.message === 'Unable to Get UserProfile') {
-          this.msgUserNotFound = true;
+    }).catch((err) => {
+      if (err) {
+        console.log("err", err)
+        this.isLoading = false;
+        if (err.error.status === 0) {
+          if (err.error.message === 'Unable to Get UserProfile') {
+            this.msgUserNotFound = true;
+          }
         }
       }
-      this.stopLoading();
     })
   }
 
@@ -517,6 +548,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     } else {
       data.offset = this.resPost && this.resPost.posts.length > 0 ? this.resPost.posts.length : 0;
     }
+
     data.limit = 5;
     let originalpost: any[] = this.resPost.posts;
     this.profileFacade.searchType(data, this.url).then(async (res: any) => {
@@ -525,9 +557,11 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           this.isMaxLoadingPost = true;
           this.isLoadingPost = false;
         }
+
         for (let post of res.posts) {
           originalpost.push(post);
         }
+
         if (this.resPost && this.resPost.pageObjectives && this.resPost.pageObjectives.length > 0) {
           let index = 0;
           for (let result of this.resPost.pageObjectives) {
@@ -537,6 +571,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             }
           }
         }
+
         this.resPost.posts = originalpost;
         for (let post of this.resPost.posts) {
           if (post.referencePost !== null && post.referencePost !== undefined && post.referencePost !== '') {
@@ -546,9 +581,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             search.whereConditions = { _id: post.referencePost };
             this.postFacade.search(search).then((res: any) => {
               if (res.length !== 0) {
-                post.referencePostObject = res[0]
+                post.referencePostObject = res[0];
               } else {
-                post.referencePostObject = 'UNDEFINED PAGE'
+                post.referencePostObject = 'UNDEFINED PAGE';
               }
             }).catch((err: any) => {
               this.isMaxLoadingPost = true;
@@ -589,7 +624,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       }
     }).catch((err: any) => {
       console.log(err)
-      this.isMaxLoadingPost = true
+      this.isMaxLoadingPost = true;
     });
   }
 
@@ -674,7 +709,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           });
         }).catch((err: any) => {
           console.log(err)
-        })
+        });
       }
     });
   }
@@ -1013,9 +1048,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       //repost
       if (res && res.type === "NOTOPIC") {
         this.resPost.posts = res.posts;
-      } else if (res.type === "TOPIC") {
+      } else if (res && res.type === "TOPIC") {
         this.resPost.posts = res.posts;
-      } else if (res.type === "UNDOTOPIC") {
+      } else if (res && res.type === "UNDOTOPIC") {
         for (let [i, data] of this.resPost.posts.entries()) {
           if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
             if (data.referencePostObject._id === action.post._id) {
@@ -1024,7 +1059,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             }
           }
         }
-      } else if (res.type === "POST") {
+      } else if (res && res.type === "POST") {
         this.router.navigateByUrl('/post/' + action.pageId);
       } else if (action.mod === 'LIKE') {
         this.isLoginCh();
@@ -1086,6 +1121,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result !== null && result !== undefined) {
         this.resPost.posts[index] = result;
+        this.searchTimeLinePost(data, true);
       }
       this.stopLoading();
     });
@@ -1234,46 +1270,120 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     })
   }
 
-  public blockUser() {
+  public blockUser(profile) {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: 'คุณต้องการบล็อกผู้ใช้นี้ใช่หรือไม่',
+        text: 'คุณต้องการบล็อกเพจนี้ใช่หรือไม่',
       },
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        // if(localStorage.getItem('blockUser') == null) {
-        //   localStorage.setItem('blockUser','[]');
-        // } 
-
-        // var add_data = JSON.parse(localStorage.getItem('blockUser'));
-        // add_data.push(this.resProfile.id);
-
-        // localStorage.setItem('blockUser', JSON.stringify(add_data));
-        // let show_blockUser = localStorage.getItem('blockUser');
-
-        // this.router.navigate(['home']);
-        // this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
+        let data = {
+          subjectId: profile.id,
+          subjectType: 'USER',
+        }
+        this.pageFacade.blockPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }
 
-  public reportUser() {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
+  public reportUser(profile) {
+    let typeReport = 'user';
+    let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
+    this.pageFacade.getManipulate(typeReport).then((res) => {
+      if (res) {
+        detail = [];
+        for (let data of res.data) {
+          detail.push(data.detail);
+        }
+        this._openDialogReport(profile, typeReport, detail)
+      }
+    }).catch((err) => {
+      if (err.error.status === 0) {
+        this._openDialogReport(profile, typeReport, detail)
+      }
+    });
+  }
+
+  public hidePost(post: any, index: number) {
+    const confirmEventEmitter = new EventEmitter<any>();
+    confirmEventEmitter.subscribe(() => {
+      this.submitDialog.emit();
+    });
+    const canCelEventEmitter = new EventEmitter<any>();
+    canCelEventEmitter.subscribe(() => {
+      this.submitCanCelDialog.emit();
+    });
+
+    let dialog = this.showDialogWarming("คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่ ", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.pageFacade.hidePost(post._id).then((res) => {
+          if (res) {
+            this.resPost.posts.splice(index, 1);
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
+      }
+    });
+  }
+
+  private _openDialogReport(page, typeReport, detail) {
+    let title = '';
+    if (typeReport === 'post') {
+      title = 'รายงานโพสต์';
+    } else if (typeReport === 'user') {
+      title = 'รายงานผู้ใช้';
+    }
+    let dialog = this.dialog.open(DialogCheckBox, {
+      disableClose: false,
       data: {
-        text: 'คุณต้องการรายงานผู้ใช้นี้ใช่หรือไม่',
-      },
+        title: title,
+        subject: detail,
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+      }
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        // this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
+        let data = {
+          typeId: page.id,
+          type: typeReport.toUpperCase(),
+          topic: res.topic,
+          message: res.detail ? res.detail : '',
+        }
+        this.pageFacade.reportPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }
 
-  private openLoading() {
-    this.isLoading = true;
+  public reportPost(post: any, index: any) {
+    let typeReport = 'post';
+    let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
+    this.pageFacade.getManipulate(typeReport).then((res) => {
+      if (res) {
+        detail = [];
+        for (let data of res.data) {
+          detail.push(data.detail);
+        }
+        this._openDialogReport(post, typeReport, detail)
+      }
+    }).catch((err) => {
+      if (err.error.status === 0) {
+        this._openDialogReport(post, typeReport, detail)
+      }
+    });
   }
 }

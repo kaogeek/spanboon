@@ -40,13 +40,20 @@ export class PageObjective extends BaseModel {
     @Column({ name: 's3IconURL' })
     public s3IconURL: string;
 
+    @Column({ name: 'personal' })
+    public personal: boolean;
+
+    @Column({ name: 'timeStamps' })
+    public timeStamps: Date;
+
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
     }
 
     @BeforeUpdate()
-    public async updateDetails(): Promise<void> {
+    public updateDetails(): any {
         this.updateDate = moment().toDate();
     }
 }

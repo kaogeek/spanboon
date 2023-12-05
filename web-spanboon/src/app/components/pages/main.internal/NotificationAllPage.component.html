@@ -4,8 +4,7 @@ display: flex;
 background-color: #eeeeee;
 align-items: center;
 justify-content: center;">
-    <div (scroll)="scroll($event)" style="max-height: 95vh;overflow: auto;"
-        class="wrapper-notification-copy width-500">
+    <div (scroll)="scroll($event)" style="max-height: 95vh;overflow: auto;" class="wrapper-notification-copy width-500">
         <div class="test">
             การแจ้งเตือนทั้งหมด
         </div>
@@ -21,7 +20,7 @@ justify-content: center;">
             </div>
         </div>
         <div *ngIf="isNotiAll" class="noti-sc">
-            <notification-card *ngFor="let i of notiisTable" [message]="i" [fullPage]="true" [slide]="true">
+            <notification-card *ngFor="let i of notiisTable" [message]="i" [fullPage]="true">
             </notification-card>
             <div class="not-foun-noti" *ngIf="notiisTable.length === 0">
                 ไม่มีการแจ้งเตือนใหม่
@@ -33,7 +32,7 @@ justify-content: center;">
             </div>
         </div>
         <div class="noti-sc">
-            <notification-card *ngFor="let i of notiisTablePast" [message]="i" [fullPage]="true" [slide]="true">
+            <notification-card *ngFor="let i of notiisTablePast" [message]="i" [fullPage]="true">
             </notification-card>
             <div class="not-foun-noti" *ngIf="notiisTablePast.length === 0">
                 ไม่มีการแจ้งเตือน

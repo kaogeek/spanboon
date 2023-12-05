@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef, HostListener } from '@angular/core';
 import { AuthenManager, ObservableManager, ObjectiveFacade, HashTagFacade, PostFacade, PostActionService, SeoService } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -16,6 +16,7 @@ import { MenuContextualService } from 'src/app/services/services';
 import AOS from 'aos';
 import 'aos/dist/aos.css'; // You can also use <link> for styles
 import './../../../../../assets/script/canvas';
+import { Meta } from '@angular/platform-browser';
 
 const PAGE_NAME: string = 'objective';
 
@@ -72,12 +73,15 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     // ObjectiveData
     public objectiveData: any;
     public pageObjective: any;
+    public pageJoinerObjective: any;
     public pageOwner: any;
     public currentDate: any;
 
     public isFollow: boolean = false;
     public isLoginUser: boolean = false;
     public isLoding: boolean = true;
+    public windowWidth: any;
+    public isRes: boolean = false;
 
     public objectiveId: string;
 
@@ -86,7 +90,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     private seoService: SeoService;
 
     constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, postFacade: PostFacade, postActionService: PostActionService, private viewContainerRef: ViewContainerRef, objectiveFacade: ObjectiveFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
-        dialog: MatDialog, seoService: SeoService) {
+        dialog: MatDialog, seoService: SeoService, private meta: Meta) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
@@ -124,6 +128,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         });
     }
     public async ngOnInit(): Promise<void> {
+        this.getScreenSize();
         this.isLoginUser = this.isLogin();
         this.routeActivated.params.subscribe((params) => {
             this.objectiveId = params['id'];
@@ -132,7 +137,15 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId).then((res) => {
             if (res) {
                 this.objectiveData = res;
-                this.seoService.updateTitle(this.objectiveData.pageObjective.hashTagName);
+                let obj = this.objectiveData.pageObjective;
+                let hashTags = [];
+                for (let hashtag of res.relatedHashTags) {
+                    hashTags.push("#" + hashtag.name + " ")
+                }
+                this.seoService.updateTitle("#" + obj.hashTagName);
+                this.meta.updateTag({ name: 'title', content: "#" + obj.hashTagName });
+                this.meta.updateTag({ name: 'keywords', content: (res.relatedHashTags.length > 0 ? hashTags.toString() : '') });
+                this.meta.updateTag({ name: 'description', content: "#" + obj.title + (obj.detail ? (" - " + obj.detail) : '') });
                 this.objectiveData.page;
                 this.objectiveData.timelines;
                 const pageType = { type: "PAGE" };
@@ -175,7 +188,9 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public setData(): void {
         this.pageObjective = this.objectiveData.pageObjective;
         this.pageOwner = this.objectiveData.page;
-
+        if (this.objectiveData.pageJoinerObjective.length > 0) {
+            this.pageJoinerObjective = this.objectiveData.pageJoinerObjective;
+        }
     }
 
     public setHashtag(tag: any, post: any): any {
@@ -193,7 +208,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
     public clickToHashtag(dataId: any, type?: any) {
         this.router.navigate([]).then(() => {
-            window.open('/search/?hashtag=' + dataId, '_blank');
+            window.open('/search?hashtag=' + dataId, '_blank');
         });
     }
 
@@ -267,7 +282,22 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
                 }
             }).catch((err: any) => {
                 console.log(err)
+                if (err.error.message === 'You cannot like this post type MFP.') {
+                    this.showDialogEngagementMember();
+                } else if (err.error.message === 'Page cannot like this post type MFP.') {
+                    this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
+                }
             });
+        }
+    }
+
+    @HostListener('window:resize', ['$event'])
+    public getScreenSize(event?) {
+        this.windowWidth = window.innerWidth;
+        if (this.windowWidth <= 768) {
+            this.isRes = true;
+        } else {
+            this.isRes = false;
         }
     }
 

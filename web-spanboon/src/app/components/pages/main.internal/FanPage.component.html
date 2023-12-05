@@ -182,8 +182,15 @@
                             <div class="fan-page-tag" [phxPreload]="resDataPage" [preloadClass]="'fan-page-tag'">
                                 {{resDataPage && resDataPage.pageUsername ? '@'+resDataPage.pageUsername : ''}}
                             </div>
+                            <ng-container
+                                *ngIf="!!resDataPage!.websiteURL && resDataPage.websiteURL !== '' && resDataPage.websiteURL !== undefined && resDataPage.websiteURL !== null">
+                                <a [href]="checkPathValidation(resDataPage.websiteURL)" target="_blank" class="btn-web">
+                                    ไปหน้าเว็บไซต์
+                                </a>
+                            </ng-container>
                         </div>
                         <div class="wrapper-btn-action" [phxPreload]="resDataPage"
+                            [ngStyle]="{'justify-content': !isLogin() ? 'center' : 'space-between','column-gap': !isLogin() ? '35px' : 'unsent'}"
                             [preloadClass]="'wrapper-btn-action'">
                             <div class="btn-follow-about">
                                 <button-follow [bgColor]="'#FFFFFF'" [inputId]="'follow'"
@@ -214,10 +221,7 @@
                                 เกี่ยวกับ
                             </div> -->
                             <!-- FBTEST-->
-                            <div class="btn-follow-about btn_fa">
-                                เกี่ยวกับ
-                            </div>
-                            <ng-container>
+                            <ng-container *ngIf="isLogin()">
                                 <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'"
                                     class="dropdown">
                                     <span class="material-icons">
@@ -239,12 +243,12 @@
                                         </ng-container>
                                         <ng-template #elseTemplatePage>
                                             <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
-                                                (click)="reportUser()">
+                                                (click)="reportUser(resDataPage)">
                                                 <mat-icon>warning</mat-icon>
                                                 <span>รายงานเพจนี้</span>
                                             </button>
                                             <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
-                                                (click)="blockUser()">
+                                                (click)="blockUser(resDataPage)">
                                                 <mat-icon>block</mat-icon>
                                                 <span>บล็อกเพจนี้</span>
                                             </button>
@@ -521,10 +525,8 @@
                                         </svg>
                                     </a>
                                 </ng-template>
-
-                                <ng-container
-                                    *ngIf="resDataPage && resDataPage.websiteURL  && resDataPage.websiteURL !== undefined  && resDataPage.websiteURL !== null  && resDataPage.websiteURL !== ''; else elseTemplateWeb">
-                                    <a href="//{{resDataPage && resDataPage.websiteURL}}" target="_blank"
+                                <ng-container *ngIf="!!resDataPage!.websiteURL; else elseTemplateWeb">
+                                    <a [href]="checkPathValidation(resDataPage.websiteURL)" target="_blank"
                                         class="contact-social"
                                         [class.active]="resDataPage && resDataPage.websiteURL  && resDataPage.websiteURL !== undefined  && resDataPage.websiteURL !== null  && resDataPage.websiteURL !== '' ? true : false">
                                         <svg class="web" xmlns="http://www.w3.org/2000/svg" width="13.747"
@@ -687,12 +689,12 @@
                                                 <post-data [itemPost]="itemPost" [user]="userImage"
                                                     [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
                                                     [isShowUser]="true" [isNotAccess]="isNotAccess"
-                                                    (action)="actionComment($event,index)"
+                                                    [isMemberShip]="isMemberShip" (action)="actionComment($event,index)"
                                                     (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                     [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
                                                     (delete)="deletePost($event,index)"
                                                     (update)="editPost($event,index)" (engagement)="engagement($event)"
-                                                    (hide)="hidePost($event,index)">
+                                                    (hide)="hidePost($event,index)" (report)="reportPost($event,index)">
                                                 </post-data>
                                             </ng-container>
                                             <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true"
@@ -708,7 +710,8 @@
                                         <ng-container *ngFor="let itemPost of resDataPost; let index = index">
                                             <post-data [itemPost]="itemPost" [user]="userImage" [isComments]="isLogin()"
                                                 [isUserPage]="isLogin() && isNotAccess" [isShowUser]="true"
-                                                [isNotAccess]="isNotAccess" (action)="actionComment($event,index)"
+                                                [isMemberShip]="isMemberShip" [isNotAccess]="isNotAccess"
+                                                (action)="actionComment($event,index)"
                                                 (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                 [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
                                                 (delete)="deletePost($event,index)" (update)="editPost($event)"
@@ -721,8 +724,8 @@
                             <div class="side-feed" #sidefeedHeight>
                                 <ng-container
                                     *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
-                                    <card-item [itemData]="resDataPage && resDataPage.pageObjectives" [isDoIng]="'true'"
-                                        [statusLable]="'กำลังทำอยู่'"></card-item>
+                                    <card-item [itemData]="resObjective" [pageId]="resDataPage.id" [isDoIng]="'true'"
+                                        [isShowIcon]="isNotAccess" [statusLable]="'กำลังทำอยู่'"></card-item>
                                 </ng-container>
                                 <recommend-card *ngIf="!showLoading" [title]="'คุณอาจรู้จัก'" [data]="dataRecommend"
                                     (submitFollow)="clickFollow($event)" [selectedIndex]="selectedIndex">

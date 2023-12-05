@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Post, Body, QueryParams } from 'routing-controllers';
+import { JsonController, Res,Req, Post, Body, QueryParams } from 'routing-controllers';
 import { ObjectID } from 'mongodb';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { NeedsService } from '../services/NeedsService';
@@ -17,7 +17,6 @@ import { CalculateAllocateQueryparam } from './params/CalculateAllocateQuerypara
 import { SearchAllocateQueryparam } from './params/SearchAllocateQueryparam';
 import { Posts } from '../models/Posts';
 import { ALLOCATE_SEARCH_LIMIT_DEFAULT, ALLOCATE_SEARCH_OFFSET_DEFAULT } from '../../constants/Constants';
-
 @JsonController('/allocate')
 export class AllocateController {
     constructor(private needsService: NeedsService) { }
@@ -38,7 +37,7 @@ export class AllocateController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/calculate')
-    public async calculateAllocate(@QueryParams() params: CalculateAllocateQueryparam, @Body({ validate: true }) allocates: AllocateRequest[], @Res() res: any): Promise<any> {
+    public async calculateAllocate(@QueryParams() params: CalculateAllocateQueryparam, @Body({ validate: true }) allocates: AllocateRequest[],  @Res() res: any, @Req() req: any): Promise<any> {
         try {
             if (allocates === undefined || allocates.length <= 0) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Calculate Allocate', []));

@@ -18,6 +18,7 @@ span:focus {
 .active-link,
 .active-link-user {
     color: $brandcolor2;
+
     path,
     circle,
     g {
@@ -28,6 +29,7 @@ span:focus {
 .footer-active-link {
     color: $white;
     opacity: 1;
+
     path,
     circle,
     g {
@@ -45,6 +47,7 @@ span:focus {
     height: 4px;
     background-color: $bg-fog-gray2;
 }
+
 ::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background-color: $brandcolor2;
@@ -73,7 +76,7 @@ span:focus {
     .list-looking-for {
         width: 100%;
 
-        > .item-looking-for {
+        >.item-looking-for {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -101,31 +104,31 @@ span:focus {
                 display: flex;
                 align-items: center;
 
-                > .icon-looking-for {
+                >.icon-looking-for {
                     width: 35pt;
                     height: 35pt;
                     object-fit: cover;
                     border-radius: 50%;
                 }
 
-                > .title-looking-for {
+                >.title-looking-for {
                     margin-left: 10pt;
                 }
             }
 
-            > .wrapper-option {
+            >.wrapper-option {
                 display: flex;
                 align-items: center;
 
-                > .amount-looking-for {
+                >.amount-looking-for {
                     padding: 0 10pt;
                     text-align: right;
 
-                    > .quantity {
+                    >.quantity {
                         @include font-size-10($font-head-100);
                     }
 
-                    > .option {
+                    >.option {
                         cursor: pointer;
                         @include pointer();
                     }
@@ -139,7 +142,7 @@ span:focus {
         align-items: center;
         color: $color-gray;
 
-        > .icon-active {
+        >.icon-active {
             flex: 0 0 auto;
             width: 8pt;
             height: 8pt;
@@ -157,16 +160,16 @@ span:focus {
             }
         }
 
-        > .looking {
+        >.looking {
             background-color: $status-post-need;
         }
 
-        > .lookingWhite {
+        >.lookingWhite {
             background-color: $status-post-need;
             border: 0.7pt solid $white;
         }
 
-        > .fulfill {
+        >.fulfill {
             background-color: $status-post-fulfill;
         }
 
@@ -219,7 +222,7 @@ span:focus {
         background: $color-8;
     }
 
-    > .div-top {
+    >.div-top {
         cursor: pointer;
         position: fixed;
         right: 17px;
@@ -236,7 +239,7 @@ span:focus {
             background: $brandcolor2;
         }
 
-        > .to-top {
+        >.to-top {
             width: 30pt;
             height: 30pt;
             font-size: 28pt;
@@ -244,13 +247,14 @@ span:focus {
             display: flex;
             justify-content: center;
             align-items: center;
+
             &::selection {
                 background: transparent;
             }
         }
     }
 
-    > .icon-post-bottom {
+    >.icon-post-bottom {
         position: fixed;
         display: flex;
         align-items: center;
@@ -277,7 +281,7 @@ span:focus {
             color: rgba($brandcolor2, 0.95);
         }
 
-        > .button-post {
+        >.button-post {
             width: 30px;
         }
 
@@ -286,7 +290,7 @@ span:focus {
         }
     }
 
-    > .wrapper-content-page {
+    >.wrapper-content-page {
         min-height: calc(100% - 105pt);
         // overflow: hidden;
     }
@@ -297,14 +301,14 @@ span:focus {
         flex-wrap: wrap;
         border-bottom: $width-border solid $border-color;
 
-        > .wrapper-doing {
+        >.wrapper-doing {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             margin: 0 5pt 5pt;
 
-            > .image-tag {
+            >.image-tag {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -322,8 +326,8 @@ span:focus {
         border-bottom: $width-border solid $border-color;
         padding: 10pt 0;
 
-        > .div-image {
-            > .image-user {
+        >.div-image {
+            >.image-user {
                 box-shadow: 0px 5px 9px 0 #e5e3dd;
                 width: 100pt;
                 height: 100pt;
@@ -332,20 +336,20 @@ span:focus {
             }
         }
 
-        > .wrapper-field-upload {
+        >.wrapper-field-upload {
             display: flex;
             flex-direction: column;
             justify-content: space-evenly;
             padding: 20pt;
 
-            > .top {
+            >.top {
                 @include font-size-9($font-head-500);
                 color: $bg-color2;
                 text-align: left;
             }
 
-            > .btn-upload {
-                > .button-social {
+            >.btn-upload {
+                >.button-social {
                     background-image: url(/../../../../../assets/img/upload.svg);
                     background-color: $white;
                     background-repeat: no-repeat;
@@ -386,7 +390,7 @@ span:focus {
         }
     }
 
-    .image-upload > input {
+    .image-upload>input {
         display: none;
     }
 
@@ -411,7 +415,8 @@ span:focus {
 
     .tribute-container-hashtag {
         color: #1b95e0;
-        > .highlight-text {
+
+        >.highlight-text {
             color: #1b95e0 !important;
         }
     }
@@ -428,6 +433,7 @@ span:focus {
         0% {
             background-position: -468px 0;
         }
+
         100% {
             background-position: 468px 0;
         }
@@ -495,6 +501,7 @@ span:focus {
         0% {
             padding: 10pt 15pt;
         }
+
         100% {
             padding: 10pt 10pt;
         }
@@ -536,14 +543,16 @@ span:focus {
 
     .input-shake::-moz-placeholder {
         /* Firefox 19+ */
-        opacity: 1; /*Firefox by default has an opacity object that usually is ideal to reset so it matches webkit*/
+        opacity: 1;
+        /*Firefox by default has an opacity object that usually is ideal to reset so it matches webkit*/
         /*styles here*/
         color: red;
     }
 
     .input-shake:-moz-placeholder {
         /* Firefox 18- */
-        opacity: 1; /*Firefox by default has an opacity object that usually is ideal to reset so it matches webkit*/
+        opacity: 1;
+        /*Firefox by default has an opacity object that usually is ideal to reset so it matches webkit*/
         /*styles here*/
         color: red;
     }
@@ -569,7 +578,7 @@ span:focus {
     display: block;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 100;
 }
 
 .ck.ck-reset_all,
@@ -584,7 +593,7 @@ span:focus {
     display: none;
 }
 
-.ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
+.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
     border-color: $white;
     height: auto !important;
     min-height: 200pt;
@@ -597,7 +606,7 @@ span:focus {
 }
 
 .met-text {
-    .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
+    .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
         overflow: hidden;
         border: none;
         height: auto !important;
@@ -606,11 +615,12 @@ span:focus {
 }
 
 .met-from-input-text {
-    .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
+    .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
         overflow: hidden;
         border: none;
         height: auto !important;
     }
+
     .ck-focused {
         border: none;
         height: auto !important;
@@ -620,16 +630,15 @@ span:focus {
 
 @media (max-width: $xxlarge) {
     .spanboon-main-page {
-        > .div-top {
-            &:hover {
-            }
-            > .to-top {
-                &::selection {
-                }
+        >.div-top {
+            &:hover {}
+
+            >.to-top {
+                &::selection {}
             }
         }
 
-        > .wrapper-content-page {
+        >.wrapper-content-page {
             min-height: calc(100% - 105pt);
         }
 
@@ -650,16 +659,15 @@ span:focus {
 
 @media (max-width: $xlarge) {
     .spanboon-main-page {
-        > .div-top {
-            &:hover {
-            }
-            > .to-top {
-                &::selection {
-                }
+        >.div-top {
+            &:hover {}
+
+            >.to-top {
+                &::selection {}
             }
         }
 
-        > .wrapper-content-page {
+        >.wrapper-content-page {
             min-height: calc(100% - 55pt - 40pt - 32pt);
         }
 
@@ -668,7 +676,7 @@ span:focus {
         }
 
         .wrapper-icon {
-            > .icon-active {
+            >.icon-active {
                 width: 7pt;
                 height: 7pt;
 
@@ -697,16 +705,15 @@ span:focus {
 
 @media (max-width: $large) {
     .spanboon-main-page {
-        > .div-top {
-            &:hover {
-            }
-            > .to-top {
-                &::selection {
-                }
+        >.div-top {
+            &:hover {}
+
+            >.to-top {
+                &::selection {}
             }
         }
 
-        > .wrapper-content-page {
+        >.wrapper-content-page {
             min-height: calc(100% - 50pt - 35pt - 31pt);
         }
 
@@ -714,10 +721,9 @@ span:focus {
             min-height: 250pt;
         }
 
-        > .div-top {
-        }
+        >.div-top {}
 
-        > .icon-post-bottom {
+        >.icon-post-bottom {
             bottom: 55pt;
             transition: all 0.8s ease-in-out;
             box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
@@ -751,6 +757,7 @@ span:focus {
         height: 0px;
         background-color: transparent;
     }
+
     ::-webkit-scrollbar-thumb {
         border-radius: 0px;
         background-color: transparent;
@@ -764,19 +771,17 @@ span:focus {
 
 @media (max-width: $medium) {
     .spanboon-main-page {
-        &.hidescroll {
-        }
+        &.hidescroll {}
 
-        > .div-top {
-            &:hover {
-            }
-            > .to-top {
-                &::selection {
-                }
+        >.div-top {
+            &:hover {}
+
+            >.to-top {
+                &::selection {}
             }
         }
 
-        > .wrapper-content-page {
+        >.wrapper-content-page {
             min-height: calc(100% - 40pt - 35pt - 60pt);
         }
 
@@ -784,20 +789,20 @@ span:focus {
             min-height: 240pt;
         }
 
-        > .icon-post-bottom {
+        >.icon-post-bottom {
             width: 36pt;
             height: 36pt;
             box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
             -webkit-box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
             -moz-box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
 
-            > .button-post {
+            >.button-post {
                 width: 26px;
             }
         }
 
         .wrapper-icon {
-            > .icon-active {
+            >.icon-active {
                 width: 6pt;
                 height: 6pt;
 
@@ -826,24 +831,23 @@ span:focus {
 
 @media (max-width: $small) {
     .spanboon-main-page {
-        > .div-top {
-            &:hover {
-            }
-            > .to-top {
-                &::selection {
-                }
+        >.div-top {
+            &:hover {}
+
+            >.to-top {
+                &::selection {}
             }
         }
 
-        > .wrapper-content-page {
+        >.wrapper-content-page {
             min-height: calc(100% - 40pt - 35pt - 55pt);
         }
 
         .wrapper-center-none-list-content {
             min-height: 230pt;
         }
-        .icon-post-bottom {
-        }
+
+        .icon-post-bottom {}
     }
 
     .avatar {
@@ -943,6 +947,7 @@ $baby-blue: #f8faff;
             display: block;
             animation: topBubbles ease-in-out 0.75s forwards;
         }
+
         &:after {
             display: block;
             animation: bottomBubbles ease-in-out 0.75s forwards;
@@ -954,9 +959,11 @@ $baby-blue: #f8faff;
     0% {
         background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
     }
+
     50% {
         background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
     }
+
     100% {
         background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
         background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
@@ -967,9 +974,11 @@ $baby-blue: #f8faff;
     0% {
         background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
     }
+
     50% {
         background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
     }
+
     100% {
         background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
         background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
@@ -988,13 +997,13 @@ $baby-blue: #f8faff;
     justify-content: center;
     padding: 12px 20px;
 
-    > span {
+    >span {
         @include font-size-9($font-head-300);
         color: $white;
         margin-right: 20px;
     }
 
-    > button {
+    >button {
         flex: 0 0 auto;
         @include font-size-9($font-head-500);
         // padding: 2pt 15pt;
@@ -1005,11 +1014,11 @@ $baby-blue: #f8faff;
 
 @media (max-width: $medium) {
     .tool-developer {
-        > span {
+        >span {
             @include font-size-9($font-head-500);
         }
 
-        > button {
+        >button {
             @include font-size-10($font-head-500);
         }
     }
@@ -1017,23 +1026,24 @@ $baby-blue: #f8faff;
 
 @media (max-width: $small) {
     .tool-developer {
-        > span {
+        >span {
             @include font-size-10($font-head-500);
         }
 
-        > button {
+        >button {
             @include font-size-10($font-head-500);
         }
     }
 }
 
-.card-feed-post > .wrapper-content > .title {
+.card-feed-post>.wrapper-content>.title {
     font-size: 15pt;
     font-family: "Kanit-500";
     line-height: 26px;
-    > .atwho-inserted {
-        > .tribute-container-hashtag {
-            > a {
+
+    >.atwho-inserted {
+        >.tribute-container-hashtag {
+            >a {
                 color: #1b95e0 !important;
             }
         }

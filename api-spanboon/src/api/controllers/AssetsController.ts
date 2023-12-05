@@ -16,7 +16,6 @@ import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/S
 import { ASSET_SCOPE } from '../../constants/AssetScope';
 import moment from 'moment';
 import { AssetRequest } from './requests/AssetRequest';
-
 @JsonController('/file')
 export class AssetController {
 
@@ -41,7 +40,7 @@ export class AssetController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get('/:id')
-    public async findAsset(@Param('id') id: string, @Res() res: any): Promise<any> {
+    public async findAsset(@Param('id') id: string,  @Res() res: any, @Req() req: any): Promise<any> {
         const objId = new ObjectID(id);
         const asset: Asset = await this.assetService.findOne({ where: { _id: objId } });
 

@@ -10,9 +10,29 @@ import { CommonModule, } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { Routes, RouterModule } from '@angular/router';
 import {
-  MainPage, StandardItemCategoryPage, UserAdminPage, PostPage, EmergencyEventPage, PageObjectiveCategoryPage, StandardItemCustomPage, StandardItemReqRequestPage, HashtagPage, testPage, StandardItemPage, LoginPage, ConfigPage, UserPage, AdminPage, PageCategoryPage,
+  MainPage,
+  StandardItemCategoryPage,
+  UserAdminPage,
+  PostPage,
+  EmergencyEventPage,
+  PageObjectiveCategoryPage,
+  StandardItemCustomPage,
+  StandardItemReqRequestPage,
+  HashtagPage,
+  testPage,
+  StandardItemPage,
+  LoginPage,
+  ConfigPage,
+  UserPage,
+  AdminPage,
+  PageCategoryPage,
+  TodayPage,
+  PageGroup,
+  NewsPaperPage
 } from './components/components';
-
+import { TodayPageV2 } from './components/pages/main.internal/TodayPageV2.component';
+import { ManipulatePage } from './components/pages/main.internal/ManipulatePage.component';
+import { ManipulatePost } from './components/pages/main.internal/ManipulatePost.component';
 const routes: Routes = [
   {
     path: '',
@@ -38,6 +58,18 @@ const routes: Routes = [
         path: EmergencyEventPage.PAGE_NAME,
         component: EmergencyEventPage
       },
+      // {
+      //   path: TodayPage.PAGE_NAME,
+      //   component: TodayPage
+      // },
+      {
+        path: TodayPageV2.PAGE_NAME,
+        component: TodayPageV2
+      },
+      {
+        path: NewsPaperPage.PAGE_NAME,
+        component: NewsPaperPage
+      },
       {
         path: StandardItemCategoryPage.PAGE_NAME,
         component: StandardItemCategoryPage
@@ -55,8 +87,20 @@ const routes: Routes = [
         component: PageCategoryPage
       },
       {
+        path: PageGroup.PAGE_NAME,
+        component: PageGroup
+      },
+      {
         path: ConfigPage.PAGE_NAME,
         component: ConfigPage
+      },
+      {
+        path: ManipulatePage.PAGE_NAME,
+        component: ManipulatePage
+      },
+      {
+        path: ManipulatePost.PAGE_NAME,
+        component: ManipulatePost
       },
       {
         path: StandardItemPage.PAGE_NAME,

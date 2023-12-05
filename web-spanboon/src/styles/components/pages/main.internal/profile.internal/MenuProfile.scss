@@ -6,179 +6,207 @@
  */
 
 .not-log {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    > .profile {
-        @include pointer();
-        width: 13pt;
-        padding: 0 !important;
-        min-width: unset !important;
-        border-radius: 50% !important;
-    }
+  > .profile {
+    @include pointer();
+    width: 13pt;
+    padding: 0 !important;
+    min-width: unset !important;
+    border-radius: 50% !important;
+  }
 }
 
 .log-header {
-    min-width: unset !important;
-    padding: 0 !important;
-    border-radius: 50% !important;
+  min-width: unset !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
 }
 
 .menu-user {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    @include pointer();
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include pointer();
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
 
-    > .image-profile {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+  > .image-profile {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 
     &.displayName {
-        background: $brandcolor2;
-        box-shadow: 2.5px 0px 0px 0 $white;
-        color: $brandcolor;
-
-        > .donator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            @include font-size-9($font-head-500);
-        }
+      background: $brandcolor2;
+      box-shadow: 2.5px 0px 0px 0 $white;
+      color: $brandcolor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      @include font-size-9($font-head-500);
     }
+  }
+
+  &.displayName {
+    background: $brandcolor2;
+    box-shadow: 2.5px 0px 0px 0 $white;
+    color: $brandcolor;
+
+    > .donator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      @include font-size-9($font-head-500);
+    }
+  }
 }
 
 .menu-set {
-    margin: 5pt 0 0 0;
-    width: 320px !important;
-    overflow-y: auto !important;
-    max-height: calc(100vh - 48px - 20pt) !important;
+  margin: 5pt 0 0 0;
+  width: 320px !important;
+  overflow-y: auto !important;
+  max-height: calc(100vh - 48px - 20pt) !important;
 
-    > .mat-menu-content {
-        > .header-menu-profile {
-            > .profile-header {
-                padding: 15pt 10pt;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                font-family: "Kanit-500";
-                text-align: center;
-                border-bottom: $width-border solid $border-separator;
+  > .mat-menu-content {
+    > .header-menu-profile {
+      > .profile-header {
+        padding: 15pt 10pt;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: "Kanit-500";
+        text-align: center;
+        border-bottom: $width-border solid $border-separator;
 
-                > .image-profile_z {
-                    width: 40pt;
-                    height: 40pt;
-                    border-radius: 50%;
-                    overflow: hidden;
-                }
-
-                > .menu-user_z {
-                    user-select: none;
-                    width: 70px;
-                    height: 70px;
-                    background: $brandcolor2;
-                    border: rgb($black, 0.1);
-                    color: $brandcolor;
-                    border-radius: 50%;
-                    overflow: hidden;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-
-                    > span {
-                        font-family: "Kanit-500";
-                        font-size: 34px;
-                    }
-                }
-
-                > .profile-detail {
-                    > .profile-name {
-                        @include font-size-8($font-head-500);
-                        line-height: 1em;
-                        margin-top: 10pt;
-                    }
-
-                    > .profile-name-eng {
-                        color: $color-gray;
-                        @include font-size-9($font-head-100);
-                        padding-top: 2pt;
-                    }
-
-                    > .header-follow {
-                        display: flex;
-                        align-items: center;
-                        @include font-size-9($font-head-100);
-                        justify-content: center;
-                        padding-top: 10px;
-
-                        > .following {
-                        }
-
-                        > .dote {
-                            @include font-size-6($font-head-500);
-                            line-height: 16px;
-                            margin: 0 5pt;
-                        }
-
-                        > .followers {
-                        }
-
-                        span {
-                            color: $color-gray;
-                        }
-                    }
-                }
-            }
-
-            > .list-setting {
-                > .setting {
-                    display: flex;
-                    padding: 5pt 25pt;
-                    align-items: center;
-                    border-bottom: $width-border solid $border-separator;
-                    @include pointer();
-
-                    &:hover {
-                        background: $bg-grey;
-                    }
-
-                    > .icon {
-                        width: 13pt;
-                    }
-
-                    > .name {
-                        padding: 5pt 13pt;
-                        @include font-size-9($font-head-400);
-                    }
-                }
-            }
+        > .image-profile_z {
+          width: 40pt;
+          height: 40pt;
+          border-radius: 50%;
+          overflow: hidden;
         }
+
+        > .menu-user_z {
+          user-select: none;
+          width: 70px;
+          height: 70px;
+          background: $brandcolor2;
+          border: rgb($black, 0.1);
+          color: $brandcolor;
+          border-radius: 50%;
+          overflow: hidden;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          > span {
+            font-family: "Kanit-500";
+            font-size: 34px;
+          }
+        }
+
+        > .profile-detail {
+          > .profile-name {
+            @include font-size-8($font-head-500);
+            line-height: 1em;
+            margin-top: 10pt;
+          }
+
+          > .profile-name-eng {
+            color: $color-gray;
+            @include font-size-9($font-head-100);
+            padding-top: 2pt;
+          }
+
+          > .header-follow {
+            display: flex;
+            align-items: center;
+            @include font-size-9($font-head-100);
+            justify-content: center;
+            padding-top: 10px;
+
+            > .following {
+            }
+
+            > .dote {
+              @include font-size-6($font-head-500);
+              line-height: 16px;
+              margin: 0 5pt;
+            }
+
+            > .followers {
+            }
+
+            span {
+              color: $color-gray;
+            }
+          }
+        }
+      }
+
+      > .list-setting {
+        > .setting {
+          display: flex;
+          padding: 5pt 25pt;
+          align-items: center;
+          border-bottom: $width-border solid $border-separator;
+          @include pointer();
+
+          &:hover {
+            background: $bg-grey;
+          }
+
+          > .icon {
+            width: 13pt;
+          }
+
+          > .name {
+            padding: 5pt 13pt;
+            @include font-size-9($font-head-400);
+          }
+        }
+      }
     }
+  }
 }
 
 @media (max-width: $small) {
-    .profile-sub-menu + * .cdk-overlay-pane {
-        right: 0 !important;
-        top: 39pt !important;
-    }
-    .menu-set {
-        height: calc(100vh - 39pt) !important;
-        width: 100vw !important;
-        max-width: 100vw !important;
-        max-height: 100vh !important;
-        min-height: 100vh !important;
-        margin: unset;
-    }
-    .header-menu-profile {
-        height: calc(100vh - 30pt);
-    }
+  .profile-sub-menu + * .cdk-overlay-pane {
+    right: 0 !important;
+    top: 39pt !important;
+  }
+
+  .menu-set {
+    height: calc(100vh - 39pt) !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    min-height: 100vh !important;
+    margin: unset;
+  }
+
+  .header-menu-profile {
+    height: calc(100vh - 30pt);
+  }
+}
+
+.btn-login {
+  @include font-size-9($font-head-500);
+  border: 2px solid $brandcolor2;
+  color: black;
+  background-color: #ffffff !important;
+  display: inline-block;
+  @include pointer();
+  border-radius: 30px;
+  padding: 6px 13px;
+  flex: 0 0 auto;
+
+  &:hover {
+    background-color: $brandcolor2 !important;
+    color: $white;
+    border: 2px solid $brandcolor2;
+  }
 }

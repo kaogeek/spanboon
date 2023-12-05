@@ -5,14 +5,13 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { from } from 'rxjs';
-
 export * from './dialog/dialog';
 export * from './card/card';
 export * from './post/post';
 export * from './tooltip/tooltip';
 export * from './preload/preload';
 export * from './chat/chat';
+export * from './provision/provision';
 export * from './NewConButtonSave.component';
 export * from './NewConButtonLoadMore.component';
 export * from './SupporterBar.component';

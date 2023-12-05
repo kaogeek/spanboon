@@ -18,7 +18,7 @@ export class Page extends BaseModel {
     @IsNotEmpty()
     @IsMongoId()
     public id: ObjectID;
-    
+
     @Index({ unique: true })
     @Column({ name: 'name' })
     public name: string;
@@ -89,13 +89,26 @@ export class Page extends BaseModel {
     @Column({ name: 's3CoverURL' })
     public s3CoverURL: string;
 
+    @Column({ name: 'province' })
+    public province: string;
+
+    @Column({ name: 'group' })
+    public group: any;
+
+    @Column({ name: 'roundRobin' })
+    public roundRobin: any;
+
+    @Column({ name: 'autoApprove' })
+    public autoApprove:boolean;
+
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
     }
 
     @BeforeUpdate()
-    public async updateDetails(): Promise<void> {
+    public updateDetails(): any {
         this.updateDate = moment().toDate();
     }
 }

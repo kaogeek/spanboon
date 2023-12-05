@@ -25,6 +25,7 @@ export class NotificationService {
         console.log('constructor called()');
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount as ServiceAccount),
+            databaseURL: process.env.DATABASEURL_FIREBASE
         });
         console.log('constructor executed()');
     }
@@ -50,8 +51,8 @@ export class NotificationService {
     }
 
     // updateMany
-    public updateMany(query:any,newValue:any): Promise<any>{
-        return this.notificationRepository.updateMany(query,newValue);
+    public updateMany(query: any, newValue: any): Promise<any> {
+        return this.notificationRepository.updateMany(query, newValue);
     }
 
     // delete Notification
@@ -83,8 +84,104 @@ export class NotificationService {
             return this.notificationRepository.find(condition);
         }
     }
+    public async testMultiDevice(token: any): Promise<any> {
+        const registrationTokens = token;
+        const title = 'Hello World ชาวก้าวไกล!';
+        const image = 'https://scontent.fbkk2-3.fna.fbcdn.net/v/t39.30808-6/355437853_834984011524286_2620245563691529882_n.jpg?_nc_cat=111&cb=99be929b-59f725be&ccb=1-7&_nc_sid=730e14&_nc_eui2=AeHulsSGw1aykmm2mWaVr7ui84g9AOew56vziD0A57Dnq_ebcZYEz2lyh_ZTBRdkA_Uhh-I0e2lyIMNgTYvbZ6a8&_nc_ohc=zOqkiqXob2wAX_HQUSs&_nc_ht=scontent.fbkk2-3.fna&oh=00_AfBTww5j0wwsoi2AMVVlLnrJ1SG3x1A-JlI97O2YaqKS_g&oe=649AD4E3';
+        const payload =
+        {
+            notification: {
+                title,
+                image,
+            }
+        };
+        if (String(registrationTokens) !== undefined) {
+            Promise.all([await admin.messaging().sendToDevice(registrationTokens, payload)]);
+        } else {
+            return;
+        }
+    }
+    public async multiPushNotificationMessage(data: any, tokenId: any, date: any, filterNews: boolean): Promise<any> {
+        const title = 'ก้าวไกลหน้าหนึ่ง';
+        let body = undefined;
+        let image = undefined;
+        if (String(filterNews) === 'true') {
+            for (let i = 0; i < data.pageRoundRobin.contents.length; i++) {
+                body = data.pageRoundRobin.contents[i].post.title ? String(data.pageRoundRobin.contents[i].post.title) : undefined;
+                image = data.pageRoundRobin.contents[i].coverPageSignUrl ? data.pageRoundRobin.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+                if (body && image !== undefined) {
+                    break;
+                } else {
+                    continue;
+                }
+            }
+            if (body === undefined) {
+                body = data.majorTrend.contents[0].post.title ? String(data.majorTrend.contents[0].post.title) : 'ก้าวไกลหน้าหนึ่ง';
+                image = data.majorTrend.contents[0].coverPageSignUrl ? data.majorTrend.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+            }
+        } else {
+            body = data.majorTrend.contents[0].post.title ? String(data.majorTrend.contents[0].post.title) : 'ก้าวไกลหน้าหนึ่ง';
+            image = data.majorTrend.contents[0].coverPageSignUrl ? data.majorTrend.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        }
+        if (body.length > 60) {
+            body = body.substring(0, 60) + '...';
+        }
+        const thaiDate = String(date);
+        const token = tokenId;
+        const notificationType = 'TODAY_NEWS';
+        const link = process.env.APP_HOME + `?date=${thaiDate}`;
+        const payload =
+        {
+            tokens: token,
+            notification: {
+                title,
+                body,
+                image,
+            },
+            data: {
+                notificationType,
+                link
+            }
+        };
 
-    public async sendNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, id?:any,count?: any): Promise<any> {
+        if (String(token) !== undefined) {
+            Promise.all([await admin.messaging().sendMulticast(payload)]);
+        } else {
+            return;
+        }
+    }
+
+    public async pushNotificationMessage(data: any, tokenId: any, date: any): Promise<any> {
+        const title = 'ก้าวไกลหน้าหนึ่ง';
+        let body = data.majorTrend.contents[0].post.title ? String(data.majorTrend.contents[0].post.title) : 'ก้าวไกลหน้าหนึ่ง';
+        if (body.length > 60) {
+            body = body.substring(0, 60) + '...';
+        }
+        const image = data.majorTrend.contents[0].coverPageSignUrl ? data.majorTrend.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        const thaiDate = String(date);
+        const token = String(tokenId);
+        const notificationType = 'TODAY_NEWS';
+        const link = process.env.APP_HOME + `?date=${thaiDate}`;
+        const payload =
+        {
+            notification: {
+                title,
+                body,
+                image,
+            },
+            data: {
+                notificationType,
+                link
+            }
+        };
+        if (String(token) !== undefined) {
+            Promise.all([await admin.messaging().sendToDevice(token, payload)]);
+        } else {
+            return;
+        }
+    }
+
+    public async sendNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, id?: any, count?: any): Promise<any> {
         const notification: Notification = new Notification();
         notification.isRead = false;
         notification.toUser = new ObjectID(toUserId);
@@ -98,26 +195,18 @@ export class NotificationService {
         notification.data = data;
         const token = String(data);
         const toUser = String(toUserId);
-        const displayNameFCM = String(displayName);
+        const fromUser = String(fromUserId);
         const link_noti = String(link);
         const image_url = String(image);
-        const count_data = String(count);
-        const notification_id = String(id);
-        console.log('notification_id',notification_id); 
         const payload =
         {
-
-            notification: {
+            data: {
                 toUser,
-                fromUserId,
+                fromUser,
                 title,
                 link_noti,
                 notificationType,
-                displayNameFCM,
                 image_url,
-                notification_id,
-                count_data
-
             }
         };
         if (String(notification.toUser) !== String(notification.fromUser)) {
@@ -127,7 +216,7 @@ export class NotificationService {
         }
     }
 
-    public async createNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
+    public async createNofiticationObjective(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, displayName?: any, image?: any, count?: any, mode?: string, joinObjectiveId?: string): Promise<any> {
         const notification: Notification = new Notification();
         notification.isRead = false;
         notification.toUser = new ObjectID(toUserId);
@@ -138,8 +227,24 @@ export class NotificationService {
         notification.link = link;
         notification.type = notificationType;
         notification.deleted = false;
-        notification.data = data;
+        notification.mode = mode;
+        notification.imageURL = image;
+        notification.joinObjectiveId = new ObjectID(joinObjectiveId);
+        return await this.create(notification);
+    }
 
+    public async createNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, displayName?: any, image?: any, count?: any, mode?: string, pageId?: string): Promise<any> {
+        const notification: Notification = new Notification();
+        notification.isRead = false;
+        notification.toUser = new ObjectID(toUserId);
+        notification.toUserType = toUserType;
+        notification.fromUser = new ObjectID(fromUserId);
+        notification.fromUserType = fromUserType;
+        notification.title = title;
+        notification.link = link;
+        notification.type = notificationType;
+        notification.deleted = false;
+        notification.imageURL = image;
         if (String(notification.toUser) !== String(notification.fromUser)) {
             return await this.create(notification);
         } else {
@@ -165,9 +270,39 @@ export class NotificationService {
         }
     }
 
-    public async createUserNotificationFCM(toUserId: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
-        const token = data;
-        return await this.createNotificationFCM(toUserId, USER_TYPE.PAGE, fromUserId, fromUserType, notificationType, title, link, token, displayName, image);
+    public async createUserNotificationObjective
+        (
+            toUserId: string,
+            fromUserId: string,
+            fromUserType: string,
+            notificationType: string,
+            title: string,
+            link?: string,
+            displayName?: any,
+            image?: any,
+            count?: any,
+            mode?: string,
+            joinObjectiveId?: string,
+
+        ):
+        Promise<any> {
+
+        return await this.createNofiticationObjective(toUserId, USER_TYPE.PAGE, fromUserId, fromUserType, notificationType, title, link, displayName, image, count, mode, joinObjectiveId);
+    }
+
+    public async createUserNotificationFCM(toUserId: string,
+        fromUserId: string,
+        fromUserType: string,
+        notificationType: string,
+        title: string,
+        link?: string,
+        displayName?: any,
+        image?: any,
+        count?: any,
+        mode?: string,
+        page?: string,): 
+        Promise<any> {
+        return await this.createNotificationFCM(toUserId, USER_TYPE.PAGE, fromUserId, fromUserType, notificationType, title, link, displayName, image, count, mode, page);
     }
 
     public async createUserNotification(toUserId: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any): Promise<any> {

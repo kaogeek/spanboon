@@ -100,7 +100,7 @@
                                                 data-name="Rectangle 579" width="1" height="3" rx="0.5"
                                                 transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
                                         </g>
-                                    </svg> เหตุการณ์ด่วน
+                                    </svg> เกาะทุกก้าว
                                 </div>
                                 <img class="image-back"
                                     [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignUrl?model.emergencyPin.contents[0].coverPageSignUrl:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents.length > 0?model.emergencyEvents.contents[0].coverPageSignUrl?model.emergencyEvents.contents[0].coverPageSignUrl:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[6].coverPageSignUrl?model.postSectionModel.contents[6].coverPageSignUrl:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
@@ -350,13 +350,17 @@
                                         *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]:model.postSectionModel.contents[5]">
 
                                         <div class="top">
+                                            <!-- <div class="status"
+                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1 ? model.postSectionModel.contents[5].post.type === 'GENERAL' : model.objectiveEvents.contents[0].post[1].type"> -->
                                             <div class="status"
-                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1 ? model.postSectionModel.contents[5].post.type === 'GENERAL' : model.objectiveEvents.contents[0].post[1].type">
+                                                *ngIf="model.postSectionModel.contents[5].post.type === 'GENERAL'">
                                                 <div class="status-g"></div>
                                                 <span>ทั่วไป</span>
                                             </div>
+                                            <!-- <div class="status"
+                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1 ? model.postSectionModel.contents[5].post.type === 'NEED' : model.objectiveEvents.contents[0].post[1].type"> -->
                                             <div class="status"
-                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1 ? model.postSectionModel.contents[5].post.type === 'NEED' : model.objectiveEvents.contents[0].post[1].type">
+                                                *ngIf="model.postSectionModel.contents[5].post.type === 'NEED'">
                                                 <div class="status-n"></div>
                                                 <span>มองหา</span>
                                             </div>
@@ -420,13 +424,17 @@
                                     <div class="post-col2"
                                         *ngIf="model.objectiveEvents.contents.length > 0 && model.objectiveEvents.contents[0].post.length > 1 ? model.objectiveEvents.contents[0].post[2] : model.postSectionModel.contents[6]">
                                         <div class="top">
+                                            <!-- <div class="status"
+                                                *ngIf="model.objectiveEvents.contents.length > 0 && model.objectiveEvents.contents[0].post.length > 1 ? model.postSectionModel.contents[6].post.type === 'GENERAL' : model.objectiveEvents.contents[0].post[1].type"> -->
                                             <div class="status"
-                                                *ngIf="model.objectiveEvents.contents.length > 0 && model.objectiveEvents.contents[0].post.length > 1 ? model.postSectionModel.contents[6].post.type === 'GENERAL' : model.objectiveEvents.contents[0].post[1].type">
+                                                *ngIf="model.postSectionModel.contents[6].post.type === 'GENERAL'">
                                                 <div class="status-g"></div>
                                                 <span>ทั่วไป</span>
                                             </div>
+                                            <!-- <div class="status"
+                                                *ngIf="model.objectiveEvents.contents.length > 0 && model.objectiveEvents.contents[0].post.length > 1 ? model.postSectionModel.contents[6].post.type === 'NEED' : model.objectiveEvents.contents[0].post[1].type"> -->
                                             <div class="status"
-                                                *ngIf="model.objectiveEvents.contents.length > 0 && model.objectiveEvents.contents[0].post.length > 1 ? model.postSectionModel.contents[6].post.type === 'NEED' : model.objectiveEvents.contents[0].post[1].type">
+                                                *ngIf="model.postSectionModel.contents[6].post.type === 'NEED'">
                                                 <div class="status-n"></div>
                                                 <span>มองหา</span>
                                             </div>
@@ -597,9 +605,11 @@
                                     </div>
                                     <img *ngIf="content.post.gallery[0]" (click)="openDilogPost(content.post)"
                                         [src]="content.signURL ? content.signURL : content.coverPageSignUrl ? content.coverPageSignUrl : apiBaseURL + content.post.gallery[0].imageURL + '/image'">
-                                    <span class="content-post-img" (click)="openDilogPost(content.post)"
-                                        *ngIf="!content.post.gallery[0]"
-                                        [innerHTML]='content.post.title | highlight'></span>
+                                    <div class="content-no-img" *ngIf="!content.post.gallery[0]"
+                                        (click)="openDilogPost(content.post)">
+                                        <span class="content-post-img"
+                                            [innerHTML]='content.post.title | highlight'></span>
+                                    </div>
                                     <div class="text">
                                         <div class="col-text" (click)="openDilogPost(content.post)">
                                             <span

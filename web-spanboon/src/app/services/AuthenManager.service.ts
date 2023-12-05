@@ -19,6 +19,7 @@ import { GenerateUUIDUtil } from '../utils/GenerateUUIDUtil';
 
 const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
+const USER_MEMBERSHIP: string = 'membership';
 const TOKEN_MODE_KEY: string = 'mode';
 const REGISTERED_SUBJECT: string = 'authen.registered';
 const TOKEN_FCM: string = 'tokenFCM';
@@ -45,6 +46,7 @@ export class AuthenManager {
   isDesktopDevice: boolean;
   isTablet: boolean;
   isMobile: boolean;
+  isTos: string;
   constructor(http: HttpClient, observManager: ObservableManager, routeActivated: ActivatedRoute) {
     this.http = http;
     this.observManager = observManager;
@@ -55,9 +57,10 @@ export class AuthenManager {
     this.routeActivated = routeActivated;
     // create obsvr subject
     this.observManager.createSubject(REGISTERED_SUBJECT);
+    this.observManager.createSubject('tos_ua_check');
   }
 
-  myBrowser() {
+  public myBrowser() {
     if ((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1) {
       return 'Opera';
     } else if (navigator.userAgent.indexOf("Chrome") != -1) {
@@ -115,7 +118,6 @@ export class AuthenManager {
           token: response.data.token,
           user: response.data.user
         };
-
         this.token = result.token;
         this.user = result.user;
         localStorage.setItem(TOKEN_KEY, result.token);
@@ -173,7 +175,7 @@ export class AuthenManager {
     });
   }
 
-  public loginWithTwitter(data: any, mode?: string): Promise<any> {
+  public loginWithTwitter(data: any, mode?: string, res?: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
@@ -183,6 +185,7 @@ export class AuthenManager {
         twitterUserId: data.twitterUserId,
         tokenFCM: tokenFCM,
         deviceName: this.myBrowser(),
+        email: res
       };
 
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -213,6 +216,71 @@ export class AuthenManager {
       });
     });
   }
+
+  public loginMember(mode?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/login';
+      let body: any = {};
+
+      let headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+      });
+      if (mode !== undefined || mode !== "") {
+        headers = headers.set('mode', mode);
+      }
+
+      let httpOptions = {
+        headers: headers
+      };
+
+      // const requestBody = {
+      //   'grant_type': environment.memberShip.grantType,
+      //   'client_id': environment.memberShip.clientId,
+      //   'client_secret': environment.memberShip.clientSecret,
+      //   'scope': environment.memberShip.scope
+      // };
+
+      // let url: string = environment.memberShip.webBaseURL + '/oauth/token';
+
+      // let headers = new HttpHeaders({
+      //   'Content-Type': 'application/json',
+      // });
+
+      // if (mode !== undefined || mode !== "") {
+      //   headers = headers.set('mode', mode);
+      // }
+
+      // let httpOptions = {
+      //   headers: headers
+      // };
+
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getSSOAuth(token?: any) {
+    return new Promise((resolve, reject) => {
+      let url: string = `${environment.memberShip.bindingBaseURL}sso?`;
+      if (token !== undefined) {
+        url += `client_id=${environment.memberShip.clientId}`;
+        url += `&process_type=${environment.memberShip.grantType}`;
+        url += `&token=${token}`;
+      }
+
+      let body: any = {};
+
+      this.http.get(url, body).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public syncWithTwitter(twitter: PageSocialTW, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/sync/tw';
@@ -428,6 +496,27 @@ export class AuthenManager {
     });
   }
 
+  public UserUA(tos: string, plc: string, date: any): Promise<any> {
+
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/user/ua';
+      let body = {
+        "uaAcceptDate": date,
+        "tosAcceptDate": date,
+        "uaVersion": plc,
+        "tosVersion": tos
+      }
+
+      let options = this.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public clearStorage(): void {
     this.token = undefined;
     this.user = undefined;
@@ -438,12 +527,15 @@ export class AuthenManager {
     localStorage.removeItem(TOKEN_MODE_KEY);
     sessionStorage.removeItem(TOKEN_MODE_KEY);
     localStorage.removeItem(TOKEN_FCM);
+    sessionStorage.removeItem(USER_MEMBERSHIP);
+    localStorage.removeItem(USER_MEMBERSHIP);
+    localStorage.removeItem('methodMFP');
   }
 
-  public getDefaultOptions(): any {
+  public getDefaultOptions(id?: string): any {
     let header = this.getDefaultHeader();
     let userId = this.getCurrentUser();
-    header = header.append('userid', userId ? userId.id : '')
+    header = header.append('userid', userId ? userId.id : id ? id : '')
 
     let httpOptions = {
       headers: header
@@ -469,6 +561,8 @@ export class AuthenManager {
 
     if (this.getToken().mode === "FB" || this.getToken().mode === "TW" || this.getToken().mode === "GG") {
       headers = headers.set('mode', this.getToken().mode);
+    } else {
+      headers = headers.set('mode', 'EMAIL');
     }
 
     return headers;
@@ -526,7 +620,6 @@ export class AuthenManager {
           ggMode = true;
           this.googleMode = true;
         }
-
         if (isUpdateUser) {
           this.token = result.token;
           this.user = result.user;
@@ -535,6 +628,8 @@ export class AuthenManager {
           this.googleMode = ggMode;
           localStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           sessionStorage.setItem(PAGE_USER, JSON.stringify(result.user));
+          localStorage.setItem(USER_MEMBERSHIP, JSON.stringify(result.user.membership));
+          sessionStorage.setItem(USER_MEMBERSHIP, JSON.stringify(result.user.membership));
           localStorage.setItem(TOKEN_KEY, result.token);
           sessionStorage.setItem(TOKEN_KEY, result.token);
           if (fbMode) {
@@ -580,6 +675,15 @@ export class AuthenManager {
     return user;
   }
 
+  public getUserMember(): any {
+    let member = localStorage.getItem(USER_MEMBERSHIP) ? localStorage.getItem(USER_MEMBERSHIP) : false;
+    if (member === "false") {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   public getToken(): any {
     let val: any = {};
     let token = localStorage.getItem(TOKEN_KEY);
@@ -590,12 +694,20 @@ export class AuthenManager {
     return val;
   }
 
+  public getParams(param: string): any {
+    return new Promise(resolve => {
+      this.routeActivated.queryParams.subscribe(params => {
+        resolve(params[param]);
+      });
+    });
+  }
 
   public getHidebar(): boolean {
     let isCheck: boolean = false;
     this.routeActivated.queryParams.subscribe(params => {
       let hidebars = params['hidebar'];
-      if (hidebars === 'true') {
+      let mfpapp = params['mfpapp'];
+      if (hidebars === 'true' || mfpapp === 'true') {
         localStorage.setItem('hidebar', "true");
         isCheck = false;
       } else {
@@ -609,10 +721,69 @@ export class AuthenManager {
 
   public setHidebar() {
     let hidebar = localStorage.getItem('hidebar');
-    if (hidebar === "true") {
+    let mfpapp = localStorage.getItem('mfpapp');
+    if (hidebar === "true" || mfpapp === "true") {
       return false;
     } else {
       return true;
+    }
+  }
+
+  public getPolicy() {
+    const plc = this.user.uaVersion;
+    if (!!plc) {
+      return plc;
+    } else {
+      return null;
+    }
+  }
+
+  public setPolicy(policy: string) {
+    const tos = this.isTos;
+    const plc = policy;
+    const date = new Date();
+    if (!!tos && !!plc) {
+      this.UserUA(tos, plc, date).then((res) => {
+        if (res) {
+          this.observManager.publish('tos_ua_check', true);
+        }
+      }).catch((err) => {
+        if (err) {
+        }
+      })
+    }
+  }
+
+  public checkVersionPolicy(version: string, user: any): boolean {
+    let users = JSON.parse(localStorage.getItem('pageUser'));
+    this.user = user ? user : users;
+    if (this.getPolicy() === version) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public getTos(): string {
+    const tos = this.user.tosVersion;
+    if (!!tos) {
+      return tos;
+    } else {
+      return null;
+    }
+  }
+
+  public setTos(tos: string) {
+    this.isTos = 'v2';
+  }
+
+  public checkVersionTos(version: string, user: any): boolean {
+    let users = JSON.parse(localStorage.getItem('pageUser'));
+    this.user = user ? user : users;
+    if (this.getTos() === version) {
+      return true;
+    } else {
+      return false;
     }
   }
 

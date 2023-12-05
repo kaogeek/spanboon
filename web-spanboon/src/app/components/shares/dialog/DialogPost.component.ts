@@ -198,29 +198,42 @@ export class DialogPost extends AbstractPage {
   public createPost(data) {
     if (this.isEdit) {
       if (data.title) {
-        let pageId = this.data.pageId;
-        this.isPostLoading = true;
+        let pageId = this.data.pageId ? this.data.pageId : null;
+        this.isPostLoading = false;
         this.pageFacade.editPost(pageId, this.data._id, data).then((res) => {
           let alertMessages: string;
           if (res.status === 1) {
             if (res.message === 'Update PagePost Successful') {
               alertMessages = 'แก้ไขโพสต์สำเร็จ'
               this.showAlertDialogWarming(alertMessages, "none");
+              if (data && data.gallery && data.gallery.length === 0) {
+                res.data.gallery = data.gallery;
+              }
               this.observManager.publish(REFRESH_DATA, res);
               this.boxPost.clearDataAll();
               delete res.data.id;
               res.data._id = this.data._id;
+              this.isPostLoading = false;
               this.dialogRef.close(res.data);
+            } else if (res.message === "You have been delete Post gallery ") {
+              alertMessages = 'แก้ไขโพสต์สำเร็จ'
+              this.showAlertDialogWarming(alertMessages, "none");
+              this.isPostLoading = false;
+              this.boxPost.clearDataAll();
+              this.dialogRef.close();
             }
           }
         }).catch((err: any) => {
           console.log(err);
+          this.isPostLoading = false;
           let alertMessages: string;
           if (err && err.error && err.error.message === 'Objective was not found.') {
             alertMessages = 'เกิดข้อผิดพลาด กรุณาทำใหม่อีกครั้ง'
+            this.isPostLoading = false;
             this.showAlertDialogWarming(alertMessages, "none");
           } else if (err && err.error && err.error.message === 'Emergency Event was not found.') {
             alertMessages = 'เกิดข้อผิดพลาด กรุณาทำใหม่อีกครั้ง'
+            this.isPostLoading = false;
             this.showAlertDialogWarming(alertMessages, "none");
           }
         })
@@ -241,6 +254,7 @@ export class DialogPost extends AbstractPage {
                   }
                   this.showAlertDialogWarming(alertMessages, "none");
                 }
+                this.isPostLoading = false;
                 this.dialogRef.close(res.data);
                 this.postFacade.nextMessageTopic('');
                 this.postFacade.nextMessage('');
@@ -251,6 +265,7 @@ export class DialogPost extends AbstractPage {
           }
         }).catch((err: any) => {
           console.log(err);
+          this.isPostLoading = false;
         })
       }
     }

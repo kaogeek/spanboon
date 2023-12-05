@@ -16,6 +16,8 @@ import { DialogWarningComponent } from '../../shares/DialogWarningComponent.comp
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
 import { data } from 'jquery';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+
 
 const PAGE_NAME: string = "emergency";
 
@@ -30,8 +32,8 @@ const SEARCH_OFFSET: number = 0;
 export class EmergencyEventPage extends AbstractPage implements OnInit {
 
     public static readonly PAGE_NAME: string = PAGE_NAME;
-    @ViewChild('myInput')
-    myInputVariable: ElementRef;
+    @ViewChild('myInput') myInputVariable: ElementRef;
+    @ViewChild('inputOrder') public inputOrder: ElementRef;
 
     public emergencyEventFacade: EmergencyEventFacade;
     public hashTagFacade: HashTagFacade;
@@ -51,6 +53,10 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
     private imageSrc: string = '';
     public value: string = '';
     public imageName: any;
+    public ordering: number;
+    public isSave: boolean = false;
+    public modeList: any[] = [];
+    public modeEmer: any;
 
     constructor(emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -111,11 +117,38 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
                 formatDate: false,
                 formatId: false,
                 align: "left"
-            },
+            }, {
+                name: "ordering",
+                label: "ลำดับเหตุการณ์ด่วน",
+                width: "40pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "center"
+            }, {
+                name: "mode",
+                label: "ลำดับเหตุการณ์ด่วน",
+                width: "40pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "center"
+            }, {
+                name: "pageList",
+                label: "ลำดับเหตุการณ์ด่วน",
+                width: "40pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "center"
+            }
         ];
         this.actions = {
             isOfficial: false,
-            isBan: true,
+            isBan: false,
             isApprove: false,
             isUnApprove: false,
             isSelect: false,
@@ -126,10 +159,13 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
             isBack: false
         };
         this.setFields();
+
     }
 
     public ngOnInit() {
+        this.table.isEmer = true;
         this.getHashtag();
+        this._getConfig();
     }
 
     public getHashtag() {
@@ -146,17 +182,41 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
         })
     }
 
+    private _getConfig() {
+        let filter = new SearchFilter();
+        filter.limit = SEARCH_LIMIT;
+        filter.offset = SEARCH_OFFSET;
+        filter.relation = [],
+            filter.whereConditions = {
+                name: 'emergencyEvent.mode'
+            },
+            filter.count = false;
+        filter.orderBy = {}
+        this.emergencyEventFacade.getConfigEmer(filter).then((res) => {
+            if (res) {
+                let array = res[0].value.split(',');
+                if (!!array) {
+                    for (const data of array) {
+                        this.modeList.push(data);
+                    }
+                }
+            }
+        })
+    }
+
     private setFields(): void {
         this.dataForm = new EmergencyEvent();
         this.dataForm.title = "";
         this.dataForm.detail = "";
         this.dataForm.coverPageURL = "";
         this.dataForm.hashTag = "";
+        this.dataForm.mode = "";
+        this.dataForm.pageList = "";
         this.imageName = false;
+        this.dataForm.ordering = undefined;
         this.fileToUpload = null
         this.orinalDataForm = JSON.parse(JSON.stringify(this.dataForm));
     }
-
     public clickCloseDrawer(): void {
         let pass = true;
         for (const key in this.orinalDataForm) {
@@ -174,6 +234,7 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
             dialogRef.afterClosed().subscribe(result => {
                 if (result) {
                     this.submitted = false;
+                    this.isSave = false;
                     this.drawer.toggle();
                 }
             });
@@ -190,10 +251,10 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
 
     public clickEditForm(data: any): void {
         this.setFields();
-        this.drawer.toggle();
         this.myInputVariable.nativeElement.value = "";
         this.dataForm = JSON.parse(JSON.stringify(data));
         this.orinalDataForm = JSON.parse(JSON.stringify(data));
+        this.drawer.toggle();
     }
 
     public handleFileInput(files: FileList) {
@@ -219,54 +280,69 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
     }
 
     public clickSave(): void {
-        this.submitted = true;
-        if (this.dataForm.title.trim() === "") {
-            return;
-        }
-        if (this.dataForm.detail.trim() === "") {
-            return;
-        }
-        if (this.dataForm.hashTag === "") {
-            return;
-        }
-        if (this.orinalDataForm.title !== "" && this.orinalDataForm.title !== undefined) {
-            if (this.fileToUpload !== undefined && this.fileToUpload !== null) {
-                this.dataForm.asset = { size: this.fileToUpload[0].size, data: this.imageSrc, mimeType: this.fileToUpload[0].type }
-            } else {
-                this.dataForm.asset = null;
+        if (!this.isSave) {
+            this.isSave = true;
+            this.submitted = true;
+            let emailPattern = "[0-9]";
+            if (!this.inputOrder!.nativeElement!.value.match(emailPattern)) {
+                this.isSave = false;
+                return;
             }
-            let index = this.dataForm.hashTag.indexOf('#');
-            if (index < 0) {
-            } else {
-                var str = this.dataForm.hashTag
-                this.dataForm.hashTag = str.substring(1, 50)
+            if (this.dataForm.title.trim() === "") {
+                this.isSave = false;
+                return;
             }
-            this.emergencyEventFacade.edit(this.dataForm.id, this.dataForm).then((res: any) => {
-                this.table.searchData();
-                this.submitted = false;
-                this.drawer.toggle();
-            }).catch((err: any) => {
-                this.dialogWarning(err.error.message);
-            });
-        } else {
-            let index = this.dataForm.hashTag.indexOf('#');
-            if (index < 0) {
-            } else {
-                var str = this.dataForm.hashTag
-                this.dataForm.hashTag = str.substring(1, 50)
+            if (this.dataForm.detail.trim() === "") {
+                this.isSave = false;
+                return;
             }
-            if (this.fileToUpload !== undefined && this.fileToUpload !== null) {
-                this.dataForm.asset = { size: this.fileToUpload[0].size, data: this.imageSrc, mimeType: this.fileToUpload[0].type }
-            } else {
-                this.dataForm.asset = null;
+            if (this.dataForm.hashTag === "") {
+                this.isSave = false;
+                return;
             }
-            this.emergencyEventFacade.create(this.dataForm).then((res: any) => {
-                this.table.searchData();
-                this.submitted = false;
-                this.drawer.toggle();
-            }).catch((err: any) => {
-                this.dialogWarning(err.error.message);
-            });
+            if (this.orinalDataForm.title !== "" && this.orinalDataForm.title !== undefined) {
+                if (this.fileToUpload !== undefined && this.fileToUpload !== null) {
+                    this.dataForm.asset = { size: this.fileToUpload[0].size, data: this.imageSrc, mimeType: this.fileToUpload[0].type }
+                } else {
+                    this.dataForm.asset = null;
+                }
+                let index = this.dataForm.hashTag.indexOf('#');
+                if (index < 0) {
+                } else {
+                    var str = this.dataForm.hashTag
+                    this.dataForm.hashTag = str.substring(1, 50)
+                }
+                this.emergencyEventFacade.edit(this.dataForm.id, this.dataForm).then((res: any) => {
+                    this.table.searchData();
+                    this.submitted = false;
+                    this.isSave = false;
+                    this.drawer.toggle();
+                }).catch((err: any) => {
+                    this.isSave = false;
+                    this.dialogWarning(err.error.message);
+                });
+            } else {
+                let index = this.dataForm.hashTag.indexOf('#');
+                if (index < 0) {
+                } else {
+                    var str = this.dataForm.hashTag
+                    this.dataForm.hashTag = str.substring(1, 50)
+                }
+                if (this.fileToUpload !== undefined && this.fileToUpload !== null) {
+                    this.dataForm.asset = { size: this.fileToUpload[0].size, data: this.imageSrc, mimeType: this.fileToUpload[0].type }
+                } else {
+                    this.dataForm.asset = null;
+                }
+                this.emergencyEventFacade.create(this.dataForm).then((res: any) => {
+                    this.table.searchData();
+                    this.submitted = false;
+                    this.isSave = false;
+                    this.drawer.toggle();
+                }).catch((err: any) => {
+                    this.isSave = false;
+                    this.dialogWarning(err.error.message);
+                });
+            }
         }
     }
 

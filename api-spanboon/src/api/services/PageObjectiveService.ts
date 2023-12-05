@@ -50,6 +50,32 @@ export class PageObjectiveService {
             }
         });
     }
+
+    // find PageObjective
+    public findAggregate(findCondition?: any, options?: any): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = await this.pageObjectiveRepository.find(findCondition);
+
+                if (result && options && options.signURL) {
+                    for (const objective of result) {
+                        if (objective.s3IconURL && objective.s3IconURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(objective.s3IconURL);
+                                Object.assign(objective, { iconSignURL: (signUrl ? signUrl : '') });
+                            } catch (error) {
+                                console.log('Search PageObjective Error: ', error);
+                            }
+                        }
+                    }
+                }
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
     // find PageObjective
     public findOne(findCondition: any): Promise<any> {
         return this.pageObjectiveRepository.findOne(findCondition);
@@ -122,12 +148,36 @@ export class PageObjectiveService {
 
     // Search PageObjective
     public search(filter: SearchFilter, options?: any): Promise<any> {
-        const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);
+        const condition: any = SearchUtil.createFindCondition(
+            filter.limit,
+            filter.offset,
+            filter.select,
+            filter.relation,
+            filter.whereConditions,
+            filter.orderBy
+        );
 
         if (filter.count) {
             return this.pageObjectiveRepository.count();
         } else {
             return this.find(condition, options);
+        }
+    }
+
+    public searchAggregate(filter: SearchFilter, options?: any): Promise<any> {
+        const condition: any = SearchUtil.createFindCondition(
+            filter.limit,
+            filter.offset,
+            filter.select,
+            filter.relation,
+            filter.whereConditions,
+            filter.orderBy
+        );
+
+        if (filter.count) {
+            return this.pageObjectiveRepository.count();
+        } else {
+            return this.findAggregate(condition, options);
         }
     }
 

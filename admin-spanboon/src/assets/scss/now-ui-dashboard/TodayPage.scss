@@ -1,0 +1,108 @@
+.container-bucket {
+    .wrapper-bucket {
+        margin: 10px 0;
+
+        >.field-data {
+            padding: 20px;
+            border: 1px solid black;
+            border-radius: 10px;
+            margin-bottom: 10px;
+
+            >.text {
+                margin-left: 5px;
+            }
+
+            >.text-value {
+                float: right;
+            }
+
+            .box-name {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .box-values {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .add-value {
+                margin-left: 10px;
+                margin-top: 4px;
+            }
+
+            >.value_bucket {
+                margin-top: 10px;
+                padding: 10px;
+                border: 1px solid black;
+                border-radius: 10px;
+                margin-bottom: 10px;
+
+                >.value-box {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+            }
+
+            .mat-form-field-flex {
+                border: 1px solid black;
+                border-radius: 10px;
+                padding: 5px 10px;
+                margin-top: 10px;
+            }
+
+            >.input-auto {
+                margin-top: 10px;
+                padding: 10px;
+                border: 1px solid black;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+
+            .mat-raised-button {
+                min-width: 0 !important;
+                padding: 0 5pt !important;
+                box-shadow: unset !important;
+                flex: 0 0 auto;
+
+                img {
+                    width: 25px;
+                    min-width: 25px;
+                    max-width: 25px;
+                }
+            }
+
+            >.field-value {
+                margin-top: 10px;
+            }
+
+            >.div-undo {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+            }
+
+            .mat-raised-button {
+                margin-right: 0;
+                box-shadow: 2px 5px 8px -6px #c2c2c2;
+
+                &.btn-back {
+                    background-color: #e65d5d;
+                    color: #fff;
+                }
+            }
+        }
+    }
+}
+
+.valid {
+    border: 1px solid red;
+}
+
+.invalid {
+    border: 1px solid green;
+}

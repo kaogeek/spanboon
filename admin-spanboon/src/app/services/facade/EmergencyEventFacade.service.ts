@@ -49,6 +49,21 @@ export class EmergencyEventFacade extends AbstractFacade {
     });
   }
 
+  public editSelect(id: any, body: any): Promise<EmergencyEvent> {
+    if (id === undefined || id === null) {
+      new Error("Id is required.");
+    }
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/admin/emergency/select/' + id;
+      let options = this.getDefaultOptions();
+      this.http.put(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    })
+  }
+
   public find(name: string): Promise<EmergencyEvent> {
     if (name === undefined || name === null || name === '') {
       new Error("Name is required.");
@@ -68,7 +83,14 @@ export class EmergencyEventFacade extends AbstractFacade {
   public search(searchFilter: SearchFilter): Promise<EmergencyEvent[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/admin/emergency/search';
-      let body: any = {};
+      let body: any = {
+        'count': searchFilter.count,
+        'limit': searchFilter.limit,
+        'offset': searchFilter.offset,
+        'orderBy': { 'createdDate': -1 },
+        'relation': searchFilter.relation,
+        'whereConditions': searchFilter.whereConditions
+      };
       if (searchFilter !== null && searchFilter !== undefined) {
         body = Object.assign(searchFilter)
       }
@@ -98,6 +120,22 @@ export class EmergencyEventFacade extends AbstractFacade {
       let options = this.getDefaultOptions();
       this.http.delete(url, options).toPromise().then((response: any) => {
         resolve(response.data as EmergencyEvent[]);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getConfigEmer(searchFilter: SearchFilter): Promise<EmergencyEvent> {
+    return new Promise((resolve, reject) => {
+      let body: any = {};
+      if (searchFilter !== null && searchFilter !== undefined) {
+        body = Object.assign(searchFilter)
+      }
+      let url: string = this.baseURL + '/admin/config/search';
+      let options = this.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
       }).catch((error: any) => {
         reject(error);
       });

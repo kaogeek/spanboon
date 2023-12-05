@@ -68,7 +68,7 @@ export class PageService {
                 if (result && options && options.signURL) {
                     if (result.s3ImageURL && result.s3ImageURL !== '') {
                         try {
-                            const signUrl = await this.s3Service.getConfigedSignedUrl(result.s3ImageURL);
+                            const signUrl = await this.s3Service.s3signCloudFront(result.s3ImageURL);
                             Object.assign(result, { signURL: (signUrl ? signUrl : '') });
                         } catch (error) {
                             console.log('Page Find one Error: ', error);
@@ -76,7 +76,7 @@ export class PageService {
                     }
                     if (result.s3CoverURL && result.s3CoverURL !== '') {
                         try {
-                            const signUrl = await this.s3Service.getConfigedSignedUrl(result.s3CoverURL);
+                            const signUrl = await this.s3Service.s3signCloudFront(result.s3CoverURL);
                             Object.assign(result, { coverSignURL: (signUrl ? signUrl : '') });
                         } catch (error) {
                             console.log('Page Find one Error: ', error);
@@ -95,6 +95,10 @@ export class PageService {
 
     // find page
     public aggregate(query: any, options?: any): Promise<Page[]> {
+        return this.pageRepository.aggregate(query, options).toArray();
+    }
+
+    public aggregateP(query: any, options?: any): Promise<any> {
         return this.pageRepository.aggregate(query, options).toArray();
     }
 
@@ -129,6 +133,23 @@ export class PageService {
     }
 
     public async searchPageOfficialConfig(): Promise<any> {
+        const result: any = {
+            searchOfficialOnly: DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY
+        };
+
+        const config: Config = await this.configService.getConfig(MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY);
+        if (config !== undefined) {
+            if (typeof config.value === 'boolean') {
+                result.searchOfficialOnly = config.value;
+            } else if (typeof config.value === 'string') {
+                result.searchOfficialOnly = (config.value.toUpperCase() === 'TRUE');
+            }
+        }
+
+        return result;
+    }
+
+    public async searchPageCategory(): Promise<any> {
         const result: any = {
             searchOfficialOnly: DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY
         };

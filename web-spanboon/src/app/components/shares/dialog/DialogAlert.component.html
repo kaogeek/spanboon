@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="dialog customize-alert">
+<div class="dialog customize-alert" *ngIf="data.options !== 'download' && data.options !== 'mfp'">
     <div class="newcon-alert-dialog">
         <div class="edit-h">
             <span class="edit-head-one">{{data.title}}</span>
@@ -17,12 +17,67 @@
         </div>
         <div class="edit-input">
             <span>{{data.text}}</span>
+            <p>{{data.text2}}</p>
+            <ng-container *ngIf="data.page && data.page.iconURL">
+                <div class="images">
+                    <img class="image-page" [src]="apiBaseURL + data.page.iconURL + '/image'" alt="">
+                </div>
+                <span class="name">{{data.page.name}}</span>
+            </ng-container>
         </div>
         <div class="dialog-footer">
             <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
                 {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
             <div class="butt but-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
                 (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}</div>
+        </div>
+    </div>
+</div>
+<div class="box-download" *ngIf="data.options === 'download'">
+    <div class="wrapper-download">
+        <div class="header">
+            <div class="image">
+                <img src="../../../../assets/img/logo/mfp.svg" alt="">
+            </div>
+        </div>
+        <div class="text">
+            <span>รับประสบการณ์ใช้งานแอปเต็มรูปแบบ</span>
+            <span>พบกับฟีเจอร์ใหม่ๆ และกิจกรรมอีกมากมายบนแอป</span>
+        </div>
+        <div class="bottom">
+            <div class="butt but-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
+                (debounceClick)="downloadApp() ">{{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}</div>
+            <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="cancel() ">
+                {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
+        </div>
+    </div>
+</div>
+<div class="box-download binding" *ngIf="data.options === 'mfp'">
+    <div class="wrapper-download warning-binding">
+        <div class="header">
+        </div>
+        <div class="text binding">
+            <ng-container *ngIf="data.type === 'binding'">
+                <span>คุณเป็นสมาชิกของพรรคก้าวไกลใช่หรือไม่?</span>
+                <span>เพื่อเชื่อมต่อระบบสมาชิกพรรคก้าวไกลเข้ากับ MFP Today</span>
+            </ng-container>
+            <ng-container *ngIf="data.type === 'engage'">
+                <span>คุณเป็นสมาชิกพรรคก้าวไกลแล้วหรือยัง?</span>
+                <span>คุณสามารถแสดงความคิดเห็นหรือกดไลค์ได้เมื่อเป็นสมาชิกพรรคเท่านั้น</span>
+            </ng-container>
+
+        </div>
+        <div class="bottom choice">
+            <div class="butt but-submit" appDebounceClick (debounceClick)="binding() ">
+                {{"ใช่...ฉันเป็นสมาชิกพรรคก้าวไกล"}}</div>
+            <div *ngIf="data.type === 'binding'" class="butt but-binding" (click)="register()">
+                {{"ฉันต้องการสมัครสมาชิกพรรค"}}</div>
+            <div class="butt but-binding" (click)="cancel()">
+                {{data.type === 'binding' ? "ฉันไม่ได้เป็นสมาชิกพรรค" : "ไว้ก่อนแล้วกัน"}}</div>
+            <div class="checkbox" *ngIf="data.type === 'binding'">
+                <mat-checkbox class="" [(ngModel)]="isRemindMe"></mat-checkbox>
+                <span>ไม่ต้องการแสดงอีก</span>
+            </div>
         </div>
     </div>
 </div>

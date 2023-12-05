@@ -33,6 +33,41 @@ export class ObjectiveFacade extends AbstractFacade {
       });
     });
   }
+
+  public searchJoiner(searchFilter: SearchFilter, objectiveId): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/objective/' + objectiveId + '/joiner';
+
+      let body: any = {
+        filter: searchFilter,
+        hashTag: ''
+      };
+      let options = this.authMgr.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public searchPublicObjective(searchFilter: SearchFilter): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/objective/lists';
+
+      let body: any = {};
+      if (searchFilter !== null && searchFilter !== undefined) {
+        body = Object.assign(searchFilter);
+      }
+
+      this.http.post(url, body).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public getObjectivePage(pageId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       // https://10.1.0.22:9001/api/page/5ebf98a6f177d22d3aebb259/post
@@ -65,6 +100,103 @@ export class ObjectiveFacade extends AbstractFacade {
       });
     });
   }
+
+  public updateObjective(data: any, objectId?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/objective/' + objectId;
+      let body: any = {
+        hashTag: data.hashTag,
+        title: data.title,
+        category: data.category,
+        pageId: data.pageId,
+        personal: data.personal
+      };
+
+      let option = this.authMgr.getDefaultOptions();
+      this.http.put(url, body, option).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public deleteJoinerObjective(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/joiner';
+
+      let body: any = {};
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public disJoinObjective(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/disjoin';
+
+      let body: any = {};
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public joinObjective(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/join';
+
+      let body: any = {};
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public approveInvite(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/approve';
+
+      let body: any = {};
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public searchObjectiveCategory(searchFilter: SearchFilter): Promise<any> {
     return new Promise((resolve, reject) => {
 
@@ -84,6 +216,19 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
 
+  public deleteObjective(objectiveId: string, pageId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/objective/' + objectiveId + '/' + pageId;
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.delete(url, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public getPageObjectiveTimeline(objectiveId: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
@@ -92,6 +237,22 @@ export class ObjectiveFacade extends AbstractFacade {
 
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public invite(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/invite';
+
+      let body = data;
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
       }).catch((error: any) => {
         reject(error);
       });

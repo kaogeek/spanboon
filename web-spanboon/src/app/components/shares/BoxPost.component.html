@@ -149,7 +149,8 @@
                     <ng-container *ngIf="!isLoading; else elseLoadImage">
                         <div class="image-top"
                             *ngIf="(item.image !== undefined || item.galleryBase64 ) && index === 0 ">
-                            <img class="list-image" src="{{item.image || item.galleryBase64}}"
+                            <img class="list-image"
+                                src="{{item.galleryBase64 ? item.galleryBase64 : item.image ? item.image : apiBaseURL + item.imageURL + '/image'}}"
                                 (click)="onShowDragandDrop()">
                         </div>
                     </ng-container>
@@ -191,15 +192,15 @@
         </ng-container>
         <div matInput contentEditable="true" [ngStyle]="isRepost? {'display': 'block'} : {'display': 'none'}"
             id="{{prefix && prefix.header !== '' ? prefix.header : '' }}topic" #topic class="header-story"
-            placeholder="หัวข้อ" (keyup)="onKeyupTopic($event)" maxlength="75">
+            placeholder="หัวข้อ" (keyup)="onKeyupTopic($event)">
         </div>
         <div *ngIf="isRepost" #storyPost id="{{prefix &&  prefix.detail? prefix.detail : ''}}editableStoryPost"
             class="textarea-editor" contentEditable="true" attr.placeholder="{{PLATFORM_STORY_TALE}}ของ {{dataPage}}"
-            (keyup)="onKeyup($event)" (click)="onKeyup($event)">
+            (keyup)="onKeyup($event)">
         </div>
         <div *ngIf="!isRepost" #storyPost id="{{prefix &&  prefix.detail? prefix.detail : ''}}editableStoryPost"
             class="textarea-editor" contentEditable="true"
-            attr.placeholder="ความเห็นของคุณต่อ{{PLATFORM_STORY_TALE}}นี้ {{repostPage}} {{dataPage}}"
+            attr.placeholder="ความเห็นของคุณต่อ{{PLATFORM_STORY_TALE}}นี้{{repostPage}} {{dataPage}}"
             (keyup)="onKeyup($event)" (click)="onKeyup($event)">
         </div>
 
@@ -217,10 +218,10 @@
             [isNeedBoxPost]="false" [isButtonFulfill]="isButtonFulfill"></needs-card>
         <div class="wrapper-event-tag" #tagEvent [class.active]="isMobilePost && isMobileText">
             <div class="wrapper-right" *ngIf="isRepost && isMobilePost  && isMobileText">
-                <div class="text-limit" [class.validate]="getTextLength() > 230"
+                <!-- <div class="text-limit" [class.validate]="getTextLength() > 230"
                     [class.active]="isMobilePost  && isMobileText">
                     {{getTextLength() ? getTextLength() : 0 }} <span>/230</span>
-                </div>
+                </div> -->
             </div>
 
             <div *ngIf="isRepost" class="wrapper-left">
@@ -260,7 +261,7 @@
                             {{'#' + dataAutoComp.hashtag}}
                         </ng-container>
                         <ng-template #elseObjective>
-                            เหตุการณ์ด่วน
+                            เกาะทุกก้าว
                         </ng-template>
                     </div>
                     <mat-menu #menuEvent="matMenu" (click)="$event.stopPropagation()"
@@ -287,7 +288,7 @@
                                 <mat-option class="list" *ngFor="let item of resEmergency" [value]="item.hashTag"
                                     (click)="selectEvent(item)">
                                     <div class="list-hashtag">
-                                        {{'#'+item.hashTag}}
+                                        {{'#'+item.title}}
                                         <div class="tag-count">
                                             <span>
                                                 {{item.view ? item.view : 0 | shortNumber }} ครั้ง
@@ -328,7 +329,7 @@
                             สิ่งที่กำลังทำ
                         </ng-template>
                     </div>
-                    <mat-menu #menuEventObjective="matMenu" (click)="$event.stopPropagation()"
+                    <mat-menu #menuEventObjective="matMenu" class="menu-objective" (click)="$event.stopPropagation()"
                         (keydown)="$event.stopPropagation()" backdropClass="sg-vertical-sub-menu">
                         <ng-container *ngIf="isUpload; else elseUpload">
                             <div class="upload-image-doing" (click)="$event.stopPropagation()">
@@ -343,63 +344,121 @@
                                         </g>
                                     </svg>
                                     <div class="btn-create-doing">
-                                        สร้างกำลังทำอยู่
+                                        {{!isEditObject ? 'สร้างสิ่งที่กำลังทำอยู่' : 'แก้ไขสิ่งที่กำลังทำอยู่'}}
                                     </div>
                                 </div>
                                 <div class="body-center">
-                                    <div class="wrappper-body-upload" (click)="$event.stopPropagation()">
-                                        <div class="wrapper-doing">
-                                            <mat-form-field class="objective-category" appearance="none">
-                                                <mat-label style="margin-bottom: 2pt;">หมวดหมู่</mat-label>
-                                                <mat-select #objectCategory [class.msg-error]="isMsgError"
-                                                    [(ngModel)]="selectedValue" name="objectCategory" required>
-                                                    <mat-option matInput disabled value="เลือกหมวดหมู่">เลือกหมวดหมู่
-                                                    </mat-option>
-                                                    <mat-option *ngFor="let item of resPageCategory" [value]="item.id">
-                                                        {{item.name}}
-                                                    </mat-option>
-                                                </mat-select>
-                                            </mat-form-field>
-                                            <div class="hash">
-                                                <label for="add-username">#</label>
-                                                <input type="text" class="input-hashTag" id="objective-doing-name"
-                                                    name="objective-doing-name" #objectiveDoingName
-                                                    placeholder="แฮชแท๊ค" required matInput>
+                                    <div class="wrappper-body-upload display-flex" style="gap: 25px;"
+                                        (click)="$event.stopPropagation()">
+                                        <div class="section-left">
+                                            <div class="wrapper-upload">
+                                                <ng-container
+                                                    *ngIf="imageIcon && imageIcon !== undefined; else elseShowImage">
+                                                    <div class="div-image">
+                                                        <img class="image-user"
+                                                            src="{{imageIcon.image !== undefined ? imageIcon.image : '../../../../assets/img/image.svg'}}"
+                                                            alt="">
+                                                        <div class="edit-image"
+                                                            (click)="showDialogImage(); $event.stopPropagation()">
+                                                            <img src="../../../assets/img/camera.svg">
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                                <ng-template #elseShowImage>
+                                                    <div class="div-image">
+                                                        <img class="image-user" src="../../../../assets/img/image.svg"
+                                                            alt="">
+                                                        <div class="edit-image"
+                                                            (click)="showDialogImage(); $event.stopPropagation()">
+                                                            <img src="../../../assets/img/camera.svg">
+                                                        </div>
+                                                    </div>
+                                                </ng-template>
                                             </div>
                                         </div>
-                                        <div class="wrapper-doing">
-                                            <input type="text" class="input-doing" id="objective-doing"
-                                                name="objective-doing" #objectiveDoing placeholder="สิ่งที่คุณกำลังทำ"
-                                                required matInput>
-                                        </div>
-                                        <div class="wrapper-upload">
-                                            <ng-container
-                                                *ngIf="imageIcon && imageIcon !== undefined; else elseShowImage">
-                                                <div class="div-image">
-                                                    <img class="image-user"
-                                                        src="{{imageIcon.image !== undefined ? imageIcon.image : '../../../../assets/img/image.svg'}}"
-                                                        alt="">
+                                        <div class="section-right">
+                                            <div class="wrapper-doing" style="flex-direction: column;">
+                                                <mat-form-field class="objective-category" appearance="none"
+                                                    [floatLabel]="'never'">
+                                                    <mat-label *ngIf="!isShow">{{selectedValue}}</mat-label>
+                                                    <mat-select [class.msg-error]="isMsgError"
+                                                        [ngModelOptions]="{standalone: true}"
+                                                        [(ngModel)]="selectedValue">
+                                                        <mat-option *ngFor="let item of resPageCategory"
+                                                            (click)="selectCategory()" [value]="item.id">
+                                                            {{item.name}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                                <div class="hash">
+                                                    <label for="add-username">#</label>
+                                                    <input type="text" class="input-hashTag" id="objective-doing-name"
+                                                        name="objective-doing-name" [(ngModel)]="tagObjDoing"
+                                                        placeholder="แฮชแท๊ค" required matInput>
                                                 </div>
-                                            </ng-container>
-                                            <ng-template #elseShowImage>
-                                                <div class="div-image">
-                                                    <img class="image-user" src="../../../../assets/img/image.svg"
-                                                        alt="">
-                                                </div>
-                                            </ng-template>
-
-                                            <div class="wrapper-field-upload">
-                                                <div class="top">
-                                                    อัพโหลดรูปโปรไฟล์
-                                                </div>
-                                                <div class="btn-upload">
-                                                    <label for="file-upload" class="button-social"
-                                                        (click)="showDialogImage(); $event.stopPropagation()">อัพโหลดรูปภาพ
-                                                    </label>
-                                                </div>
+                                            </div>
+                                            <div class="wrapper-doing">
+                                                <input type="text" class="input-doing" id="objective-doing"
+                                                    name="objective-doing" [(ngModel)]="objDoing"
+                                                    placeholder="สิ่งที่คุณกำลังทำ" required matInput>
+                                            </div>
+                                            <div class="public-button">
+                                                <mat-slide-toggle [(ngModel)]="isPublic"
+                                                    [ngModelOptions]="{standalone: true}"
+                                                    (change)="objectPublic($event)">
+                                                </mat-slide-toggle>
+                                                <span>เปิดเป็นสาธารณะ</span>
                                             </div>
                                         </div>
                                     </div>
+                                    <ng-container *ngIf="isPublicObj">
+                                        <ng-container *ngIf="listJoiner.length > 0; else elseEmptyJoiner">
+                                            <div class="wrapper-joiner">
+                                                <div class="header-joiner">
+                                                    <span>ผู้คนที่กำลังทำสิ่งเดียวกัน</span>
+                                                    <div class="image-upload"
+                                                        (click)="inviteJoin();$event.stopPropagation()">
+                                                        <span class="add-label">+เพิ่ม</span>
+                                                    </div>
+                                                </div>
+                                                <div class="wrapper-box">
+                                                    <div class="box-joiner"
+                                                        *ngFor="let item of listJoiner;let i = index">
+                                                        <div class="images">
+                                                            <img [src]="apiBaseURL + item.page.imageURL + '/image'">
+                                                        </div>
+                                                        <span>{{item.page.name}}</span>
+                                                        <button mat-icon-button [matMenuTriggerFor]="menu"
+                                                            [disableRipple]="'false'" class="dropdown"
+                                                            (click)="$event.stopPropagation()">
+                                                            <span class="material-icons">
+                                                                more_horiz
+                                                            </span>
+                                                        </button>
+                                                        <mat-menu #menu="matMenu" xPosition="before">
+                                                            <button mat-menu-item [disableRipple]="'true'"
+                                                                class="list-dropdown"
+                                                                (click)="deleteObjective(item,i,'deleteJoiner');$event.stopPropagation()">
+                                                                <mat-icon>delete</mat-icon>
+                                                                <span>ลบ</span>
+                                                            </button>
+                                                        </mat-menu>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #elseEmptyJoiner>
+                                            <div class="wrapper-joiner">
+                                                <div class="header-joiner">
+                                                    <span>ไม่มีผู้เข้าร่วมสิ่งที่กำลังทำนี้</span>
+                                                    <div class="image-upload"
+                                                        (click)="inviteJoin(); $event.stopPropagation()">
+                                                        <span class="add-label">+เพิ่ม</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </ng-container>
                                     <div class="wrapper-footer-doing">
                                         <div class="btn-submit">
                                             <spanboon-button (click)="canCelImageObject()" [bgColor]="'#f3f3f3'"
@@ -408,7 +467,8 @@
                                         </div>
                                         <div class="btn-submit">
                                             <spanboon-button (click)="isLock ? null : createImageObjective()"
-                                                [height]="'28pt'" [width]="'79pt'" [text]="'สร้าง'">
+                                                [height]="'28pt'" [width]="'79pt'"
+                                                [text]="!isEditObject ? 'สร้าง' : 'แก้ไข'">
                                             </spanboon-button>
                                         </div>
                                     </div>
@@ -417,45 +477,117 @@
                         </ng-container>
                         <ng-template #elseUpload>
                             <div class="wrapper-body-objective" (click)="$event.stopPropagation()">
-                                <div class="search-header-objective">
-                                    <label for="searchInputObjective">
-                                        <svg class="img-search" xmlns="http://www.w3.org/2000/svg" width="20.276"
-                                            height="20.682" viewBox="0 0 20.276 20.682">
-                                            <g id="surface1" transform="translate(-27)">
-                                                <path id="Path_104" data-name="Path 104"
-                                                    d="M14.235,12.272a7.776,7.776,0,1,0-2.392,2.2l5.734,5.7a1.628,1.628,0,0,0,2.36-2.242c-.02-.021-.039-.04-.059-.059ZM7.883,12.8A5.016,5.016,0,1,1,12.9,7.779,5.017,5.017,0,0,1,7.883,12.8Zm0,0"
-                                                    transform="translate(26.891 0)" fill="#474747" />
-                                            </g>
-                                        </svg>
-                                    </label>
-                                    <input matInput placeholder="ค้นหา" #searchInputObjective id="searchInputObjective">
-                                </div>
                                 <div class="wrapper-add-doing">
                                     <div class="wrapper-add-image">
                                         <div class="page-doing">
-                                            สิ่งที่ {{dataPage ? '"' + dataPage + '"' : ''}} กำลังทำอยู่
-                                        </div>
-                                        <div class="image-upload" (click)="UploadImage(); $event.stopPropagation()">
-                                            <svg class="icon-add" xmlns="http://www.w3.org/2000/svg" width="20.948"
-                                                height="20.948" viewBox="0 0 20.948 20.948">
-                                                <path id="plus_4_" data-name="plus (4)"
-                                                    d="M17.88,3.068A10.474,10.474,0,0,0,3.067,17.88,10.474,10.474,0,0,0,17.88,3.068ZM10.473,19.311a8.837,8.837,0,1,1,8.837-8.837,8.847,8.847,0,0,1-8.837,8.837Zm.818-9.656h3.682v1.637H11.292v3.682H9.655V11.291H5.973V9.655H9.655V5.973h1.637Zm0,0"
-                                                    transform="translate(0)" fill="#212721" />
-                                            </svg>
-                                            <span class="add-label">เพิ่มใหม่</span>
-                                            <div class="lable-add"></div>
+                                            <span>สิ่งที่</span><span>{{dataPage ? '"' + dataPage + '"' :
+                                                ''}}</span><span>กำลังทำอยู่</span>
+                                            <!-- สิ่งที่ {{dataPage ? '"' + dataPage + '"' : ''}} กำลังทำอยู่ -->
                                         </div>
                                     </div>
                                 </div>
-
+                                <div class="box-action">
+                                    <!-- <div class="settings" (click)="editObject()">
+                                        <img src="'../../../../../assets/img/setting.svg" alt="">
+                                        <div class="setting-button">
+                                            ตั้งค่า
+                                        </div>
+                                    </div> -->
+                                    <div class="image-upload" (click)="UploadImage(); $event.stopPropagation()">
+                                        <span class="add-label">+สร้าง</span>
+                                        <div class="lable-add"></div>
+                                    </div>
+                                    <div class="search-header-objective">
+                                        <label for="searchInputObjective">
+                                            <svg class="img-search" xmlns="http://www.w3.org/2000/svg" width="20.276"
+                                                height="20.682" viewBox="0 0 20.276 20.682">
+                                                <g id="surface1" transform="translate(-27)">
+                                                    <path id="Path_104" data-name="Path 104"
+                                                        d="M14.235,12.272a7.776,7.776,0,1,0-2.392,2.2l5.734,5.7a1.628,1.628,0,0,0,2.36-2.242c-.02-.021-.039-.04-.059-.059ZM7.883,12.8A5.016,5.016,0,1,1,12.9,7.779,5.017,5.017,0,0,1,7.883,12.8Zm0,0"
+                                                        transform="translate(26.891 0)" fill="#474747" />
+                                                </g>
+                                            </svg>
+                                        </label>
+                                        <input matInput placeholder="ค้นหา" #searchInputObjective
+                                            id="searchInputObjective">
+                                    </div>
+                                </div>
                                 <div class="wrapper-choose-tag">
                                     <div class="wrapper-body-doing">
                                         <ng-container
                                             *ngIf="resObjective && resObjective.length > 0; else elseHasObjective">
                                             <div class="wrapper-doing" id="wrapper-doing"
-                                                [class.active-click-doing]="selectedObjectiveId === item.id"
+                                                [class.active-click-doing]="(selectedObjectiveId === (item._id || item.id)) || (selectedObjectiveId === item.objectiveId) && selectedObjectiveId !== undefined"
                                                 *ngFor="let item of resObjective ; let i = index"
                                                 (click)="clickCardObjective(i,item)">
+                                                <!-- <ng-container *ngIf="selectedObjectiveId === item.id">
+                                                    <ng-container *ngIf="!item.join">
+                                                        <div class="edit"
+                                                            (click)="editObjective(item,i); $event.stopPropagation()">
+                                                            <mat-icon style="color: white;">edit</mat-icon>
+                                                        </div>
+                                                    </ng-container>
+                                                    <ng-container *ngIf="!item.join; else elseDelete">
+                                                        <div class="delete" (click)="deleteObjective(item,i)">
+                                                            <mat-icon style="color: white;">close</mat-icon>
+                                                        </div>
+                                                    </ng-container>
+                                                    <ng-template #elseDelete>
+                                                        <div class="delete" (click)="deleteObjective(item,i,'join')">
+                                                            <mat-icon style="color: white;">close</mat-icon>
+                                                        </div>
+                                                    </ng-template>
+                                                </ng-container> -->
+                                                <ng-container *ngIf="!item.join; else elseDelete">
+                                                    <button mat-icon-button [matMenuTriggerFor]="menu"
+                                                        [disableRipple]="'false'" class="dropdown"
+                                                        (click)="$event.stopPropagation()">
+                                                        <span class="material-icons">
+                                                            more_horiz
+                                                        </span>
+                                                    </button>
+                                                    <mat-menu #menu="matMenu" xPosition="before">
+                                                        <ng-container *ngIf="!item.personal else elsePersonal">
+                                                            <button mat-menu-item [disableRipple]="'true'"
+                                                                class="list-dropdown"
+                                                                (click)="editObjective(item,i,false)">
+                                                                <mat-icon>edit</mat-icon>
+                                                                <span>แก้ไข</span>
+                                                            </button>
+                                                        </ng-container>
+                                                        <ng-template #elsePersonal>
+                                                            <button mat-menu-item [disableRipple]="'true'"
+                                                                class="list-dropdown"
+                                                                (click)="editObjective(item,i,true)">
+                                                                <mat-icon>edit</mat-icon>
+                                                                <span>แก้ไข</span>
+                                                            </button>
+                                                        </ng-template>
+
+                                                        <button mat-menu-item [disableRipple]="'true'"
+                                                            class="list-dropdown" (click)="deleteObjective(item,i)">
+                                                            <mat-icon>delete</mat-icon>
+                                                            <span>ลบ</span>
+                                                        </button>
+                                                    </mat-menu>
+                                                </ng-container>
+                                                <ng-template #elseDelete>
+                                                    <button mat-icon-button [matMenuTriggerFor]="menu"
+                                                        [disableRipple]="'false'" class="dropdown"
+                                                        (click)="$event.stopPropagation()">
+                                                        <span class="material-icons">
+                                                            more_horiz
+                                                        </span>
+                                                    </button>
+                                                    <mat-menu #menu="matMenu" xPosition="before">
+                                                        <button mat-menu-item [disableRipple]="'true'"
+                                                            class="list-dropdown"
+                                                            (click)="deleteObjective(item,i,'join')">
+                                                            <mat-icon>delete</mat-icon>
+                                                            <span>ลบ</span>
+                                                        </button>
+                                                    </mat-menu>
+                                                </ng-template>
                                                 <ng-container
                                                     *ngIf="isLoading || item.isLoadImageIcon ; else elseIsicon">
                                                     <span class="loading-image">
@@ -465,18 +597,60 @@
                                                 </ng-container>
                                                 <ng-template #elseIsicon>
                                                     <ng-container
-                                                        *ngIf="!item.iconSignURL && !item.iconURL; else elseIsBase64">
+                                                        *ngIf="!item.iconSignURL && !item.iconURL && !item.iconURL; else elseUrl">
                                                         <div class="image-tag image-waste">
                                                             <img src="../../../../assets/img/photo.png"
                                                                 style="width: 40%; height: auto;">
                                                         </div>
                                                     </ng-container>
+                                                    <ng-template #elseUrl>
+                                                        <ng-container *ngIf="!!item.join; else elseIsBase64">
+                                                            <div class="images">
+                                                                <img class="image-tag"
+                                                                    [src]="apiBaseURL + item.iconURL + '/image'" alt="">
+                                                                <img class="lock"
+                                                                    src="'../../../../../assets/img/join-objective.svg"
+                                                                    alt="">
+                                                            </div>
+                                                        </ng-container>
+                                                    </ng-template>
                                                     <ng-template #elseIsBase64>
                                                         <ng-container
                                                             *ngIf="!!item.iconSignURL || !!item.iconBase64; else elsecheckBase">
-                                                            <img class="image-tag"
-                                                                [src]="item.iconSignURL ? item.iconSignURL : item.iconBase64"
-                                                                alt="">
+                                                            <ng-container
+                                                                *ngIf="item.personal !== true; else elsePublicObj">
+                                                                <div class="images">
+                                                                    <img class="image-tag"
+                                                                        [src]="item.iconSignURL ? item.iconSignURL : item.iconBase64"
+                                                                        alt="">
+                                                                    <img class="lock"
+                                                                        src="'../../../../../assets/img/lock-icon.svg"
+                                                                        alt="">
+                                                                </div>
+                                                            </ng-container>
+                                                            <ng-template #elsePublicObj>
+                                                                <div class="images">
+                                                                    <img class="image-tag"
+                                                                        [src]="item.iconSignURL ? item.iconSignURL : item.iconBase64"
+                                                                        alt="">
+                                                                    <!-- <ng-container
+                                                                        *ngIf="item && item.pageObjectiveJoiner.length === 0; else elseObjJoin">
+                                                                        <img class="lock"
+                                                                            src="'../../../../../assets/img/public-objective.svg"
+                                                                            alt="">
+                                                                    </ng-container>
+                                                                    <ng-template #elseObjJoin>
+                                                                        <img *ngIf="item.pageObjectiveJoiner[0].approve === false"
+                                                                            class="lock"
+                                                                            src="'../../../../../assets/img/public-objective.svg"
+                                                                            alt="">
+                                                                        <img *ngIf="item.pageObjectiveJoiner[0].approve === true"
+                                                                            class="lock"
+                                                                            src="'../../../../../assets/img/joined-objective.svg"
+                                                                            alt="">
+                                                                    </ng-template> -->
+                                                                </div>
+                                                            </ng-template>
                                                         </ng-container>
                                                         <ng-template #elsecheckBase>
                                                             <div class="image-tag image-waste">
@@ -486,12 +660,11 @@
                                                         </ng-template>
                                                     </ng-template>
                                                 </ng-template>
-
-                                                <span class="name-objective">{{'#'+item.hashTag}}</span>
-                                                <div class="div-objective">
-                                                    <span>(</span>
-                                                    <span class="name-objective bo_2">{{item.title}}</span>
-                                                    <span>)</span>
+                                                <div class="text-objective">
+                                                    <span class="name-objective">{{'#'+ (item.hashTagName ?
+                                                        item.hashTagName : item.name ? item.name :
+                                                        item.hashTag)}}</span>
+                                                    <span class="title-objective">{{'['+ item.title + ']'}}</span>
                                                 </div>
                                             </div>
                                         </ng-container>
@@ -530,15 +703,15 @@
             <div class="wrapper-right">
                 <ng-container *ngIf="isTablet; else elseTemplateisTablet">
                     <!-- version tablet -->
-                    <div class="text-limit" [class.validate]="getTextLength() > 230">
+                    <!-- <div class="text-limit" [class.validate]="getTextLength() > 230">
                         {{getTextLength() ? getTextLength() : 0 }}/230
-                    </div>
+                    </div> -->
                 </ng-container>
                 <ng-template #elseTemplateisTablet>
-                    <div *ngIf="isRepost && !isMobilePost && !isMobileText " class="text-limit"
+                    <!-- <div *ngIf="isRepost && !isMobilePost && !isMobileText " class="text-limit"
                         [class.validate]="getTextLength() > 230">
                         {{getTextLength() ? getTextLength() : 0 }}/230
-                    </div>
+                    </div> -->
                 </ng-template>
             </div>
         </div>
@@ -552,18 +725,49 @@
                 <ng-container *ngIf="!isFulfill">
                     <ng-container *ngIf="isRepost; else elseIsRepost">
                         <ng-container *ngIf="modeDoIng; else elseDoIng">
-                            <ng-container *ngFor="let data of chooseStorys">
-                                <div appDebounceClick class="butt" (click)="selectType(data.value)">
+                            <!-- <div appDebounceClick class="butt" (click)="selectType(data.value)">
                                     {{data.viewValue}}
-                                </div>
-                            </ng-container>
+                                </div> -->
+                            <!-- <mat-form-field appearance="none">
+                                    <mat-select class="butt">
+                                        <mat-option *ngFor="let data of chooseStorys" [value]="data.value"
+                                            (click)="selectType(data.value)">
+                                            <div class="wrapper-body-action">
+                                                <div class="{{data.class}}"></div>
+                                                {{data.viewValue}}
+                                            </div>
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field> -->
+                            <mat-form-field appearance="none">
+                                <mat-select name="mode" [(value)]="typePost">
+                                    <mat-option *ngFor="let data of chooseStorys" [value]="data.value"
+                                        (click)="selectType(data.value)">
+                                        <div class="wrapper-body-action">
+                                            <div class="{{data.class}}"></div>
+                                            {{data.viewValue}}
+                                        </div>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
                         </ng-container>
                         <ng-template #elseDoIng>
-                            <ng-container *ngFor="let data of chooseStory">
+                            <!-- <ng-container *ngFor="let data of chooseStory">
                                 <div appDebounceClick class="butt" (click)="selectType(data.value)">
                                     {{data.viewValue}}
                                 </div>
-                            </ng-container>
+                            </ng-container> -->
+                            <mat-form-field appearance="none">
+                                <mat-select name="mode" [(value)]="typePost">
+                                    <mat-option *ngFor="let data of chooseStory" [value]="data.value"
+                                        (click)="selectType(data.value)">
+                                        <div class="wrapper-body-action">
+                                            <div class="{{data.class}}"></div>
+                                            {{data.viewValue}}
+                                        </div>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
                         </ng-template>
                     </ng-container>
                     <ng-template #elseIsRepost>
@@ -904,3 +1108,5 @@
         </div>
     </div>
 </div>
+
+<loading *ngIf="isLoading"></loading>

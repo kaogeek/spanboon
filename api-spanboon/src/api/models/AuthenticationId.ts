@@ -46,13 +46,32 @@ export class AuthenticationId extends BaseModel {
     @Column({ name: 'expirationDate' })
     public expirationDate: Date;
 
+    @Column({ name: 'membership' })
+    public membership: boolean;
+
+    @Column({ name: 'expirationDate_law_expired' })
+    public expirationDate_law_expired: Date;
+
+    @Column({ name: 'membershipState' })
+    public membershipState: string;
+
+    @Column({ name: 'membershipType' })
+    public membershipType: string;
+
+    @Column({ name: 'identificationNumber' })
+    public identificationNumber: any;
+
+    @Column({ name: 'mobileNumber' })
+    public mobileNumber: any;
+
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
     }
 
     @BeforeUpdate()
-    public async updateDetails(): Promise<void> {
+    public updateDetails(): any {
         this.updateDate = moment().toDate();
     }
 }

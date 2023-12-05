@@ -47,13 +47,17 @@ export class Asset extends BaseModel {
     @Column({ name: 's3FilePath' })
     public s3FilePath: string;
 
+    @Column({ name: 'pageObjectiveId' })
+    public pageObjectiveId: ObjectID;
+
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
     }
 
     @BeforeUpdate()
-    public async updateDetails(): Promise<void> {
+    public updateDetails(): any {
         this.updateDate = moment().toDate();
     }
 }

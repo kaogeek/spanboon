@@ -10,7 +10,7 @@ import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
 @Entity('DeviceToken')
-export class DeviceToken extends BaseModel{
+export class DeviceToken extends BaseModel {
     @ObjectIdColumn({ name: '_id' })
     @IsNotEmpty()
     @IsMongoId()
@@ -19,18 +19,22 @@ export class DeviceToken extends BaseModel{
     public DeviceName: string;
 
     @Column({ name: 'token' })
-    public Tokens: string;
+    public token: string;
 
     @Column({ name: 'userId' })
     public userId: ObjectID;
 
+    @Column({ name: 'os'})
+    public os: string;
+
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
     }
 
     @BeforeUpdate()
-    public async updateDetails(): Promise<void> {
+    public updateDetails(): any {
         this.updateDate = moment().toDate();
     }
 }

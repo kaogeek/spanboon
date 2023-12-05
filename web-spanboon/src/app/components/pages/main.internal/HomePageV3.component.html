@@ -1,14 +1,1400 @@
-<div class="home-page">
-    <section class="section-1">
+<div *ngIf="model === undefined" class="loding">
+    <Preload-card [isShowCard4]="true" [isShowCard2]="false">
+    </Preload-card>
+</div>
+
+<div class="home-page" infinite-scroll [infiniteScrollDistance]="scrollDistance" [alwaysCallback]="true"
+    (scrolled)="onScrollDown($event)">
+    <section class="section-0" *ngIf="!showLoading && isAnnounce">
+        <div class="container header-annouce">
+            <div class="header-announcement">
+                <div class="announce head">
+                    <ng-container *ngIf="linkAnnounce; else elseLink">
+                        <a target="_blank" [href]="linkAnnounce">
+                            <marquee direction="left" id="scroll_news" loop=""
+                                onMouseOver="document.getElementById('scroll_news').stop();"
+                                onMouseOut="document.getElementById('scroll_news').start();">
+                                {{announcement}}
+                            </marquee>
+                        </a>
+                    </ng-container>
+                    <ng-template #elseLink>
+                        <marquee direction="left" id="scroll_news" loop=""
+                            onMouseOver="document.getElementById('scroll_news').stop();"
+                            onMouseOut="document.getElementById('scroll_news').start();">
+                            {{announcement}}
+                        </marquee>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section-0" *ngIf="!showLoading">
         <div class="container">
-            <div class="grid">
-                <ng-container *ngFor="let item of [1,2,3,4,5]; let i=index">
-                    <div class="grid-item">
-                        <img src="https://d1evz9svx3lh53.cloudfront.net/6020f8720f755b346c231ba5/6020f8720f755b346c231ba56f4o10n6vm216745444917614oxr8woeara.jpg?AWSAccessKeyId=AKIATCMHTO4YJZYKAD7U&Expires=1675051208&Signature=re4eADiyHqGnVhKgta5wJnIYQ04%3D"
-                            alt="">
+            <div class="header-announcement">
+                <div class="announce" *ngIf="!isAnnounce">
+                    <ng-container *ngIf="linkAnnounce; else elseLink">
+                        <a target="_blank" [href]="linkAnnounce">
+                            <marquee direction="left" id="scroll_news" loop=""
+                                onMouseOver="document.getElementById('scroll_news').stop();"
+                                onMouseOut="document.getElementById('scroll_news').start();">
+                                {{announcement}}
+                            </marquee>
+                        </a>
+                    </ng-container>
+                    <ng-template #elseLink>
+                        <marquee direction="left" id="scroll_news" loop=""
+                            onMouseOver="document.getElementById('scroll_news').stop();"
+                            onMouseOut="document.getElementById('scroll_news').start();">
+                            {{announcement}}
+                        </marquee>
+                    </ng-template>
+                </div>
+                <div class="label-date" (click)="!isLoading ? picker.open() : null"
+                    [ngClass]="{'label-date-2': isAnnounce}">
+                    <span *ngIf="isKaokai">ก้าวไกลหน้าหนึ่ง</span>
+                    <div class="label-date-right">
+                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
+                            xmlns:svgjs="http://svgjs.com/svgjs" width="512" height="512" x="0" y="0"
+                            viewBox="0 0 455.005 455.005" xml:space="preserve" class="">
+                            <g>
+                                <path
+                                    d="M446.158 267.615c-5.622-3.103-12.756-2.421-19.574 1.871l-125.947 79.309a7.5 7.5 0 0 0 7.993 12.693l125.947-79.309c2.66-1.675 4.116-1.552 4.331-1.432.218.12 1.096 1.285 1.096 4.428 0 8.449-6.271 19.809-13.42 24.311l-122.099 76.885c-6.492 4.088-12.427 5.212-16.284 3.084-3.856-2.129-6.067-7.75-6.067-15.423 0-19.438 13.896-44.61 30.345-54.967l139.023-87.542a7.5 7.5 0 0 0 0-12.694L184.368 50.615a7.5 7.5 0 0 0-7.993 0L35.66 139.223C15.664 151.815 0 180.188 0 203.818v4c0 23.63 15.664 52.004 35.66 64.595l209.292 131.791a7.501 7.501 0 0 0 7.993-12.693L43.653 259.72C28.121 249.941 15 226.172 15 207.818v-4c0-18.354 13.121-42.122 28.653-51.902l136.718-86.091 253.059 159.35-128.944 81.196c-20.945 13.189-37.352 42.909-37.352 67.661 0 13.495 4.907 23.636 13.818 28.555 3.579 1.976 7.526 2.956 11.709 2.956 6.231 0 12.985-2.176 19.817-6.479l122.099-76.885c11.455-7.213 20.427-23.467 20.427-37.004 0-8.056-3.224-14.456-8.846-17.56z"
+                                    fill="#000000" data-original="#000000" class=""></path>
+                                <path
+                                    d="M353.664 232.676a7.5 7.5 0 0 0 4.004-13.847l-173.3-109.126a7.5 7.5 0 0 0-7.993 12.693l173.3 109.126a7.467 7.467 0 0 0 3.989 1.154zM323.68 252.58a7.493 7.493 0 0 0 6.361-3.517 7.498 7.498 0 0 0-2.37-10.338L254.46 192.82a7.498 7.498 0 0 0-10.338 2.37 7.498 7.498 0 0 0 2.37 10.338l73.211 45.905a7.457 7.457 0 0 0 3.977 1.147zM223.903 212.559a7.5 7.5 0 0 0-10.334 2.39 7.5 7.5 0 0 0 2.39 10.334l73.773 46.062a7.495 7.495 0 0 0 10.334-2.39 7.5 7.5 0 0 0-2.39-10.334l-73.773-46.062zM145.209 129.33l-62.33 39.254a7.501 7.501 0 0 0 .037 12.716l74.335 46.219a7.493 7.493 0 0 0 8.031-.07l16.556-10.7a7.5 7.5 0 0 0-8.142-12.598l-12.562 8.119-60.119-37.38 48.2-30.355 59.244 37.147-6.907 4.464a7.5 7.5 0 0 0 8.142 12.598l16.8-10.859a7.501 7.501 0 0 0-.087-12.653l-73.218-45.909a7.498 7.498 0 0 0-7.98.007zM270.089 288.846a7.5 7.5 0 0 0-2.409-10.329l-74.337-46.221a7.498 7.498 0 0 0-10.329 2.409 7.5 7.5 0 0 0 2.409 10.329l74.337 46.221a7.494 7.494 0 0 0 10.329-2.409zM53.527 192.864a7.5 7.5 0 0 0 2.409 10.329l183.478 114.081a7.494 7.494 0 0 0 10.329-2.409 7.5 7.5 0 0 0-2.409-10.329L63.856 190.455a7.497 7.497 0 0 0-10.329 2.409z"
+                                    fill="#000000" data-original="#000000" class=""></path>
+                            </g>
+                        </svg>
+                        <h2 class="newspaper_title">ฉบับวันที่ </h2>
+                        <span class="Newspaper_SelectDate">
+                            <loading *ngIf="isLoading"></loading>
+                            <mat-form-field class="custom-class">
+                                <input matInput [matDatepicker]="picker" [matDatepickerFilter]="dateFilter"
+                                    [(ngModel)]="dateValues?dateValues:startDate" (dateChange)="saveDate($event)"
+                                    disabled>
+                                <mat-datepicker #picker panelClass="datepickerOne" disabled="false"></mat-datepicker>
+                            </mat-form-field>
+                        </span>
+                        <span class="material-icons">
+                            arrow_drop_down
+                        </span>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section-1" *ngIf="!showLoading">
+        <div class="container">
+            <div class="wrapper-hastags"
+                *ngIf="(model && model.emergencyEvents.contents.length === 0) && (model && model.postSectionModel.contents.length > 0) && (model && model.pageRoundRobin.contents.length > 0)">
+                <span class="header-hastags">มาใหม่ : </span>
+                <a class="tag-link" (click)="clickToPage(model && model.hashTagSumma[0].name,'hashTagSumma')">#{{model
+                    &&
+                    model.hashTagSumma[0].name}}</a>
+                <span> | </span>
+                <a class="tag-link" (click)="clickToPage(model && model.hashTagSumma[1].name,'hashTagSumma')">#{{model
+                    &&
+                    model.hashTagSumma[1].name}}</a>
+                <span> | </span>
+                <a class=" tag-link" (click)="clickToPage(model && model.hashTagSumma[2].name,'hashTagSumma')">#{{model
+                    &&
+                    model.hashTagSumma[2].name}}</a>
+            </div>
+            <div class="wrapper-1">
+                <ng-container *ngIf="model && model!.emergencyEvents!.contents[0]">
+                    <div class="wrapper-1-left"
+                        *ngIf="model && model.emergencyEvents.contents.length > 0 && model.emergencyEvents.type === 'EMERGENCYEVENT' && hidebar"
+                        [ngStyle]="{'width': !isRes && (model && model.postSectionModel.contents.length > 0) && (model && model.pageRoundRobin.contents.length > 0) ? '100%' : '100%'}">
+                        <div>
+                            <ng-container
+                                *ngIf="model && model!.emergencyEvents!.contents[3] && model && model!.emergencyEvents!.contents[4]">
+                                <div class="wrapper-hastags">
+                                    <span class="header-hastags">ก่อนหน้า : </span>
+                                    <a class="tag-link"
+                                        (click)="clickToPage(model && model!.emergencyEvents!.contents[3].data.emergencyEventId)">{{model
+                                        && model!.emergencyEvents!.contents[3]!.title}}</a>
+                                    <span> | </span>
+                                    <a class="tag-link"
+                                        (click)="clickToPage(model && model!.emergencyEvents!.contents[4].data.emergencyEventId)">{{model
+                                        && model!.emergencyEvents!.contents[4]!.title}}</a>
+                                </div>
+                            </ng-container>
+                            <a class="wrapper-box"
+                                (click)="clickToPage(model && model!.emergencyEvents!.contents[0].data.emergencyEventId)">
+                                <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
+                                    <div class="wrapper-copper-img">
+                                        <div class="teg_event"
+                                            *ngIf="model && model.emergencyEvents.contents.length > 0">
+                                            <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg"
+                                                width="23" height="21" viewBox="0 0 23 21">
+                                                <g id="Group_1312" data-name="Group 1312"
+                                                    transform="translate(-672.701 -415.463)">
+                                                    <path class="svg-icon-color-activate" id="Subtraction_2"
+                                                        data-name="Subtraction 2"
+                                                        d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"
+                                                        transform="translate(7129.611 -573.082)" fill="#747474"
+                                                        stroke="rgba(0,0,0,0)" stroke-miterlimit="10"
+                                                        stroke-width="1" />
+                                                    <path class="svg-icon-color-activate" id="Rectangle_572"
+                                                        data-name="Rectangle 572"
+                                                        d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z"
+                                                        transform="translate(674.701 434.463)" fill="#747474" />
+                                                    <rect class="svg-icon-color-activate" id="Rectangle_573"
+                                                        data-name="Rectangle 573" width="2" height="3" rx="1"
+                                                        transform="translate(683.701 415.463)" fill="#747474" />
+                                                    <rect class="svg-icon-color-activate" id="Rectangle_574"
+                                                        data-name="Rectangle 574" width="1.398" height="3.962"
+                                                        rx="0.699" transform="translate(678.115 416.918) rotate(-30)"
+                                                        fill="#747474" />
+                                                    <rect class="svg-icon-color-activate" id="Rectangle_575"
+                                                        data-name="Rectangle 575" width="1.398" height="3.962"
+                                                        rx="0.699"
+                                                        transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)"
+                                                        fill="#747474" />
+                                                    <rect class="svg-icon-color-activate" id="Rectangle_576"
+                                                        data-name="Rectangle 576" width="1.398" height="3.962"
+                                                        rx="0.699"
+                                                        transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)"
+                                                        fill="#747474" />
+                                                    <rect class="svg-icon-color-activate" id="Rectangle_577"
+                                                        data-name="Rectangle 577" width="1.398" height="3.962"
+                                                        rx="0.699" transform="translate(689.761 416.304) rotate(31.145)"
+                                                        fill="#747474" />
+                                                    <rect class="svg-icon-color-activate" id="Rectangle_578"
+                                                        data-name="Rectangle 578" width="1" height="3" rx="0.5"
+                                                        transform="translate(672.701 427.463) rotate(-90)"
+                                                        fill="#747474" />
+                                                    <rect class="svg-icon-color-activate" id="Rectangle_579"
+                                                        data-name="Rectangle 579" width="1" height="3" rx="0.5"
+                                                        transform="translate(692.701 427.463) rotate(-90)"
+                                                        fill="#747474" />
+                                                </g>
+                                            </svg> เกาะทุกก้าว
+                                        </div>
+                                        <img class="image-background" *ngIf="!isRes1"
+                                            [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
+                                            alt="">
+                                        <img class="image"
+                                            [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
+                                            alt="">
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
+                                    <div class="detail">
+                                        <p class="title" [innerHTML]="model && model.emergencyEvents.contents[0].title">
+                                        </p>
+                                        <p class="content-detail"
+                                            [innerHTML]="model && model.emergencyEvents.contents[0].description | highlight">
+                                        </p>
+                                        <p class="amount-social">
+                                            <span>{{model && model.emergencyEvents.contents[0].commentCount |
+                                                shortNumber}}
+                                                ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.emergencyEvents.contents[0].shareCount |
+                                                shortNumber}}
+                                                บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.emergencyEvents.contents[0].likeCount | shortNumber}}
+                                                ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.emergencyEvents.contents[0].repostCount |
+                                                shortNumber}}
+                                                แชร์</span>
+                                        </p>
+                                    </div>
+                                </ng-container>
+                            </a>
+                        </div>
+                        <ng-container
+                            *ngIf="model && model!.emergencyEvents!.contents[1] && model && model!.emergencyEvents!.contents[2]">
+                            <div>
+                                <div class="wrapper-banner-header">
+                                    <a class="banner-text-header tag-link"
+                                        (click)="clickToPage(model && model!.emergencyEvents!.contents[1].data.emergencyEventId)"
+                                        [innerHTML]="model && model.emergencyEvents.contents[1].title"></a>
+                                    <a class="banner-count-header tag-link" href=""
+                                        [innerHTML]="(model && model.emergencyEvents.contents[1].postCount | shortNumber) + ' ครั้ง'"></a>
+                                </div>
+                                <div class="wrapper-banner-header">
+                                    <a class="banner-text-header tag-link"
+                                        (click)="clickToPage(model && model!.emergencyEvents!.contents[2].data.emergencyEventId)"
+                                        [innerHTML]="model && model.emergencyEvents.contents[2].title"></a>
+                                    <a class="banner-count-header tag-link" href=""
+                                        [innerHTML]="(model && model.emergencyEvents.contents[2].postCount | shortNumber) + ' ครั้ง'"></a>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="wrapper-1-left"
+                        *ngIf="model && model.emergencyEvents.contents.length > 0 && model.emergencyEvents.type === 'RangeOfHashTags' && hidebar"
+                        [ngStyle]="{'width': !isRes && (model && model.postSectionModel.contents.length > 0) && (model && model.pageRoundRobin.contents.length > 0) ? '100%' : '100%'}">
+                        <div class="wrapper-hastags"
+                            *ngIf="(model && model.emergencyEvents.contents.length > 0) && ((model && model.postSectionModel.contents.length > 0) || (model && model.pageRoundRobin.contents.length > 0))"
+                            [class.active]="model && model.postSectionModel.contents.length > 0 && model.postSectionModel.contents[0].post.objectiveTag === null">
+                            <a class="tag-link"
+                                (click)="clickToPage(model && model.emergencyEvents.mirrorTrends[0].name,'hashTagSumma')">#{{model
+                                &&
+                                model.emergencyEvents.mirrorTrends[0].name}}</a>
+                            <span> | </span>
+                            <a class="tag-link"
+                                (click)="clickToPage(model && model.emergencyEvents.mirrorTrends[1].name,'hashTagSumma')">#{{model
+                                &&
+                                model.emergencyEvents.mirrorTrends[1].name}}</a>
+                            <span> | </span>
+                            <a class=" tag-link"
+                                (click)="clickToPage(model && model.emergencyEvents.mirrorTrends[2].name,'hashTagSumma')">#{{model
+                                &&
+                                model.emergencyEvents.mirrorTrends[2].name}}</a>
+                        </div>
+                        <a class="wrapper-box">
+                            <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
+                                <div class="wrapper-copper-img"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[0]) : clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')">
+                                    <img class="image-background"
+                                        [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
+                                        alt="">
+                                    <img class="image"
+                                        [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
+                                        alt="">
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
+                                <div class="detail">
+                                    <p class="title tag-link"
+                                        [innerHTML]="'#'+(model && model.emergencyEvents.majorTrendHashTags[0].name | highlight)"
+                                        (click)="clickToPage(model && model.emergencyEvents.majorTrendHashTags[0].name,'trendTags')">
+                                    </p>
+                                    <p class="content-detail"
+                                        (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[0]) : clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')"
+                                        [innerHTML]="model && model.emergencyEvents.contents[0].post.detail ? (model && model.emergencyEvents.contents[0].post.detail | highlight) : model && model.emergencyEvents.contents[0].post.title | highlight">
+                                    </p>
+                                    <p class="amount-social"
+                                        (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[0]) : clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')">
+                                        <span>{{model && model.emergencyEvents.contents[0].commentCount |
+                                            shortNumber}}
+                                            ความคิดเห็น</span>
+                                        <span>•</span>
+                                        <span>{{model && model.emergencyEvents.contents[0].shareCount |
+                                            shortNumber}}
+                                            บอกต่อ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.emergencyEvents.contents[0].likeCount | shortNumber}}
+                                            ถูกใจ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.emergencyEvents.contents[0].repostCount |
+                                            shortNumber}}
+                                            แชร์</span>
+                                    </p>
+                                </div>
+                            </ng-container>
+                        </a>
+                        <ng-container *ngIf="model && model.emergencyEvents.majorTrendHashTags.length >0">
+                            <div>
+                                <div class="wrapper-banner-header"
+                                    *ngFor="let item of model && model.emergencyEvents.majorTrendHashTags | slice:1:4; let i=index">
+                                    <a class="banner-text-header tag-link"
+                                        (click)="clickToPage(item.name,'trendTags')">#{{item.name}}
+                                    </a>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-container>
+                <div class="wrapper-1-right"
+                    *ngIf="(model && model.pageRoundRobin && model.pageRoundRobin.contents.length > 0) || (model && model.postSectionModel && model.postSectionModel.contents.length > 0)"
+                    [ngClass]="{'home-wrapper-right': model && model.emergencyEvents.contents.length <= 0}"
+                    [ngStyle]="{'width': !isRes && model && model.emergencyEvents.contents.length !== 0 &&
+                    ((model && model.postSectionModel.contents.length > 0 && model && model.pageRoundRobin.contents.length === 0) || 
+                    (model && model.postSectionModel.contents.length === 0 && model && model.pageRoundRobin.contents.length > 0)) ? '100%' : '100%'}">
+                    <div class="wrapper-hastags"
+                        *ngIf="(model && model.emergencyEvents.contents.length > 0) && ((model && model.postSectionModel.contents.length > 0) || (model && model.pageRoundRobin.contents.length > 0))"
+                        [class.active]="model && model.postSectionModel.contents.length > 0 && model.postSectionModel.contents[0].post.objectiveTag === null">
+                        <span class="header-hastags">มาใหม่ : </span>
+                        <a class="tag-link"
+                            (click)="clickToPage(model && model.hashTagSumma[0].name,'hashTagSumma')">#{{model &&
+                            model.hashTagSumma[0].name}}</a>
+                        <span> | </span>
+                        <a class="tag-link"
+                            (click)="clickToPage(model && model.hashTagSumma[1].name,'hashTagSumma')">#{{model &&
+                            model.hashTagSumma[1].name}}</a>
+                        <span> | </span>
+                        <a class=" tag-link"
+                            (click)="clickToPage(model && model.hashTagSumma[2].name,'hashTagSumma')">#{{model &&
+                            model.hashTagSumma[2].name}}</a>
+                    </div>
+                    <div class="wrapper-section-model" *ngIf="model && model.postSectionModel.contents.length > 0">
+                        <ng-container *ngIf="model && model!.postSectionModel!.contents[0].post.objective">
+                            <div class="wrapper-banner-header banner-header-bg-gray"
+                                *ngIf="model && model.postSectionModel.contents.length > 0">
+                                <svg class="img-objective" xmlns="http://www.w3.org/2000/svg" width="22.899"
+                                    height="22.899" viewBox="0 0 22.899 22.899">
+                                    <g id="mission" transform="translate(0)">
+                                        <path id="Path_3205" data-name="Path 3205"
+                                            d="M4.864,322.8a1.782,1.782,0,0,1,.267-1.475l3.26-4.646L6.552,314.13a.447.447,0,0,0-.726,0L.085,322.093a.447.447,0,0,0,.363.709Z"
+                                            transform="translate(0 -299.903)" fill="#747474" />
+                                        <path id="Path_3206" data-name="Path 3206"
+                                            d="M311.071,9.5V7.156h5.59a.671.671,0,0,0,.57-1.025L316.06,4.249l1.171-1.882a.671.671,0,0,0-.57-1.025h-5.59V.671a.671.671,0,1,0-1.342,0V9.5A.865.865,0,0,1,311.071,9.5Z"
+                                            transform="translate(-295.877)" fill="#747474" />
+                                        <path id="Path_3207" data-name="Path 3207"
+                                            d="M149.512,349.174l-1.6,1.492a.671.671,0,0,1-.915,0l-1.162-1.082-1.161,1.082a.671.671,0,0,1-.915,0l-1.6-1.492-4.616,6.578a.447.447,0,0,0,.366.7h15.855a.447.447,0,0,0,.366-.7Z"
+                                            transform="translate(-131.312 -333.558)" fill="#747474" />
+                                        <path id="Path_3208" data-name="Path 3208"
+                                            d="M260.934,244.4l1.161-1.082a.671.671,0,0,1,.915,0l1.162,1.082,1.292-1.177-2.545-3.626a.447.447,0,0,0-.732,0l-2.545,3.626Z"
+                                            transform="translate(-248.03 -228.703)" fill="#747474" />
+                                    </g>
+                                </svg>
+                                <span class="banner-text-header"
+                                    (click)="clickToPageUser(model && model.postSectionModel.contents[0].post.objective,'objective')"
+                                    [innerHTML]="'#' + (model && model.postSectionModel.contents[0].post.objectiveTag)"></span>
+                            </div>
+                        </ng-container>
+                        <div class="wrapper-news"
+                            [ngClass]="(model && model.emergencyEvents.contents.length === 0) && (model && model.postSectionModel.contents.length === 2) ? 'wrapper-news-2' : ''">
+                            <div class="wrapper-news-left" *ngIf="model && model.postSectionModel.contents.length >= 1"
+                                [ngStyle]="{'display': model && model.postSectionModel.contents.length >= 3 ? 'grid' : 'unset','width': model && model.postSectionModel.contents.length === 2 ? '100%' : ''}">
+                                <div class="wrapper-bar"
+                                    [ngClass]="{'md-none-min': model && model.postSectionModel.contents.length >= 3}"
+                                    *ngIf="model && model.postSectionModel.contents.length > 0">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
+                                        <ng-container
+                                            *ngIf="model && model.postSectionModel.contents.length === 2; else elseSectionTag">
+                                            <a class="tag-link gray time"
+                                                (click)="clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[1].post.createdDate | thformatdatetime"></a>
+                                        </ng-container>
+                                        <ng-template #elseSectionTag>
+                                            <a class="tag-link gray time"
+                                                (click)="model && model.postSectionModel.contents[1] ? clickToPost(model && model.postSectionModel.contents[1].post._id) : clickToPost(model && model.postSectionModel.contents[0].post._id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[1] ? (model && model.postSectionModel.contents[1].post.createdDate | thformatdatetime) : model && model.postSectionModel.contents[0].post.createdDate | thformatdatetime"></a>
+                                        </ng-template>
+                                    </span>
+                                </div>
+                                <div class="wrapper-news-post"
+                                    [ngClass]="!isRes && (model && model.emergencyEvents.contents.length === 0) && (model && model.postSectionModel.contents.length < 3) && (model.postSectionModel.contents.length !== 1) ? 'news-post-flex' : 'flex-content'"
+                                    *ngIf="model && model.postSectionModel.contents.length > 0">
+                                    <ng-container
+                                        *ngIf="model && model.postSectionModel.contents.length >= 3; else elseContentSec2">
+                                        <div class="wrapper-news-post-img md-none-min">
+                                            <ng-container
+                                                *ngIf="model && model.postSectionModel.contents[1].coverPageUrl; else elsePostImg">
+                                                <img src="{{model && model.postSectionModel.contents[1].coverPageSignUrl ? model && model.postSectionModel.contents[1].coverPageSignUrl : apiBaseURL + (model && model.postSectionModel.contents[1].coverPageUrl) + '/image'}}"
+                                                    alt=""
+                                                    (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)">
+                                            </ng-container>
+                                            <ng-template #elsePostImg>
+                                                <span
+                                                    [innerHTML]="model && model.postSectionModel.contents[1].post.title"
+                                                    (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"></span>
+                                            </ng-template>
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #elseContentSec2>
+                                        <ng-container
+                                            *ngIf="model && model.postSectionModel.contents[1]; else elseCoverImageSec2">
+                                            <div class="wrapper-news-post-img"
+                                                (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                [ngClass]="!isRes && (model && model.emergencyEvents.contents.length === 0) && model && model.postSectionModel.contents.length === 2 ? 'post-wid' : ''">
+                                                <ng-container
+                                                    *ngIf="model && model.postSectionModel.contents[1].coverPageUrl; else elseTextTitle">
+                                                    <img src="{{model.postSectionModel.contents[1].coverPageSignUrl ? model.postSectionModel.contents[1].coverPageSignUrl : apiBaseURL + (model && model.postSectionModel.contents[1].coverPageUrl) + '/image'}}"
+                                                        alt=""
+                                                        (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)">
+                                                </ng-container>
+                                                <ng-template #elseTextTitle>
+                                                    <span
+                                                        [innerHTML]="model && model.postSectionModel.contents[1].post.title"></span>
+                                                </ng-template>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #elseCoverImageSec2>
+                                            <div class="wrapper-news-post-img"
+                                                [ngClass]="!isRes && (model && model.emergencyEvents.contents.length === 0) && model && model.postSectionModel.contents.length === 2 ? 'post-wid' : ''">
+                                                <ng-container
+                                                    *ngIf="model && model.postSectionModel.contents.length === 2; else elseImageSec">
+                                                    <span
+                                                        [innerHTML]="model && model.postSectionModel.contents[1].post.title"></span>
+                                                </ng-container>
+                                                <ng-template #elseImageSec>
+                                                    <ng-container
+                                                        *ngIf="model &&
+                                                    model.postSectionModel.contents[0].coverPageUrl===null ; else elseCoverPagePost">
+                                                        <span
+                                                            [innerHTML]="model && model.postSectionModel.contents[0].post.title"></span>
+                                                    </ng-container>
+                                                    <ng-template #elseCoverPagePost>
+                                                        <img style="aspect-ratio: 16/9;"
+                                                            src="{{model.postSectionModel.contents[0].coverPageSignUrl ? model.postSectionModel.contents[0].coverPageSignUrl : apiBaseURL + (model && model.postSectionModel.contents[0].coverPageUrl) + '/image'}}"
+                                                            alt=""
+                                                            (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[0]) : clickToPost(model && model.postSectionModel.contents[0].post._id)">
+                                                    </ng-template>
+                                                </ng-template>
+                                            </div>
+                                        </ng-template>
+                                    </ng-template>
+                                    <div class="detail"
+                                        [ngClass]="!isRes && model && model.postSectionModel.contents.length === 2 ? 'post-wid' : ''">
+                                        <ng-container
+                                            *ngIf="model && model.postSectionModel.contents.length === 2; else elseTitleDetail">
+                                            <p class="title md-none-min"
+                                                (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[1].coverPageUrl ? (model && model.postSectionModel.contents[1].post.title | highlight) : model && model.postSectionModel.contents[1].post.detail | highlight">
+                                            </p>
+                                        </ng-container>
+                                        <ng-template #elseTitleDetail>
+                                            <ng-container
+                                                *ngIf="model && model.postSectionModel.contents.length >= 3; else elseTitleMd">
+                                                <p class="title md-none-min"
+                                                    (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                    [innerHTML]="model && model.postSectionModel.contents[1].coverPageUrl ? (model && model.postSectionModel.contents[1].post.title | highlight) : model && model.postSectionModel.contents[1].post.detail | highlight">
+                                                </p>
+                                            </ng-container>
+                                            <ng-template #elseTitleMd>
+                                                <p class="title md-none-min"
+                                                    (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[0]) : clickToPost(model && model.postSectionModel.contents[0].post._id)"
+                                                    [innerHTML]="model && model.postSectionModel.contents[0].coverPageUrl ? (model && model.postSectionModel.contents[0].post.title | highlight) : model && model.postSectionModel.contents[0].post.detail | highlight">
+                                                </p>
+                                            </ng-template>
+                                        </ng-template>
+                                        <div class="owner-post md-none-min">
+                                            <p class="owner-name"
+                                                (click)="model && model.postSectionModel.contents[1] ? clickToPageUser(model && model.postSectionModel.contents[1].owner.id) : clickToPageUser(model && model.postSectionModel.contents[0].owner.id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[1] ? model && model.postSectionModel.contents[1].owner.name : model.postSectionModel.contents[0].owner.name">
+                                            </p>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.postSectionModel.contents[1] ? model &&
+                                                model.postSectionModel.contents[1].post.commentCount : model &&
+                                                model.postSectionModel.contents[0].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[1] ? model &&
+                                                model.postSectionModel.contents[1].post.repostCount : model &&
+                                                model.postSectionModel.contents[0].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[1] ? model &&
+                                                model.postSectionModel.contents[1].post.likeCount : model &&
+                                                model.postSectionModel.contents[0].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[1] ? model &&
+                                                model.postSectionModel.contents[1].post.shareCount : model &&
+                                                model.postSectionModel.contents[0].post.shareCount |
+                                                shortNumber}} แชร์</span>
+                                        </p>
+                                        <div class="wrapper-title-topic md-none-max">
+                                            <ng-container
+                                                *ngIf="model && model.postSectionModel.contents.length === 2; else elseTitleTopic">
+                                                <p class="title-topic"
+                                                    (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                    [innerHTML]="model && model.postSectionModel.contents[1].coverPageUrl ? (model && model.postSectionModel.contents[1].post.title | highlight) : model && model.postSectionModel.contents[1].post.detail | highlight">
+                                                </p>
+                                            </ng-container>
+                                            <ng-template #elseTitleTopic>
+                                                <ng-container
+                                                    *ngIf="model && model.postSectionModel.contents.length >= 3; else elseContent3">
+                                                    <p class="title-topic"
+                                                        (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                        [innerHTML]="model && model.postSectionModel.contents[1].coverPageUrl ? (model && model.postSectionModel.contents[1].post.title | highlight) : model && model.postSectionModel.contents[1].post.detail | highlight">
+                                                    </p>
+                                                </ng-container>
+                                                <ng-template #elseContent3>
+                                                    <p class="title-topic"
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[0]) : clickToPost(model && model.postSectionModel.contents[0].post._id)"
+                                                        [innerHTML]="model && model.postSectionModel.contents[0].coverPageUrl ? (model && model.postSectionModel.contents[0].post.title | highlight) : model && model.postSectionModel.contents[0].post.detail | highlight">
+                                                    </p>
+                                                </ng-template>
+                                            </ng-template>
+                                            <a class="tag-link gray time"
+                                                *ngIf="model && model.postSectionModel.contents.length >= 3"
+                                                (click)="clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                [innerHTML]="model &&
+                                            model.postSectionModel.contents[1] ? (model.postSectionModel.contents[1].post.createdDate | thformatdatetime) : model.postSectionModel.contents[0].post.createdDate |
+                                            thformatdatetime"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wrapper-bar md-none-min"
+                                    *ngIf="model && model.postSectionModel.contents.length >= 3">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
+                                        <a class="tag-link gray time"
+                                            *ngIf="model && model.postSectionModel.contents.length >= 3"
+                                            (click)="clickToPost(model && model.postSectionModel.contents[2].post._id)"
+                                            [innerHTML]="model && model.postSectionModel.contents[2].post.createdDate | thformatdatetime"></a>
+                                    </span>
+                                </div>
+                                <div class="wrapper-news-post flex-content"
+                                    *ngIf="model && model.postSectionModel.contents.length >= 3"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[2]) : clickToPost(model && model.postSectionModel.contents[2].post._id)">
+                                    <div class="wrapper-news-post-img md-none-min">
+                                        <ng-container
+                                            *ngIf="model && model.postSectionModel.contents[2].coverPageUrl; else elsePostImgSection">
+                                            <img src="{{model.postSectionModel.contents[2].coverPageSignUrl ? model.postSectionModel.contents[2].coverPageSignUrl : apiBaseURL + (model && model.postSectionModel.contents[2].coverPageUrl) + '/image'}}"
+                                                alt="">
+                                        </ng-container>
+                                        <ng-template #elsePostImgSection>
+                                            <span
+                                                [innerHTML]="model && model.postSectionModel.contents[2].post.title | highlight"></span>
+                                        </ng-template>
+                                    </div>
+                                    <div class="detail">
+                                        <p class="title md-none-min"
+                                            (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[2]) : clickToPost(model && model.postSectionModel.contents[2].post._id)"
+                                            [innerHTML]="model && model.postSectionModel.contents[2].coverPageUrl ? (model && model.postSectionModel.contents[2].post.title | highlight) : model && model.postSectionModel.contents[2].post.detail | highlight">
+                                        </p>
+                                        <div class="owner-post md-none-min">
+                                            <p class="owner-name"
+                                                (click)="clickToPageUser(model && model.postSectionModel.contents[2].owner.id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[2].owner.name ? model && model.postSectionModel.contents[2].owner.name : model && model.postSectionModel.contents[2].owner.displayName">
+                                            </p>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.postSectionModel.contents[2].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[2].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[2].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[2].post.shareCount |
+                                                shortNumber}} แชร์</span>
+                                        </p>
+                                        <div class="wrapper-title-topic md-none-max">
+                                            <p class="title-topic"
+                                                (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[2]) : clickToPost(model && model.postSectionModel.contents[2].post._id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[2].coverPageUrl ? (model && model.postSectionModel.contents[2].post.title | highlight) : model && model.postSectionModel.contents[2].post.detail | highlight">
+                                            </p>
+                                            <a class="tag-link gray time"
+                                                (click)="clickToPost(model && model.postSectionModel.contents[2].post._id)"
+                                                [innerHTML]="model &&
+                                            model.postSectionModel.contents[2].post.createdDate |
+                                            thformatdatetime"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wrapper-news-right" *ngIf="model && model.postSectionModel.contents.length > 1"
+                                [ngStyle]="{'display': !isRes && model && model.postSectionModel.contents.length >= 3 ? 'grid' : 'unset','width': model && model.postSectionModel.contents.length === 2 ? '100%' : ''}">
+                                <div class="wrapper-bar">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
+                                        <a class="tag-link gray time"
+                                            (click)="clickToPost(model && model.postSectionModel.contents[0].post._id)"
+                                            [innerHTML]="model &&
+                                        model.postSectionModel.contents[0].post.createdDate |
+                                        thformatdatetime"></a>
+                                    </span>
+                                </div>
+                                <div class="wrapper-news-post"
+                                    *ngIf="model && model.postSectionModel.contents.length > 0"
+                                    [ngClass]="!isRes && (model.emergencyEvents.contents.length === 0) && model && model.postSectionModel.contents.length < 3 ? 'news-post-flex' : 'flex-content'"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[0]) : clickToPost(model && model.postSectionModel.contents[0].post._id)">
+                                    <div class="wrapper-news-post-img"
+                                        [ngClass]="!isRes && (model.emergencyEvents.contents.length === 0) && model && model.postSectionModel.contents.length < 3 ? 'post-wid' : ''">
+                                        <img src="{{model.postSectionModel.contents[0].coverPageSignUrl ? model.postSectionModel.contents[0].coverPageSignUrl : apiBaseURL + (model && model.postSectionModel.contents[0].coverPageUrl) + '/image'}}"
+                                            alt="">
+                                    </div>
+                                    <div class="detail"
+                                        [ngClass]="!isRes && (model.emergencyEvents.contents.length === 0) && model && model.postSectionModel.contents.length < 3 ? 'post-wid' : ''">
+                                        <p class="title"
+                                            [innerHTML]="model && model.postSectionModel.contents[0].coverPageUrl ? model && model.postSectionModel.contents[0].post.title : model && model.postSectionModel.contents[0].post.detail">
+                                        </p>
+                                        <div class="owner-post md-none-min">
+                                            <p class="owner-name"
+                                                (click)="clickToPageUser(model && model.postSectionModel.contents[0].owner.id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[0].owner.name ? model && model.postSectionModel.contents[0].owner.name : model && model.postSectionModel.contents[0].owner.displayName">
+                                            </p>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.postSectionModel.contents[0].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[0].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[0].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[0].post.shareCount |
+                                                shortNumber}} แชร์</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wrapper-section-model" *ngIf="model && model.pageRoundRobin.contents.length > 0">
+                        <div class="wrapper-banner-header banner-header-bg-gray">
+                            <span class="banner-text-header">
+                                ก้าวไกลวันนี้
+                            </span>
+                        </div>
+                        <div class="wrapper-news"
+                            [ngClass]="model && model.pageRoundRobin.contents.length === 2 ? 'wrapper-news-2' : ''">
+                            <div class="wrapper-news-left" *ngIf="model && model.pageRoundRobin.contents.length >= 1"
+                                [ngStyle]="{'display': model && model.pageRoundRobin.contents.length >= 3 ? 'grid' : 'unset','width': model && model.pageRoundRobin.contents.length === 2 ? '100%' : ''}">
+                                <div class="wrapper-bar"
+                                    [ngClass]="{'md-none-min': model && model.pageRoundRobin.contents.length >= 3}"
+                                    *ngIf="model && model.pageRoundRobin.contents.length > 0">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
+                                        <ng-container
+                                            *ngIf="model && model.pageRoundRobin.contents.length === 2 ; else elseTagLink">
+                                            <a class="tag-link gray time"
+                                                (click)="clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
+                                                [innerHTML]="model && model.pageRoundRobin.contents[1].post.createdDate | thformatdatetime"></a>
+                                        </ng-container>
+                                        <ng-template #elseTagLink>
+                                            <a class="tag-link gray time"
+                                                (click)="model && model.pageRoundRobin.contents[1] ? clickToPost(model && model.pageRoundRobin.contents[1].post._id) : clickToPost(model && model.pageRoundRobin.contents[0].post._id)"
+                                                [innerHTML]="model && model.pageRoundRobin.contents[1] ? (model && model.pageRoundRobin.contents[1].post.createdDate | thformatdatetime) : model && model.pageRoundRobin.contents[0].post.createdDate | thformatdatetime"></a>
+                                        </ng-template>
+                                    </span>
+                                </div>
+                                <div class="wrapper-news-post" *ngIf="model && model.pageRoundRobin.contents.length > 0"
+                                    [ngClass]="(!isRes && model && model.pageRoundRobin.contents.length < 3) && (model.pageRoundRobin.contents.length !== 1) ? 'news-post-flex' : 'flex-content'">
+                                    <ng-container
+                                        *ngIf="model && model.pageRoundRobin.contents.length >= 3; else elseContent2">
+                                        <div class="wrapper-news-post-img md-none-min">
+                                            <ng-container
+                                                *ngIf="model && model.pageRoundRobin.contents[1].coverPageUrl === null || model && model.pageRoundRobin.contents[1].coverPageUrl === undefined; else elseCoverPageRound3">
+                                                <span [innerHTML]="model && model.pageRoundRobin.contents[1].post.title"
+                                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : clickToPost(model && model.pageRoundRobin.contents[1].post._id)"></span>
+                                            </ng-container>
+                                            <ng-template #elseCoverPageRound3>
+                                                <img src="{{model.pageRoundRobin.contents[1].coverPageSignUrl ? model.pageRoundRobin.contents[1].coverPageSignUrl : apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
+                                                    alt=""
+                                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))">
+                                            </ng-template>
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #elseContent2>
+                                        <ng-container
+                                            *ngIf="model && model.pageRoundRobin.contents.length === 2; else elseCoverImage2">
+                                            <div class="wrapper-news-post-img"
+                                                [ngClass]="!isRes && model && model.pageRoundRobin.contents.length === 2 ? 'post-wid' : ''">
+                                                <ng-container
+                                                    *ngIf="model && model.pageRoundRobin.contents[1].coverPageUrl === null || model && model.pageRoundRobin.contents[1].coverPageUrl === undefined; else elseCoverPageRound1">
+                                                    <span
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[1].post.title"></span>
+                                                </ng-container>
+                                                <ng-template #elseCoverPageRound1>
+                                                    <img src="{{model.pageRoundRobin.contents[1].coverPageSignUrl ? model.pageRoundRobin.contents[1].coverPageSignUrl : apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
+                                                        alt=""
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))">
+                                                </ng-template>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #elseCoverImage2>
+                                            <div class="wrapper-news-post-img">
+                                                <ng-container
+                                                    *ngIf="model && model.pageRoundRobin.contents.length === 2; else elseImageRound">
+                                                    <img style="aspect-ratio: 16/9;"
+                                                        src="{{model.pageRoundRobin.contents[1].coverPageSignUrl ? model.pageRoundRobin.contents[1].coverPageSignUrl : apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
+                                                        alt=""
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))">
+                                                </ng-container>
+                                                <ng-template #elseImageRound>
+                                                    <img style="aspect-ratio: 16/9;"
+                                                        src="{{model.pageRoundRobin.contents[0].coverPageSignUrl ? model.pageRoundRobin.contents[0].coverPageSignUrl : apiBaseURL + (model && model.pageRoundRobin.contents[0].coverPageUrl) + '/image'}}"
+                                                        alt=""
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[0]) : (clickToPost(model && model.pageRoundRobin.contents[0].post._id))">
+                                                </ng-template>
+                                            </div>
+                                        </ng-template>
+                                    </ng-template>
+                                    <div class="detail"
+                                        [ngStyle]="{'width': model && model.pageRoundRobin.contents.length === 1 || model && model.pageRoundRobin.contents.length >= 3 ? '100%' : '50%'}"
+                                        [ngClass]="{'post-wid': !isRes && model && model.pageRoundRobin.contents.length < 3}">
+                                        <ng-container
+                                            *ngIf="model && model.pageRoundRobin.contents === 2; else elseDetail2">
+                                            <p class="title md-none-min"
+                                                (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))"
+                                                [innerHTML]="model && model.pageRoundRobin.contents[1].coverPageUrl && model && model.pageRoundRobin.contents[1].coverPageUrl !== null ? (model && model.pageRoundRobin.contents[1].post.title | highlight) : model && model.pageRoundRobin.contents[1].post.detail | highlight">
+                                            </p>
+                                        </ng-container>
+                                        <ng-template #elseDetail2>
+                                            <ng-container
+                                                *ngIf="model && model.pageRoundRobin.contents.length >= 3; else elseTitleMd2">
+                                                <p class="title md-none-min"
+                                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))"
+                                                    [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
+                                                </p>
+                                            </ng-container>
+                                            <ng-template #elseTitleMd2>
+                                                <ng-container
+                                                    *ngIf="model && model.pageRoundRobin.contents[1]; else elseRoundTitle">
+                                                    <p class="title md-none-min"
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))"
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
+                                                    </p>
+                                                </ng-container>
+                                                <ng-template #elseRoundTitle>
+                                                    <p class="title md-none-min"
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[0]) : (clickToPost(model && model.pageRoundRobin.contents[0].post._id))"
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[0].post.title | highlight">
+                                                    </p>
+                                                </ng-template>
+                                            </ng-template>
+                                        </ng-template>
+                                        <div class="owner-post md-none-min">
+                                            <ng-container
+                                                *ngIf="model && model.pageRoundRobin.contents.length === 2; else elseOwnerPost">
+                                                <p class="owner-name"
+                                                    (click)="clickToPageUser(model && model.pageRoundRobin.contents[1].owner.id)"
+                                                    [innerHTML]="model && model.pageRoundRobin.contents[1].owner.name ? model && model.pageRoundRobin.contents[1].owner.name : model && model.pageRoundRobin.contents[1].owner.displayName">
+                                                </p>
+                                            </ng-container>
+                                            <ng-template #elseOwnerPost>
+                                                <ng-container
+                                                    *ngIf="model && model.pageRoundRobin.contents.length >= 3; else elseOwnerPage">
+                                                    <p class="owner-name"
+                                                        (click)="clickToPageUser(model && model.pageRoundRobin.contents[1].owner.id)"
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[1].owner.name ? model && model.pageRoundRobin.contents[1].owner.name : model && model.pageRoundRobin.contents[1].owner.displayName">
+                                                    </p>
+                                                </ng-container>
+                                                <ng-template #elseOwnerPage>
+                                                    <p class="owner-name"
+                                                        (click)="clickToPageUser(model && model.pageRoundRobin.contents[0].owner.id)"
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[0].owner.name ? model && model.pageRoundRobin.contents[0].owner.name : model && model.pageRoundRobin.contents[0].owner.displayName">
+                                                    </p>
+                                                </ng-template>
+                                            </ng-template>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.pageRoundRobin.contents.length === 2 ? model
+                                                && model.pageRoundRobin.contents[1].post.commentCount : model &&
+                                                model.pageRoundRobin.contents[0].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents.length === 2 ? model
+                                                && model.pageRoundRobin.contents[1].post.repostCount : model &&
+                                                model.pageRoundRobin.contents[0].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents.length === 2 ? model &&
+                                                model.pageRoundRobin.contents[1].post.likeCount : model &&
+                                                model.pageRoundRobin.contents[0].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents.length === 2 ? model &&
+                                                model.pageRoundRobin.contents[1].post.shareCount : model &&
+                                                model.pageRoundRobin.contents[0].post.shareCount |
+                                                shortNumber}} แชร์</span>
+                                        </p>
+                                        <ng-container
+                                            *ngIf="model && model.pageRoundRobin.contents.length === 2; else elseTitleTagLink">
+                                            <div class="wrapper-title-topic md-none-max">
+                                                <p class="title-topic"
+                                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
+                                                    [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
+                                                </p>
+                                                <a class="tag-link gray time"
+                                                    *ngIf="model && model.pageRoundRobin.contents.length >= 3"
+                                                    (click)="clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
+                                                    [innerHTML]="model && model.pageRoundRobin.contents[1] ? (model && model.pageRoundRobin.contents[1].post.createdDate | thformatdatetime) : model && model.pageRoundRobin.contents[0].post.createdDate | thformatdatetime"></a>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #elseTitleTagLink>
+                                            <div class="wrapper-title-topic md-none-max">
+                                                <ng-container
+                                                    *ngIf="model && model.pageRoundRobin.contents.length >= 3; else elseTitlePage">
+                                                    <p class="title-topic"
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
+                                                    </p>
+                                                </ng-container>
+                                                <ng-template #elseTitlePage>
+                                                    <p class="title-topic"
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[0]) : clickToPost(model && model.pageRoundRobin.contents[0].post._id)"
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[0].post.title | highlight">
+                                                    </p>
+                                                </ng-template>
+                                                <a class="tag-link gray time"
+                                                    *ngIf="model && model.pageRoundRobin.contents.length >= 3"
+                                                    (click)="clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
+                                                    [innerHTML]="model &&
+                                                model.pageRoundRobin.contents[1].post.createdDate |
+                                                thformatdatetime"></a>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                </div>
+                                <div class="wrapper-bar md-none-min"
+                                    *ngIf="model && model.pageRoundRobin.contents.length >= 3">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
+                                        <a class="tag-link gray time"
+                                            *ngIf="model && model.pageRoundRobin.contents.length >= 3"
+                                            (click)="clickToPost(model && model.pageRoundRobin.contents[2].post._id)"
+                                            [innerHTML]="model && model.pageRoundRobin.contents[2].post.createdDate | thformatdatetime"></a>
+                                    </span>
+                                </div>
+                                <div class="wrapper-news-post flex-content"
+                                    *ngIf="model && model.pageRoundRobin.contents.length >= 3"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[2]) : clickToPost(model && model.pageRoundRobin.contents[2].post._id)">
+                                    <div class="wrapper-news-post-img md-none-min">
+                                        <ng-container
+                                            *ngIf="model && model.pageRoundRobin.contents[2].coverPageUrl === null || model && model.pageRoundRobin.contents[2].coverPageUrl === undefined; else elseCoverPageRound2">
+                                            <span [innerHTML]="model && model.pageRoundRobin.contents[2].post.title"
+                                                (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : clickToPost(model && model.pageRoundRobin.contents[1].post._id)"></span>
+                                        </ng-container>
+                                        <ng-template #elseCoverPageRound2>
+                                            <img src="{{model.pageRoundRobin.contents[2].coverPageSignUrl ? model.pageRoundRobin.contents[2].coverPageSignUrl : apiBaseURL + (model && model.pageRoundRobin.contents[2].coverPageUrl) + '/image'}}"
+                                                alt="">
+                                        </ng-template>
+                                    </div>
+                                    <div class="detail">
+                                        <p class="title md-none-min"
+                                            (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[2]) : clickToPost(model && model.pageRoundRobin.contents[2].post._id)"
+                                            [innerHTML]="model && model.pageRoundRobin.contents[2].coverPageUrl && model.pageRoundRobin.contents[2].coverPageUrl !== null ? (model && model.pageRoundRobin.contents[2].post.title | highlight) : model && model.pageRoundRobin.contents[2].post.detail | highlight">
+                                        </p>
+                                        <div class="owner-post md-none-min">
+                                            <p class="owner-name"
+                                                (click)="clickToPageUser(model && model.pageRoundRobin.contents[2].owner.id)"
+                                                [innerHTML]="model && model.pageRoundRobin.contents[2].owner.name ? model && model.pageRoundRobin.contents[2].owner.name : model && model.pageRoundRobin.contents[2].owner.displayName">
+                                            </p>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.pageRoundRobin.contents[2].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[2].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[2].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[2].post.shareCount |
+                                                shortNumber}} แชร์</span>
+                                        </p>
+                                        <div class="wrapper-title-topic md-none-max">
+                                            <p class="title-topic"
+                                                (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[2]) : clickToPost(model && model.pageRoundRobin.contents[2].post._id)"
+                                                [innerHTML]="model && model.pageRoundRobin.contents[2].post.title | highlight">
+                                            </p>
+                                            <a class="tag-link gray time"
+                                                (click)="clickToPost(model && model.pageRoundRobin.contents[2].post._id)"
+                                                [innerHTML]="model &&
+                                            model.pageRoundRobin.contents[2].post.createdDate |
+                                            thformatdatetime"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wrapper-news-right" *ngIf="model && model.pageRoundRobin.contents.length > 1"
+                                [ngStyle]="{'display': !isRes && model && model.pageRoundRobin.contents.length >= 3 ? 'grid' : 'unset','width': model && model.pageRoundRobin.contents.length === 2 ? '100%' : ''}">
+                                <div class="wrapper-bar">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
+                                        <a class="tag-link gray time"
+                                            (click)="clickToPost(model && model.pageRoundRobin.contents[0].post._id)"
+                                            [innerHTML]="model &&
+                                        model.pageRoundRobin.contents[0].post.createdDate |
+                                        thformatdatetime"></a>
+                                    </span>
+                                </div>
+                                <div class="wrapper-news-post" *ngIf="model && model.pageRoundRobin.contents.length > 0"
+                                    [ngClass]="!isRes && model && model.pageRoundRobin.contents.length < 3 ? 'news-post-flex' : 'flex-content'"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[0]) : clickToPost(model && model.pageRoundRobin.contents[0].post._id)">
+                                    <div class="wrapper-news-post-img"
+                                        [ngClass]="!isRes && model && model.pageRoundRobin.contents.length < 3 ? 'post-wid' : ''">
+                                        <ng-container
+                                            *ngIf="model && model.pageRoundRobin.contents[0].coverPageUrl === null || model && model.pageRoundRobin.contents[0].coverPageUrl === undefined; else elseCoverPageRound">
+                                            <span
+                                                [innerHTML]="model && model.pageRoundRobin.contents[0].post.title"></span>
+                                        </ng-container>
+                                        <ng-template #elseCoverPageRound>
+                                            <img src="{{model.pageRoundRobin.contents[0].coverPageSignUrl ? model.pageRoundRobin.contents[0].coverPageSignUrl : apiBaseURL + (model && model.pageRoundRobin.contents[0].coverPageUrl) + '/image'}}"
+                                                alt="">
+                                        </ng-template>
+                                    </div>
+                                    <div class="detail"
+                                        [ngClass]="!isRes && model && model.pageRoundRobin.contents.length < 3 ? 'post-wid' : ''">
+                                        <p class="title"
+                                            [innerHTML]="model && model.pageRoundRobin.contents[0].coverPageUrl && model.pageRoundRobin.contents[0].coverPageUrl !== null ? (model && model.pageRoundRobin.contents[0].post.title | highlight) : model && model.pageRoundRobin.contents[0].post.detail | highlight">
+                                        </p>
+                                        <div class="owner-post md-none-min">
+                                            <p class="owner-name"
+                                                (click)="clickToPageUser(model && model.pageRoundRobin.contents[0].owner.id)"
+                                                [innerHTML]="model && model.pageRoundRobin.contents[0].owner.name ? model && model.pageRoundRobin.contents[0].owner.name : model && model.pageRoundRobin.contents[0].owner.displayName">
+                                            </p>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.pageRoundRobin.contents[0].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[0].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[0].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[0].post.shareCount |
+                                                shortNumber}} แชร์</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section-2"
+        *ngIf="!showLoading && (model && !!model.majorTrend && model.majorTrend.contents.length !== 0)">
+        <div class="container">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
+                <div class="wrapper-title">
+                    <span>เกาะกระแส</span>
+                </div>
+                <div class="wrapper-title">
+                    <hr>
+                </div>
+            </div>
+            <div class="wrapper-content">
+                <ng-container *ngFor="let majorTrend of model && model.majorTrend.contents; let i=index">
+                    <card-content-home [titlepost]="majorTrend.post.title" [ownername]="majorTrend.owner.name"
+                        [pageId]="majorTrend.post.pageId ? majorTrend.post.pageId : null"
+                        [ownerid]="majorTrend.owner.id ? majorTrend.owner.id : null" [itempost]="majorTrend"
+                        [signUrl]="majorTrend.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
+                        [image]="majorTrend.coverPageSignUrl ? majorTrend.coverPageSignUrl : majorTrend.coverPageUrl ? majorTrend.coverPageUrl : null"
+                        [idpost]="majorTrend.post._id" [comment]="majorTrend.post.commentCount"
+                        [repost]="majorTrend.post.repostCount" [like]="majorTrend.post.likeCount"
+                        [share]="majorTrend.post.shareCount" [postdate]="majorTrend.post.createdDate | thformatdatetime"
+                        (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                        (openDialog)="openDilogPost($event)"></card-content-home>
+                </ng-container>
+            </div>
+        </div>
+    </section>
+    <section class="section-3"
+        *ngIf="!showLoading && (model && !!model.kaokaiProvince && model.kaokaiProvince.contents.length !== 0)">
+        <div class="container">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
+                <div class="wrapper-title">
+                    <span [innerHTML]="model && model.kaokaiProvince.title"></span>
+                </div>
+                <div class="wrapper-title">
+                    <hr>
+                </div>
+            </div>
+            <div class="wrapper-content">
+                <ng-container *ngFor="let kaokaiProvince of model && model.kaokaiProvince.contents; let i=index">
+                    <card-content-home [titlepost]="kaokaiProvince.post.title" [ownername]="kaokaiProvince.owner.name"
+                        [pageId]="kaokaiProvince.post.pageId ? kaokaiProvince.post.pageId : null"
+                        [ownerid]="kaokaiProvince.owner.id ? kaokaiProvince.owner.id : null" [itempost]="kaokaiProvince"
+                        [signUrl]="kaokaiProvince.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
+                        [image]="kaokaiProvince.coverPageSignUrl ? kaokaiProvince.coverPageSignUrl : kaokaiProvince.coverPageUrl ? kaokaiProvince.coverPageUrl : null"
+                        [idpost]="kaokaiProvince.post._id" [comment]="kaokaiProvince.post.commentCount"
+                        [repost]="kaokaiProvince.post.repostCount" [like]="kaokaiProvince.post.likeCount"
+                        [share]="kaokaiProvince.post.shareCount"
+                        [postdate]="kaokaiProvince.post.createdDate | thformatdatetime"
+                        (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                        (openDialog)="openDilogPost($event)"></card-content-home>
+                </ng-container>
+            </div>
+        </div>
+    </section>
+    <section class="section-4"
+        *ngIf="!showLoading && (model && !!model.kaokaiHashTag && model.kaokaiHashTag.contents.length !== 0)">
+        <div class="container">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
+                <div class="wrapper-title">
+                    <span [innerHTML]="model && model.kaokaiHashTag.title"></span>
+                </div>
+                <div class="wrapper-title">
+                    <hr>
+                </div>
+            </div>
+            <div class="wrapper-content">
+                <ng-container *ngFor="let kaokaiHashTag of model && model.kaokaiHashTag.contents; let i=index">
+                    <card-content-home [titlepost]="kaokaiHashTag.post.title" [ownername]="kaokaiHashTag.owner.name"
+                        [pageId]="kaokaiHashTag.post.pageId ? kaokaiHashTag.post.pageId : null"
+                        [ownerid]="kaokaiHashTag.owner.id ? kaokaiHashTag.owner.id : null" [itempost]="kaokaiHashTag"
+                        [signUrl]="kaokaiHashTag.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
+                        [image]="kaokaiHashTag.coverPageSignUrl ? kaokaiHashTag.coverPageSignUrl : kaokaiHashTag.coverPageUrl ? kaokaiHashTag.coverPageUrl : null"
+                        [idpost]="kaokaiHashTag.post._id" [comment]="kaokaiHashTag.post.commentCount"
+                        [repost]="kaokaiHashTag.post.repostCount" [like]="kaokaiHashTag.post.likeCount"
+                        [share]="kaokaiHashTag.post.shareCount"
+                        [postdate]="kaokaiHashTag.post.createdDate | thformatdatetime"
+                        (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                        (openDialog)="openDilogPost($event)"></card-content-home>
+                </ng-container>
+            </div>
+        </div>
+    </section>
+    <section class="section-4"
+        *ngIf="!showLoading && (model && !!model.kaokaiContent && model.kaokaiContent.contents.length !== 0)">
+        <div class="container">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
+                <div class="wrapper-title">
+                    <span [innerHTML]="model && model.kaokaiContent.title"></span>
+                </div>
+                <div class="wrapper-title">
+                    <hr>
+                </div>
+            </div>
+            <div class="wrapper-content">
+                <ng-container *ngFor="let kaokaiContent of model && model.kaokaiContent.contents; let i=index">
+                    <card-content-home [titlepost]="kaokaiContent.post.title" [ownername]="kaokaiContent.owner.name"
+                        [pageId]="kaokaiContent.post.pageId ? kaokaiContent.post.pageId : null"
+                        [ownerid]="kaokaiContent.owner.id ? kaokaiContent.owner.id : null" [itempost]="kaokaiContent"
+                        [signUrl]="kaokaiContent.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
+                        [image]="kaokaiContent.coverPageSignUrl ? kaokaiContent.coverPageSignUrl : kaokaiContent.coverPageUrl ? kaokaiContent.coverPageUrl : null"
+                        [idpost]="kaokaiContent.post._id" [comment]="kaokaiContent.post.commentCount"
+                        [repost]="kaokaiContent.post.repostCount" [like]="kaokaiContent.post.likeCount"
+                        [share]="kaokaiContent.post.shareCount"
+                        [postdate]="kaokaiContent.post.createdDate | thformatdatetime"
+                        (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                        (openDialog)="openDilogPost($event)"></card-content-home>
+                </ng-container>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-5" *ngIf="hidebar && loadingCount > 0">
+        <div class="container">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}" style="
+            grid-template-columns: 1fr auto 1fr;">
+                <div class="wrapper-title">
+                    <hr>
+                </div>
+                <div class="wrapper-title">
+                    <span>{{isLogin() ? 'ข่าวสารสำหรับคุณ' : 'ข่าวสารอื่นๆ'}}</span>
+                </div>
+                <div class="wrapper-title">
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section-6" *ngIf="hidebar && loadingCount > 0 && isReadPost.isReadPosts.contents.length > 0">
+        <div class="container">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
+                <div class="wrapper-title">
+                    <span [innerHTML]="isReadPost.isReadPosts.title"></span>
+                </div>
+                <div class="wrapper-title">
+                    <hr>
+                </div>
+            </div>
+            <div class="wrapper-content">
+                <ng-container *ngFor="let isReadPosts of isReadPost.isReadPosts.contents; let i=index">
+                    <card-content-home [titlepost]="isReadPosts.post.title" [ownername]="isReadPosts.owner.name"
+                        [pageId]="isReadPosts.post.pageId ? isReadPosts.post.pageId : null"
+                        [ownerid]="isReadPosts.owner.id ? isReadPosts.owner.id : null" [itempost]="isReadPosts"
+                        [signUrl]="isReadPosts.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
+                        [image]="isReadPosts.coverPageSignUrl ? isReadPosts.coverPageSignUrl : isReadPosts.coverPageUrl ? isReadPosts.coverPageUrl : null"
+                        [idpost]="isReadPosts.post._id" [comment]="isReadPosts.post.commentCount"
+                        [repost]="isReadPosts.post.repostCount" [like]="isReadPosts.post.likeCount"
+                        [share]="isReadPosts.post.shareCount"
+                        [postdate]="isReadPosts.post.createdDate | thformatdatetime" (clickToPost)="clickToPost($event)"
+                        (clickToPage)="clickToPageUser($event)"
+                        (openDialog)="openDilogPost($event)"></card-content-home>
+                </ng-container>
+            </div>
+        </div>
+    </section>
+    <ng-container *ngIf="!!pageFollowings">
+        <section class="section-follow" *ngIf="hidebar && pageFollowings.pageFollowing.contents.length > 0">
+            <ng-container *ngFor="let owner of pageFollowings.pageFollowing.contents; let ownerI=index">
+                <div class="container" style="margin-top: 15px"
+                    *ngIf="!isEmptyObject(owner.owner) && owner.owner.posts.length > 0 && owner.owner.posts[0].post.deleted !== true">
+                    <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
+                        <div class="wrapper-title">
+                            <span style="margin-right: 10px;" [innerHTML]="pageFollowings.pageFollowing.title"></span>
+                            <ng-container *ngIf="owner.owner.type !== 'EMERGENCY'; else elseEmerName">
+                                <span
+                                    [innerHTML]="owner.owner.type === 'PAGE' ? owner.owner.name : owner.owner.displayName"></span>
+                            </ng-container>
+                            <ng-template #elseEmerName>
+                                <span [innerHTML]="owner.owner.title"></span>
+                            </ng-template>
+                        </div>
+                        <div class="wrapper-title">
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="wrapper-content">
+                        <ng-container *ngFor="let post of owner.owner.posts; let i=index">
+                            <ng-container *ngIf="post.post.deleted === false && post.post.type !== 'NEEDS'">
+                                <card-content-home [itempost]="post" [signUrl]="post.coverPageSignUrl ? true : false"
+                                    [pageId]="post.post.pageId ? post.post.pageId : null"
+                                    [ownerid]="post.post.ownerUser ? post.post.ownerUser : null"
+                                    [titlepost]="post.post.title" [isDialog]="isPostNewTab"
+                                    [image]="post.coverPageSignUrl ? post.coverPageSignUrl : post.coverPageUrl ? post.coverPageUrl : null"
+                                    [idpost]="post.post._id" [comment]="post.post.commentCount"
+                                    [repost]="post.post.repostCount" [like]="post.post.likeCount"
+                                    [share]="post.post.shareCount" [postdate]="post.post.createdDate | thformatdatetime"
+                                    (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                                    (openDialog)="openDilogPost($event)"></card-content-home>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+        </section>
+    </ng-container>
+    <ng-container *ngIf="!!emergencyFollowings">
+        <section class="section-follow" *ngIf="hidebar && emergencyFollowings.emergenFollowing.contents.length > 0">
+            <ng-container *ngFor="let owner of emergencyFollowings.emergenFollowing.contents; let ownerI=index">
+                <div class="container" style="margin-top: 15px"
+                    *ngIf="!isEmptyObject(owner.owner) && owner.owner.posts.length > 0 && owner.owner.posts[0].post.deleted !== true">
+                    <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
+                        <div class="wrapper-title">
+                            <span style="margin-right: 10px;"
+                                [innerHTML]="emergencyFollowings.emergenFollowing.title"></span>
+                            <ng-container *ngIf="owner.owner.type !== 'EMERGENCY'; else elseEmerName">
+                                <span
+                                    [innerHTML]="owner.owner.type === 'PAGE' ? owner.owner.name : owner.owner.displayName"></span>
+                            </ng-container>
+                            <ng-template #elseEmerName>
+                                <span [innerHTML]="owner.owner.title"></span>
+                            </ng-template>
+                        </div>
+                        <div class="wrapper-title">
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="wrapper-content">
+                        <ng-container *ngFor="let post of owner.owner.posts; let i=index">
+                            <ng-container *ngIf="post.post.deleted === false && post.post.type !== 'NEEDS'">
+                                <card-content-home [itempost]="post" [signUrl]="post.coverPageSignUrl ? true : false"
+                                    [pageId]="post.post.pageId ? post.post.pageId : null"
+                                    [ownerid]="post.post.ownerUser ? post.post.ownerUser : null"
+                                    [titlepost]="post.post.title" [isDialog]="isPostNewTab"
+                                    [image]="post.coverPageSignUrl ? post.coverPageSignUrl : post.coverPageUrl ? post.coverPageUrl : null"
+                                    [idpost]="post.post._id" [comment]="post.post.commentCount"
+                                    [repost]="post.post.repostCount" [like]="post.post.likeCount"
+                                    [share]="post.post.shareCount" [postdate]="post.post.createdDate | thformatdatetime"
+                                    (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                                    (openDialog)="openDilogPost($event)"></card-content-home>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+        </section>
+    </ng-container>
+    <ng-container *ngIf="!!objectiveFollowings">
+        <section class="section-follow" *ngIf="hidebar && objectiveFollowings.objectiveFollowing.contents.length > 0">
+            <ng-container *ngFor="let owner of objectiveFollowings.objectiveFollowing.contents; let ownerI=index">
+                <div class="container" style="margin-top: 15px"
+                    *ngIf="!isEmptyObject(owner.owner) && owner.owner.posts.length > 0 && owner.owner.posts[0].post.deleted !== true">
+                    <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
+                        <div class="wrapper-title">
+                            <span style="margin-right: 10px;"
+                                [innerHTML]="objectiveFollowings.objectiveFollowing.title"></span>
+                            <ng-container *ngIf="owner.owner.type !== 'EMERGENCY'; else elseEmerName">
+                                <span
+                                    [innerHTML]="owner.owner.type === 'PAGE' ? owner.owner.name : owner.owner.displayName"></span>
+                            </ng-container>
+                            <ng-template #elseEmerName>
+                                <span [innerHTML]="owner.owner.title"></span>
+                            </ng-template>
+                        </div>
+                        <div class="wrapper-title">
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="wrapper-content">
+                        <ng-container *ngFor="let post of owner.owner.posts; let i=index">
+                            <ng-container *ngIf="post.post.deleted === false && post.post.type !== 'NEEDS'">
+                                <card-content-home [itempost]="post" [signUrl]="post.coverPageSignUrl ? true : false"
+                                    [pageId]="post.post.pageId ? post.post.pageId : null"
+                                    [ownerid]="post.post.ownerUser ? post.post.ownerUser : null"
+                                    [titlepost]="post.post.title" [isDialog]="isPostNewTab"
+                                    [image]="post.coverPageSignUrl ? post.coverPageSignUrl : post.coverPageUrl ? post.coverPageUrl : null"
+                                    [idpost]="post.post._id" [comment]="post.post.commentCount"
+                                    [repost]="post.post.repostCount" [like]="post.post.likeCount"
+                                    [share]="post.post.shareCount" [postdate]="post.post.createdDate | thformatdatetime"
+                                    (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                                    (openDialog)="openDilogPost($event)"></card-content-home>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+        </section>
+    </ng-container>
+    <ng-container *ngIf="!!userFollowings">
+        <section class="section-follow" *ngIf="hidebar && userFollowings.userFollowing.contents.length > 0 && userFollowings.userFollowing.contents[0].owner.posts[0].post.type !== 'NEEDS'
+            && userFollowings.userFollowing.contents[0].owner.posts[0].post.deleted !== true">
+            <ng-container *ngFor="let owner of userFollowings.userFollowing.contents; let ownerI=index">
+                <div class="container" style="margin-top: 15px"
+                    *ngIf="!isEmptyObject(owner.owner) && owner.owner.posts.length > 0 && owner.owner.posts[0].post.deleted !== true">
+                    <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
+                        <div class="wrapper-title">
+                            <span style="margin-right: 10px;" [innerHTML]="userFollowings.userFollowing.title"></span>
+                            <ng-container *ngIf="owner.owner.type !== 'EMERGENCY'; else elseEmerName">
+                                <span
+                                    [innerHTML]="owner.owner.type === 'PAGE' ? owner.owner.name : owner.owner.displayName"></span>
+                            </ng-container>
+                            <ng-template #elseEmerName>
+                                <span [innerHTML]="owner.owner.title"></span>
+                            </ng-template>
+                        </div>
+                        <div class="wrapper-title">
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="wrapper-content">
+                        <ng-container *ngFor="let post of owner.owner.posts; let i=index">
+                            <ng-container *ngIf="post.post.deleted === false && post.post.type !== 'NEEDS'">
+                                <card-content-home [itempost]="post" [signUrl]="post.coverPageSignUrl ? true : false"
+                                    [pageId]="post.post.pageId ? post.post.pageId : null"
+                                    [ownerid]="post.post.ownerUser ? post.post.ownerUser : null"
+                                    [titlepost]="post.post.title" [isDialog]="isPostNewTab"
+                                    [image]="post.coverPageSignUrl ? post.coverPageSignUrl : post.coverPageUrl ? post.coverPageUrl : null"
+                                    [idpost]="post.post._id" [comment]="post.post.commentCount"
+                                    [repost]="post.post.repostCount" [like]="post.post.likeCount"
+                                    [share]="post.post.shareCount" [postdate]="post.post.createdDate | thformatdatetime"
+                                    (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                                    (openDialog)="openDilogPost($event)"></card-content-home>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+        </section>
+    </ng-container>
+    <section class="section-7"
+        *ngIf="hidebar && loadingCount >=5 && !!followingProvinces && followingProvinces.followingProvince.contents.length !== 0">
+        <div class="container">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
+                <div class="wrapper-title">
+                    <ng-container
+                        *ngIf="followingProvinces.followingProvince.title !== 'ก้าวไกลundefined'; else elseProvince">
+                        <span [innerHTML]="followingProvinces.followingProvince.title"></span>
+                    </ng-container>
+                    <ng-template #elseProvince>
+                        <span [innerHTML]="'ก้าวไกลทุกจังหวัด'"></span>
+                    </ng-template>
+                </div>
+                <div class="wrapper-title">
+                    <hr>
+                </div>
+            </div>
+            <div class="wrapper-content">
+                <ng-container
+                    *ngFor="let followingProvince of followingProvinces.followingProvince.contents; let i=index">
+                    <ng-container
+                        *ngIf="followingProvince.post.deleted === false && followingProvince.post.type !== 'NEEDS'">
+                        <card-content-home [titlepost]="followingProvince.post.title"
+                            [ownername]="followingProvince.owner.name" [itempost]="followingProvince"
+                            [pageId]="followingProvince.post.pageId ? followingProvince.post.pageId : null"
+                            [ownerid]="followingProvince.owner.id ? followingProvince.owner.id : null"
+                            [signUrl]="followingProvince.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
+                            [image]="followingProvince.coverPageSignUrl ? followingProvince.coverPageSignUrl : followingProvince.coverPageUrl ? followingProvince.coverPageUrl : null"
+                            [idpost]="followingProvince.post._id" [comment]="followingProvince.post.commentCount"
+                            [repost]="followingProvince.post.repostCount" [like]="followingProvince.post.likeCount"
+                            [share]="followingProvince.post.shareCount"
+                            [postdate]="followingProvince.post.createdDate | thformatdatetime"
+                            (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                            (openDialog)="openDilogPost($event)"></card-content-home>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </section>
+    <section class="section-8" *ngIf="hidebar && (loadingCount === 6 || loadingCount === 1) && !!followingContent">
+        <div class="container">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
+                <div class="wrapper-title">
+                    <span [innerHTML]="followingContent.followingContents.title"></span>
+                </div>
+                <div class="wrapper-title">
+                    <hr>
+                </div>
+            </div>
+            <div class="wrapper-content">
+                <ng-container
+                    *ngFor="let followingContents of followingContent.followingContents.contents; let i=index">
+                    <ng-container *ngIf="followingContents.post.type !== 'NEEDS'">
+                        <card-content-home [titlepost]="followingContents.post.title" [itempost]="followingContents"
+                            [pageId]="followingContents.post.pageId ? followingContents.post.pageId : null"
+                            [ownerid]="followingContents.owner.id ? followingContents.owner.id : null"
+                            [signUrl]="followingContents.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
+                            [image]="followingContents.coverPageSignUrl ? followingContents.coverPageSignUrl : followingContents.coverPageUrl ? followingContents.coverPageUrl : null"
+                            [idpost]="followingContents.post._id" [comment]="followingContents.post.commentCount"
+                            [repost]="followingContents.post.repostCount" [like]="followingContents.post.likeCount"
+                            [share]="followingContents.post.shareCount"
+                            [ownername]="followingContents.owner.name ? followingContents.owner.name : followingContents.owner.displayName"
+                            [postdate]="followingContents.post.createdDate | thformatdatetime"
+                            (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                            (openDialog)="openDilogPost($event)"></card-content-home>
+                    </ng-container>
                 </ng-container>
             </div>
         </div>
     </section>
 </div>
+
+<ng-container *ngIf="isLoadingPost">
+    <ng-container *ngFor="let item of [0,1]; let i=index">
+        <Preload-card [isShowCard6]="true">
+        </Preload-card>
+    </ng-container>
+</ng-container>

@@ -3,11 +3,12 @@ const { argv } = require('yargs');
 
 // read the command line arguments passed with yargs
 const environment = argv.environment;
+const isStaging = environment === 'staging';
 const isProduction = environment === 'production';
 
-const targetPath = isProduction ? './src/environments/environment.prod.ts' : './src/environments/environment.ts';
+const targetPath = isProduction ? './src/environments/environment.prod.ts' : isStaging ? './src/environments/environment.stg.ts' : './src/environments/environment.ts';
 const firebasePath = './src/firebase-messaging-sw.js';
-const envPath = isProduction ? './.env.production' : './.env';
+const envPath = isProduction ? './.env.production' : isStaging ? '.env.staging' : './.env';
 
 // read environment variables from .env file
 require('dotenv').config({ path: envPath });
@@ -32,6 +33,8 @@ export const environment = {
    accessTokenSecretTwitter: "${process.env["TWITTER_ACCESS_TOKEN_SECRET_KEY"]}",
    apiBaseURL: "${process.env["API_BASE_URL"]}",
    webBaseURL: "${process.env["WEB_BASE_URL"]}",
+   sha256_cert_fingerprints: ${process.env["SHA_256_CERT_FINGER_PRINTS"]},
+   apple_app_link: "${process.env["APPLE_APP_LINK"]}",
    firebase: {
     apiKey: "${process.env["FIREBASE_API_KEY"]}",
     authDomain: "${process.env["FIREBASE_AUTH_DOMAIN"]}",
@@ -42,7 +45,15 @@ export const environment = {
     appId: "${process.env["FIREBASE_APP_ID"]}",
     measurementId: "${process.env["FIREBASE_MEASUREMENT_ID"]}",
     vapidKey: "${process.env["FIREBASE_VAPID_KEY"]}"
-   }
+   },
+   memberShip: {
+    grantType: "${process.env["GRANT_TYPE"]}",
+    clientId: "${process.env["CLIENT_ID"]}",
+    clientSecret: "${process.env["CLIENT_SECRET"]}",
+    scope: "${process.env["SCOPE"]}",
+    webBaseURL: "${process.env["WEB_BASE_URL"]}",
+    bindingBaseURL: "${process.env["APP_MFP_API"]}",
+ }
 };
 `;
 
@@ -78,5 +89,5 @@ writeFile(firebasePath, firebaseFileContent, function (err) {
         console.log(err);
     }
 
-    console.log(`Wrote Firebase to ${targetPath}`);
+    console.log(`Wrote Firebase to ${firebasePath}`);
 });

@@ -12,6 +12,7 @@ import { UserService } from '../services/UserService';
 import { ObjectID } from 'mongodb';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { UpdateUserProfileRequest } from './requests/UpdateUserProfileRequest';
+import { BindingUserMFP } from './requests/BindingUserMFPRequest';
 import { User } from '../models/User';
 import { AssetRequest } from './requests/AssetRequest';
 import { AssetService } from '../services/AssetService';
@@ -31,7 +32,12 @@ import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { PostsCommentService } from '../services/PostsCommentService';
 import { AuthenticationId } from '../models/AuthenticationId';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
-
+import { HidePostService } from '../services/HidePostService';
+import jwt from 'jsonwebtoken';
+import { PROVIDER } from '../../constants/LoginProvider';
+import * as bcrypt from 'bcrypt';
+import axios from 'axios';
+import qs from 'qs';
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
@@ -41,7 +47,8 @@ export class UserProfileController {
         private userFollowService: UserFollowService,
         private postsService: PostsService,
         private postsCommentService: PostsCommentService,
-        private assetService: AssetService
+        private assetService: AssetService,
+        private hidePostService: HidePostService
     ) { }
 
     // Get UserProfile API
@@ -91,7 +98,20 @@ export class UserProfileController {
                     }
                 },
                 {
-                    $project: { uniqueId: 1, username: 1, email: 1, firstName: 1, lastName: 1, displayName: 1, birthdate: 1, customGender: 1, gender: 1, imageURL: 1, coverURL: 1, coverPosition: 1, provideItems: 1 }
+                    $project: {
+                        uniqueId: 1,
+                        firstName: 1,
+                        lastName: 1,
+                        displayName: 1,
+                        birthdate: 1,
+                        customGender: 1,
+                        gender: 1,
+                        imageURL: 1,
+                        coverURL: 1,
+                        coverPosition: 1,
+                        provideItems: 1,
+                        membership: 1
+                    }
                 }
             ]
         );
@@ -118,16 +138,56 @@ export class UserProfileController {
             const userFollowing = await this.userFollowService.find({ where: { userId: usrObjId, subjectType: SUBJECT_TYPE.USER } });
             const userFollower = await this.userFollowService.find({ where: { subjectId: usrObjId, subjectType: SUBJECT_TYPE.USER } });
             const authProviderList: string[] = [];
-
+            let mfpProvider = undefined;
             if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
                 for (const userAuth of userAuthList) {
+                    if (userAuth.providerName !== undefined && userAuth.providerName === 'MFP') {
+                        mfpProvider = userAuth;
+                    }
                     authProviderList.push(userAuth.providerName);
                 }
             }
+            const requestBody = {
+                'grant_type': process.env.GRANT_TYPE,
+                'client_id': process.env.CLIENT_ID,
+                'client_secret': process.env.CLIENT_SECRET,
+                'scope': process.env.SCOPE
+            };
+            const formattedData = qs.stringify(requestBody);
 
+            const responseMFP = await axios.post(
+                process.env.APP_MFP_API_OAUTH,
+                formattedData, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Accept: 'application/json'
+                }
+            });
+            const tokenCredential = responseMFP.data.access_token;
+            let getMembershipById = undefined;
+            if (mfpProvider !== undefined) {
+                getMembershipById = await axios.get(
+                    process.env.API_MFP_GET_ID + mfpProvider.providerUserId,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${tokenCredential}`
+                        }
+                    }
+                );
+            }
             result.authUser = authProviderList;
             result.following = userFollowing.length;
             result.followers = userFollower.length;
+            result.mfpUser = {
+                // id: getMembershipById ? getMembershipById.data.data.id : undefined,
+                expiredAt: getMembershipById ? getMembershipById.data.data.expired_at : undefined,
+                firstName: getMembershipById ? getMembershipById.data.data.first_name : undefined,
+                lastName: getMembershipById ? getMembershipById.data.data.last_name : undefined,
+                email: getMembershipById ? getMembershipById.data.data.email : undefined,
+                state: getMembershipById ? getMembershipById.data.data.state : undefined,
+                identification: getMembershipById ? getMembershipById.data.data.identification_number.slice(0, getMembershipById.data.data.identification_number.length - 4) + 'XXXX' : undefined,
+                mobile: getMembershipById ? getMembershipById.data.data.mobile_number.slice(0, getMembershipById.data.data.mobile_number.length - 4) + 'XXXX' : undefined,
+            };
 
             if (isUserFollow !== null && isUserFollow !== undefined) {
                 result.isFollow = true;
@@ -173,6 +233,10 @@ export class UserProfileController {
             if (isHideStory === null || isHideStory === undefined) {
                 isHideStory = true;
             }
+            let objIdsUser = undefined;
+            if (req.headers.userid !== undefined && req.headers.userid !== null && req.headers.userid !== '') {
+                objIdsUser = new ObjectID(req.headers.userid);
+            }
             const postType = search.type;
             let userObjId;
             const result: any = {};
@@ -199,6 +263,18 @@ export class UserProfileController {
                 const today = moment().toDate();
                 let limit = search.limit;
                 let offset = search.offset;
+                const postIds = [];
+                if (objIdsUser) {
+                    const hidePost = await this.hidePostService.find({ userId: objIdsUser });
+                    if (hidePost.length > 0) {
+                        for (let j = 0; j < hidePost.length; j++) {
+                            const postId = hidePost[j].postId;
+                            if (postId !== undefined && postId !== null && postId.length > 0) {
+                                postIds.push(...postId.map(id => new ObjectID(id)));
+                            }
+                        }
+                    }
+                }
 
                 if (limit === null || limit === undefined || limit <= 0) {
                     limit = MAX_SEARCH_ROWS;
@@ -207,65 +283,43 @@ export class UserProfileController {
                 if (offset === null || offset === undefined) {
                     offset = 0;
                 }
-
+                let postStmtN: any = undefined;
                 if (postType !== null && postType !== undefined && postType !== '') {
-                    userPostStmt = [
-                        { $match: { pageId: null, ownerUser: usrObjId, type: postType, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
-                        { $sort: { startDateTime: -1 } },
-                        { $skip: offset },
-                        { $limit: limit },
-                        {
-                            $lookup: {
-                                from: 'PostsGallery',
-                                localField: '_id',
-                                foreignField: 'post',
-                                as: 'gallery'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'EmergencyEvent',
-                                localField: 'emergencyEvent',
-                                foreignField: '_id',
-                                as: 'emergencyEvent'
-                            },
-                        },
-                        {
-                            $unwind: {
-                                path: '$emergencyEvent',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        }
-                    ];
+                    postStmtN = { pageId: null, ownerUser: usrObjId, type: postType, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } };
                 } else {
-                    userPostStmt = [
-                        { $match: { pageId: null, ownerUser: usrObjId, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
-                        { $sort: { startDateTime: -1 } },
-                        { $skip: offset },
-                        { $limit: limit },
-                        {
-                            $lookup: {
-                                from: 'PostsGallery',
-                                localField: '_id',
-                                foreignField: 'post',
-                                as: 'gallery'
-                            }
-                        }, {
-                            $lookup: {
-                                from: 'EmergencyEvent',
-                                localField: 'emergencyEvent',
-                                foreignField: '_id',
-                                as: 'emergencyEvent'
-                            },
-                        },
-                        {
-                            $unwind: {
-                                path: '$emergencyEvent',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        }
-                    ];
+                    postStmtN = { pageId: null, ownerUser: usrObjId, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } };
                 }
+                if (postIds.length > 0) {
+                    postStmtN._id = { $nin: postIds };
+                }
+                userPostStmt = [
+                    { $match: postStmtN },
+                    { $sort: { startDateTime: -1 } },
+                    { $skip: offset },
+                    { $limit: limit },
+                    {
+                        $lookup: {
+                            from: 'PostsGallery',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'gallery'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'EmergencyEvent',
+                            localField: 'emergencyEvent',
+                            foreignField: '_id',
+                            as: 'emergencyEvent'
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: '$emergencyEvent',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    }
+                ];
 
                 const userPostLists: any[] = await this.postsService.aggregate(userPostStmt);
 
@@ -565,6 +619,118 @@ export class UserProfileController {
         }
     }
 
+    @Post('/:id')
+    @Authorized('user')
+    public async bindingUserMFPProcess(@Param('id') id: string, @Body({ validate: true }) users: UpdateUserProfileRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObj = new ObjectID(id);
+        const tokenSecret = users.token;
+        const membership = users.membership;
+        const mode = req.headers.mode;
+
+        if (membership === true) {
+            const token = await jwt.sign({
+                redirect_uri: process.env.WEB_MFP_REDIRECT_URI,
+                uid: userObj + '.' + tokenSecret + '.' + mode,
+            }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
+            if (token) {
+                const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
+                return res.status(200).send(successResponseMFP);
+            } else {
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'axios error.' };
+                return res.status(400).send(errorUserNameResponse);
+            }
+        } else {
+            // delete mfp authentication
+            const query = { _id: userObj };
+            const newValue = { $set: { membership: false } };
+            const update = await this.userService.update(query, newValue);
+            if (update) {
+                const deleteAuthen = await this.authenIdService.delete({ user: userObj, providerName: PROVIDER.MFP });
+                if (deleteAuthen) {
+                    const successResponseMFP = ResponseUtil.getSuccessResponse('Binding MFP is successful.', undefined);
+                    return res.status(200).send(successResponseMFP);
+                }
+            }
+        }
+    }
+
+    @Post('/:id/binding')
+    @Authorized('user')
+    public async bindingUserMFP(@Param('id') id: string, @Body({ validate: true }) bindingUser: BindingUserMFP, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObject = bindingUser;
+        const userObjId = new ObjectID(id);
+        let authIdCreate: AuthenticationId;
+        // PENDING_PAYMENT 400
+        if (userObject.membership.state === 'PENDING_PAYMENT' && userObject.membership.membership_type === 'UNKNOWN') {
+            return res.status(400).send(ResponseUtil.getErrorResponse('PENDING_PAYMENT', undefined));
+        }
+        // PENDING_APPROVAL 400
+        if (userObject.membership.state === 'PENDING_APPROVAL') {
+            return res.status(400).send(ResponseUtil.getErrorResponse('PENDING_APPROVAL', undefined));
+        }
+        // REJECTED 400
+        if (userObject.membership.state === 'REJECTED') {
+            return res.status(400).send(ResponseUtil.getErrorResponse('REJECTED', undefined));
+        }
+        // PROFILE_RECHECKED 400
+        if (userObject.membership.state === 'PROFILE_RECHECKED') {
+            return res.status(400).send(ResponseUtil.getErrorResponse('PROFILE_RECHECKED', undefined));
+        }
+        if (userObject.membership.state === 'ARCHIVED') {
+            return res.status(400).send(ResponseUtil.getErrorResponse('ARCHIVED', undefined));
+
+        }
+        if (userObject.membership.state === 'APPROVED'
+            &&
+            (userObject.membership.membership_type === 'MEMBERSHIP_YEARLY' ||
+                userObject.membership.membership_type === 'MEMBERSHIP_PERMANENT')) {
+
+            const user = await this.userService.findOne({ _id: userObjId });
+            if (user) {
+                // check authentication MFP Is existing ?
+                const encryptIdentification = await bcrypt.hash(userObject.membership.identification_number, 10);
+                const checkAuthentication = await this.authenIdService.findOne({ providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
+                if (checkAuthentication !== undefined && checkAuthentication !== null) {
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('You have ever binded this user.', undefined));
+
+                }
+                // import * as bcrypt from 'bcrypt';
+
+                const authenId = new AuthenticationId();
+                authenId.user = user.id;
+                authenId.lastAuthenTime = moment().toDate();
+                authenId.providerUserId = userObject.membership.id;
+                authenId.providerName = PROVIDER.MFP;
+                authenId.properties = userObject.membership;
+                authenId.expirationDate = userObject.membership.expired_at;
+                authenId.expirationDate_law_expired = userObject.membership.law_expired_at;
+                authenId.identificationNumber = encryptIdentification;
+                authenId.mobileNumber = userObject.membership.mobile_number;
+                authenId.membershipState = userObject.membership.state;
+                authenId.membershipType = userObject.membership.membership_type;
+                authenId.membership = true;
+                authIdCreate = await this.authenIdService.create(authenId);
+                if (authIdCreate) {
+                    // update status user membership = true
+                    const query = { _id: userObjId };
+                    const newValues = { $set: { membership: true } };
+                    const update = await this.userService.update(query, newValues);
+                    if (update) {
+                        const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', 'APPROVED');
+                        return res.status(200).send(successResponseMFP);
+                    } else {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('Cannot Update Status Membership User.', undefined));
+                    }
+                }
+            } else {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('User Not Found', undefined));
+            }
+        }
+        else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('User Not Found', undefined));
+        }
+    }
+
     // Update User Profile API
     /**
      * @api {put} /api/profile/:id Update User Profile API
@@ -614,7 +780,8 @@ export class UserProfileController {
             let userBirthdate = users.birthdate;
             let userGender = users.gender;
             let userCustomGender = users.customGender;
-
+            let userProvince = users.province;
+            let userMembership = users.membership;
             if (userDisplayName === null || userDisplayName === undefined) {
                 userDisplayName = findUser.displayName;
             }
@@ -638,7 +805,16 @@ export class UserProfileController {
             if (userCustomGender === null || userCustomGender === undefined) {
                 userCustomGender = findUser.customGender;
             }
+            if (userProvince === null || userProvince === undefined) {
+                userProvince = findUser.province;
+            }
+            // check authen
+            // mode MFP membership
+            if (userMembership === null || userMembership === undefined) {
+                userMembership = findUser.membership;
+                // create authentication 
 
+            }
             const updateQuery = { _id: userObjId };
             const newValue = {
                 $set: {
@@ -647,7 +823,9 @@ export class UserProfileController {
                     lastName: userLastName,
                     birthdate: userBirthdate,
                     gender: userGender,
-                    customGender: userCustomGender
+                    customGender: userCustomGender,
+                    province: userProvince,
+                    membership: userMembership
                 }
             };
 

@@ -11,4 +11,5 @@ export const PROVIDER = {
     TWITTER: 'TWITTER',
     GOOGLE: 'GOOGLE',
     APPLE: 'APPLE',
+    MFP: 'MFP',
 };

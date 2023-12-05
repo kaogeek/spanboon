@@ -1,0 +1,33 @@
+.member-process-box {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  > .member-process-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    flex-direction: column;
+    border: 2px solid gray;
+    border-radius: 20px;
+    width: 300px;
+    padding: 40px 20px;
+
+    > span {
+      @include font-size-9($font-head-500);
+      color: black;
+
+      &:first-of-type {
+        margin-top: 25px;
+        @include font-size-6($font-head-500);
+      }
+
+      &:last-child {
+        @include font-size-9($font-head-500);
+      }
+    }
+  }
+}

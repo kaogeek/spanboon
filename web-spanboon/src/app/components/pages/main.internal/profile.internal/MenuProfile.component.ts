@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output, HostListener } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
@@ -19,6 +19,7 @@ import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil';
 const DEFAULT_USER_ICON: string = '../../../../assets/img/profile.svg';
 const REDIRECT_PATH: string = '/home';
 const PAGE_NAME: string = 'menu';
+const REFRESH_DATA: string = 'refresh_page';
 
 @Component({
     selector: 'btn-menu-profile',
@@ -29,9 +30,12 @@ export class MenuProfile extends AbstractPage implements OnInit {
     public router: Router;
     private observManager: ObservableManager;
     private assetFacade: AssetFacade;
-    public isActive: boolean;
+    public isActive1: boolean;
+    public isActive2: boolean;
     public isSelect: boolean;
     public profileUser: any;
+    public windowWidth: any;
+    public isShowButton: boolean;
 
     @Output()
     public logout: EventEmitter<any> = new EventEmitter();
@@ -60,6 +64,12 @@ export class MenuProfile extends AbstractPage implements OnInit {
             // this.getProfileImage(data);
             this.reloadUserImage();
         });
+        this.observManager.subscribe(REFRESH_DATA, (result: any) => {
+            if (result) {
+                // this.resPost.posts.unshift(result);
+                this.userImage.displayName = result.displayName;
+            }
+        });
     }
 
     public ngOnInit(): void {
@@ -68,6 +78,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
 
     public ngOnDestroy(): void {
         super.ngOnDestroy();
+        this.observManager.complete(REFRESH_DATA);
     }
 
     isPageDirty(): boolean {
@@ -133,7 +144,6 @@ export class MenuProfile extends AbstractPage implements OnInit {
                     }
                 }
             }).catch((err: any) => {
-                alert(err.error.message);
                 this.authenManager.clearStorage();
                 this.router.navigateByUrl(REDIRECT_PATH);
             })
@@ -172,17 +182,31 @@ export class MenuProfile extends AbstractPage implements OnInit {
     }
 
     public getLinkProfile() {
-        this.isActive = true;
+        this.isActive1 = true;
+        this.isActive2 = false;
         this.router.navigateByUrl("/profile/" + this.getCurrentUniqueId());
 
     }
 
     public settingProfile() {
-        this.showAlertDevelopDialog();
+        this.isActive2 = true;
+        this.isActive1 = false;
+        this.router.navigateByUrl("/account/settings");
     }
 
     public notificationProfile() {
         this.showAlertDevelopDialog();
+    }
+
+    @HostListener('window:resize', ['$event'])
+    public getScreenSize(event?) {
+        this.windowWidth = window.innerWidth;
+
+        if (this.windowWidth <= 479) {
+            this.isShowButton = true;
+        } else {
+            this.isShowButton = false;
+        }
     }
 
     onMouseEnterItem(e) {

@@ -46,6 +46,43 @@ export class ProfileFacade extends AbstractFacade {
     return httpOptions;
   }
 
+  public getProvince() {
+    return new Promise((resolve, reject) => {
+      let url: string = "https://raw.githubusercontent.com/earthchie/jquery.Thailand.js/master/jquery.Thailand.js/database/raw_database/raw_database.json";
+      let data = [];
+      this.http.get(url).toPromise().then((response: any) => {
+        for (let index = 0; index < response.length; index++) {
+          const element = response[index].province;
+          data.push(element)
+        }
+        var dataProvince = data.filter(function (elem, index, self) {
+          return index === self.indexOf(elem);
+        });
+        resolve(dataProvince);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public setEmailPushNotification(email: boolean, noti: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/user/notification/settings';
+      let body = {
+        "sendEmail": email,
+        "subscribeNoti": noti
+      }
+
+      let options = this.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public searchType(data: any, userId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/profile/' + userId + '/post/search';
@@ -77,6 +114,24 @@ export class ProfileFacade extends AbstractFacade {
       let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public updateMember(userId: any, status?: boolean): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      let url: string = this.baseURL + '/profile/' + userId;
+
+      let body: any = {
+        membership: status,
+        token: localStorage.getItem('token')
+      };
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
       }).catch((error: any) => {
         reject(error);
       });
@@ -150,6 +205,21 @@ export class ProfileFacade extends AbstractFacade {
       let body: any = {};
       let options = this.authMgr.getDefaultOptions();
 
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public delete(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/user/delete';
+      let body: any = {
+        banned: true
+      };
+      let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {

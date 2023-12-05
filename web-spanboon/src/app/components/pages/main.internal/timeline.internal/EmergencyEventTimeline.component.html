@@ -5,10 +5,11 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 <script src="../../../../../assets/script/canvas.js"></script>
-<div id="canvas-wrap">
+<div id="canvas-wrap" infinite-scroll [infiniteScrollDistance]="scrollDistance" [alwaysCallback]="true"
+    (scrolled)="onScrollDown($event)">
     <canvas id="canvas"></canvas>
     <div *ngIf="objectiveData" class="objective-timeline-body" id="body">
-        <svg class="img_objective" xmlns="http://www.w3.org/2000/svg" width="700.899" height="700.899"
+        <!-- <svg class="img_objective" xmlns="http://www.w3.org/2000/svg" width="700.899" height="700.899"
             viewBox="10 0 22.899 22.899">
             <g id="mission" transform="translate(0)">
                 <path fill="white" id="Path_3205" data-name="Path 3205"
@@ -24,103 +25,111 @@
                     d="M260.934,244.4l1.161-1.082a.671.671,0,0,1,.915,0l1.162,1.082,1.292-1.177-2.545-3.626a.447.447,0,0,0-.732,0l-2.545,3.626Z"
                     transform="translate(-248.03 -228.703)" />
             </g>
-        </svg>
+        </svg> -->
 
-        <div class="objective-head" *ngIf="pageObjective">
-            <div class="top-objective-data">
-                <div class="objective">
-                    <div class="data">
-                        <img class="iconURL"
-                            [src]="pageObjective.signURL ? pageObjective.signURL : pageObjective.coverPageSignURL ? pageObjective.coverPageSignURL : apiBaseURL + pageObjective.coverPageURL + '/image'"
-                            alt="">
-                        <div class="data-text">
-                            <div class="text">
-                                <span class="title">#{{pageObjective.hashTagName}}</span>
-                                <span class="disiption">#{{pageObjective.title}}</span>
-                            </div>
-                            <div class="score">
-                                <div class="score-type">
-                                    <span class="title">{{objectiveData.followedCount}}</span>
-                                    <span class="disiption">ติดตาม</span>
-                                </div>
-                                <div class="score-type">
-                                    <span class="title">{{objectiveData.timelines[0].post.viewCount}}</span>
-                                    <span class="disiption">การพูดถึง</span>
-                                </div>
-                                <div class="score-type">
-                                    <span class="title">{{objectiveData.timelines[0].post.repostCount}}</span>
-                                    <span class="disiption">บอกต่อ</span>
-                                </div>
-                                <div class="score-type">
-                                    <span class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
-                                    <span class="disiption">แชร์</span>
+        <div class="emergencyEvent-box">
+            <div class="objective-head" *ngIf="pageObjective">
+                <div class="top-objective-data">
+                    <div class="objective">
+                        <div class="data">
+                            <div class="wrapper-left">
+                                <img class="iconURL"
+                                    [src]="pageObjective.signURL ? pageObjective.signURL : pageObjective.coverPageSignURL ? pageObjective.coverPageSignURL : apiBaseURL + pageObjective.coverPageURL + '/image'"
+                                    alt="">
+                                <div class="detail" *ngIf="objectiveData.relatedHashTags.length > 0">
+                                    <span class="title">แท็กที่เกี่ยวข้อง</span>
+                                    <div class="wrap-description">
+                                        <span class="disiption"
+                                            *ngFor="let item of objectiveData? objectiveData.relatedHashTags:[]; let index = index"
+                                            (click)="clickToPage(item)">#{{item.name}}</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="score-cout">
-                                <div class="main-score">
+                            <div class="data-text">
+                                <div class="text">
+                                    <span class="title">#{{pageObjective.title}}</span>
+                                    <span class="disiption">#{{pageObjective.detail}}</span>
+                                </div>
+                                <div class="score">
                                     <div class="score-type">
                                         <span class="title">{{objectiveData.followedCount}}</span>
                                         <span class="disiption">ติดตาม</span>
                                     </div>
-                                </div>
-                                <div class="sub-score">
                                     <div class="score-type">
-                                        <span class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
-                                        <span class="disiption">แชร์</span>
-                                    </div>
-                                    <div class="score-type">
-                                        <span class="title">{{objectiveData.timelines[0].post.repostCount}}</span>
+                                        <ng-container
+                                            *ngIf="pageObjective.mode && pageObjective.mode === 'random'; else elseNoneRandom">
+                                            <span class="title">{{objectiveData.timelines[0] ?
+                                                objectiveData.timelines[1].totalPosts : '0'}}</span>
+                                        </ng-container>
+                                        <ng-template #elseNoneRandom>
+                                            <ng-container *ngIf="objectiveData.timelines[1]; else elseTimeLine">
+                                                <span class="title">{{objectiveData.timelines[0] ?
+                                                    objectiveData.timelines[1].posts.length : '0'}}</span>
+                                            </ng-container>
+                                            <ng-template #elseTimeLine>
+                                                <span class="title">{{1}}</span>
+                                            </ng-template>
+                                        </ng-template>
+
                                         <span class="disiption">การพูดถึง</span>
                                     </div>
                                     <div class="score-type">
-                                        <span class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
-                                        <span class="disiption">บอกต่อ</span>
+                                        <span class="title">{{objectiveData.shareCountTotal}}</span>
+                                        <span class="disiption">แชร์</span>
+                                    </div>
+                                </div>
+                                <div class="score-cout">
+                                    <div class="main-score">
+                                        <div class="score-type">
+                                            <span class="title">{{objectiveData.followedCount}}</span>
+                                            <span class="disiption">ติดตาม</span>
+                                        </div>
+                                    </div>
+                                    <div class="sub-score">
+                                        <div class="score-type">
+                                            <span class="title">{{objectiveData.timelines[0] ?
+                                                objectiveData.timelines[0].post.shareCount : '0'}}</span>
+                                            <span class="disiption">แชร์</span>
+                                        </div>
+                                        <div class="score-type">
+                                            <span class="title">{{objectiveData.timelines[0] ?
+                                                objectiveData.timelines[0].post.commentCount : '0'}}</span>
+                                            <span class="disiption">การพูดถึง</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="buttom" *ngIf="isLoginUser">
+                                    <span>กดติดตามสิ่งที่กำลังทำได้ที่นี้</span>
+                                    <button-follow *ngIf="!objectiveData.isFollow" (click)="followObjective()"
+                                        class="btn-follow" [color]="'#EE7623'" [border]="'0.7px solid #EE7623'"
+                                        [bgColor]="'rgb(49 63 64 / 0%)'" [text]="'ติดตาม'">
+                                    </button-follow>
+                                    <button-follow *ngIf="objectiveData.isFollow" (click)="followObjective()"
+                                        class="btn-follow" [color]="'#EE7623'" [border]="'0.7px solid #EE7623'"
+                                        [bgColor]="'##FFE7D7'" [text]="'ยกเลิกติดตาม'">
+                                    </button-follow>
+                                </div>
+                                <div class="detail" *ngIf="objectiveData.relatedHashTags.length > 0">
+                                    <span class="title">แท็กที่เกี่ยวข้อง</span>
+                                    <div class="wrap-description">
+                                        <span class="disiption"
+                                            *ngFor="let item of objectiveData? objectiveData.relatedHashTags:[]; let index = index"
+                                            (click)="clickToPage(item)">#{{item.name}}</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="buttom" *ngIf="isLoginUser">
-                                <span>กดติดตามสิ่งที่กำลังทำได้ที่นี้</span>
-                                <button-follow *ngIf="!objectiveData.isFollow" (click)="followObjective()"
-                                    style="margin-top: 15px;" class="btn-follow" [color]="'#FD545A'"
-                                    [border]="'0.7px solid #FD545A'" [bgColor]="'rgb(49 63 64 / 0%)'" [text]="'ติดตาม'">
-                                </button-follow>
-                                <button-follow *ngIf="objectiveData.isFollow" (click)="followObjective()"
-                                    style="margin-top: 15px;" class="btn-follow" [color]="'#fff'"
-                                    [border]="'0.7px solid #FD545A'" [bgColor]="'#fd5454'" [text]="'ยกเลิกติดตาม'">
-                                </button-follow>
-                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="objective-owner">
-                    <div class="owner">
-                        <div class="detail">
-                            <span class="title">แท็กที่เกี่ยวข้อง</span>
-                            <span class="disiption"
-                                *ngFor="let item of objectiveData? objectiveData.relatedHashTags:[]; let index = index"
-                                (click)="clickToPage(item.name)">#{{item.name}}</span>
-                        </div>
-                        <div class="follow-fullfill">
-                            <div class="follow">
-                                <div class="text">
-                                </div>
-                            </div>
-                            <div class="fullfill">
-                                <div class="text">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- <div class="needs-section">
+                    <span class="title" *ngIf="objectiveData && objectiveData.needItems.length > 0">สิ่งที่กำลังมองหา</span>
+                    <needs-card *ngIf="objectiveData && objectiveData.needItems.length > 0"
+                        [itemNeeds]="objectiveData.needItems" [isFulfillQuantity]="true" [isFulfill]="true"
+                        [isPendingFulfill]="true"
+                        [isImage]="objectiveData.gallery && objectiveData.gallery.length > 0 && objectiveData.title === '' ">
+                    </needs-card>
+                </div> -->
             </div>
-            <!-- <div class="needs-section">
-                <span class="title" *ngIf="objectiveData && objectiveData.needItems.length > 0">สิ่งที่กำลังมองหา</span>
-                <needs-card *ngIf="objectiveData && objectiveData.needItems.length > 0"
-                    [itemNeeds]="objectiveData.needItems" [isFulfillQuantity]="true" [isFulfill]="true"
-                    [isPendingFulfill]="true"
-                    [isImage]="objectiveData.gallery && objectiveData.gallery.length > 0 && objectiveData.title === '' ">
-                </needs-card>
-            </div> -->
         </div>
         <div class="timeline-data-section">
             <div class="body" *ngIf="objectiveData.timelines.length > 1">
@@ -128,11 +137,17 @@
                     class="strat-section-point">
                     <div class="head">
                         <div class="line"></div>
-                        <div class="strat-point" data-aos="fade-up" data-aos-offset="10" data-aos-delay="15"
-                            data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
-                            data-aos-once="false" data-aos-anchor-placement="top-center">
-                            <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น':currentDate |
-                                thdatetime}}</span>
+                        <div class="strat-point">
+                            <ng-container
+                                *ngIf="pageObjective.mode && pageObjective.mode === 'random'; else elseMonthStart">
+                                <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น' :
+                                    'เรื่องราวในขณะนี้'}}</span>
+                            </ng-container>
+                            <ng-template #elseMonthStart>
+                                <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น' :
+                                    item.posts[0].post[0].createdDate|
+                                    thdatetime}}</span>
+                            </ng-template>
                         </div>
                     </div>
                     <div class="card">
@@ -161,28 +176,43 @@
                                     </div>
                                     <div class="post">
                                         <div class="head">
-                                            <div class="type" *ngIf="item.post.type === 'NEEDS'">
-                                                <div class="point"></div>
-                                                <div class="type_name">
-                                                    <span>มองหา</span>
+                                            <div class="wrapper-type-post">
+                                                <!-- <span class="drot">•</span> -->
+                                                <div class="type">
+                                                    <div class="point"
+                                                        [ngClass]="{'looking': item.post.type === 'NEEDS', 'member': item.post.type === 'MEMBERSHIP', 'fulfill': item.post.type === 'FULFILLMENT'}">
+                                                    </div>
+                                                    <div class="type_name">
+                                                        <span *ngIf="item.post.type === 'GENERAL'"
+                                                            [innerHTML]="'ทั่วไป'"></span>
+                                                        <span *ngIf="item.post.type === 'NEEDS'"
+                                                            [innerHTML]="'มองหา'"></span>
+                                                        <span *ngIf="item.post.type === 'MEMBERSHIP'"
+                                                            [innerHTML]="'สมาชิกพรรค'"></span>
+                                                        <span *ngIf="item.post.type === 'FULFILLMENT'"
+                                                            [innerHTML]="'เติมเต็ม'"></span>
+                                                    </div>
                                                 </div>
+                                                <span class="createdDate">
+                                                    <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
+                                                        width="10pt" xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                            fill="black" />
+                                                        <path
+                                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                            fill="black" />
+                                                    </svg>
+                                                    {{item.post.createdDate | dateFormat}}
+                                                </span>
                                             </div>
-                                            <span class="drot">•</span>
-                                            <span class="createdDate">
-                                                <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                        fill="black" />
-                                                    <path
-                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                        fill="black" />
-                                                </svg>
-                                                {{item.post.createdDate | dateFormat}}
-                                            </span>
                                         </div>
-                                        <div class="title" [innerHTML]="item.post.title | highlight"></div>
-                                        <div class="detail" [innerHTML]="item.post.detail | highlight"></div>
+                                        <div class="title"
+                                            [innerHTML]="item.post.title | highlightevent:pageObjective.title:currentUrl:hidebar">
+                                        </div>
+                                        <div class="detail"
+                                            [innerHTML]="item.post.detail | highlightevent:pageObjective.title:currentUrl:hidebar">
+                                        </div>
                                         <div class="buttom">
                                             <div class="botton" (click)="clickDataSearch(item)">
                                                 <span>ไปที่โพสต์</span>
@@ -195,23 +225,20 @@
                                             </div>
                                             <div class="score">
                                                 <div class="score-type">
-                                                    <span
-                                                        class="title">{{objectiveData.timelines[0].post.repostCount}}</span>
-                                                    <span class="disiption">การพูดถึง</span>
-                                                </div>
-                                                <div class="score-type">
-                                                    <span
-                                                        class="title">{{objectiveData.timelines[0].post.viewCount}}</span>
-                                                    <span class="disiption">บอกต่อ</span>
-                                                </div>
-                                                <div class="score-type">
-                                                    <span
-                                                        class="title">{{objectiveData.timelines[0].post.likeCount}}</span>
+                                                    <span class="title">{{objectiveData.timelines[0].post.likeCount +
+                                                        (objectiveData.timelines[0].post.likeCountFB ?
+                                                        objectiveData.timelines[0].post.likeCountFB : 0)}}</span>
                                                     <span class="disiption">ถูกใจ</span>
                                                 </div>
                                                 <div class="score-type">
                                                     <span
-                                                        class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
+                                                        class="title">{{objectiveData.timelines[0].post.commentCount}}</span>
+                                                    <span class="disiption">การพูดถึง</span>
+                                                </div>
+                                                <div class="score-type">
+                                                    <span class="title">{{objectiveData.timelines[0].post.shareCount +
+                                                        (objectiveData.timelines[0].post.shareCountFB ?
+                                                        objectiveData.timelines[0].post.shareCountFB : 0)}}</span>
                                                     <span class="disiption">แชร์</span>
                                                 </div>
                                             </div>
@@ -1205,171 +1232,319 @@
 
                         <div *ngIf="item.type === 'EMERGENCY_LASTEST'" class="objective_lastest_card">
                             <div class="body">
-                                <ng-container *ngFor="let post of item.posts; let indexa = index; let odd = odd;">
-                                    <ng-container *ngIf="!odd; else elseTemplateFade">
-                                        <div class="wrapper-objective">
-                                            <div class="wrapper-gallery" id="point" data-aos="fade-left"
-                                                data-aos-offset="10" data-aos-delay="15" data-aos-duration="500"
-                                                data-aos-easing="ease-in-out" data-aos-mirror="false"
-                                                data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                <div class="wrapper-image">
-                                                    <ng-container
-                                                        *ngFor="let image of post.postGallery; let image_index = index">
-                                                        <img *ngIf="image_index === 0"
-                                                            [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
-                                                            alt="">
-                                                    </ng-container>
-                                                    <div class="wrapper-image-cloud">
+                                <ng-container *ngFor="let posts of item.posts; let indexa = index; let odd = odd;">
+                                    <div class="head"
+                                        *ngIf="item.posts.length > 1 && indexa > 0 && pageObjective.mode && pageObjective.mode !== 'random'">
+                                        <div class="line"></div>
+                                        <div class="strat-point">
+                                            <span class="title" id="point">{{item.posts[indexa].post[0].createdDate
+                                                |
+                                                thdatetime}}</span>
+                                        </div>
+                                    </div>
+                                    <ng-container *ngFor="let post of posts.post;let i = index">
+                                        <ng-container *ngIf="!odd; else elseTemplateFade">
+                                            <div class="wrapper-objective">
+                                                <div class="wrapper-gallery" id="point" data-aos="fade-left"
+                                                    data-aos-offset="10" data-aos-delay="15" data-aos-duration="500"
+                                                    data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                                    data-aos-once="false" data-aos-anchor-placement="top-center">
+                                                    <div class="wrapper-image">
                                                         <ng-container
                                                             *ngFor="let image of post.postGallery; let image_index = index">
-                                                            <img *ngIf="image_index !== 0 && image_index <= 3"
+                                                            <img *ngIf="image_index === 0"
                                                                 [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
-                                                                alt=""
-                                                                [ngStyle]=" {'transform': image_index===1 ? 'rotate(-5deg)'
-                                                                : image_index===2 ? 'rotate(-10deg)' : 'rotate(10deg)' }">
+                                                                alt="">
                                                         </ng-container>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="wrapper-content" data-aos="fade-right" data-aos-offset="10"
-                                                data-aos-delay="15" data-aos-duration="500"
-                                                data-aos-easing="ease-in-out" data-aos-mirror="false"
-                                                data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                <span class="drot">•</span>
-                                                <span class="createdDate">
-                                                    <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
-                                                        width="10pt" xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                            fill="black" />
-                                                        <path
-                                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                            fill="black" />
-                                                    </svg>
-                                                    {{post.createdDate | dateFormat}}
-                                                </span>
-                                                <div class="head-title">
-                                                    <span class="title">#{{post.title}}</span>
-                                                </div>
-                                                <div class="detail">
-                                                    {{post.detail}}
-                                                </div>
-                                                <div class="buttom">
-                                                    <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
-                                                        target="_blank" class="botton">
-                                                        <span>ไปที่โพสต์</span>
-                                                        <svg style="margin: 0px 10px;" height="15pt" class="icon-time"
-                                                            width="15pt" viewBox="0 -22 512 511"
-                                                            xmlns="http://www.w3.org/2000/svg">
-                                                            <path fill="white"
-                                                                d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
-                                                        </svg>
-                                                    </a>
-                                                    <div class="score">
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.commentCount}}</span>
-                                                            <span class="disiption">การพูดถึง</span>
-                                                        </div>
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.repostCount}}</span>
-                                                            <span class="disiption">บอกต่อ</span>
-                                                        </div>
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.likeCount}}</span>
-                                                            <span class="disiption">ถูกใจ</span>
-                                                        </div>
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.shareCount}}</span>
-                                                            <span class="disiption">แชร์</span>
+                                                        <div class="wrapper-image-cloud">
+                                                            <ng-container
+                                                                *ngFor="let image of post.postGallery; let image_index = index">
+                                                                <img *ngIf="image_index !== 0 && image_index <= 3"
+                                                                    [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
+                                                                    alt=""
+                                                                    [ngStyle]=" {'transform': image_index===1 ? 'rotate(-5deg)'
+                                                                    : image_index===2 ? 'rotate(-10deg)' : 'rotate(10deg)' }">
+                                                            </ng-container>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="wrapper-content" data-aos="fade-right" data-aos-offset="10"
+                                                    data-aos-delay="15" data-aos-duration="500"
+                                                    data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                                    data-aos-once="false" data-aos-anchor-placement="top-center">
+                                                    <div class="wrapper-type-post">
+                                                        <!-- <span class="drot">•</span> -->
+                                                        <div class="type">
+                                                            <div class="point"
+                                                                [ngClass]="{'looking': post.type === 'NEEDS', 'member': post.type === 'MEMBERSHIP', 'fulfill': post.type === 'FULFILLMENT'}">
+                                                            </div>
+                                                            <div class="type_name">
+                                                                <span *ngIf="post.type === 'GENERAL'"
+                                                                    [innerHTML]="'ทั่วไป'"></span>
+                                                                <span *ngIf="post.type === 'NEEDS'"
+                                                                    [innerHTML]="'มองหา'"></span>
+                                                                <span *ngIf="post.type === 'MEMBERSHIP'"
+                                                                    [innerHTML]="'สมาชิกพรรค'"></span>
+                                                                <span *ngIf="post.type === 'FULFILLMENT'"
+                                                                    [innerHTML]="'เติมเต็ม'"></span>
+                                                            </div>
+                                                        </div>
+                                                        <span class="createdDate">
+                                                            <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
+                                                                width="10pt" xmlns="http://www.w3.org/2000/svg">
+                                                                <path
+                                                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                                    fill="black" />
+                                                                <path
+                                                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                                    fill="black" />
+                                                            </svg>
+                                                            {{post.createdDate | dateFormat}}
+                                                        </span>
+                                                    </div>
+                                                    <div class="head-title">
+                                                        <span class="title"
+                                                            [innerHTML]="post.title | highlightevent:pageObjective.title:currentUrl:hidebar"></span>
+                                                    </div>
+                                                    <div class="detail"
+                                                        [innerHTML]="post.detail | highlightevent:pageObjective.title:currentUrl:hidebar">
+                                                    </div>
+                                                    <div class="buttom">
+                                                        <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
+                                                            target="_blank" class="botton">
+                                                            <span>ไปที่โพสต์</span>
+                                                            <svg style="margin: 0px 10px;" height="15pt"
+                                                                class="icon-time" width="15pt" viewBox="0 -22 512 511"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill="white"
+                                                                    d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
+                                                            </svg>
+                                                        </a>
+                                                        <div class="score">
+                                                            <div class="score-type">
+                                                                <span class="disiption"
+                                                                    (click)="postLike(post,indexa,i)">
+                                                                    <ng-container
+                                                                        *ngIf="post && post.userLike && post.userLike.length > 0; else elseNotLike">
+                                                                        <svg class="img-action"
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="23" height="23"
+                                                                            viewBox="0 0 56.85 48.58">
+                                                                            <path class="svg-icon-color-activate"
+                                                                                id="Path_3669" data-name="Path 3669"
+                                                                                d="M196.9,74.77h-.05a17.223,17.223,0,0,0-11.07,4,17.029,17.029,0,0,0-10.99-4,17.259,17.259,0,0,0-17.45,17.31c0,15.15,23.76,28.7,26.47,30.2l1.94,1.07,1.95-1.06c2.71-1.48,26.49-14.86,26.49-30.23A17.438,17.438,0,0,0,196.9,74.77Z"
+                                                                                transform="translate(-157.34 -74.77)"
+                                                                                fill="#000" />
+                                                                        </svg>
+                                                                    </ng-container>
+                                                                    <ng-template #elseNotLike>
+                                                                        <svg class="img-action"
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="23" height="23"
+                                                                            viewBox="0 0 15.474 13.059">
+                                                                            <path id="Path_3804" data-name="Path 3804"
+                                                                                d="M701.4,704.7a4.581,4.581,0,0,1-6.336,0,4.57,4.57,0,0,0-4.565,4.564c0,4.183,7.062,8.124,7.361,8.289l.373.206.375-.2c.3-.164,7.365-4.06,7.365-8.3A4.6,4.6,0,0,0,701.4,704.7Zm3.017,4.564c0,2.855-4.893,5.947-6.182,6.712-2.21-1.306-6.18-4.284-6.18-6.712a3.014,3.014,0,0,1,3.012-3.008h.026a2.961,2.961,0,0,1,2.491,1.352l.649,1,.654-.995a3,3,0,0,1,2.519-1.356A3.034,3.034,0,0,1,704.413,709.262Z"
+                                                                                transform="translate(-690.495 -704.698)"
+                                                                                fill="#000" />
+                                                                        </svg>
+                                                                    </ng-template>
+                                                                </span>
+                                                                <span class="title">{{post.likeCount +
+                                                                    post.likeCountFB}}</span>
+                                                            </div>
+                                                            <div class="score-type" (click)="clickDataSearch(post)">
+                                                                <span class="disiption">
+                                                                    <svg class="img-action"
+                                                                        xmlns="http://www.w3.org/2000/svg" width="23"
+                                                                        height="23" viewBox="0 0 16.439 15.437">
+                                                                        <g id="Group_3339" data-name="Group 3339"
+                                                                            transform="translate(-647.471 -703.739)">
+                                                                            <path id="Path_3806" data-name="Path 3806"
+                                                                                d="M661.713,703.739H649.658a2.2,2.2,0,0,0-2.187,2.19v8.294a2.205,2.205,0,0,0,2.2,2.187h1.317v1.823a.938.938,0,0,0,.6.879.934.934,0,0,0,1.034-.245l2.234-2.458h6.869a2.205,2.205,0,0,0,2.187-2.2v-8.288A2.231,2.231,0,0,0,661.713,703.739Zm-10.04,11.291h-2a.826.826,0,0,1-.824-.815v-8.274a.827.827,0,0,1,.815-.823H661.7a.84.84,0,0,1,.828.817v8.272a.828.828,0,0,1-.816.822h-7.47l-1.881,2.071v-2.07Z"
+                                                                                fill="#000" />
+                                                                            <path id="Path_3807" data-name="Path 3807"
+                                                                                d="M651.292,708.667h5.083a.764.764,0,0,0,0-1.528h-5.083a.764.764,0,0,0,0,1.528Z"
+                                                                                fill="#000" />
+                                                                            <path id="Path_3808" data-name="Path 3808"
+                                                                                d="M660.279,711.375a.744.744,0,0,0-.723-.764h-8.305a.765.765,0,0,0,0,1.528h8.305A.744.744,0,0,0,660.279,711.375Z"
+                                                                                fill="#000" />
+                                                                        </g>
+                                                                    </svg>
+                                                                </span>
+                                                                <span class="title">{{post.commentCount}}</span>
+                                                            </div>
+                                                            <div class="score-type"
+                                                                (click)="dialogShare(post,indexa,i)">
+                                                                <span class="disiption">
+                                                                    <svg class="img-action-share"
+                                                                        xmlns="http://www.w3.org/2000/svg" width="23"
+                                                                        height="23" viewBox="0 0 13.913 15.385">
+                                                                        <path id="Path_3803" data-name="Path 3803"
+                                                                            d="M723.992,714.311a2.533,2.533,0,0,0-1.8-.745,2.59,2.59,0,0,0-1.555.522l-.052.039-4.7-2.459.017-.075a2.55,2.55,0,0,0,.042-.825l-.006-.065,4.7-2.793.054.038a2.531,2.531,0,0,0,1.5.49,2.566,2.566,0,1,0-2.568-2.565,2.529,2.529,0,0,0,.063.549l.015.072-4.52,2.691-.056-.05a2.574,2.574,0,0,0-2.635-.5l-.061.026a2.566,2.566,0,0,0,1.963,4.741,2.5,2.5,0,0,0,.5-.282l.051-.036,4.741,2.478-.014.074a2.566,2.566,0,1,0,4.334-1.326Zm-.526,1.849a1.314,1.314,0,1,1-1.314-1.314A1.315,1.315,0,0,1,723.466,716.16Zm-1.314-11.688a1.314,1.314,0,1,1-1.313,1.313A1.315,1.315,0,0,1,722.152,704.472Zm-7.5,6.527a1.314,1.314,0,1,1-1.314-1.314A1.316,1.316,0,0,1,714.656,711Z"
+                                                                            transform="translate(-710.83 -703.306)"
+                                                                            fill="#000" />
+                                                                    </svg>
+                                                                </span>
+                                                                <span class="title">{{post.shareCount +
+                                                                    post.shareCountFB}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </ng-container>
+                                        <ng-template #elseTemplateFade>
+                                            <div class="wrapper-objective">
+                                                <div class="wrapper-gallery" id="point" data-aos="fade-right"
+                                                    data-aos-offset="10" data-aos-delay="15" data-aos-duration="500"
+                                                    data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                                    data-aos-once="false" data-aos-anchor-placement="top-center">
+                                                    <div class="wrapper-image">
+                                                        <ng-container
+                                                            *ngFor="let image of post.postGallery; let image_index = index">
+                                                            <img *ngIf="image_index === 0"
+                                                                [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
+                                                                alt="">
+                                                        </ng-container>
+                                                        <div class="wrapper-image-cloud">
+                                                            <ng-container
+                                                                *ngFor="let image of post.postGallery; let image_index = index">
+                                                                <img *ngIf="image_index !== 0 && image_index <= 3"
+                                                                    [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
+                                                                    alt=""
+                                                                    [ngStyle]=" {'transform': image_index===1 ? 'rotate(-5deg)'
+                                                                    : image_index===2 ? 'rotate(-10deg)' : 'rotate(10deg)' }">
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="wrapper-content" data-aos="fade-left" data-aos-offset="10"
+                                                    data-aos-delay="15" data-aos-duration="500"
+                                                    data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                                    data-aos-once="false" data-aos-anchor-placement="top-center">
+                                                    <div class="wrapper-type-post">
+                                                        <!-- <span class="drot">•</span> -->
+                                                        <div class="type">
+                                                            <div class="point"
+                                                                [ngClass]="{'looking': post.type === 'NEEDS', 'member': post.type === 'MEMBERSHIP', 'fulfill': post.type === 'FULFILLMENT'}">
+                                                            </div>
+                                                            <div class="type_name">
+                                                                <span *ngIf="post.type === 'GENERAL'"
+                                                                    [innerHTML]="'ทั่วไป'"></span>
+                                                                <span *ngIf="post.type === 'NEEDS'"
+                                                                    [innerHTML]="'มองหา'"></span>
+                                                                <span *ngIf="post.type === 'MEMBERSHIP'"
+                                                                    [innerHTML]="'สมาชิกพรรค'"></span>
+                                                                <span *ngIf="post.type === 'FULFILLMENT'"
+                                                                    [innerHTML]="'เติมเต็ม'"></span>
+                                                            </div>
+                                                        </div>
+                                                        <span class="createdDate">
+                                                            <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
+                                                                width="10pt" xmlns="http://www.w3.org/2000/svg">
+                                                                <path
+                                                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                                    fill="black" />
+                                                                <path
+                                                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                                    fill="black" />
+                                                            </svg>
+                                                            {{post.createdDate | dateFormat}}
+                                                        </span>
+                                                    </div>
+                                                    <div class="head-title">
+                                                        <span class="title">#{{post.title}}</span>
+                                                    </div>
+                                                    <div class="detail">
+                                                        {{post.detail}}
+                                                    </div>
+                                                    <div class="buttom">
+                                                        <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
+                                                            target="_blank" class="botton">
+                                                            <span>ไปที่โพสต์</span>
+                                                            <svg style="margin: 0px 10px;" height="15pt"
+                                                                class="icon-time" width="15pt" viewBox="0 -22 512 511"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill="white"
+                                                                    d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
+                                                            </svg>
+                                                        </a>
+                                                        <div class="score">
+                                                            <div class="score-type">
+                                                                <span class="disiption"
+                                                                    (click)="postLike(post,indexa,i)">
+                                                                    <ng-container
+                                                                        *ngIf="post && post.userLike && post.userLike.length > 0; else elseNotLikeEven">
+                                                                        <svg class="img-action"
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="23" height="23"
+                                                                            viewBox="0 0 56.85 48.58">
+                                                                            <path class="svg-icon-color-activate"
+                                                                                id="Path_3669" data-name="Path 3669"
+                                                                                d="M196.9,74.77h-.05a17.223,17.223,0,0,0-11.07,4,17.029,17.029,0,0,0-10.99-4,17.259,17.259,0,0,0-17.45,17.31c0,15.15,23.76,28.7,26.47,30.2l1.94,1.07,1.95-1.06c2.71-1.48,26.49-14.86,26.49-30.23A17.438,17.438,0,0,0,196.9,74.77Z"
+                                                                                transform="translate(-157.34 -74.77)"
+                                                                                fill="#000" />
+                                                                        </svg>
+                                                                    </ng-container>
+                                                                    <ng-template #elseNotLikeEven>
+                                                                        <svg class="img-action"
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="23" height="23"
+                                                                            viewBox="0 0 15.474 13.059">
+                                                                            <path id="Path_3804" data-name="Path 3804"
+                                                                                d="M701.4,704.7a4.581,4.581,0,0,1-6.336,0,4.57,4.57,0,0,0-4.565,4.564c0,4.183,7.062,8.124,7.361,8.289l.373.206.375-.2c.3-.164,7.365-4.06,7.365-8.3A4.6,4.6,0,0,0,701.4,704.7Zm3.017,4.564c0,2.855-4.893,5.947-6.182,6.712-2.21-1.306-6.18-4.284-6.18-6.712a3.014,3.014,0,0,1,3.012-3.008h.026a2.961,2.961,0,0,1,2.491,1.352l.649,1,.654-.995a3,3,0,0,1,2.519-1.356A3.034,3.034,0,0,1,704.413,709.262Z"
+                                                                                transform="translate(-690.495 -704.698)"
+                                                                                fill="#000" />
+                                                                        </svg>
+                                                                    </ng-template>
+                                                                </span>
+                                                                <span class="title">{{post.likeCount +
+                                                                    post.likeCountFB}}</span>
+                                                            </div>
+                                                            <div class="score-type">
+                                                                <span class="disiption">
+                                                                    <svg class="img-action"
+                                                                        xmlns="http://www.w3.org/2000/svg" width="23"
+                                                                        height="23" viewBox="0 0 16.439 15.437">
+                                                                        <g id="Group_3339" data-name="Group 3339"
+                                                                            transform="translate(-647.471 -703.739)">
+                                                                            <path id="Path_3806" data-name="Path 3806"
+                                                                                d="M661.713,703.739H649.658a2.2,2.2,0,0,0-2.187,2.19v8.294a2.205,2.205,0,0,0,2.2,2.187h1.317v1.823a.938.938,0,0,0,.6.879.934.934,0,0,0,1.034-.245l2.234-2.458h6.869a2.205,2.205,0,0,0,2.187-2.2v-8.288A2.231,2.231,0,0,0,661.713,703.739Zm-10.04,11.291h-2a.826.826,0,0,1-.824-.815v-8.274a.827.827,0,0,1,.815-.823H661.7a.84.84,0,0,1,.828.817v8.272a.828.828,0,0,1-.816.822h-7.47l-1.881,2.071v-2.07Z"
+                                                                                fill="#000" />
+                                                                            <path id="Path_3807" data-name="Path 3807"
+                                                                                d="M651.292,708.667h5.083a.764.764,0,0,0,0-1.528h-5.083a.764.764,0,0,0,0,1.528Z"
+                                                                                fill="#000" />
+                                                                            <path id="Path_3808" data-name="Path 3808"
+                                                                                d="M660.279,711.375a.744.744,0,0,0-.723-.764h-8.305a.765.765,0,0,0,0,1.528h8.305A.744.744,0,0,0,660.279,711.375Z"
+                                                                                fill="#000" />
+                                                                        </g>
+                                                                    </svg>
+                                                                </span>
+                                                                <span class="title">{{post.commentCount}}</span>
+                                                            </div>
+                                                            <div class="score-type"
+                                                                (click)="dialogShare(post,indexa,i)">
+                                                                <span class="disiption">
+                                                                    <svg class="img-action-share"
+                                                                        xmlns="http://www.w3.org/2000/svg" width="23"
+                                                                        height="23" viewBox="0 0 13.913 15.385">
+                                                                        <path id="Path_3803" data-name="Path 3803"
+                                                                            d="M723.992,714.311a2.533,2.533,0,0,0-1.8-.745,2.59,2.59,0,0,0-1.555.522l-.052.039-4.7-2.459.017-.075a2.55,2.55,0,0,0,.042-.825l-.006-.065,4.7-2.793.054.038a2.531,2.531,0,0,0,1.5.49,2.566,2.566,0,1,0-2.568-2.565,2.529,2.529,0,0,0,.063.549l.015.072-4.52,2.691-.056-.05a2.574,2.574,0,0,0-2.635-.5l-.061.026a2.566,2.566,0,0,0,1.963,4.741,2.5,2.5,0,0,0,.5-.282l.051-.036,4.741,2.478-.014.074a2.566,2.566,0,1,0,4.334-1.326Zm-.526,1.849a1.314,1.314,0,1,1-1.314-1.314A1.315,1.315,0,0,1,723.466,716.16Zm-1.314-11.688a1.314,1.314,0,1,1-1.313,1.313A1.315,1.315,0,0,1,722.152,704.472Zm-7.5,6.527a1.314,1.314,0,1,1-1.314-1.314A1.316,1.316,0,0,1,714.656,711Z"
+                                                                            transform="translate(-710.83 -703.306)"
+                                                                            fill="#000" />
+                                                                    </svg>
+                                                                </span>
+                                                                <span class="title">{{post.shareCount +
+                                                                    post.shareCountFB}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-template>
                                     </ng-container>
-                                    <ng-template #elseTemplateFade>
-                                        <div class="wrapper-objective">
-                                            <div class="wrapper-gallery" id="point" data-aos="fade-right"
-                                                data-aos-offset="10" data-aos-delay="15" data-aos-duration="500"
-                                                data-aos-easing="ease-in-out" data-aos-mirror="false"
-                                                data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                <div class="wrapper-image">
-                                                    <ng-container
-                                                        *ngFor="let image of post.postGallery; let image_index = index">
-                                                        <img *ngIf="image_index === 0"
-                                                            [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
-                                                            alt="">
-                                                    </ng-container>
-                                                    <div class="wrapper-image-cloud">
-                                                        <ng-container
-                                                            *ngFor="let image of post.postGallery; let image_index = index">
-                                                            <img *ngIf="image_index !== 0"
-                                                                [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
-                                                                alt=""
-                                                                [ngStyle]=" {'transform': image_index===1 ? 'rotate(-5deg)'
-                                                                : image_index===2 ? 'rotate(-10deg)' : 'rotate(10deg)' }">
-                                                        </ng-container>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="wrapper-content" data-aos="fade-left" data-aos-offset="10"
-                                                data-aos-delay="15" data-aos-duration="500"
-                                                data-aos-easing="ease-in-out" data-aos-mirror="false"
-                                                data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                <span class="drot">•</span>
-                                                <span class="createdDate">
-                                                    <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
-                                                        width="10pt" xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                            fill="black" />
-                                                        <path
-                                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                            fill="black" />
-                                                    </svg>
-                                                    {{post.createdDate | dateFormat}}
-                                                </span>
-                                                <div class="head-title">
-                                                    <span class="title">#{{post.title}}</span>
-                                                </div>
-                                                <div class="detail">
-                                                    {{post.detail}}
-                                                </div>
-                                                <div class="buttom">
-                                                    <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
-                                                        target="_blank" class="botton">
-                                                        <span>ไปที่โพสต์</span>
-                                                        <svg style="margin: 0px 10px;" height="15pt" class="icon-time"
-                                                            width="15pt" viewBox="0 -22 512 511"
-                                                            xmlns="http://www.w3.org/2000/svg">
-                                                            <path fill="white"
-                                                                d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
-                                                        </svg>
-                                                    </a>
-                                                    <div class="score">
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.commentCount}}</span>
-                                                            <span class="disiption">การพูดถึง</span>
-                                                        </div>
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.repostCount}}</span>
-                                                            <span class="disiption">บอกต่อ</span>
-                                                        </div>
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.likeCount}}</span>
-                                                            <span class="disiption">ถูกใจ</span>
-                                                        </div>
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.shareCount}}</span>
-                                                            <span class="disiption">แชร์</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </ng-template>
-
                                 </ng-container>
+
                                 <!-- <div class="top">
                                     <span data-aos="fade-up" data-aos-offset="10" data-aos-delay="70"
                                         data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"

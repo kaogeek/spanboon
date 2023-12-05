@@ -15,11 +15,13 @@ import {
   StoryPage,
   PostPage,
   RegisterPage,
+  OfficialPage,
+  AppleAppSite,
   MenuRegister,
   PageHashTag,
   PageRecommended,
   SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
-  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy, TOS, HomePageV3,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch, LoginMemberProcessing, MemberProcess, MobileProcessing, KnowledgeCenter,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -33,16 +35,46 @@ export const APP_ROUTES: Routes = [
     pathMatch: 'full'
   },
   {
+    path: AppleAppSite.PAGE_NAME + '/assetlinks.json',
+    component: AppleAppSite,
+  },
+  {
+    path: AppleAppSite.PAGE_NAME + AppleAppSite.PAGE_NAME_APPLE,
+    component: AppleAppSite,
+  },
+  {
+    path: OfficialPage.PAGE_NAME,
+    component: OfficialPage,
+  },
+  {
+    path: LoginMemberProcessing.PAGE_NAME,
+    component: LoginMemberProcessing,
+  },
+  {
+    path: "process/" + MobileProcessing.PAGE_NAME,
+    component: MobileProcessing,
+  },
+  {
+    path: MemberProcess.PAGE_NAME,
+    component: MemberProcess,
+    children: [
+      {
+        path: 'success',
+        component: MemberProcess,
+      },
+      {
+        path: 'reject',
+        component: MemberProcess,
+      },
+    ]
+  },
+  {
     path: MainPage.PAGE_NAME,
     component: MainPage,
     children: [
       {
         path: '',
-        component: HomePage,
-      },
-      {
-        path: HomePage.PAGE_NAME,
-        component: HomePage,
+        component: HomePageV3,
       },
       {
         path: HomePageV3.PAGE_NAME,
@@ -139,13 +171,17 @@ export const APP_ROUTES: Routes = [
         path: ObjectiveTimeline.PAGE_NAME + "/:id",
         component: ObjectiveTimeline,
       },
-      {
-        path: ObjectiveTimeline.PAGE_NAME,
-        redirectTo: '/home',
-      },
+      // {
+      //   path: ObjectiveTimeline.PAGE_NAME,
+      //   redirectTo: '/home',
+      // },
       {
         path: EmergencyEventTimeline.PAGE_NAME + "/:id",
         component: EmergencyEventTimeline,
+      },
+      {
+        path: ":hash" + "/:id" + "/search",
+        component: EventSearch,
       },
       // {
       //   path: SettingsFanPage.PAGE_NAME,
@@ -218,12 +254,16 @@ export const APP_ROUTES: Routes = [
         component: RegisterPage,
       },
       {
-        path: Policy.PAGE_NAME,
-        component: Policy,
+        path: PolicyPage.PAGE_NAME,
+        component: PolicyPage,
       },
       {
-        path: TOS.PAGE_NAME,
-        component: TOS,
+        path: TermsOfServicePage.PAGE_NAME,
+        component: TermsOfServicePage,
+      },
+      {
+        path: KnowledgeCenter.PAGE_NAME,
+        component: KnowledgeCenter,
       },
       // {
       //   path: NotificationAllPage.PAGE_NAME,
@@ -254,18 +294,18 @@ export const APP_ROUTES: Routes = [
     ]
   },
   {
-    path: 'test',
-    component: TestComponent,
-    canDeactivate: [DirtyCheckGuard]
-  },
-  {
     path: 'registerpage',
     component: RegisterPageTestComponent
   },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(APP_ROUTES)],
+  imports: [RouterModule.forRoot(APP_ROUTES, {
+    useHash: false,
+    relativeLinkResolution: 'legacy',
+    initialNavigation: 'enabled',
+    scrollPositionRestoration: 'top'
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

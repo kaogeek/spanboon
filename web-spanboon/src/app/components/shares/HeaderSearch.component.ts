@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, Input, ViewChild, ElementRef, OnInit, EventEmitter } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, OnInit, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import * as $ from 'jquery';
 import { ObjectiveFacade, MainPageSlideFacade, AuthenManager, SearchHistoryFacade, AssetFacade, HashTagFacade } from '../../services/services';
@@ -17,6 +17,7 @@ import { map, distinctUntilChanged, debounceTime, takeUntil } from 'rxjs/operato
 import { CookieUtil } from '../../utils/CookieUtil';
 import { ValidBase64ImageUtil } from '../../utils/ValidBase64ImageUtil';
 import { environment } from 'src/environments/environment';
+import { CountdownConfig } from 'ngx-countdown';
 
 declare var $: any;
 const SEARCH_LIMIT: number = 10;
@@ -43,8 +44,11 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   public crColor: string = "";
   @Input()
   public link: string = "#";
+  @Output()
+  public aboutUs: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('search', { static: false }) public search: ElementRef;
+  @ViewChild('buttonSearch', { static: false }) public buttonSearch: ElementRef;
 
   public router: Router;
   private mainPageFacade: MainPageSlideFacade;
@@ -70,6 +74,9 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   public isHideButton: boolean = false;
   public apiBaseURL = environment.apiBaseURL;
   public isTabClick: string;
+  public isLimit: boolean = false;
+
+  public configCountdown: CountdownConfig = { leftTime: 180, format: 'mm:ss' };
 
   @ViewChild('tabs', { static: false }) private tabs: ElementRef;
   @ViewChild('wrapperBodyTag', { static: false }) private wrapperBodyTag: ElementRef;
@@ -105,6 +112,22 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     ).subscribe((text: any) => {
       this.keyUpAutoComp(this.search.nativeElement.value);
     });
+
+    fromEvent(this.buttonSearch.nativeElement, 'click').pipe(
+      debounceTime(500)
+      , distinctUntilChanged()
+    ).subscribe((text: any) => {
+      if (!this.isLimit) {
+        this.clickShowSearch('hide');
+      } else {
+        let dialog = this.showAlertDialogWarming("กรุณารอ 15นาที เพื่อค้นหาอีกครั้ง", "none");
+        dialog.afterClosed().subscribe((res) => {
+          if (res) {
+            this.SearchShow = false;
+          }
+        });
+      }
+    });
   }
 
   public ngOnDestroy(): void {
@@ -132,12 +155,17 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     }, 250);
   }
 
-  public clickShowSearch() {
+  public searchShow() {
+    this.SearchShow = true;
+  }
+
+  public clickShowSearch(value: string) {
+    if (value === 'hide') {
+      this.aboutUs.emit(value);
+    }
     // $("#menubottom").css({
     //   'overflow-y': "hidden"
     // });
-
-    this.SearchShow = true;
     this.filled = true;
     this.searchPageRecent();
     this.searchRecentNames();
@@ -215,7 +243,10 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     }
   }
 
-  public clickHideSearch() {
+  public clickHideSearch(value: string) {
+    if (value === 'show') {
+      this.aboutUs.emit(value);
+    }
     // $("#menubottom").css({
     //   'overflow-y': "auto"
     // });
@@ -320,8 +351,12 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       delete filter.whereConditions.userId
     }
     this.searchHistoryFacade.search(filter).then((res: any) => {
+      this.isLimit = false;
       this.searchRecentName = res
     }).catch((err: any) => {
+      if (err.error.message === "Too many requests") {
+        this.isLimit = true;
+      }
       if (err.error.status === 0) {
         if (err.error.message === 'History Not Found') {
           this.isMsgHistory = true;
@@ -395,6 +430,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   }
 
   public onClickSearchLink(event) {
+    // ?????
     let data = this.search.nativeElement.value;
     this.clickOpenLink(data, true);
   }
@@ -434,7 +470,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       }
     } else {
       isPass = data.type;
-      dataList = data.value;
+      dataList = data.type === 'HASHTAG' ? data.label : data.value;
       result = {
         resultType: data.type,
         resultId: data.value,
@@ -460,13 +496,13 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     } else {
       this.router.navigateByUrl('/search');
     }
-    this.clickHideSearch();
+    this.clickHideSearch('show');
     this.search.nativeElement.value = ''
     this.filled = false;
 
     this.searchHistoryFacade.create(result).then((res: any) => {
       // this.filled = false;
-      this.clickHideSearch();
+      this.clickHideSearch('show');
     }).catch((err: any) => {
       console.log(err)
     })

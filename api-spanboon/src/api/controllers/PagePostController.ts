@@ -48,19 +48,24 @@ import { UserLikeService } from '../services/UserLikeService';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { PageObjective } from '../models/PageObjective';
 import { PageNotificationService } from '../services/PageNotificationService';
-import { NotificationService } from '../services/NotificationService';
+// import { NotificationService } from '../services/NotificationService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 import { HashTag } from '../models/HashTag';
-import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { PostUtil } from '../../utils/PostUtil';
-import { DeviceTokenService } from '../services/DeviceToken';
-import { UserFollowService } from '../services/UserFollowService';
+// import { DeviceTokenService } from '../services/DeviceToken';
+// import { UserFollowService } from '../services/UserFollowService';
+import { HidePostService } from '../services/HidePostService';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
+import { PROVIDER } from '../../constants/LoginProvider';
+import axios from 'axios';
+import qs from 'qs';
 @JsonController('/page')
 export class PagePostController {
     constructor(
@@ -82,11 +87,13 @@ export class PagePostController {
         private userLikeService: UserLikeService,
         private pageNotificationService: PageNotificationService,
         private pageAccessLevelService: PageAccessLevelService,
-        private notificationService: NotificationService,
+        // private notificationService: NotificationService,
         private pageSocialAccountService: PageSocialAccountService,
         private s3Service: S3Service,
-        private deviceToken: DeviceTokenService,
-        private userFollowService: UserFollowService
+        // private deviceToken: DeviceTokenService,
+        // private userFollowService: UserFollowService,
+        private hidePostService: HidePostService,
+        private authenticationIdService: AuthenticationIdService
     ) { }
     // @Get('/test/post')
     // public async test(@Req() req:any):Promise<any>{
@@ -270,7 +277,17 @@ export class PagePostController {
             return res.status(400).send(errorResponse);
         }
     }
-
+    @Post('/:pageId/isReadPost/:postId')
+    @Authorized('user')
+    public async isReadPost(@Body({ validate: true }) pagePost: PagePostRequest, @Param('pageId') pageId: string, @Param('postId') postId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        if (userObjId !== undefined && userObjId !== null) {
+            // check read owner post 
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot identify reading post', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     /**
      * @api {post} /api/page/:pageId/post Create PagePost API
      * @apiGroup PagePost
@@ -314,6 +331,7 @@ export class PagePostController {
         const postUserTag = pagePost.userTags;
         const postEmergencyEvent = pagePost.emergencyEvent;
         const startDateTime = moment(pagePost.startDateTime).toDate();
+        const membership = pagePost.type ? pagePost.type : undefined;
         const today = moment().toDate();
         let pageData: Page[];
         let pageObjId = null;
@@ -321,7 +339,11 @@ export class PagePostController {
         let needNotiTxt = '';
         let isPostTwitter = false;
         let isPostFacebook = false;
-        const space = ' ';
+        // const space = ' ';
+        // const now = new Date();
+        // const hours = now.getHours();
+        // const minutes = now.getMinutes();
+        // const interval = 30;
         if (options !== undefined) {
             if (options.twitterPost !== undefined && typeof options.twitterPost === 'string') {
                 if ('TRUE' === options.twitterPost.toUpperCase()) {
@@ -430,6 +452,87 @@ export class PagePostController {
         if (postDetail !== null && postDetail !== undefined && postDetail !== '') {
             postDetail = postDetail.replace(/^\s*[\r\n]/gm, '\n');
         }
+        // before create the post type membership 
+        // first we need to check authenticate that user is membership ?
+        // page official === false 
+        let authMemberShip = undefined;
+        let pageIds = undefined;
+        if (String(pageObjId) !== null) {
+            const pageObjIds = new ObjectID(pageObjId);
+            pageIds = await this.pageService.findOne({ _id: pageObjIds });
+        }
+        if (pageIds !== undefined && pageIds.isOfficial === false) {
+            if (membership !== undefined && membership !== null && membership !== '' && membership === 'MEMBERSHIP') {
+                const userMemberShip = await this.userService.findOne({ _id: userObjId });
+                authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
+                if (
+                    (userMemberShip.membership === undefined || userMemberShip.membership === false)
+                    &&
+                    authMemberShip === undefined || authMemberShip.membership === false) {
+                    return res.status(400).send(ResponseUtil.getErrorResponse('You cannot post type memberShip.', undefined));
+                }
+            }
+        }
+
+        if (pageIds === undefined) {
+            if (membership !== undefined && membership !== null && membership !== '' && membership === 'MEMBERSHIP') {
+                const userMemberShip = await this.userService.findOne({ _id: userObjId });
+                authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
+                if (
+                    (userMemberShip.membership === undefined || userMemberShip.membership === false)
+                    ||
+                    authMemberShip === undefined || authMemberShip.membership === false) {
+                    return res.status(400).send(ResponseUtil.getErrorResponse('You cannot post type memberShip.', undefined));
+                }
+            }
+        }
+        // check client credential
+        authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
+
+        const response = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        const tokenCredential = response.data.access_token;
+        let getMembershipById = undefined;
+        if (authMemberShip !== undefined) {
+            getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + authMemberShip.providerUserId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
+                }
+            );
+        }
+        if (getMembershipById !== undefined && getMembershipById.data.data.state !== 'APPROVED') {
+            const errorResponse = ResponseUtil.getErrorResponse('Your status have not approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        if (pageIds !== undefined && pageIds.official === true) {
+            // check authentication
+            authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
+            const timeStampToday = today.getTime();
+            if (authMemberShip !== undefined &&
+                authMemberShip.membershipState === 'APPROVED' &&
+                authMemberShip.membershipType === 'MEMBERSHIP_YEARLY') {
+                const timeStampSettings = Date.parse(authMemberShip.expirationDate);
+                if (timeStampToday > timeStampSettings) {
+                    return res.status(400).send(ResponseUtil.getErrorResponse('Your account have already expired.', undefined));
+                }
+            }
+        }
 
         const postPage: Posts = new Posts();
         postPage.title = pagePost.title;
@@ -447,9 +550,11 @@ export class PagePostController {
         postPage.shareCount = 0;
         postPage.likeCount = 0;
         postPage.viewCount = 0;
+        postPage.newsFlag = false;
         postPage.createdDate = createdDate;
         postPage.startDateTime = postDateTime;
         postPage.story = (postStory !== null && postStory !== undefined) ? postStory : null;
+        postPage.type = membership; // type post membership MFP
         const masterHashTagMap = {};
         const postMasterHashTagList = [];
         const imageBase64sForTw = [];
@@ -581,14 +686,19 @@ export class PagePostController {
                 engagement.action = ENGAGEMENT_ACTION.CREATE;
                 engagement.isFirst = true;
                 await this.userEngagementService.create(engagement);
-                // page to user
-                const pagePostId = await this.pageService.findOne({ _id: createPostPageData.pageId });
+                // page to user /// 
+                // let tokenFCMId = undefined;
+                // let notificationTextPOST = undefined;
+                // let link = undefined;
+                // const pagePostId = await this.pageService.findOne({ _id: createPostPageData.pageId });
                 if (createPostPageData.pageId !== null) {
-                    const notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + space + pagePostId.name;
-                    const userFollow = await this.userFollowService.find({ subjectType: 'PAGE', subjectId: createPostPageData.pageId });
+                    // notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + space + pagePostId.name;
+                    // const userFollow = await this.userFollowService.find({ subjectType: 'PAGE', subjectId: createPostPageData.pageId });
+                    // console.log('userFollow',userFollow.length);
+                    /* 
                     for (let i = 0; i < userFollow.length; i++) {
-                        const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
-                        const link = `/page/${pagePostId.id}/post/` + createPostPageData.id;
+                        tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId });
+                        link = `/page/${pagePostId.id}/post/` + createPostPageData.id;
                         await this.notificationService.createNotificationFCM(
                             userFollow[i].userId,
                             USER_TYPE.PAGE,
@@ -600,35 +710,102 @@ export class PagePostController {
                             pagePostId.pageUsername,
                             pagePostId.imageURL
                         );
-                        for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
-                                await this.notificationService.sendNotificationFCM(
-                                    tokenFCM.userId,
-                                    USER_TYPE.PAGE,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.POST,
-                                    notificationTextPOST,
-                                    link,
-                                    tokenFCM.Tokens,
-                                    pagePostId.pageUsername,
-                                    pagePostId.imageURL
-                                );
+                    }
+                    if (tokenFCMId !== undefined && tokenFCMId !== null && tokenFCMId.length > 0) {
+                        if (userFollow.length > 0 && userFollow.length <= 5) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                            else {
-                                continue;
+                        } else if (userFollow.length > 5 && userFollow.length <= 20 && minutes % interval === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (userFollow.length > 20 && userFollow.length <= 500 && hours % 3 === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (userFollow.length > 500 && hours % 5 === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
                         }
                     }
-
+                    */
                 }
                 else {
+                    // type post membership MFP. (user post)
                     // user to user
+                    /* 
                     const userPost = await this.userService.findOne({ _id: createPostPageData.ownerUser });
-                    const notificationTextPOST = 'มีโพสต์ใหม่จาก' + space + userPost.displayName;
+                    notificationTextPOST = 'มีโพสต์ใหม่จาก' + space + userPost.displayName;
                     const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
-                    const link = `/profile/${userPost.id}/post/` + createPostPageData.id;
+                    link = `/profile/${userPost.id}/post/` + createPostPageData.id;
                     for (let i = 0; i < userFollow.length; i++) {
+                        tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId });
                         await this.notificationService.createNotificationFCM(
                             userFollow[i].userId,
                             USER_TYPE.USER,
@@ -640,28 +817,91 @@ export class PagePostController {
                             userPost.displayName,
                             userPost.imageURL
                         );
-                        const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
-                        for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
-                                await this.notificationService.sendNotificationFCM(
-                                    tokenFCM.userId,
-                                    USER_TYPE.USER,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.POST,
-                                    notificationTextPOST,
-                                    link,
-                                    tokenFCM.Tokens,
-                                    userPost.displayName,
-                                    userPost.imageURL
-                                );
+                    }
+                    if (tokenFCMId !== undefined && tokenFCMId.length > 0) {
+                        if (userFollow.length > 0 && userFollow.length <= 5) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userPost.displayName,
+                                        userPost.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                            else {
-                                continue;
+                        } else if (userFollow.length > 5 && userFollow.length <= 20 && minutes % interval === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userPost.displayName,
+                                        userPost.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (userFollow.length > 20 && userFollow.length <= 500 && hours % 3 === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userPost.displayName,
+                                        userPost.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (userFollow.length > 500 && hours % 5 === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userPost.displayName,
+                                        userPost.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
                         }
-
                     }
+                    */
                 }
                 let needsCreate: Needs;
                 const needsCreated: Needs[] = [];
@@ -985,7 +1225,22 @@ export class PagePostController {
             if (isHideStory === null || isHideStory === undefined) {
                 isHideStory = true;
             }
-
+            let objIdsUser = undefined;
+            const postIds = [];
+            if (req.headers.userid !== undefined && req.headers.userid !== null && req.headers.userid !== '') {
+                objIdsUser = new ObjectID(req.headers.userid);
+                if (objIdsUser) {
+                    const hidePost = await this.hidePostService.find({ userId: objIdsUser });
+                    if (hidePost.length > 0) {
+                        for (let j = 0; j < hidePost.length; j++) {
+                            const postId = hidePost[j].postId;
+                            if (postId !== undefined && postId !== null && postId.length > 0) {
+                                postIds.push(...postId.map(id => new ObjectID(id)));
+                            }
+                        }
+                    }
+                }
+            }
             const postType = search.type;
             let pageObjId;
             let pageStmt;
@@ -1021,6 +1276,9 @@ export class PagePostController {
                 const matchStmt: any = { pageId: postPageObjId, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } };
                 if (postType !== null && postType !== undefined && postType !== '') {
                     matchStmt.type = postType;
+                }
+                if (postIds.length > 0) {
+                    matchStmt._id = { $nin: postIds };
                 }
                 // add some filter
                 const ignoreKey = ['pageId', 'hidden', 'deleted', 'isDraft', 'startDateTime'];
@@ -1511,7 +1769,10 @@ export class PagePostController {
             const objective = postPages.objective; // as id string
             const today = moment().toDate();
             let startDateTime = postPages.startDateTime;
-
+            const postMasterHashTagList: any[] = [];
+            const allHashTagsString = [];
+            let queryHashTag = undefined;
+            let newValuesHashTag = undefined;
             // page mode
             let isPageMode = false;
             if (pageId !== undefined && pageId !== '' && pageId !== 'null' && pageId !== null && pageId !== 'undefined') {
@@ -1559,22 +1820,17 @@ export class PagePostController {
             }
 
             let assetResultUpload: Asset;
-
             if (postGallery !== undefined && postGallery !== null && postGallery.length > 0) {
-
                 let isCreateAssetGallery = false;
                 let postIdGallery;
                 const deleteGalleryList = [];
                 const UpdateGalleryList = [];
                 const createGalleyList = [];
-
                 for (const image of postGallery) {
                     postIdGallery = new ObjectID(image.postId);
                     deleteGalleryList.push(new ObjectID(image.fileId));
                     UpdateGalleryList.push(image);
                 }
-
-                // find post have not in image  
                 await this.postGalleryService.deleteMany({
                     // where: {
                     $and: [
@@ -1588,20 +1844,27 @@ export class PagePostController {
                     ]
                     // }
                 });
+                // find post have not in image  
+                /*
+                await this.postGalleryService.deleteMany({ $and: [{ post: postIdGallery }, { fileId: { $nin: deleteGalleryList } }] });
+                for (const deleteGallery of deleteGalleryList) {
+                    await this.postGalleryService.delete({ fileId: deleteGallery });
+                }
+                await this.assetService.delete({ _id: deleteGallery }); */
 
-                for (const data of UpdateGalleryList) {
+                for (let i = 0; i < UpdateGalleryList.length; i++) {
                     // find gallery update ordering
-                    const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data.id) } });
+                    const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(UpdateGalleryList[i].id) } });
                     if (gallery.length > 0) {
-                        const updateImageQuery = { _id: new ObjectID(data.id) };
+                        const updateImageQuery = { _id: new ObjectID(UpdateGalleryList[i].id) };
                         const newImageValue = {
                             $set: {
-                                ordering: data.asset.ordering,
+                                ordering: UpdateGalleryList[i].asset.ordering,
                             }
                         };
                         await this.postGalleryService.update(updateImageQuery, newImageValue);
                     } else {
-                        createGalleyList.push(data);
+                        createGalleyList.push(UpdateGalleryList[i]);
                         isCreateAssetGallery = true;
                     }
                 }
@@ -1632,7 +1895,14 @@ export class PagePostController {
                         await this.postGalleryService.create(gallery);
                     }
                 }
-
+            }
+            // check if post.length > 0, but in the post gallery have valued.
+            // that's meaning delete the one picture.
+            if (postGallery !== undefined && postGallery !== null && postGallery.length === 0) {
+                const picGallery = await this.postGalleryService.findOne({ post: pagePostsObjId });
+                if (picGallery !== undefined && picGallery !== null) {
+                    await this.postGalleryService.delete({ post: pagePostsObjId });
+                }
             }
 
             let assetResult: Asset;
@@ -1686,29 +1956,50 @@ export class PagePostController {
                 }
             }
 
-            const allHashTagsString = [];
             if (post.postsHashTags !== undefined) {
                 for (const tagObjId of post.postsHashTags) {
                     allHashTagsString.push(tagObjId + '');
                 }
             }
-
             let postsHashTags: any[] = post.postsHashTags;
-            const postMasterHashTagList: any[] = [];
             // if postHashTag is undefined or null postHashTags will use an old value
             if (postHashTag !== null && postHashTag !== undefined && postHashTag.length > 0) {
-                const masterHashTagList: HashTag[] = await this.findMasterHashTag(postHashTag);
+                for (const hashEdit of postHashTag) {
+                    const stringHashTag: string = String(hashEdit);
+                    // check if hashtag exists.
+                    const hashTagCheck = await this.hashTagService.findOne({ name: stringHashTag });
+                    if (hashTagCheck !== undefined) {
+                        const id = hashTagCheck.id + '';
+                        if (allHashTagsString.indexOf(id) < 0) {
+                            allHashTagsString.push(id);
+                        }
+                        postMasterHashTagList.push(new ObjectID(id));
+                    } else {
+                        const newHashTag: HashTag = new HashTag();
+                        newHashTag.name = stringHashTag;
+                        newHashTag.lastActiveDate = today;
+                        newHashTag.count = 0;
+                        newHashTag.iconURL = '';
 
-                for (const hashTag of masterHashTagList) {
-                    const id = hashTag.id + '';
-                    if (allHashTagsString.indexOf(id) < 0) {
-                        allHashTagsString.push(id);
+                        const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+                        if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                            postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+
+                        }
                     }
-                    postMasterHashTagList.push(new ObjectID(id));
                 }
 
                 postsHashTags = postMasterHashTagList;
+                for (const hashTags of postsHashTags) {
+                    const count = parseInt(hashTags.count, 10);
+                    queryHashTag = { _id: new ObjectID(hashTags._id) };
+                    newValuesHashTag = { $set: { count: count + 1 } };
+                    await this.hashTagService.update(queryHashTag, newValuesHashTag);
+                }
             }
+            const queryTag = { _id: pagePostsObjId };
+            const newValuesTag = { $set: { postsHashTags: postMasterHashTagList } };
+            await this.postsService.update(queryTag, newValuesTag);
 
             const allHashTags = [];
             for (const hashTagString of allHashTagsString) {
@@ -1764,6 +2055,7 @@ export class PagePostController {
                 objectiveID = new ObjectID(objective);
                 const obj = await this.objectiveService.findOne({ _id: objectiveID });
                 if (!obj) {
+                    console.log('error1');
                     return res.status(400).send(ResponseUtil.getErrorResponse('Objective was not found.', undefined));
                 }
 
@@ -1994,6 +2286,48 @@ export class PagePostController {
                 await this.userEngagementService.create(engagement);
 
                 const pageUpdated: Posts = await this.postsService.findOne({ _id: pagePostsObjId });
+                const postGalleryP = await this.postGalleryService.find({ post: pagePostsObjId });
+                const editPost: Posts = new Posts();
+                editPost.createdBy = pageUpdated.createdBy;
+                editPost.createdDate = pageUpdated.createdDate;
+                editPost.createdTime = pageUpdated.createdTime;
+                editPost.createdByUsername = pageUpdated.createdByUsername;
+                editPost.updateDate = pageUpdated.updateDate;
+                editPost.updateByUsername = pageUpdated.updateByUsername;
+                editPost.id = pageUpdated.id;
+                editPost.pageId = pageUpdated.pageId;
+                editPost.title = pageUpdated.title;
+                editPost.detail = pageUpdated.detail;
+                editPost.story = pageUpdated.story;
+                editPost.isDraft = pageUpdated.isDraft;
+                editPost.pinned = pageUpdated.pinned;
+                editPost.deleted = pageUpdated.deleted;
+                editPost.hidden = pageUpdated.hidden;
+                editPost.type = pageUpdated.type;
+                editPost.ownerUser = pageUpdated.ownerUser;
+                editPost.referencePost = pageUpdated.referencePost;
+                editPost.rootReferencePost = pageUpdated.rootReferencePost;
+                editPost.referenceMode = pageUpdated.referenceMode;
+                editPost.commentCount = pageUpdated.commentCount;
+                editPost.repostCount = pageUpdated.repostCount;
+                editPost.shareCount = pageUpdated.shareCount;
+                editPost.likeCount = pageUpdated.likeCount;
+                editPost.viewCount = pageUpdated.viewCount;
+                editPost.coverImage = pageUpdated.coverImage;
+                editPost.s3CoverImage = pageUpdated.s3CoverImage;
+                editPost.postsHashTags = pageUpdated.postsHashTags;
+                editPost.objective = { '_id': pageUpdated.objective };
+                editPost.emergencyEvent = { '_id': pageUpdated.emergencyEvent };
+                editPost.objectiveTag = pageUpdated.objectiveTag;
+                editPost.emergencyEventTag = pageUpdated.emergencyEventTag;
+                editPost.userTags = pageUpdated.userTags;
+                editPost.startDateTime = pageUpdated.startDateTime;
+                editPost.postAsPage = pageUpdated.postAsPage;
+                editPost.visibility = pageUpdated.visibility;
+                editPost.ranges = pageUpdated.ranges;
+                editPost.feedReachCount = pageUpdated.feedReachCount;
+                editPost.linkReachCount = pageUpdated.linkReachCount;
+                editPost.reachCount = pageUpdated.reachCount;
                 // update post hastag
                 try {
                     // beware slow becase count all post
@@ -2004,8 +2338,13 @@ export class PagePostController {
                     console.log(error);
                 }
 
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Update PagePost Successful', pageUpdated));
+                const PostEdit = (ResponseUtil.getSuccessResponseEditPost('Update PagePost Successful', editPost));
+                const temp: any = PostEdit.data;
+                temp['gallery'] = postGalleryP;
+                // test['data']['postGallery'] = editPost,postGalleryP;
+                return res.status(200).send(PostEdit);
             } else {
+
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PagePost', undefined));
             }
         } catch (error) {

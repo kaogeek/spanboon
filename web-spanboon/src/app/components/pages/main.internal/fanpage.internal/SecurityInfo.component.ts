@@ -242,7 +242,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
 
     public getConfigFacebook() {
-        this.pageFacade.getConfigByPage(this.pageId, FACEBOOK_AUTO_POST).then((res: any) => {
+        this.pageFacade.getConfigByPage(this.pageId, FACEBOOK_AUTO_FETCHPOST).then((res: any) => {
             this.autoPostFacebook = res.value;
         }).catch((err: any) => {
             console.log('err ', err)
@@ -274,8 +274,10 @@ export class SecurityInfo extends AbstractPage implements OnInit {
 
     public unBindingSharePost(event: any, social: string) {
         let autopost: string = '';
+        let fetchpost: string = '';
         if (social === 'facebook') {
             autopost = FACEBOOK_AUTO_POST;
+            fetchpost = FACEBOOK_AUTO_FETCHPOST
         } else if (social === 'twitter') {
             autopost = TWITTER_AUTO_POST;
         }

@@ -4,9 +4,12 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
+<div class="not-found-post" *ngIf="!itemPost">
+    <span>ไม่พบเรื่องราว</span>
+</div>
 
-<div class="card-feed-post">
-    <ng-container *ngIf="itemPost">
+<div class="card-feed-post" *ngIf="!!itemPost">
+    <ng-container *ngIf="itemPost && isLogin()">
         <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'" class="dropdown">
             <span class="material-icons">
                 more_horiz
@@ -28,14 +31,23 @@
                     <mat-icon>close</mat-icon>
                     <span>ซ่อนโพสต์นี้</span>
                 </button>
-                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="reportPost()">
+                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="reportPost(itemPost)">
                     <mat-icon>warning</mat-icon>
                     <span>รายงานโพสต์นี้</span>
                 </button>
-                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="blockUser()">
-                    <mat-icon>block</mat-icon>
-                    <span>บล็อกผู้ใช้นี้</span>
-                </button>
+                <ng-container *ngIf="itemPost.pageId !== null; else elseBlockUser">
+                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="blockPage(itemPost)">
+                        <mat-icon>block</mat-icon>
+                        <span>บล็อกเพจนี้</span>
+                    </button>
+                </ng-container>
+                <ng-template #elseBlockUser>
+                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="blockUser(itemPost)">
+                        <mat-icon>block</mat-icon>
+                        <span>บล็อกผู้ใช้นี้</span>
+                    </button>
+                </ng-template>
+
             </ng-template>
         </mat-menu>
     </ng-container>
@@ -45,7 +57,8 @@
     <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
         <div class="left" [ngStyle]="{'margin-right': !!itemPost.referencePostObject ? '15pt' : 'unset'}">
             <ng-container *ngIf="isShowProfile">
-                <div class="wrapper-profile-page" *ngIf="itemPost.type === 'NEEDS' || itemPost.type === 'GENERAL' ">
+                <div class="wrapper-profile-page"
+                    *ngIf="itemPost.type === 'NEEDS' || itemPost.type === 'GENERAL' || itemPost.type === 'MEMBERSHIP'">
                     <div class="page-img">
                         <ng-container *ngIf="itemPost.page; else elseImage">
                             <a target="_blank"
@@ -92,17 +105,25 @@
                             </ng-template>
 
                             <div class="post-data-createdBy">
-                                <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseTemplateGeneral">
+                                <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseMember">
                                     <div class="icon-feed"></div>
                                     <span>
                                         {{PLATFORM_GENERAL_TEXT}}
                                     </span>
                                 </ng-container>
-                                <ng-template #elseTemplateGeneral>
-                                    <div class="icon-feed looking"></div>
-                                    <span>
-                                        {{PLATFORM_NEEDS_TEXT}}
-                                    </span>
+                                <ng-template #elseMember>
+                                    <ng-container *ngIf="itemPost.type === 'MEMBERSHIP'; else elseTemplateGeneral">
+                                        <div class="icon-feed member"></div>
+                                        <span>
+                                            {{PLATFORM_MEMBERSHIP_TEXT}}
+                                        </span>
+                                    </ng-container>
+                                    <ng-template #elseTemplateGeneral>
+                                        <div class="icon-feed looking"></div>
+                                        <span>
+                                            {{PLATFORM_NEEDS_TEXT}}
+                                        </span>
+                                    </ng-template>
                                 </ng-template>
                                 <div class="post-to">
                                     <a href={{linkPost}} target="_blank"
@@ -151,24 +172,32 @@
             </ng-container>
 
             <ng-container *ngIf="!isShowProfile">
-                <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseTemplateGeneral">
-                    <div class="icon-feed"></div>
+                <ng-container *ngIf="itemPost.type === 'FULFILLMENT'; else elseTemplateFulfill">
+                    <div class="icon-feed fulfill"></div>
                     <span>
-                        {{PLATFORM_GENERAL_TEXT}}
+                        {{PLATFORM_FULFILL_TEXT}}
                     </span>
                 </ng-container>
-                <ng-template #elseTemplateGeneral>
-                    <ng-container *ngIf="itemPost.type === 'NEEDS'; else elseTemplateNeed">
+                <ng-template #elseTemplateFulfill>
+                    <ng-container *ngIf="itemPost.type === 'NEEDS'; else elseTemplateMember">
                         <div class="icon-feed looking"></div>
                         <span>
                             {{PLATFORM_NEEDS_TEXT}}
                         </span>
                     </ng-container>
-                    <ng-template #elseTemplateNeed>
-                        <div class="icon-feed fulfill"></div>
-                        <span>
-                            {{PLATFORM_FULFILL_TEXT}}
-                        </span>
+                    <ng-template #elseTemplateMember>
+                        <ng-container *ngIf="itemPost.type === 'MEMBERSHIP'; else elseTemplateGeneral">
+                            <div class="icon-feed member"></div>
+                            <span>
+                                {{PLATFORM_MEMBERSHIP_TEXT}}
+                            </span>
+                        </ng-container>
+                        <ng-template #elseTemplateGeneral>
+                            <div class="icon-feed"></div>
+                            <span>
+                                {{PLATFORM_GENERAL_TEXT}}
+                            </span>
+                        </ng-template>
                     </ng-template>
                 </ng-template>
                 <div class="post-to">
@@ -349,7 +378,9 @@
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
         <!-- <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery> -->
     </ng-container>
-    <div class="topic-name" [class.active]="itemPost.referencePostObject" *ngIf="!!itemPost!.title">
+
+    <div class="topic-name" [class.active]="itemPost.referencePostObject"
+        *ngIf="!!itemPost!.title && !!itemPost!.requester && !!itemPost!.fulfillmentPage">
         <div class="name" *ngIf="itemPost.requester">
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
@@ -499,14 +530,35 @@
                     <div class="send-button"><span class="material-icons" (click)="onClickComment($event)"> send </span>
                     </div>
 
-                    <input class="comment-text" placeholder="แสดงความคิดเห็น..." (keyup.enter)="onClickComment($event);"
-                        [(ngModel)]="value" type="text">
+                    <ng-container *ngIf="isUserPage; else elseProfile">
+                        <input class="comment-text" placeholder="แสดงความคิดเห็น..."
+                            (keyup.enter)="onClickComment($event);" [(ngModel)]="value" type="text">
+                    </ng-container>
+                    <ng-template #elseProfile>
+                        <ng-container *ngIf="itemPost.type === 'MEMBERSHIP'; else elseGeneral">
+                            <ng-container *ngIf="isMemberShip; else elseMember">
+                                <input class="comment-text" [ngClass]="{'disable': !isMemberShip}"
+                                    [placeholder]="isMemberShip ? 'แสดงความคิดเห็น...' : 'เฉพาะสมาชิกพรรคเท่านั้น'"
+                                    (keyup.enter)="onClickComment($event);" [(ngModel)]="value" type="text">
+                            </ng-container>
+                            <ng-template #elseMember>
+                                <input class="comment-text" [ngClass]="{'disable': !isMemberShip}"
+                                    [placeholder]="isMemberShip ? 'แสดงความคิดเห็น...' : 'เฉพาะสมาชิกพรรคเท่านั้น'"
+                                    (keyup.enter)="onClickComment($event);" [(ngModel)]="value" type="text" disabled>
+                            </ng-template>
+                        </ng-container>
+                        <ng-template #elseGeneral>
+                            <input class="comment-text" [placeholder]="'แสดงความคิดเห็น...'"
+                                (keyup.enter)="onClickComment($event);" [(ngModel)]="value" type="text">
+                        </ng-template>
+                    </ng-template>
+
                 </div>
             </div>
             <ng-container *ngIf="commentpost.length > 0">
                 <div class="post-comment">
                     <comment-post (isLogin)="isComments" (submit)="commentAction($event)" [userId]="usercurrent?.id"
-                        [commentdata]="commentpost">
+                        [commentdata]="commentpost" [isNotAccess]="isNotAccess">
                     </comment-post>
                 </div>
             </ng-container>

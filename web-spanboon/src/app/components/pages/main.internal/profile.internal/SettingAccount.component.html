@@ -7,11 +7,11 @@
 
 <div class="setting-account">
     <div class="container">
-        <div class="setting-top"> 
-            <div class="label-top">การตั้งค่า</div>
+        <div class="setting-top">
+            <div class="label-top" (click)="test()">จัดการบัญชี</div>
         </div>
-        <div class="settings-flex"> 
-            <div class="settings-left"> 
+        <div class="settings-flex">
+            <div class="settings-left">
                 <div class="settings-list">
                     <div class="list-item-menu" matRipple matTooltip="{{link.label}}" [matTooltipPosition]="'right'"
                         *ngFor="let link of links" (click)="selecedInformation(link)"
@@ -21,8 +21,23 @@
                     </div>
                 </div>
             </div>
-            <div class="settings-right">  
-               
+            <div class="settings-right" *ngIf="selected === 'ทั่วไป'">
+                <edit-profile-card [dataProfile]="data"></edit-profile-card>
+            </div>
+            <div class="settings-right" style="align-items: center; display: flex;" *ngIf="selected === 'การเชื่อมต่อ'">
+                <div class="wrapper-right">
+                    <div class="mfp-binding">
+                        <img src="../../../../assets/img/logo/mfp.svg" alt="">
+                        <span>Move Forward Party</span>
+
+                        <div class="binding" (click)="!isMember ? binding() : unbind()">
+                            <span [innerHTML]="!isMember ? 'ยังไม่ได้เชื่อมต่อ' : 'เชื่อมต่อแล้ว'"></span>
+                            <mat-icon>
+                                navigate_next
+                            </mat-icon>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

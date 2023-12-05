@@ -8,7 +8,7 @@
 import { Component, ElementRef, EventEmitter, NgZone, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDatepicker, MatDatepickerInputEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthenManager, ObservableManager, TwitterService, UserFacade } from '../../../../services/services';
+import { AuthenManager, NotificationManager, ObservableManager, TwitterService, UserFacade } from '../../../../services/services';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogImage } from '../../../shares/dialog/DialogImage.component';
 import { DateAdapter } from '@angular/material';
@@ -19,8 +19,9 @@ import { User } from '../../../../models/User';
 import { DialogPassword } from '../../../../components/shares/shares';
 import { Asset } from '../../../../models/Asset';
 import { SocialAuthService, SocialUser } from 'angularx-social-login';
-import * as $ from 'jquery';
 import { environment } from 'src/environments/environment';
+import { fromEvent, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 const PAGE_NAME: string = 'register';
 
@@ -29,13 +30,15 @@ const PAGE_NAME: string = 'register';
   templateUrl: './RegisterPage.component.html'
 })
 export class RegisterPage extends AbstractPage implements OnInit {
-
+  selectProvide: any;
   public static readonly PAGE_NAME: string = PAGE_NAME;
-
+  private destroy = new Subject<void>();
   @ViewChild(MatDatepicker, { static: true }) datapicker: MatDatepicker<Date>;
   @ViewChild("birthday", { static: false }) private datapickerBirthday: any;
   @ViewChild('register', { static: false }) private registerForm: any;
   @ViewChild('birthday', { static: false }) private birthdayForm: ElementRef;
+  @ViewChild('inputEmail', { static: false }) public inputEmail: ElementRef;
+  @ViewChild('username', { static: false }) public username: ElementRef;
 
   @Output()
   public dateChange: EventEmitter<MatDatepickerInputEvent<any>>;
@@ -51,7 +54,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public dialog: MatDialog;
   public hide = true;
   public uuid: boolean;
-  public email: string = '';
+  public objectMerge: any = {};
 
   public avatar: any;
   public images: any;
@@ -71,20 +74,27 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public passwordModeSocial: string = '';
   public repassword: string = '';
   public password: string = '';
-  public birthday; Date;
+  public birthday: Date;
+
+  public provinces;
 
   public user: SocialUser;
   public loggedIn: boolean;
   public active: boolean;
+  public activeFirstName: boolean;
+  public activeLastName: boolean;
   public activeEmail: boolean;
   public activePass: boolean;
   public activeRePass: boolean;
   public isLoading: boolean;
+  public isOnEdit: boolean;
   public genderTxt: string;
   public account_twitter: any;
   public isCheckDate: any;
   public checkedCon: boolean = false;
   public isRegister: boolean = false;
+  public isInputEmail: boolean;
+  public isPassUUID: boolean = true;
 
   constructor(authenManager: AuthenManager,
     private authService: SocialAuthService,
@@ -93,6 +103,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     dialog: MatDialog,
     observManager: ObservableManager,
     userFacade: UserFacade,
+    private notificationManager: NotificationManager,
     dateAdapter: DateAdapter<Date>, twitterService: TwitterService) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
@@ -122,7 +133,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     // this.data.birthday = new Date();
     this.activatedRoute.queryParams.subscribe(params => {
       this.mode = params['mode'];
-      if (params['mode'] === 'normal') {
+      if (params['mode'] === 'normal' || params['mode'] === 'mfp') {
         this.mode = "normal";
       } else if (params['mode'] === 'facebook') {
         this.mode = "facebook";
@@ -140,6 +151,11 @@ export class RegisterPage extends AbstractPage implements OnInit {
         if (state) {
           this.redirection = state.redirection;
           this.accessToken = state.accessToken;
+          this.objectMerge = {
+            email: state.email,
+            token: state.token
+          }
+          this.isInputEmail = true;
 
           if (this.mode === "facebook") {
             this.getCurrentUserInfo();
@@ -152,16 +168,33 @@ export class RegisterPage extends AbstractPage implements OnInit {
           this.router.navigateByUrl("/login");
         }
       }
+      if (params['mode'] === 'mfp') {
+        this.objectMerge = {
+          email: state.email
+        }
+      }
     });
   }
 
   ngOnInit(): void {
     super.ngOnInit();
+    this.getProvince();
     this.checkLoginAndRedirection();
+  }
+
+  public ngAfterViewInit(): void {
+    fromEvent(this.username && this.username.nativeElement, 'keyup').pipe(
+      debounceTime(800)
+      , distinctUntilChanged()
+    ).subscribe((text: any) => {
+      this.checkUUID(this.username.nativeElement.value);
+    });
   }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.destroy.next();
+    this.destroy.complete();
   }
 
   isPageDirty(): boolean {
@@ -176,6 +209,15 @@ export class RegisterPage extends AbstractPage implements OnInit {
     // throw new Error('Method not implemented.');
     return;
   }
+
+  public getProvince() {
+    this.userFacade.getProvince().then((res) => {
+      if (res) {
+        this.provinces = res;
+      }
+    })
+  }
+
   public fbLibrary() {
     (window as any).fbAsyncInit = function () {
       window['FB'].init({
@@ -211,18 +253,20 @@ export class RegisterPage extends AbstractPage implements OnInit {
     if (!this.isRegister) {
       this.isRegister = true;
       const register = new User();
-      register.username = formData.email;
+      register.username = !!formData!.email ? formData.email : this.inputEmail.nativeElement.value;
       register.firstName = formData.firstName === undefined ? "" : formData.firstName;
       register.lastName = formData.lastName === undefined ? "" : formData.lastName;
-      register.email = formData.email;
+      register.email = !!formData!.email ? formData.email : this.inputEmail.nativeElement.value;
       register.password = formData.password;
+      register.province = formData.province;
       // unqueId
       if (formData.username === undefined || formData.username === '') {
         this.generatorUnqueId(formData.displayName).then((isVaild: any) => {
           if (isVaild) {
             register.uniqueId = formData.displayName;
+            this.isRegister = false;
           } else {
-            let emailSubstring = formData.email.substring(1, 0);
+            let emailSubstring = !!formData!.email ? formData.email.substring(1, 0) : this.inputEmail.nativeElement.value.substring(1, 0);
             let newUnique = formData.displayName + '.' + emailSubstring;
             this.generatorUnqueId(newUnique).then((isVaild1: any) => {
               if (isVaild1) {
@@ -230,13 +274,21 @@ export class RegisterPage extends AbstractPage implements OnInit {
               }
             }).catch((err: any) => {
               console.log(err)
+              this.isRegister = false;
             });
           }
         }).catch((err: any) => {
-          console.log(err)
+          if (err) {
+            console.log(err)
+          }
         });
       } else {
         register.uniqueId = formData.username;
+      }
+      if (!this.isPassUUID) {
+        this.isRegister = false;
+        this.showAlertDialogWarming("กรุณารอ 15นาที เพื่อสมัครสมาชิกอีกครั้ง", "none");
+        return;
       }
       register.birthdate = new Date(moment(formData.birthday).format('YYYY-MM-DD'));
       register.birthdate.setHours(0);
@@ -248,14 +300,34 @@ export class RegisterPage extends AbstractPage implements OnInit {
       if (formData.displayName === '' || formData.displayName === undefined) {
         this.active = true;
         document.getElementById('displayName').style.border = "1px solid red";
+        this.isRegister = false;
         return document.getElementById("displayName").focus();
       } else {
         document.getElementById('displayName').style.border = "unset";
         this.active = false;
       }
-      if (formData.email === '' || formData.email === undefined) {
+      if (formData.firstName === '' || formData.firstName === undefined) {
+        this.activeFirstName = true;
+        document.getElementById('firstName').style.border = "1px solid red";
+        this.isRegister = false;
+        return document.getElementById("firstName").focus();
+      } else {
+        document.getElementById('firstName').style.border = "unset";
+        this.activeFirstName = false;
+      }
+      if (formData.lastName === '' || formData.lastName === undefined) {
+        this.activeLastName = true;
+        document.getElementById('lastName').style.border = "1px solid red";
+        this.isRegister = false;
+        return document.getElementById("lastName").focus();
+      } else {
+        document.getElementById('lastName').style.border = "unset";
+        this.activeLastName = false;
+      }
+      if (!this.inputEmail!.nativeElement!.value) {
         this.activeEmail = true;
         document.getElementById('email').style.border = "1px solid red";
+        this.isRegister = false;
         return document.getElementById("email").focus();
       } else {
         document.getElementById('email').style.border = "unset";
@@ -263,9 +335,10 @@ export class RegisterPage extends AbstractPage implements OnInit {
       }
       // mark
       let emailPattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
-      if (!formData.email.match(emailPattern)) {
+      if (!this.inputEmail!.nativeElement!.value.match(emailPattern)) {
         this.activeEmail = true;
         document.getElementById('email').style.border = "1px solid red";
+        this.isRegister = false;
         return document.getElementById("email").focus();
       } else {
         document.getElementById('email').style.border = "unset";
@@ -273,13 +346,21 @@ export class RegisterPage extends AbstractPage implements OnInit {
       }
 
       if (!this.uuid) {
+        this.isRegister = false;
         return;
       }
 
-      if (this.mode === "normal") {
+      let passwordPattern = " ";
+      if (this.mode === "normal" || this.mode === "mfp") {
         if (formData.password === "" && formData.repassword === "") {
           this.activePass = true;
           document.getElementById('password').style.border = "1px solid red";
+          this.isRegister = false;
+          return document.getElementById("password").focus();
+        } else if (formData.password.match(passwordPattern)) {
+          this.activePass = true;
+          document.getElementById('password').style.border = "1px solid red";
+          this.isRegister = false;
           return document.getElementById("password").focus();
         } else {
           document.getElementById('password').style.border = "unset";
@@ -290,6 +371,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
           if (formData.password.length < 6 || formData.repassword.length < 6) {
             this.activePass = true;
             document.getElementById('password').style.border = "1px solid red";
+            this.isRegister = false;
             return document.getElementById("password").focus();
           } else {
             document.getElementById('password').style.border = "unset";
@@ -299,6 +381,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         if (formData.password !== formData.repassword) {
           this.activeRePass = true;
           document.getElementById('repassword').style.border = "1px solid red";
+          this.isRegister = false;
           return document.getElementById("repassword").focus();
         } else {
           document.getElementById('repassword').style.border = "unset";
@@ -307,6 +390,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       }
       if (formData.gender === -1 && formData.genderTxt === undefined) {
         document.getElementById('genderTxt').style.border = "1px solid red";
+        this.isRegister = false;
         return document.getElementById("genderTxt").focus();
       }
 
@@ -324,12 +408,22 @@ export class RegisterPage extends AbstractPage implements OnInit {
       let image = {
         asset
       }
+
+      if (register.province === undefined || register.province === null || register.province === '') {
+        let dialog = this.showAlertDialogWarming('กรุณาเลือกจังหวัดของท่าน', "none");
+        this.isRegister = false;
+        return;
+      }
+
       let body = Object.assign(register, image)
 
-      if (this.mode === "normal") {
+      if (this.mode === "normal" || this.mode === "mfp") {
         let modeType = "EMAIL";
+        this.isLoading = true;
         this.authenManager.register(body, modeType).then((res) => {
           if (res.status === 1) {
+            this.isLoading = false;
+            this.isRegister = false;
             let alertMessage: string = 'ลงทะเบียนสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
             let isValid = false;
             this.isRegister = false;
@@ -340,18 +434,23 @@ export class RegisterPage extends AbstractPage implements OnInit {
             dialog.afterClosed().subscribe((res) => {
               if (isValid) {
                 this.observManager.publish('authen.check', null);
+                this.notificationManager.checkLoginSuccess();
                 if (this.redirection) {
                   this.router.navigateByUrl(this.redirection);
                 } else {
+                  this.isRegister = false;
                   this.router.navigate(['/login']);
                 }
               } else {
+                this.isRegister = false;
                 this.router.navigate(['/login']);
               }
             });
           }
         }).catch((err) => {
+          this.isLoading = false;
           if (err.error.status === 0) {
+            this.isRegister = false;
             let alertMessages: string;
             if (err.error.message === 'This Email already exists') {
               alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
@@ -364,14 +463,17 @@ export class RegisterPage extends AbstractPage implements OnInit {
             dialog.afterClosed().subscribe((res) => {
               if (res) {
                 this.observManager.publish('authen.check', null);
+                this.notificationManager.checkLoginSuccess();
                 if (this.redirection) {
                   this.router.navigateByUrl(this.redirection);
                 } else {
+                  this.isRegister = false;
                   this.router.navigate(['/login']);
                 }
               }
             });
           } else {
+            this.isRegister = false;
             this.router.navigate(['/login']);
           }
           this.isRegister = false;
@@ -383,23 +485,23 @@ export class RegisterPage extends AbstractPage implements OnInit {
         } else {
           register.password = this.passwordModeSocial === undefined ? "" : this.passwordModeSocial;
         }
-
         if (this.mode === "facebook" || this.mode === "FACEBOOK") {
-          register.fbAccessExpirationTime = this.accessToken.fbexptime;
-          register.fbSignedRequest = this.accessToken.fbsignedRequest;
-          register.fbToken = this.accessToken.fbtoken;
-          register.fbUserId = this.accessToken.fbid;
+          register.fbAccessExpirationTime = !!this.accessToken && !!this.accessToken!.fbexptime ? this.accessToken.fbexptime : this.objectMerge.token.fbexptime;
+          register.fbSignedRequest = !!this.accessToken && !!this.accessToken!.fbsignedRequest ? this.accessToken.fbsignedRequest : this.objectMerge.token.fbsignedRequest;
+          register.fbToken = !!this.accessToken && !!this.accessToken!.fbtoken ? this.accessToken.fbtoken : this.objectMerge.token.fbtoken;
+          register.fbUserId = !!this.accessToken && !!this.accessToken!.fbid ? this.accessToken.fbid : this.objectMerge.token.fbid;
         } else if (this.mode === "google" || this.mode === "GOOGLE") {
           register.googleUserId = this.accessToken.googleUserId;
           register.authToken = this.accessToken.authToken;
           register.idToken = this.accessToken.idToken;
         } else if (this.mode === "twitter" || this.mode === "TWITTER") {
-          register.twitterUserId = this.accessToken.twitterUserId;
-          register.twitterOauthToken = this.accessToken.twitterOauthToken;
-          register.twitterTokenSecret = this.accessToken.twitterOauthTokenSecret;
+          register.twitterUserId = !!this.accessToken && !!this.accessToken!.twitterUserId ? this.accessToken.twitterUserId : this.objectMerge.token.twitterUserId;
+          register.twitterOauthToken = !!this.accessToken && !!this.accessToken!.twitterOauthToken ? this.accessToken.twitterOauthToken : this.objectMerge.token.twitterOauthToken;
+          register.twitterTokenSecret = !!this.accessToken && !!this.accessToken!.twitterOauthTokenSecret ? this.accessToken.twitterOauthTokenSecret : this.objectMerge.token.twitterOauthTokenSecret;
         }
         this.authenManager.registerSocial(register, this.mode).then((value: any) => {
           if (value.status === 1) {
+            this.isRegister = false;
             let alertMessage: string = 'ลงทะเบียนสำเร็จ';
             let isValid = false;
             this.isRegister = false;
@@ -410,17 +512,21 @@ export class RegisterPage extends AbstractPage implements OnInit {
             dialog.afterClosed().subscribe((res) => {
               if (isValid) {
                 this.observManager.publish('authen.check', null);
+                this.notificationManager.checkLoginSuccess();
                 if (this.redirection) {
                   this.router.navigateByUrl(this.redirection);
                 } else {
+                  this.isRegister = false;
                   this.router.navigate(['/login']);
                 }
               } else {
+                this.isRegister = false;
                 this.router.navigate(['/login']);
               }
             });
           }
           else if (value.status === 2) {
+            this.isRegister = false;
             this.fbLibrary();
             window['FB'].login((response) => {
               if (response.authResponse) {
@@ -436,7 +542,9 @@ export class RegisterPage extends AbstractPage implements OnInit {
             }, { scope: 'public_profile, email, pages_manage_posts, pages_show_list, pages_read_engagement, pages_manage_metadata' });
           }
         }).catch((err: any) => {
+          console.log("err", err)
           if (err.error.status === 0) {
+            this.isRegister = false;
             let alertMessages: string;
             if (err.error.message === 'This Email already exists') {
               alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
@@ -444,11 +552,14 @@ export class RegisterPage extends AbstractPage implements OnInit {
               alertMessages = 'คุณไม่สามารถสมัครสมาชิกได้ กรุณาติดต่อผู้ดูแลระบบ';
             } else if (err.error.message === 'Twitter TokenSecret is required') {
               alertMessages = 'โทเค็นของคุณหมดอายุ';
+            } else if (err.error.message === 'This Email not exists') {
+              alertMessages = 'ไม่พบอีเมลของคุณในระบบ';
             }
             let dialog = this.showAlertDialogWarming(alertMessages, "none");
             dialog.afterClosed().subscribe((res) => {
               if (res) {
                 this.observManager.publish('authen.check', null);
+                this.notificationManager.checkLoginSuccess();
                 if (this.redirection) {
                   this.router.navigateByUrl(this.redirection);
                 } else {
@@ -457,6 +568,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
               }
             });
           } else {
+            this.isRegister = false;
             this.router.navigate(['/login']);
           }
           this.isRegister = false;
@@ -489,42 +601,34 @@ export class RegisterPage extends AbstractPage implements OnInit {
   }
 
   public checkUUID(event) {
-<<<<<<< HEAD
-    this.isLoading = true
-    if (event === '') {
-      return;
-    }
-    if (event.length > 0) {
-      let pattern = event.match('^[A-Za-z0-9_.]*$');
-      if (!pattern) {
-        this.uuid = false;
-        document.getElementById('username').focus();
-      } else {
-        let body = {
-          uniqueId: event
-        }
-=======
     this.isLoading = true;
     if (!!event) {
       let pattern = event.match('^[A-Za-z0-9_]*$');
       if (pattern) {
->>>>>>> b6ab8ffd05cbcdfb219a17874c11a2944b8213b3
         this.uuid = true;
-        this.userFacade.checkUniqueId(body).then((res) => {
-          if (res && res.data) {
-            this.uuid = res.data;
-          } else {
-            this.uuid = res.error;
+        this.userFacade.checkUniqueId({ uniqueId: event }).then((res) => {
+          if (res) {
+            this.isPassUUID = true;
+            this.isLoading = false;
+            if (res && res.data) {
+              this.uuid = res.data;
+            } else {
+              this.uuid = res.error;
+            }
+            document.getElementById('username').focus();
           }
-          document.getElementById('username').focus();
-
         }).catch((err) => {
           this.uuid = false;
+          this.isLoading = false;
+          if (err.error.message === 'Too many requests') {
+            this.isPassUUID = false;
+          }
           document.getElementById('username').focus();
         })
+      } else {
+        this.uuid = false;
       }
     }
-
   }
 
   public onShowDialog() {
@@ -542,13 +646,16 @@ export class RegisterPage extends AbstractPage implements OnInit {
 
   public getTwitterUser() {
     let body = {
-      twitterOauthToken: this.accessToken.twitterOauthToken,
-      twitterOauthTokenSecret: this.accessToken.twitterOauthTokenSecret
+      twitterOauthToken: !!this.accessToken && !!this.accessToken!.twitterOauthToken ? this.accessToken.twitterOauthToken : this.objectMerge.token.twitterOauthToken,
+      twitterOauthTokenSecret: !!this.accessToken && !!this.accessToken!.twitterOauthTokenSecret ? this.accessToken.twitterOauthTokenSecret : this.objectMerge.token.twitterOauthToken
     }
     this.twitterService.accountVerify(body).then((account: any) => {
       this.data = account;
       this.data.displayName = account.name;
-      this.images = account.profile_image_url_https;
+      let str = account.profile_image_url_https;
+      let splitted = str.split("_normal", 2);
+      let splitImg = splitted[0] + splitted[1];
+      this.images = splitImg;
       this.data.gender = -1;
       this.data.birthday = this.data.birthday ? new Date(this.data.birthday) : undefined;
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
@@ -568,17 +675,16 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.data.displayName = user.name;
       this.data.firstName = user.firstName;
       this.data.lastName = user.lastName;
-      this.images = user.photoUrl;
+      let str = user.photoUrl;
+      let splitted = str.split("s96", 2);
+      let splitImg = splitted[0] + "s400" + splitted[1];
+      this.images = splitImg;
       this.data.gender = -1;
       this.data.birthday = new Date();
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
-<<<<<<< HEAD
-        this.imagesAvatar.image = result;
-=======
         if (result) {
           this.imagesAvatar.image = result;
         }
->>>>>>> b6ab8ffd05cbcdfb219a17874c11a2944b8213b3
       }).catch(err => {
         console.log("เกิดข้อผิดพลาด");
       });
@@ -587,7 +693,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
 
   public getCurrentUserInfo(): any {
     window['FB'].api('/me', {
-      fields: 'name, first_name, last_name,birthday,picture,id,email,gender'
+      fields: 'name, first_name, last_name,birthday,picture.width(512).height(512),id,email,gender'
     }, (userInfo) => {
       this.data = userInfo;
       this.data.displayName = userInfo.name;
@@ -598,13 +704,15 @@ export class RegisterPage extends AbstractPage implements OnInit {
       // this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=large';
       this.images = userInfo.picture.data.url;
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
-        this.imagesAvatar.image = result;
+        if (result) {
+          this.imagesAvatar.image = result;
+        }
       }).catch(err => {
         console.log("เกิดข้อผิดพลาด");
       });
     });
-
   }
+
   public async getBase64ImageFromUrl(imageUrl) {
     var res = await fetch(imageUrl);
     var blob = await res.blob();
@@ -651,5 +759,4 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public checkedClick() {
     this.checkedCon = !this.checkedCon;
   }
-
 }

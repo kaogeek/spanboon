@@ -16,4 +16,12 @@ export class UpdateEmergencyEventRequest {
     public asset: any;
     public isClose: boolean;
     public isPin: boolean;
+    public ordering:number;
+    public currentIndex:any;
+    public previousIndex:any;
+    public filteredData:any;
+    public modeEmer:string;
+    public drag:string;
+    public mode:string;
+    public pageList:any;
 }

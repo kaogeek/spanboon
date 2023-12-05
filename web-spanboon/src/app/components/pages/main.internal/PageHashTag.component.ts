@@ -11,7 +11,7 @@ import { DateAdapter, MatDialog } from '@angular/material';
 import { FileHandle } from '../../shares/directive/directives';
 import * as $ from 'jquery';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { BoxPost, DialogReboonTopic, DialogShare } from '../../shares/shares';
+import { BoxPost, DialogAlert, DialogCheckBox, DialogReboonTopic, DialogShare } from '../../shares/shares';
 import { ChangeContext, LabelType, Options } from 'ng5-slider';
 import { SearchFilter } from '../../../../app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
@@ -453,6 +453,34 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       }
     });
 
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation.extras.state;
+    if (state) {
+      // this.emergency = data.item.hashTag;
+      // this.emergencyId = data.item.hasTagObj._id;
+    }
+    // if (this.mode !== "normal") {
+    //   if (state) {
+    //     this.redirection = state.redirection;
+    //     this.accessToken = state.accessToken;
+    //     this.objectMerge = {
+    //       email: state.email,
+    //       token: state.token
+    //     }
+    //     this.isInputEmail = true;
+
+    //     if (this.mode === "facebook") {
+    //       this.getCurrentUserInfo();
+    //     } else if (this.mode === "google") {
+    //       this.getGoogleUser();
+    //     } else if (this.mode === "twitter") {
+    //       this.getTwitterUser();
+    //     }
+    //   } else {
+    //     this.router.navigateByUrl("/login");
+    //   }
+    // }
+
     /* // this is for query param check
     this.routeActivated.queryParams.subscribe(params => {
     });*/
@@ -570,7 +598,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       let data = {
         keyword: text
       }
-
       this.dataUser = await this.accountFacade.search(data);
 
       for (let data of this.dataUser) {
@@ -754,7 +781,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.searchHashTag();
     } else if (event === 'ประเภทเพจ') {
       this.searchPageCategory(true);
-    } else if (event === 'เหตุการณ์ด่วน') {
+    } else if (event === 'เกาะทุกก้าว') {
       this.searchEmergency();
     } else if (event === 'สิ่งที่กำลังทำ') {
       this.searchObjective();
@@ -983,9 +1010,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     } else {
       this.endActionCount = this.countEngagement
     }
-
     const keywordFilter: any = {
-      keyword: this.keyword,
+      keyword: this.matHashTag ? this.matHashTag : this.keyword,
       hashtag: this.matHashTag,
       onlyFollowed: this.follow ? this.follow : undefined,
       type: this.type ? this.type : '',
@@ -1271,6 +1297,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public async searchPageCategory(isLoadMore?: boolean) {
+    this.isLoading = true;
+    this.isLoadMorePageCategory = true;
+
     let filter = new SearchFilter();
     filter.limit = 5;
     filter.offset = SEARCH_OFFSET + (this.resPageType && this.resPageType.length > 0 ? this.resPageType.length : 0);
@@ -1280,8 +1309,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     filter.orderBy = {
       createdDate: "DESC",
     }
-    this.isLoading = true;
-    this.isLoadMorePageCategory = true;
 
     let clonePageCategory: any[] = this.resPageType;
     await this.pageCategoryFacade.search(filter).then((res: any) => {
@@ -1303,6 +1330,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
       }
       this.isLoadMorePageCategory = false;
+      this.isLoading = false;
     }).catch((err: any) => {
       console.log(err)
       this.isLoading = false;
@@ -1568,6 +1596,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       }).catch((err: any) => {
         console.log(err)
         this.isLoading = false;
+        if (err.error.message === 'You cannot like this post type MFP.') {
+          this.showDialogEngagementMember();
+        } else if (err.error.message === 'Page cannot like this post type MFP.') {
+          this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
+        }
       });
     }
   }
@@ -1602,6 +1635,76 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.recommendedLeft.nativeElement.scrollTop = 0
     }
     super.clicktotop();
+  }
+
+  public hidePost(post: any, index: number) {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: false,
+      data: {
+        text: 'คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่',
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.pageFacade.hidePost(post._id).then((res) => {
+          if (res) {
+            this.resPost.splice(index, 1);
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
+      }
+    });
+  }
+
+  public reportPost(post: any, index: any) {
+    let typeReport = 'post';
+    let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
+    this.pageFacade.getManipulate(typeReport).then((res) => {
+      if (res) {
+        detail = [];
+        for (let data of res.data) {
+          detail.push(data.detail);
+        }
+        this._openDialogReport(post, typeReport, detail)
+      }
+    }).catch((err) => {
+      if (err.error.status === 0) {
+        this._openDialogReport(post, typeReport, detail)
+      }
+    });
+  }
+
+  private _openDialogReport(page, typeReport, detail) {
+    let title = '';
+    if (typeReport === 'post') {
+      title = 'รายงานโพสต์';
+    }
+    let dialog = this.dialog.open(DialogCheckBox, {
+      disableClose: false,
+      data: {
+        title: title,
+        subject: detail,
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        let data = {
+          typeId: page._id,
+          type: typeReport.toUpperCase(),
+          topic: res.topic,
+          message: res.detail ? res.detail : '',
+        }
+        this.pageFacade.reportPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
+      }
+    });
   }
 
   public getImageSelector(): string[] {

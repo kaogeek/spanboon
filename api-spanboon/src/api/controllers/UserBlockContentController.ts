@@ -11,7 +11,6 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { ObjectUtil } from '../../utils/ObjectUtil';
 import { DEFAULT_SEARCH_CONFIG_VALUE, SEARCH_CONFIG_NAME } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
-
 @JsonController('/user/content')
 export class UserBlockContentController {
 

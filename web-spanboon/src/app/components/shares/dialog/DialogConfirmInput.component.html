@@ -1,0 +1,31 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="dialog customize-alert">
+    <div class="newcon-alert-dialog">
+        <div class="edit-h">
+            <span class="edit-head-one">{{data.title}}</span>
+            <div class="dialog-image-title-right">
+                <i class="material-icons" (click)="onClose()">
+                    clear
+                </i>
+            </div>
+        </div>
+        <div class="edit-input">
+            <input type="text" [formControl]="input" [placeholder]="data!.placeholder ? data.placeholder : ''"
+                (keyup.enter)="input.valid ? onConfirm() : null">
+        </div>
+        <div class="dialog-footer">
+            <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
+                {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
+            <div class="butt but-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
+                (debounceClick)="input.valid ? onConfirm() : null">
+                {{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}
+            </div>
+        </div>
+    </div>
+</div>

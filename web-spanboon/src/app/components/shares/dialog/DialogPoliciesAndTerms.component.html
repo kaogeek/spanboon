@@ -1,0 +1,23 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<mat-dialog-content #content (scroll)="scrollingTo($event)">
+    <policy-page *ngIf="data && data.mode === 'policy'"></policy-page>
+    <terms-of-service-page *ngIf="data && data.mode === 'terms'"></terms-of-service-page>
+    <div class="wrapper-content">
+        <div class="container">
+            <div class="wrapper-flex">
+                <mat-checkbox [(ngModel)]="isAccept">ยอมรับ{{data && data.mode === 'policy' ? 'นโยบายความเป็นส่วนตัว' :
+                    'เงื่อนไขในการให้บริการ'}}</mat-checkbox>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="center">
+    <spanboon-button [height]="'45px'" [width]="'220px'" [text]="'ยืนยัน'" [fontSize]="'18px'"
+        [isDisable]="!isReading || !isAccept" (click)="isReading && isAccept ? clickSubmit() : null"></spanboon-button>
+</mat-dialog-actions>

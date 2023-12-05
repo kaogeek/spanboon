@@ -15,10 +15,9 @@ import { FileUtil } from '../../utils/FileUtil';
 import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/SystemConfig';
 import { S3Service } from '../services/S3Service';
 import { ConfigService } from '../services/ConfigService';
-import { aws_setup } from '../../env';
+// import { aws_setup } from '../../env';
 import { ASSET_SCOPE } from '../../constants/AssetScope';
 import { ObjectID } from 'mongodb';
-
 @Service()
 export class AssetService {
 
@@ -35,8 +34,8 @@ export class AssetService {
     }
 
     // deleteMany
-    public async deleteMany(query:any,options?:any): Promise<any>{
-        return this.assetRepository.deleteMany(query,options);
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return this.assetRepository.deleteMany(query, options);
     }
 
     // create asset
@@ -135,26 +134,27 @@ export class AssetService {
         if (asset !== undefined && asset.s3FilePath !== undefined && asset.s3FilePath !== '' && asset.s3FilePath !== null) {
             // s3 upload by cofig
             const signExpireConfig = await this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
-            let expireSecond = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
+            // let expireSecond = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
 
             if (signExpireConfig && signExpireConfig.value) {
                 try {
                     if (typeof signExpireConfig.value === 'number') {
-                        expireSecond = signExpireConfig.value;
+                        // expireSecond = signExpireConfig.value;
                     } else if (typeof signExpireConfig.value === 'string') {
-                        expireSecond = parseFloat(signExpireConfig.value);
+                        // expireSecond = parseFloat(signExpireConfig.value);
                     }
                 } catch (error) {
                     console.log(ASSET_CONFIG_NAME.EXPIRE_MINUTE + ' value was wrong.');
                 }
             }
 
-            let signURL = await this.s3Service.getSignedUrl(asset.s3FilePath, expireSecond);
+            const signURL = await this.s3Service.s3signCloudFront(asset.s3FilePath);
+            /* 
             if (signURL !== undefined) {
                 for (const prefix of this.s3Service.getPrefixBucketURL()) {
                     signURL = signURL.replace(prefix, aws_setup.AWS_CLOUDFRONT_PREFIX);
                 }
-            }
+            } */
             asset.signURL = signURL;
             delete asset.s3FilePath;
             delete asset.data;

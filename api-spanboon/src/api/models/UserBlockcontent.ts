@@ -4,7 +4,7 @@ import { ObjectIdColumn, Column, BeforeInsert, BeforeUpdate, Entity } from 'type
 import { BaseModel } from './BaseModel';
 import { ObjectID } from 'mongodb';
 
-@Entity('UserBlockcontent')
+@Entity('UserBlockContent')
 export class UserBlockContent extends BaseModel {
 
     @ObjectIdColumn({ name: '_id' })

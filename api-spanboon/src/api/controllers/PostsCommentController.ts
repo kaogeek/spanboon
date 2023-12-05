@@ -37,6 +37,11 @@ import { PageNotificationService } from '../services/PageNotificationService';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageService } from '../services/PageService';
 import { UserService } from '../services/UserService';
+// import { ConfigService } from '../services/ConfigService';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
+import { PROVIDER } from '../../constants/LoginProvider';
+import axios from 'axios';
+import qs from 'qs';
 @JsonController('/post')
 export class PostsCommentController {
     constructor(
@@ -51,7 +56,8 @@ export class PostsCommentController {
         private pageNotificationService: PageNotificationService,
         private deviceTokenService: DeviceTokenService,
         private pageService: PageService,
-        private userService: UserService
+        private userService: UserService,
+        private authenticationIdService: AuthenticationIdService
     ) { }
 
     // PostsComment List API
@@ -122,8 +128,65 @@ export class PostsCommentController {
         const assets = pcm.asset;
         let assetCreate: Asset;
         const space = ' ';
-        const posts: Posts = await this.postsService.findOne({ where: { _id: postObjId } });
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const interval = 30;
+        // comment user post membership MFP
+        // check authenticate membership MFP 
+        const postObject = await this.postsService.findOne({ _id: postObjId });
+        const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
+        if (postObject.type === 'MEMBERSHIP' || authenticateMFP !== undefined && authenticateMFP.membership === false) {
+            if (authenticateMFP === undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('You cannot comment this post type MFP.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+        // check client credential
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
 
+        const response = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        const tokenCredential = response.data.access_token;
+        let getMembershipById = undefined;
+        if (authenticateMFP !== undefined) {
+            getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + authenticateMFP.providerUserId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
+                }
+            );
+        }
+        if (getMembershipById !== undefined && getMembershipById.data.data.state !== 'APPROVED') {
+            const errorResponse = ResponseUtil.getErrorResponse('Your status have not approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const today = new Date();
+        const timeStampToday = today.getTime();
+        if (authenticateMFP !== undefined &&
+            authenticateMFP.membershipState === 'APPROVED' &&
+            authenticateMFP.membershipType === 'MEMBERSHIP_YEARLY') {
+            const timeStampSettings = Date.parse(authenticateMFP.expirationDate);
+            if (timeStampToday > timeStampSettings) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Your account have already expired.', undefined));
+            }
+        }
+
+        const posts: Posts = await this.postsService.findOne({ where: { _id: postObjId } });
         if (posts !== null && posts !== undefined) {
             if (assets !== null && assets !== undefined) {
                 const newFileName = userId + FileUtil.renameFile() + postId;
@@ -154,163 +217,578 @@ export class PostsCommentController {
                 await this.postsService.update({ _id: postObjId }, { $set: { commentCount } });
                 const successResponse = ResponseUtil.getSuccessResponse('Create PostsComment Successful', comment);
                 const postWho = await this.postsService.findOne({ _id: comment.post });
-                const getPost = await this.postsService.findOne({ _id: comment.post });
-                const userDisplayName = await this.userService.findOne({ _id: getPost.ownerUser });
+                const ownerPosts = await this.postsService.findOne({ _id: comment.post });
+                const userDisplayName = await this.userService.findOne({ _id: ownerPosts.ownerUser });
+                let notificationComment = undefined;
+                let link = undefined;
+                let firstPerson = undefined;
+                let secondPerson = undefined;
                 if (comment.commentAsPage !== null) {
+                    const commentPost = await this.postsCommentService.aggregate([{ $match: { post: postObjId, commentAsPage: { $ne: null } } }]);
                     const pageName = await this.pageService.findOne({ _id: ObjectID(commentAsPage) });
                     // page to page
                     if (postWho.pageId !== undefined && postWho.pageId !== null) {
-                        const page = await this.pageService.findOne({ _id: getPost.pageId });
-                        const notificationComment = 'เพจ' + pageName.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของเพจ' + space + page.name;
-                        const link = `/page/${pageName.id}/post/` + postWho.id;
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
-                        await this.pageNotificationService.notifyToPageUserFcm(
-                            getPost.pageId,
-                            undefined,
-                            postsComment.commentAsPage + '',
-                            USER_TYPE.PAGE,
-                            NOTIFICATION_TYPE.COMMENT,
-                            notificationComment,
-                            link,
-                            pageName.name,
-                            pageName.imageURL
-                        );
-                        for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
-                                await this.notificationService.sendNotificationFCM(
-                                    getPost.pageId,
-                                    undefined,
-                                    postsComment.commentAsPage + '',
-                                    USER_TYPE.PAGE,
-                                    NOTIFICATION_TYPE.COMMENT,
-                                    notificationComment,
-                                    link,
-                                    tokenFCM.Tokens,
-                                    pageName.name,
-                                    pageName.imageURL
-                                );
+                        const page = await this.pageService.findOne({ _id: ownerPosts.pageId });
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPosts.ownerUser });
+                        firstPerson = await this.pageService.findOne({ _id: new ObjectID(commentPost[commentPost.length - 1].commentAsPage) });
+                        if (commentPost.length > 0 && commentPost.length <= 5) {
+                            link = `/page/${pageName.id}/post/` + postWho.id;
+                            notificationComment = 'เพจ' + space + firstPerson.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของเพจ' + space + page.name;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                ownerPosts.pageId,
+                                undefined,
+                                postsComment.commentAsPage + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                firstPerson.name,
+                                firstPerson.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        ownerPosts.pageId,
+                                        undefined,
+                                        postsComment.commentAsPage + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        firstPerson.name,
+                                        firstPerson.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                            else {
-                                continue;
+                        } else if (commentPost.length > 5 && commentPost.length <= 20 && minutes % interval === 0) {
+                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(commentPost[commentPost.length - 2].commentAsPage) });
+                            link = `/page/${pageName.id}/post/` + postWho.id;
+                            notificationComment = 'เพจ' + firstPerson.name + space + 'และเพจ' + space + secondPerson.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของเพจ' + space + page.name + space + 'และอื่น' + space + commentPost.length;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                ownerPosts.pageId,
+                                undefined,
+                                postsComment.commentAsPage + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                firstPerson.name,
+                                firstPerson.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        ownerPosts.pageId,
+                                        undefined,
+                                        postsComment.commentAsPage + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        firstPerson.name,
+                                        firstPerson.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
+                        } else if (commentPost.length > 20 && commentPost.length <= 500 && hours % 3 === 0) {
+                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(commentPost[commentPost.length - 2].commentAsPage) });
+                            link = `/page/${pageName.id}/post/` + postWho.id;
+                            notificationComment = 'เพจ' + firstPerson.name + space + 'และเพจ' + space + secondPerson.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของเพจ' + space + page.name + space + 'และอื่น' + space + commentPost.length;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                ownerPosts.pageId,
+                                undefined,
+                                postsComment.commentAsPage + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                pageName.name,
+                                pageName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        ownerPosts.pageId,
+                                        undefined,
+                                        postsComment.commentAsPage + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pageName.name,
+                                        pageName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (commentPost.length > 500 && hours % 5 === 0) {
+                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(commentPost[commentPost.length - 2].commentAsPage) });
+                            link = `/page/${pageName.id}/post/` + postWho.id;
+                            notificationComment = 'เพจ' + firstPerson.name + space + 'และเพจ' + space + secondPerson.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของเพจ' + space + page.name + space + 'และอื่น' + space + commentPost.length;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                ownerPosts.pageId,
+                                undefined,
+                                postsComment.commentAsPage + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                pageName.name,
+                                pageName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        ownerPosts.pageId,
+                                        undefined,
+                                        postsComment.commentAsPage + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pageName.name,
+                                        pageName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+
                         }
                     }
                     // page to user
                     else {
-                        const notificationComment = 'เพจ' + space + pageName.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
-                        const link = `/profile/${userDisplayName.id}/post/` + postWho.id;
                         // page to user
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
-                        await this.notificationService.createNotificationFCM(
-                            getPost.ownerUser,
-                            USER_TYPE.PAGE,
-                            req.user.id + '',
-                            USER_TYPE.USER,
-                            NOTIFICATION_TYPE.COMMENT,
-                            notificationComment,
-                            link,
-                            pageName.name,
-                            pageName.imageURL
-                        );
-                        for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
-                                await this.notificationService.sendNotificationFCM(
-                                    getPost.ownerUser,
-                                    USER_TYPE.PAGE,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.COMMENT,
-                                    notificationComment,
-                                    link,
-                                    tokenFCM.Tokens,
-                                    pageName.name,
-                                    pageName.imageURL
-                                );
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPosts.ownerUser });
+                        if (commentPost.length > 0 && commentPost.length <= 5) {
+                            link = `/profile/${userDisplayName.id}/post/` + postWho.id;
+                            notificationComment = 'เพจ' + space + pageName.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
+                            await this.notificationService.createNotificationFCM(
+                                ownerPosts.ownerUser,
+                                USER_TYPE.PAGE,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                pageName.name,
+                                pageName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        ownerPosts.ownerUser,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pageName.name,
+                                        pageName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                            else {
-                                continue;
+                        } else if (commentPost.length > 5 && commentPost.length <= 20 && minutes % interval === 0) {
+                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(commentPost[commentPost.length - 2].commentAsPage) });
+                            link = `/profile/${comment.commentAsPage}`;
+                            notificationComment = 'เพจ' + space + pageName.name + space + secondPerson.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ' + space + 'และอื่น' + space + commentPost.length;
+                            await this.notificationService.createNotificationFCM(
+                                ownerPosts.ownerUser,
+                                USER_TYPE.PAGE,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                pageName.name,
+                                pageName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        ownerPosts.ownerUser,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pageName.name,
+                                        pageName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (commentPost.length > 20 && commentPost.length <= 500 && hours % 3 === 0) {
+                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(commentPost[commentPost.length - 2].commentAsPage) });
+                            link = `/profile/${comment.commentAsPage}`;
+                            notificationComment = 'เพจ' + space + pageName.name + space + secondPerson.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ' + space + 'และอื่น' + space + commentPost.length;
+                            await this.notificationService.createNotificationFCM(
+                                ownerPosts.ownerUser,
+                                USER_TYPE.PAGE,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                pageName.name,
+                                pageName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        ownerPosts.ownerUser,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pageName.name,
+                                        pageName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (commentPost.length > 500 && hours % 5 === 0) {
+                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(commentPost[commentPost.length - 2].commentAsPage) });
+                            link = `/profile/${comment.commentAsPage}`;
+                            notificationComment = 'เพจ' + space + pageName.name + space + secondPerson.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ' + space + 'และอื่น' + space + commentPost.length;
+                            await this.notificationService.createNotificationFCM(
+                                ownerPosts.ownerUser,
+                                USER_TYPE.PAGE,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                pageName.name,
+                                pageName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        ownerPosts.ownerUser,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pageName.name,
+                                        pageName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
                         }
                     }
-                }
-
-                else {
+                } else {
                     // WHO POST USER OR PAGE ?
                     // USER TO PAGE
                     const page = await this.pageService.findOne({ _id: postWho.pageId });
+                    const commentPost = await this.postsCommentService.find({ post: postObjId });
                     if (postWho.pageId !== undefined && postWho.pageId !== null) {
                         const userName = await this.userService.findOne({ _id: postsComment.user });
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
-                        const notificationComment = `${userName.displayName}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}`;
-                        const link = `/post/` + postWho.id;
-                        await this.pageNotificationService.notifyToPageUserFcm(
-                            page.id,
-                            undefined,
-                            req.user.id + '',
-                            USER_TYPE.PAGE,
-                            NOTIFICATION_TYPE.COMMENT,
-                            notificationComment,
-                            link,
-                            userName.displayName,
-                            userName.imageURL
-                        );
-                        for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
-                                await this.notificationService.sendNotificationFCM(
-                                    page.id,
-                                    undefined,
-                                    req.user.id + '',
-                                    USER_TYPE.PAGE,
-                                    NOTIFICATION_TYPE.COMMENT,
-                                    notificationComment,
-                                    link,
-                                    tokenFCM.Tokens,
-                                    userName.displayName,
-                                    userName.imageURL
-                                );
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPosts.ownerUser });
+                        if (commentPost.length > 0 && commentPost.length <= 5) {
+                            link = `/page/${page.id}/post/` + postWho.id;
+                            notificationComment = `${userName.displayName}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}`;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                page.id,
+                                undefined,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                userName.displayName,
+                                userName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userName.displayName,
+                                        userName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                            else {
-                                continue;
+                        } else if (commentPost.length > 5 && commentPost.length <= 20 && minutes % interval === 0) {
+                            link = `/page/${page.id}/post/` + postWho.id;
+                            notificationComment = `${userName.displayName}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}` + space + 'และอื่น' + space + commentPost.length;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                page.id,
+                                undefined,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                userName.displayName,
+                                userName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userName.displayName,
+                                        userName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                        }
-                    }
-                    else {
-                        // USER TO USER
-                        const userName = await this.userService.findOne({ _id: postsComment.user });
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: postWho.ownerUser });
-                        const notificationComment = userName.displayName + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
-                        const link = `/profile/${userName.id}/post/` + postWho.id;
-                        await this.notificationService.createNotificationFCM(
-                            postWho.ownerUser,
-                            USER_TYPE.USER,
-                            req.user.id + '',
-                            USER_TYPE.USER,
-                            NOTIFICATION_TYPE.COMMENT,
-                            notificationComment,
-                            link,
-                            userName.displayName,
-                            userName.imageURL
-                        );
-                        for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
-                                await this.notificationService.sendNotificationFCM(
-                                    postWho.ownerUser,
-                                    USER_TYPE.USER,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.COMMENT,
-                                    notificationComment,
-                                    link,
-                                    tokenFCM.Tokens,
-                                    userName.displayName,
-                                    userName.imageURL
-                                );
+                        } else if (commentPost.length > 20 && commentPost.length <= 500 && hours % 3 === 0) {
+                            link = `/page/${page.id}/post/` + postWho.id;
+                            notificationComment = `${userName.displayName}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}` + space + 'และอื่น' + space + commentPost.length;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                page.id,
+                                undefined,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                userName.displayName,
+                                userName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userName.displayName,
+                                        userName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                            else {
-                                continue;
+                        } else if (commentPost.length > 500 && hours % 3 === 0) {
+                            link = `/page/${page.id}/post/` + postWho.id;
+                            notificationComment = `${userName.displayName}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}` + space + 'และอื่น' + space + commentPost.length;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                page.id,
+                                undefined,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                userName.displayName,
+                                userName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userName.displayName,
+                                        userName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
                         }
 
+                    } else {
+                        // USER TO USER
+                        const userName = await this.userService.findOne({ _id: postsComment.user });
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: postWho.ownerUser });
+                        if (commentPost.length > 0 && commentPost.length <= 5) {
+                            link = `/profile/${userName.id}/post/` + postWho.id;
+                            notificationComment = userName.displayName + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
+                            await this.notificationService.createNotificationFCM(
+                                postWho.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                userName.displayName,
+                                userName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userName.displayName,
+                                        userName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (commentPost.length > 5 && commentPost.length <= 20 && minutes % interval === 0) {
+                            link = `/profile/${userName.id}/post/` + postWho.id;
+                            notificationComment = userName.displayName + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
+                            await this.notificationService.createNotificationFCM(
+                                postWho.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                userName.displayName,
+                                userName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userName.displayName,
+                                        userName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (commentPost.length > 20 && commentPost.length <= 500 && hours % 3 === 0) {
+                            link = `/profile/${userName.id}/post/` + postWho.id;
+                            notificationComment = userName.displayName + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
+                            await this.notificationService.createNotificationFCM(
+                                postWho.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                userName.displayName,
+                                userName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userName.displayName,
+                                        userName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (commentPost.length > 500 && hours % 5 === 0) {
+                            link = `/profile/${userName.id}/post/` + postWho.id;
+                            notificationComment = userName.displayName + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
+                            await this.notificationService.createNotificationFCM(
+                                postWho.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationComment,
+                                link,
+                                userName.displayName,
+                                userName.imageURL
+                            );
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.COMMENT,
+                                        notificationComment,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        userName.displayName,
+                                        userName.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        }
                     }
 
                 }
@@ -450,7 +928,7 @@ export class PostsCommentController {
 
                     postCommentLists.map((result) => {
                         const commentId = result.id;
-
+                        result.typePost = posts.type;
                         if (userLikeMap[commentId]) {
                             result.isLike = true;
                         } else {
@@ -631,6 +1109,11 @@ export class PostsCommentController {
         const contentType = ENGAGEMENT_CONTENT_TYPE.POST_COMMENT;
         const likeAsPage = like.likeAsPage;
         const space = ' ';
+        /* 
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const interval = 30; */
         let userEngagementAction: UserEngagement;
         let userLiked: UserLike[];
         let result = {};
@@ -639,7 +1122,59 @@ export class PostsCommentController {
         let likeCount;
         let likeAsPageObjId;
         let likeStmt;
+        // like comment user post membership MFP
+        // check authenticate membership MFP 
+        const postObject = await this.postsService.findOne({ _id: postObjId });
+        const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
+        if (postObject.type === 'MEMBERSHIP' || authenticateMFP !== undefined && authenticateMFP.membership === false) {
+            if (authenticateMFP === undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('You cannot like comment this post type MFP.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+        // check client credential
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
 
+        const response = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        const tokenCredential = response.data.access_token;
+        let getMembershipById = undefined;
+        if (authenticateMFP !== undefined) {
+            getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + authenticateMFP.providerUserId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
+                }
+            );
+        }
+        if (getMembershipById !== undefined && getMembershipById.data.data.state !== 'APPROVED') {
+            const errorResponse = ResponseUtil.getErrorResponse('Your status have not approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const today = new Date();
+        const timeStampToday = today.getTime();
+        if (authenticateMFP !== undefined &&
+            authenticateMFP.membershipState === 'APPROVED' &&
+            authenticateMFP.membershipType === 'MEMBERSHIP_YEARLY') {
+            const timeStampSettings = Date.parse(authenticateMFP.expirationDate);
+            if (timeStampToday > timeStampSettings) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Your account have already expired.', undefined));
+            }
+        }
         if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
             likeAsPageObjId = new ObjectID(likeAsPage);
             likeStmt = { where: { userId: userObjId, subjectId: commentObjId, subjectType: LIKE_TYPE.POST_COMMENT, likeAsPage: likeAsPageObjId } };
@@ -740,12 +1275,14 @@ export class PostsCommentController {
                 const userDisplayName = await this.userService.findOne({ _id: comment.user });
                 const pageLike = await this.pageService.findOne({ _id: likeCreate.likeAsPage });
                 const user = await this.userService.findOne({ _id: likeCreate.userId });
+                let notificationComment = undefined;
+                let link = undefined;
                 if (likeCreate.likeAsPage !== null) {
                     // page to page
                     if (comment.commentAsPage !== undefined && comment.commentAsPage !== null) {
-                        const notificationComment = 'เพจ' + space + pageLike.name + space + 'กดถูกใจคอมเมนต์ของเพจ' + space + page.name;
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: page.ownerUser });
-                        const link = `/page/${page.id}/post/` + post_who.id;
+                        notificationComment = 'เพจ' + space + pageLike.name + space + 'กดถูกใจคอมเมนต์ของเพจ' + space + page.name;
+                        // const tokenFCMId = await this.deviceTokenService.find({ userId: page.ownerUser });
+                        link = `/page/${page.id}/post/` + post_who.id;
                         await this.pageNotificationService.notifyToPageUserFcm(
                             page.id + '',
                             undefined,
@@ -757,8 +1294,9 @@ export class PostsCommentController {
                             pageLike.name,
                             pageLike.imageURL
                         );
+                        /* 
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     page.id + '',
                                     undefined,
@@ -775,13 +1313,13 @@ export class PostsCommentController {
                             else {
                                 continue;
                             }
-                        }
+                        } */
                     }
                     // page to user
                     else {
-                        const notificationComment = 'เพจ' + space + pageLike.name + space + 'กดถูกใจคอมเมนต์ของคุณ';
+                        notificationComment = 'เพจ' + space + pageLike.name + space + 'กดถูกใจคอมเมนต์ของคุณ';
                         const tokenFCMId = await this.deviceTokenService.find({ userId: comment.user });
-                        const link = `/profile/${userDisplayName.id}/post/` + post_who.id;
+                        link = `/profile/${userDisplayName.id}/post/` + post_who.id;
                         await this.notificationService.createNotificationFCM(
                             tokenFCMId.userId,
                             USER_TYPE.PAGE,
@@ -793,8 +1331,9 @@ export class PostsCommentController {
                             pageLike.name,
                             pageLike.imageURL
                         );
+                        /* 
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     tokenFCMId.userId,
                                     USER_TYPE.PAGE,
@@ -810,7 +1349,7 @@ export class PostsCommentController {
                             } else {
                                 continue;
                             }
-                        }
+                        } */
                     }
                 }
                 // User to page and User to user
@@ -818,9 +1357,9 @@ export class PostsCommentController {
                     // User to page
                     const pageUser = await this.pageService.findOne({ _id: comment.commentAsPage });
                     if (comment.commentAsPage !== null && comment.commentAsPage !== undefined) {
-                        const notificationComment = user.displayName + space + 'กดถูกใจคอมเมนต์ของเพจ' + space + pageUser.name;
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: pageUser.ownerUser });
-                        const link = `/page/${page.id}/post/` + post_who.id;
+                        notificationComment = user.displayName + space + 'กดถูกใจคอมเมนต์ของเพจ' + space + pageUser.name;
+                        // const tokenFCMId = await this.deviceTokenService.find({ userId: pageUser.ownerUser });
+                        link = `/page/${page.id}/post/` + post_who.id;
                         await this.pageNotificationService.notifyToPageUserFcm
                             (
                                 page.id + '',
@@ -833,8 +1372,9 @@ export class PostsCommentController {
                                 user.displayName,
                                 user.imageURL
                             );
+                        /* 
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM
                                     (
                                         page.id + '',
@@ -852,13 +1392,13 @@ export class PostsCommentController {
                             else {
                                 continue;
                             }
-                        }
+                        } */
                     }
                     // User to User
                     else {
-                        const notificationComment = user.displayName + space + 'กดถูกใจคอมเมนต์ของคุณ';
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: notifiUser.user });
-                        const link = `/profile/${user.id}/post/` + post_who.id;
+                        notificationComment = user.displayName + space + 'กดถูกใจคอมเมนต์ของคุณ';
+                        // const tokenFCMId = await this.deviceTokenService.find({ userId: notifiUser.user });
+                        link = `/profile/${user.id}/post/` + post_who.id;
                         await this.notificationService.createNotificationFCM
                             (
                                 notifiUser.user + '',
@@ -871,8 +1411,9 @@ export class PostsCommentController {
                                 user.displayName,
                                 user.imageURL
                             );
+                        /* 
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM
                                     (
                                         notifiUser.user + '',
@@ -890,7 +1431,7 @@ export class PostsCommentController {
                             else {
                                 continue;
                             }
-                        }
+                        } */
                     }
                 }
                 if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
@@ -1011,16 +1552,14 @@ export class PostsCommentController {
     public async deletePostsComment(@Param('postId') postId: string, @Param('commentId') commentId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const commentObjId = new ObjectID(commentId);
         const postsObjId = new ObjectID(postId);
-        const username = req.user.id;
 
-        const postsCommentData: PostsComment = await this.postsCommentService.findOne({ $and: [{ _id: commentObjId }, { post: postsObjId }, { user: username }, { deleted: false }] });
+        const postsCommentData: PostsComment = await this.postsCommentService.findOne({ $and: [{ _id: commentObjId }, { post: postsObjId }, { deleted: false }] });
 
         if (postsCommentData !== null && postsCommentData !== undefined) {
-            const deletePostsComment = await this.postsCommentService.update({ _id: commentObjId, post: postsObjId, user: username }, { $set: { deleted: true } });
+            const deletePostsComment = await this.postsCommentService.update({ _id: commentObjId, post: postsObjId }, { $set: { deleted: true } });
 
             if (deletePostsComment) {
                 const posts: Posts = await this.postsService.findOne({ _id: postsObjId });
-                console.log('posts >>>> ', posts);
                 await this.postsService.update({ _id: postsObjId }, { $set: { commentCount: posts.commentCount - 1 } });
 
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully delete PostsComment', []);

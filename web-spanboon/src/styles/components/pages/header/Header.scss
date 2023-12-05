@@ -5,6 +5,11 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
+.icon-home-2 {
+  width: 16pt !important;
+  height: 16pt !important;
+}
+
 .header-top {
   position: sticky;
   display: flex;
@@ -101,8 +106,31 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    margin: 10pt 0 10pt 15pt;
+    padding: 10pt 0 10pt 10pt;
     border-left: $width-border solid $bg-fog-gray2;
+
+    >.label-date {
+      display: flex;
+      padding: 0 10pt;
+      align-items: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      width: 20px;
+    }
+
+    >.about-us-icon {
+      width: 40px;
+      height: 40px;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+
+      >svg {
+        width: 20px;
+        height: 20px;
+        display: block;
+      }
+    }
 
     >.icon-social {
       display: flex;
@@ -127,9 +155,7 @@
       }
     }
 
-    >.menu-search {
-      margin-left: 15pt;
-    }
+    >.menu-search {}
 
     >.menu-chat,
     >.menu-fulfill {
@@ -171,17 +197,13 @@
     }
 
     >.list-right-menu {
-      margin-left: 5pt;
+      margin-right: 5px;
       display: flex;
       justify-content: center;
       align-items: center;
 
       &.menu-nofitication {
         margin-right: 5pt;
-      }
-
-      &:nth-child(1) {
-        margin-left: 15pt;
       }
     }
 
@@ -277,11 +299,6 @@
       >.menu-chat,
       >.menu-fulfill {
         display: none;
-      }
-
-      >.list-right-menu {
-        margin-left: 3pt;
-        margin-right: 10px;
       }
     }
   }

@@ -30,14 +30,14 @@ export class LoginPage implements OnInit {
     public password: string = "";
 
     constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog) {
-      this.dialog = dialog;
-      this.router = router;
-      this.authenManager = authenManager;
-     }
+        this.dialog = dialog;
+        this.router = router;
+        this.authenManager = authenManager;
+    }
 
     public ngOnInit() {
-        if(this.authenManager.getUserToken()) {
-          this.router.navigateByUrl("main/item");
+        if (this.authenManager.getUserToken()) {
+            this.router.navigateByUrl("main/item");
         }
     }
 

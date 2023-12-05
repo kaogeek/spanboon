@@ -9,15 +9,26 @@ import { EventEmitter } from '@angular/core';
 import { BaseModel } from './BaseModel';
 
 export class DialogData extends BaseModel {
-
+  mode?: string;
   width: string;
   height: string;
   title: string;
   text: string;
+  text2: string;
+  group: any;
+  pageId: string;
+  page?: any;
   bgColor: string;
   textColor: string;
   item: string;
   allo: boolean;
+  placeholder: string;
+  subject: string;
+  type: string;
+  isProvince: boolean;
+  isGroup: boolean;
+  userId: string;
+  user: any;
 
   //bottom
   bottomText1: string;
@@ -41,4 +52,5 @@ export class DialogData extends BaseModel {
 
   // options
   options: any;
+  data: any[];
 }

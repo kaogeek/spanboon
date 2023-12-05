@@ -6,85 +6,461 @@
  */
 
 .setting-account {
-    min-height: calc(100vh - 55pt);
-    background: $bg-fog-gray2;
+  min-height: calc(100vh - 55pt);
+  background: $bg-fog-gray2;
 
-    .container {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0 10px;
-        >.setting-top {
-            padding-top: 10pt;
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 10px;
+
+    > .setting-top {
+      padding-top: 10pt;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: stretch;
+
+      > .label-top {
+        width: calc(300px - 20pt);
+        border-radius: 4px 0 0 4px;
+        border: 1px solid #e5e5e5;
+        background: #fff;
+        display: flex;
+        padding: 5pt 10pt;
+        @include font-size-7($font-head-500);
+
+        @media (max-width: $medium) {
+          width: 100%;
+        }
+      }
+    }
+
+    > .settings-flex {
+      padding: 10pt 0;
+      display: flex;
+      flex-direction: row;
+
+      @media (max-width: $medium) {
+        flex-direction: column;
+      }
+
+      > .settings-left {
+        width: 300px;
+        margin-right: 10pt;
+
+        @media (max-width: $medium) {
+          width: 100%;
+        }
+
+        > .settings-list {
+          border-radius: 4px;
+          border: 1px solid $border-color;
+          background: $white;
+
+          > .list-item-menu {
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
-            align-items: stretch;
-            >.label-top {
-                width: calc(300px - 20pt);
-                border-radius: 4px 0 0 4px;
-                border: 1px solid #e5e5e5;
-                background: #fff;
-                display: flex;
-                padding: 5pt 10pt;
-                @include font-size-7($font-head-500);
+            align-items: center;
+            padding: 13px 10px;
+            border-top: 1px solid $border-color;
+            @include pointer();
+            @include font-size-9($font-head-500);
+            opacity: 0.7;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: $black;
+
+            &:hover {
+              background: #f5f6f7;
             }
+
+            &.active {
+              opacity: 1;
+            }
+
+            > .settings-icon {
+              margin-right: 8pt;
+              color: $brandcolor2;
+            }
+
+            > .settings-title {
+            }
+          }
         }
-        > .settings-flex {
-            padding: 10pt 0;
+      }
+
+      > .settings-right {
+        width: calc(100% - 300px - 10pt);
+        border-radius: 4px;
+        border: 1px solid $border-color;
+        background: $white;
+        padding-bottom: 20pt;
+        // padding: 20pt;
+
+        @media (max-width: $medium) {
+          width: 100%;
+        }
+
+        > .wrapper-right {
+          width: 90%;
+          height: 100%;
+          margin: 25px 0 0 10px;
+          display: flex;
+          align-items: center;
+
+          > .mfp-binding {
             display: flex;
-            flex-direction: row;
+            align-items: center;
+            position: relative;
+            width: 100%;
 
-            > .settings-left {
-                width: 300px;
-                margin-right: 10pt; 
-
-                > .settings-list {
-                    border-radius: 4px;
-                    border: 1px solid $border-color;
-                    background: $white; 
-
-                    > .list-item-menu {
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: flex-start;
-                        align-items: center;
-                        padding: 13px 10px;
-                        border-top: 1px solid $border-color;
-                        @include pointer();
-                        @include font-size-9($font-head-500);
-                        opacity: 0.7;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                        color: $black;
-
-                        &:hover {
-                            background: #f5f6f7;
-                        }
-
-                        &.active {
-                            opacity: 1;
-                        }
-
-                        > .settings-icon {
-                            margin-right: 8pt;
-                            color: $brandcolor2;
-                        }
-
-                        > .settings-title {
-                        }
-                    }
-                }
+            > img {
+              @media (max-width: $small) {
+                width: 40px;
+              }
             }
 
-            > .settings-right {
-                width: calc(100% - 300px - 10pt);
-                border-radius: 4px;
-                border: 1px solid $border-color;
-                background: $white;
-                padding-bottom: 20pt;
-                // padding: 20pt;
+            > span {
+              margin-left: 15px;
+              width: 340px;
+              @include font-size-9($font-head-500);
+              color: #757575;
+
+              @media (max-width: $small) {
+                margin-left: 0px;
+                @include font-size-10($font-head-500);
+              }
             }
+
+            > .binding {
+              cursor: pointer;
+              opacity: 0.5;
+              width: 80%;
+              display: flex;
+              justify-content: flex-end;
+              align-items: center;
+              @include font-size-10($font-head-500);
+
+              @media (max-width: $small) {
+                font-size: 8pt;
+              }
+            }
+          }
         }
+
+        > .settings-wrapper {
+          padding: 20px 20px 0 20px;
+
+          > .container-general {
+            > .slide-email {
+              > label {
+                @include font-size-9($font-head-500);
+              }
+            }
+          }
+        }
+
+        > edit-profile-card {
+          form {
+            margin: 15pt 20pt;
+
+            > .form-label-error {
+              color: red;
+              @include font-size-10($font-head-500);
+            }
+
+            > .form-group-div {
+              > .form-group {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                width: 100%;
+                height: 35pt;
+                margin-bottom: 15pt;
+                gap: 15px;
+
+                @media (max-width: $small) {
+                  flex-direction: column;
+                  align-items: flex-start;
+                  height: auto;
+                  margin-bottom: 0;
+                  gap: 0;
+                }
+
+                &:last-child {
+                  margin-bottom: unset;
+                }
+
+                > .form-col {
+                  width: 100%;
+                  position: relative;
+
+                  @media (max-width: $small) {
+                    margin-bottom: 7pt;
+                  }
+
+                  > .input-text {
+                    display: block;
+                    height: 28pt;
+                    padding: 0 13pt;
+                    width: calc(100% - 26pt - 1.4px);
+                    background-color: $white;
+                    background-clip: padding-box;
+                    border-radius: 25px;
+                    @include font-size-10($font-head-500);
+                    border: 0.7px solid rgb($black, 0.3);
+                    transition: border-color 0.15s ease-in-out,
+                      box-shadow 0.15s ease-in-out;
+
+                    &.error-msg {
+                      border: 0.7pt solid red;
+                    }
+                  }
+
+                  > .input-text-group {
+                    display: block;
+                    height: 28pt;
+                    padding: 0 13pt;
+                    width: calc(100% - 26pt);
+                    background: $white;
+                    background-clip: padding-box;
+                    border-radius: 25px;
+                    @include font-size-10($font-head-500);
+                    border: 0.7px solid rgb($black, 0.3);
+                    transition: border-color 0.15s ease-in-out,
+                      box-shadow 0.15s ease-in-out;
+                  }
+
+                  > #firstName {
+                    margin-right: 7pt;
+                    width: calc(100% - 26pt - 7pt - 1.4px);
+                  }
+
+                  > #lastName {
+                    margin-left: 7pt;
+                    width: calc(100% - 26pt - 7pt - 1.4px);
+                  }
+
+                  > #customGender {
+                    width: calc(50% - 26pt - 7pt - 1.4px);
+                  }
+
+                  mat-form-field {
+                    @include font-size-10($font-head-500);
+                    width: 100%;
+                  }
+                }
+
+                > .div-gender {
+                  width: 100%;
+                  margin-top: 10pt;
+
+                  mat-radio-group {
+                    display: flex;
+                    width: 100%;
+
+                    mat-radio-button {
+                      display: flex;
+                      background-color: $white;
+                      border: 0.7px solid rgb($black, 0.3);
+                      width: 95pt;
+                      height: 28pt;
+                      border-radius: 25px;
+                      margin-right: 10pt;
+
+                      > .mat-radio-label {
+                        padding-left: 13pt;
+
+                        > .mat-radio-container {
+                          width: 16px;
+                          height: 16px;
+
+                          > .mat-radio-outer-circle {
+                            border: 1px solid $brandcolor2;
+                            width: 16px;
+                            height: 16px;
+                          }
+
+                          > .mat-radio-inner-circle {
+                            background-color: $brandcolor2;
+                            width: 16px;
+                            height: 16px;
+                          }
+
+                          > .mat-radio-ripple {
+                            > .mat-ripple-element {
+                              background: transparent;
+                            }
+                          }
+                        }
+
+                        > .mat-radio-label-content {
+                          @include font-size-10($font-head-500);
+                          padding-left: 5px;
+                          color: $color-black;
+                        }
+                      }
+                    }
+                  }
+                }
+
+                > .slide-email {
+                  > mat-slide-toggle {
+                    display: flex;
+                    background-color: #fff;
+                    border: 0.7px solid rgba(0, 0, 0, 0.3);
+                    width: 50pt;
+                    height: 28pt;
+                    border-radius: 25px;
+
+                    > label {
+                      justify-content: center;
+                    }
+                  }
+                }
+
+                > .mat-form-field {
+                  margin-top: 10pt;
+                  width: calc(50% - 34pt - 1.4px);
+
+                  @media (max-width: $medium) {
+                    width: 75%;
+                  }
+
+                  > .mat-form-field-wrapper {
+                    padding-bottom: unset;
+
+                    > .mat-form-field-flex {
+                      align-items: center;
+
+                      > .mat-form-field-infix {
+                        border-top: unset;
+                        padding: unset;
+
+                        > .mat-input-element {
+                          display: flex;
+                          border-radius: 25px;
+                          background-color: $white;
+                          height: 28pt;
+                          color: $color-black;
+                          padding: 0 17pt;
+                          @include font-size-10($font-head-500);
+                          border: 0.7px solid rgb($black, 0.3);
+
+                          > .mat-form-field-label-wrapper {
+                          }
+                        }
+                      }
+
+                      > .mat-form-field-suffix {
+                        > .mat-datepicker-toggle {
+                          > .mat-icon-button {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            > .mat-button-wrapper {
+                              > .mat-datepicker-toggle {
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+
+                    > .mat-form-field-underline {
+                      height: 0px !important;
+
+                      > .mat-form-field-ripple {
+                        background-color: unset;
+                        opacity: 0;
+                      }
+                    }
+                  }
+                }
+              }
+
+              > .form-label {
+                @include font-size-10($font-head-500);
+                display: flex;
+                color: $black;
+                margin-top: 10pt;
+              }
+
+              > .dropdown-province {
+                height: 50px;
+
+                > mat-form-field {
+                  > .mat-form-field-wrapper {
+                    > .mat-form-field-flex {
+                      background-color: white;
+
+                      > .mat-form-field-infix {
+                        border: 0.7px solid rgb($black, 0.3);
+                        border-radius: 30px;
+                        padding: 10px 0;
+
+                        .mat-select {
+                          > .mat-select-trigger {
+                            > .mat-select-value {
+                              > span {
+                                margin-left: 10px;
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          .wrapper-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 7pt 5pt;
+            border-top: $width-border solid $bg-fog-gray;
+            overflow: hidden;
+            align-items: center;
+
+            > span {
+              @include font-size-9($font-head-500);
+              margin-left: 20px;
+              color: red;
+              flex: 0 0 auto;
+              text-decoration: unset;
+
+              &:hover {
+                text-decoration: underline;
+                cursor: pointer;
+              }
+            }
+
+            .mat-button {
+              width: 70pt;
+              margin: 0 6pt;
+              border: $width-border solid $bg-fog-gray !important;
+              @include font-size-10($font-head-500);
+              background-color: $brandcolor2;
+              color: $brandcolor;
+              // transition: 0.5s;
+
+              &:hover {
+                // transform: scale(1.01);
+              }
+            }
+
+            .mat-button-focus-overlay {
+              opacity: 0 !important;
+            }
+          }
+        }
+      }
     }
+  }
 }

@@ -17,15 +17,19 @@
             0% {
                 opacity: 1;
             }
+
             25% {
                 opacity: 0.3;
             }
+
             50% {
                 opacity: 1;
             }
+
             75% {
                 opacity: 0.3;
             }
+
             100% {
                 opacity: 1;
             }
@@ -103,7 +107,7 @@
     //     }
     // }
 
-    > .postcard {
+    >.postcard {
         padding: 15pt 20pt;
         border: $width-border solid $border-color;
         background-color: $white;
@@ -115,52 +119,58 @@
         flex-direction: column;
         justify-content: flex-start;
 
+        @media (max-width: $medium) {
+            padding: 15pt 10pt;
+        }
+
         &.card-pad {
             padding: 5pt 10pt;
         }
 
         &.preload-fulfill {
-            border : unset;
+            border: unset;
         }
 
-        > .post-card-top {
+        >.post-card-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
 
-            > .left {
-            }
+            >.left {}
 
-            > .right {
-            }
+            >.right {}
         }
 
-        > .post-card-center {
+        >.post-card-center {
             margin: 20pt 0;
         }
 
-        > .post-card-bottom {
+        >.post-card-bottom {
             display: flex;
             justify-content: space-around;
             align-items: center;
         }
-        > .row-card {
+
+        >.row-card {
+
             // display: flex;
-            > .preload-left { 
+            >.preload-left {
                 width: 100%;
+
                 preload-data {
                     .preload-data {
-                        > .wrapper-preload {
+                        >.wrapper-preload {
                             padding: 15pt 0;
                         }
                     }
                 }
 
-                > .preload-body-left {
+                >.preload-body-left {
                     display: flex;
                 }
             }
-            > .preload-right {
+
+            >.preload-right {
                 display: flex;
                 flex-direction: column;
                 // border: 0.7pt solid $bg-grey;
@@ -168,12 +178,13 @@
                 // border-radius: 8pt;
                 padding: 16pt 15pt;
 
-                > .preload-top {
+                >.preload-top {
                     display: flex;
                     justify-content: space-between;
                 }
 
             }
+
             >.preload-center {
                 display: flex;
                 justify-content: center;
@@ -181,4 +192,86 @@
             }
         }
     }
+
+    >.postcard-home {
+        width: 1280px;
+        padding: 15px;
+        margin-top: 85px;
+
+        >.post-card-top {
+            margin: 0 auto;
+
+            @media (max-width: $xxlarge) {
+                max-width: 1024px;
+            }
+
+            @media (max-width: $large) {
+                max-width: 768px;
+            }
+
+            @media (max-width: $medium) {
+                max-width: $small;
+            }
+
+            @media (max-width: $small) {
+                max-width: 320px;
+            }
+
+            >.post-wrapper {
+                display: flex;
+                align-items: flex-start;
+                gap: 30px;
+
+                >.post-left {
+                    width: 100%;
+                }
+
+                >.post-right {
+                    width: 100%;
+
+                    >.post-wrapper-right {
+                        display: flex;
+                        gap: 15px;
+                        width: 100%;
+
+                        >.wrapper-left {
+                            display: grid;
+                            width: 50%;
+                        }
+
+                        >.wrapper-right {
+                            width: 50%;
+                        }
+                    }
+                }
+            }
+        }
+
+        >.post-card-bottom {
+            margin: 0 auto;
+            margin-top: 165px;
+
+            >.box-bottom {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 10px;
+                margin: 0 auto;
+
+                @media (max-width: $xxlarge) {
+                    max-width: 1024px;
+                }
+
+                @media (max-width: $large) {
+                    max-width: 768px;
+                }
+
+                >.box {}
+            }
+        }
+    }
+}
+
+.bottom-content {
+    margin: 0 auto;
+    margin-top: unset !important;
 }

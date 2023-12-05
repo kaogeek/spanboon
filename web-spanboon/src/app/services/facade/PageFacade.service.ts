@@ -40,7 +40,7 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public search(filter: SearchFilter): Promise<Page> {
+  public search(filter: SearchFilter): Promise<Page[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/search';
       let body: any = {};
@@ -57,15 +57,20 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
+  public groups(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page';
+      let body: any = {}
+    })
+  }
   public searchType(data: any, pageId: string): Promise<Page> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/post/search';
-      let body: any = {}
+      let body: any = {};
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
       let options = this.authMgr.getDefaultOptions();
-
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
@@ -78,7 +83,6 @@ export class PageFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/post/search';
       let body: any = {};
-
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
@@ -169,13 +173,9 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public updateProfilePage(pageId: string, data: any): Promise<any> {
+  public updateProfilePage(pageId: string, body?: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId;
-      let body: any = {};
-      if (data !== null && data !== undefined) {
-        body = Object.assign(data)
-      }
 
       let option = this.authMgr.getDefaultOptions();
       this.http.put(url, body, option).toPromise().then((response: any) => {
@@ -186,6 +186,41 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
+  public updateProvincePage(pageId: string, province?: string, group?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId;
+      let body: any = {
+        province: province,
+        group: group
+      };
+
+      let option = this.authMgr.getDefaultOptions();
+      this.http.put(url, body, option).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getProvince() {
+    return new Promise((resolve, reject) => {
+      let url: string = "https://raw.githubusercontent.com/earthchie/jquery.Thailand.js/master/jquery.Thailand.js/database/raw_database/raw_database.json";
+      let data = [];
+      this.http.get(url).toPromise().then((response: any) => {
+        for (let index = 0; index < response.length; index++) {
+          const element = response[index].province;
+          data.push(element)
+        }
+        var dataProvince = data.filter(function (elem, index, self) {
+          return index === self.indexOf(elem);
+        });
+        resolve(dataProvince);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
 
   public saveImagePage(id: string, data: any): Promise<any> {
     if (id === undefined || id === null || id === '') {
@@ -282,6 +317,32 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
+  public deletePermission(pageId: string, id: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/delete/' + id;
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.delete(url, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public deletePage(pageId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/delete';
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.delete(url, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public deletePost(pageId: string, postId: string): Promise<Post> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/post/' + postId;
@@ -304,7 +365,6 @@ export class PageFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-
       let options = this.authMgr.getDefaultOptions();
 
       this.http.put(url, body, options).toPromise().then((response: any) => {
@@ -323,6 +383,95 @@ export class PageFacade extends AbstractFacade {
 
       if (pageUsername !== null && pageUsername !== undefined) {
         body = Object.assign(pageUsername)
+      }
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public manipulatePost(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/post/manipulate';
+      let options = this.authMgr.getDefaultOptions();
+      let body: any = {};
+
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getManipulate(type: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string;
+      if (type === 'user') {
+        url = this.baseURL + '/user/report/manipulate';
+      } else if (type === 'page') {
+        url = this.baseURL + '/page/report/manipulate';
+      } else if (type === 'post') {
+        url = this.baseURL + '/post/report/manipulate';
+      }
+
+      this.http.get(url).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public blockPage(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/user/content/block';
+      let options = this.authMgr.getDefaultOptions();
+      let body: any = {};
+
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public reportPage(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/user/report';
+      let options = this.authMgr.getDefaultOptions();
+      let body: any = {};
+
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public hidePost(postId: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/user/report/hide';
+      let options = this.authMgr.getDefaultOptions();
+      let body: any = {
+        postId: [postId],
       }
 
       this.http.post(url, body, options).toPromise().then((response: any) => {

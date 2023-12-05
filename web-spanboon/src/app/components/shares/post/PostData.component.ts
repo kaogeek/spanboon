@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
 import { PostCommentFacade, AuthenManager, ObservableManager, Engagement } from '../../../services/services';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { NeedsFacade } from '../../../services/facade/NeedsFacade.service';
@@ -16,11 +16,12 @@ import { MatDialog } from '@angular/material';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../dialog/DialogAlert.component';
 import { environment } from '../../../../environments/environment';
-import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY, PLATFORM_STORY_TALE } from '../../../../custom/variable';
+import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY, PLATFORM_STORY_TALE, PLATFORM_MEMBERSHIP_TEXT } from '../../../../custom/variable';
 import { MESSAGE } from '../../../../custom/variable';
 import { Router } from '@angular/router';
 import Glightbox from 'glightbox';
 import { DialogShare } from '../dialog/DialogShare.component';
+import { DialogCheckBox } from '../dialog/DialogCheckBox.component';
 
 @Component({
   selector: 'post-data',
@@ -70,6 +71,8 @@ export class PostData {
   @Input()
   public isShowUser: boolean;
   @Input()
+  public isMemberShip: boolean;
+  @Input()
   public isShowProfile: boolean = false;
   @Input()
   public pageUser: any;
@@ -99,6 +102,8 @@ export class PostData {
   public engagement: EventEmitter<any> = new EventEmitter();
   @Output()
   public hide: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public report: EventEmitter<any> = new EventEmitter();
 
   public value: any
   public isLoading: Boolean;
@@ -112,6 +117,7 @@ export class PostData {
   private mainPageLink: string = window.location.origin + '/page/';
 
   public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT;
+  public PLATFORM_MEMBERSHIP_TEXT: string = PLATFORM_MEMBERSHIP_TEXT;
   public PLATFORM_NEEDS_TEXT: string = PLATFORM_NEEDS_TEXT;
   public PLATFORM_GENERAL_TEXT: string = PLATFORM_GENERAL_TEXT;
   public PLATFORM_STORY: string = PLATFORM_STORY;
@@ -410,6 +416,25 @@ export class PostData {
     this.action.emit({ mod: 'POST', pageId: post._id });
   }
 
+  public showDialogEngagementMember(text?: any): void {
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: text ? text : 'กดไลค์สำหรับสมาชิกพรรคเท่านั้น',
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+        btDisplay1: "none",
+        options: 'mfp',
+        userId: user.id,
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+      }
+    });
+  }
+
   public commentAction(data: any) {
     if (!this.isLogin()) {
       this.showAlertDialog();
@@ -426,6 +451,17 @@ export class PostData {
           this.commentpost[data.index].likeCount = res.likeCount
           this.commentpost[data.index].isLike = res.isLike
         }).catch((err: any) => {
+          console.log("err", err)
+          if (err.error.message === 'You cannot like comment this post type MFP.') {
+            this.showDialogEngagementMember();
+          } else if (err.error.message === 'Page cannot like this post type MFP.') {
+            this.dialog.open(DialogAlert, {
+              disableClose: true,
+              data: {
+                text: 'เพจไม่สามารถกดไลค์ได้',
+              }
+            });
+          }
         })
       }
     } else if (data.action === "DELETE") {
@@ -512,17 +548,17 @@ export class PostData {
   }
 
   public showAlertDialog(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_TITLE_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_TITLE_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    // });
   }
 
   public editPost(itemPost) {
@@ -540,24 +576,86 @@ export class PostData {
   }
 
   public hidePost(post) {
-    this.hide.emit(post);
+    const url: string = decodeURI(this.router.url);
+    const path = url.split('/')[1];
+    if (path === 'post') {
+      let dialog = this.dialog.open(DialogAlert, {
+        disableClose: false,
+        data: {
+          text: 'คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่',
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          this.pageFacade.hidePost(post._id).then((res) => {
+            if (res) {
+              this.itemPost = undefined;
+            }
+          });
+        }
+      });
+    } else {
+      this.hide.emit(post);
+    }
   }
 
-  public reportPost() {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
+  public reportPost(post) {
+    const url: string = decodeURI(this.router.url);
+    const path = url.split('/')[1];
+    if (path === 'post') {
+      let typeReport = 'post';
+      let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
+      this.pageFacade.getManipulate(typeReport).then((res) => {
+        if (res) {
+          detail = [];
+          for (let data of res.data) {
+            detail.push(data.detail);
+          }
+          this._openDialogReport(post, typeReport, detail);
+        }
+      }).catch((err) => {
+        if (err.error.status === 0) {
+          this._openDialogReport(post, typeReport, detail);
+        }
+      });
+    } else {
+      this.report.emit(post);
+    }
+  }
+
+  private _openDialogReport(page, typeReport, detail) {
+    let title = '';
+    if (typeReport === 'post') {
+      title = 'รายงานโพสต์';
+    }
+    let dialog = this.dialog.open(DialogCheckBox, {
+      disableClose: false,
       data: {
-        text: 'คุณต้องการรายงานโพสต์นี้ใช่หรือไม่',
-      },
+        title: title,
+        subject: detail,
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+      }
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.showAlertDialog();
+        let data = {
+          typeId: page._id,
+          type: typeReport.toUpperCase(),
+          topic: res.topic,
+          message: res.detail ? res.detail : '',
+        }
+        this.pageFacade.reportPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }
 
-  public blockUser() {
+  public blockUser(post) {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
@@ -566,7 +664,39 @@ export class PostData {
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.showAlertDialog();
+        let data = {
+          subjectId: post.ownerUser,
+          subjectType: 'USER',
+        }
+        this.pageFacade.blockPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
+      }
+    });
+  }
+
+  public blockPage(post) {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการบล็อกเพจนี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        let data = {
+          subjectId: post.pageId,
+          subjectType: 'PAGE',
+        }
+        this.pageFacade.blockPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }

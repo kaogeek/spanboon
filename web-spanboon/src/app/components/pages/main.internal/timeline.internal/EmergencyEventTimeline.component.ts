@@ -5,10 +5,10 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef, HostListener } from '@angular/core';
 import { AuthenManager, ObservableManager, EmergencyEventFacade, HashTagFacade, AssetFacade, PostActionService, PostFacade, SeoService } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { TooltipProfile } from '../../../shares/tooltip/TooltipProfile.component';
 import { AbstractPage } from '../../AbstractPage';
@@ -16,7 +16,14 @@ import { MenuContextualService } from 'src/app/services/services';
 import AOS from 'aos';
 import 'aos/dist/aos.css'; // You can also use <link> for styles
 import './../../../../../assets/script/canvas';
-import { E } from '@angular/cdk/keycodes';
+import { Meta } from '@angular/platform-browser';
+import { DialogShare } from 'src/app/components/shares/dialog/DialogShare.component';
+import {
+    getSupportedInputTypes,
+    Platform,
+    supportsPassiveEventListeners,
+    supportsScrollBehavior,
+} from '@angular/cdk/platform';
 
 const PAGE_NAME: string = 'emergencyevent';
 
@@ -26,6 +33,9 @@ const PAGE_NAME: string = 'emergencyevent';
 })
 
 export class EmergencyEventTimeline extends AbstractPage implements OnInit {
+    supportedInputTypes = Array.from(getSupportedInputTypes()).join(', ');
+    supportsPassiveEventListeners = supportsPassiveEventListeners();
+    supportsScrollBehavior = supportsScrollBehavior();
 
     public static readonly PAGE_NAME: string = PAGE_NAME;
 
@@ -71,13 +81,28 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public isLoginUser: boolean = false;
 
     public objectiveId: string;
+    public hidebar: boolean = true;
+    public isRes: boolean = false;
+    public windowWidth: any;
+    public paramToken: string = undefined;
+    public paramUserId: string = undefined;
+    public paramMode: string = undefined;
+    public currentUrl: any;
+    public url: any;
+    public checkLike: boolean = false;
+    public tokenMode: boolean;
+    public limit: number = 10;
+    public offset: number = 0;
+    public scrollDistance = 2;
+    public isOnload: boolean = false;
+    public postOjbId: any[] = [];
 
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
     private seoService: SeoService;
 
     constructor(router: Router, authenManager: AuthenManager, assetFacade: AssetFacade, postActionService: PostActionService, postFacade: PostFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
-        dialog: MatDialog, seoService: SeoService) {
+        dialog: MatDialog, seoService: SeoService, private meta: Meta, public platform: Platform) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
@@ -114,35 +139,104 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
             anchorPlacement: 'top-bottom', // defines which position of the element regarding to window should trigger the animation
 
         });
+        this.url = this.router.url;
+        this.hidebar = this.authenManager.getHidebar();
+        const url = this.router.url.split('/');
+        if (!this.hidebar) {
+            let url2 = url[2].split('?')[0];
+            this.currentUrl = (url[1] + '/' + url2);
+        } else {
+            this.currentUrl = (url[1] + '/' + url[2]);
+        }
 
+        this.routeActivated.queryParams.subscribe(params => {
+            const tokens = params['token'];
+            const userid = params['userid'];
+            const mode = params['mode'];
+            if (tokens) {
+                this.paramToken = tokens;
+                localStorage.setItem('token', this.paramToken);
+                sessionStorage.setItem('token', this.paramToken);
+            }
+            if (userid) this.paramUserId = userid;
+            if (mode) {
+                this.paramMode = mode;
+                localStorage.setItem('mode', this.paramMode);
+                sessionStorage.setItem('mode', this.paramMode);
+            }
+            if (tokens && mode) {
+                this.tokenMode = true;
+                this.authenManager.checkAccountStatus(tokens, mode, { updateUser: true }).then((res) => {
+                    this.isLoginUser = this.isLogin();
+                });
+            }
+        });
     }
 
     public async ngOnInit(): Promise<void> {
-        this.isLoginUser = this.isLogin();
+        if (!this.tokenMode) {
+            this.isLoginUser = this.isLogin();
+        }
         this.routeActivated.params.subscribe((params) => {
             this.objectiveId = params['id'];
         })
+        let dataMobile = {
+            token: this.paramToken,
+            mode: this.paramMode,
+            userid: this.paramUserId
+        }
+        this._getTimeline(dataMobile, false);
+    }
 
-        this.currentDate = new Date();
-        this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId).then((res) => {
+    private async _getTimeline(dataMobile?: any, isScroll?: boolean) {
+        if (isScroll) {
+            this.offset += this.limit;
+        }
+        await this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId, dataMobile, this.limit, this.offset, this.postOjbId).then((res) => {
             if (res) {
-                this.objectiveData = res;
-                this.seoService.updateTitle(this.objectiveData.emergencyEvent.hashTagName);
-                this.objectiveData.page;
-                this.objectiveData.timelines;
+                if (!isScroll) {
+                    this.objectiveData = res;
+                }
+                if (isScroll && res.emergencyEvent.mode && res.emergencyEvent.mode === 'random') {
+                    let postList = res.timelines[1].posts[0].post;
+                    for (const post of postList) {
+                        this.objectiveData.timelines[1].posts[0].post.push(post);
+                    }
+                    this.isOnload = false;
+                }
+                let hashTags = [];
+                for (let hashtag of res.relatedHashTags) {
+                    hashTags.push("#" + hashtag.name + " ")
+                }
+                this._setMeta(res, hashTags);
                 const pageType = { type: "PAGE" };
                 const origin = this.objectiveData.page;
                 const dataPageTypeAssign = Object.assign(pageType, origin);
                 this.objectiveData.page = { owner: dataPageTypeAssign };
                 this._groupData();
                 this.setData();
+                if (res.timelines[1].posts[0].post) {
+                    let postList = res.timelines[1].posts[0].post;
+                    for (const post of postList) {
+                        this.postOjbId.push(post._id);
+                    }
+                }
             }
         }).catch((error) => {
             if (error) {
-                this.router.navigate(['home']);
+                // this.router.navigate(['home']);
                 console.log("error", error);
+                this.isOnload = true;
             }
         });
+    }
+
+    private _setMeta(res: any, hashTags: any) {
+        let emer = this.objectiveData.emergencyEvent;
+        this.seoService.updateTitle("#" + emer.title);
+        this.meta.updateTag({ name: 'title', content: "#" + emer.title });
+        this.meta.updateTag({ name: 'keywords', content: (res.relatedHashTags.length > 0 ? hashTags.toString() : '') });
+        this.meta.updateTag({ name: 'description', content: "#" + emer.title + (emer.detail ? (" - " + emer.detail) : '') });
     }
 
     private _groupData(): void {
@@ -179,18 +273,43 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     }
 
     public clickDataSearch(post: any): void {
+        let idpost = !!post._id ? post._id : post.post._id;
         this.router.navigate([]).then(() => {
-            window.open('/post/' + post.post._id, '_blank');
+            window.open('/post/' + idpost, '_blank');
         });
     }
 
-    public clickToPage(dataId: any, type?: any) {
-        this.router.navigate([]).then(() => {
-            window.open('/search?hashtag=' + dataId, '_blank');
-        });
+    public clickToPage(data: any, type?: any) {
+        // if (this.hidebar) {
+        //     let navigationExtras: NavigationExtras = {
+        //         state: {
+        //             hashTag: this.pageObjective.hashTagName,
+        //             id: this.pageObjective.id,
+        //         },
+        //         queryParams: { hashtag: data.name }
+        //     }
+        //     this.router.navigate(['/search'], navigationExtras);
+        // } else {
+        //     let navigationExtras: NavigationExtras = {
+        //         state: {
+        //             hashTag: this.pageObjective.hashTagName,
+        //             id: this.pageObjective.id,
+        //         },
+        //         queryParams: { hashtag: data.name, hidebar: this.hidebar ? false : true }
+        //     }
+        //     this.router.navigate(['/search'], navigationExtras);
+        // }
+        if (this.hidebar) {
+            let navigationExtras: NavigationExtras = {
+                queryParams: { hashtag: data.name, emertag: this.pageObjective.hashTagName }
+            }
+            this.router.navigate([this.router.url + '/search'], navigationExtras);
+        } else {
+            window.open('/emergencyevent/' + this.pageObjective.id + '/search' + '?hashtag=' + data.name + '&emertag=' + this.pageObjective.hashTagName)
+        }
     }
 
-    public async actionComment(action: any, index: number, indexa: number) {
+    public async actionComment(action: any, index?: number, indexa?: number) {
 
         await this.postActionService.actionPost(action, index, undefined, "PAGE").then((res: any) => {
             if (res !== undefined && res !== null) {
@@ -215,20 +334,65 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         });
     }
 
-    public postLike(data: any, index: number) {
-        if (!this.isLogin()) {
-        } else {
-            this.postFacade.like(data.postData._id).then((res: any) => {
-                if (res.isLike) {
-                    if (data.postData._id === res.posts.id) {
+    public dialogShare(data: any, index?: number, i?: number) {
+        let mainPostLink = window.location.origin + '/post/';
+        let linkPost = (mainPostLink + data._id);
+        let dialog = this.dialog.open(DialogShare, {
+            disableClose: true,
+            autoFocus: false,
+            data: {
+                title: "แชร์",
+                text: linkPost
+            }
+        });
+    }
+
+    public postLike(data: any, index?: number, i?: number) {
+        let check = data && data.userLike && data.userLike.length > 0 ? true : false;
+        if (!this.checkLike) {
+            if (!this.isLogin()) {
+                this.showAlertLoginDialog(this.url);
+            } else {
+                this.checkLike = true;
+                if (check) {
+                    data.userLike.splice(0, 1);
+                    if (data.likeCount > 0) {
+                        data.likeCount--;
                     }
                 } else {
-                    if (data.postData._id === res.posts.id) {
-                    }
+                    data.userLike.push(true);
+                    data.likeCount++;
                 }
-            }).catch((err: any) => {
-                console.log(err)
-            });
+                if (!this.isLogin()) {
+                    this.showAlertLoginDialog(this.url);
+                } else {
+                    this.postFacade.like(data._id).then((res: any) => {
+                        if (res.isLike) {
+                            this.checkLike = false;
+                        } else {
+                            this.checkLike = false;
+                        }
+                    }).catch((err: any) => {
+                        console.log(err)
+                        this.checkLike = false;
+                        if (err.error.message === 'You cannot like this post type MFP.') {
+                            data.userLike.splice(0, 1);
+                            data.likeCount--;
+                            if (!this.hidebar) {
+                                this.router.navigate([]).then(() => {
+                                    window.open('/process/mobile', '_blank');
+                                });
+                            } else {
+                                this.showDialogEngagementMember();
+                            }
+                        } else if (err.error.message === 'Page cannot like this post type MFP.') {
+                            data.userLike.splice(0, 1);
+                            data.likeCount--;
+                            this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
+                        }
+                    });
+                }
+            }
         }
     }
 
@@ -271,6 +435,28 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
             }
 
         }, 400);
+    }
+
+    public async onScrollDown(ev) {
+        if (!this.isOnload) {
+            this.isOnload = true;
+            let dataMobile = {
+                token: this.paramToken,
+                mode: this.paramMode,
+                userid: this.paramUserId
+            }
+            this._getTimeline(dataMobile, true);
+        }
+    }
+
+    @HostListener('window:resize', ['$event'])
+    public getScreenSize(event?) {
+        this.windowWidth = window.innerWidth;
+        if (this.windowWidth <= 768) {
+            this.isRes = true;
+        } else {
+            this.isRes = false;
+        }
     }
 
     isPageDirty(): boolean {

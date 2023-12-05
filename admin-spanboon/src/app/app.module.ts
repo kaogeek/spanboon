@@ -58,7 +58,12 @@ import {
   StandardItemCustomPage,
   PageObjectiveCategoryPage,
   EmergencyEventPage,
-  DialogWarningComponent
+  DialogWarningComponent,
+  DialogAlert,
+  TodayPage,
+  TodayPageV2,
+  PageGroup,
+  NewsPaperPage
 } from './components/components';
 import {
   AuthenManager,
@@ -73,16 +78,23 @@ import {
   StandardItemReqRequestFacade,
   PageObjectiveCategoryFacade,
   EmergencyEventFacade,
+  TodayPageFacade,
+  PageGroupFacade,
   PageUserFacade,
-  PageUserAdminFacade
-  ,
+  PageUserAdminFacade,
+  NewsPaperFacade,
+  ManipulateFacade,
+  ManipulatePostFacade,
 } from './services/services';
 import { UserFacade } from './services/facade/UserFacade.service';
 import {
   SafePipe,
   ShortNumberPipe,
-  PrefixNumberPipe
+  PrefixNumberPipe,
+  PipeThDatetimePipe
 } from './components/shares/pipes/pipes';
+import { ManipulatePage } from './components/pages/main.internal/ManipulatePage.component';
+import { ManipulatePost } from './components/pages/main.internal/ManipulatePost.component';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -114,13 +126,21 @@ const COMPONENTS: any[] = [
   StandardItemCustomPage,
   PageObjectiveCategoryPage,
   EmergencyEventPage,
+  TodayPage,
+  TodayPageV2,
+  PageGroup,
   testPage,
   // component 
   FormComponent,
   DialogDeleteComponent,
   ColumnTable,
   DialogWarningComponent,
-  TableComponent
+  DialogAlert,
+  TableComponent,
+  PageGroup,
+  ManipulatePage,
+  ManipulatePost,
+  NewsPaperPage
 ];
 
 const PIPE_CLASSES: any[] = [
@@ -128,6 +148,7 @@ const PIPE_CLASSES: any[] = [
   SafePipe,
   ShortNumberPipe,
   PrefixNumberPipe,
+  PipeThDatetimePipe,
 ]
 
 const SERVICE_CLASSES: any[] = [
@@ -145,9 +166,14 @@ const SERVICE_CLASSES: any[] = [
   StandardItemReqRequestFacade,
   PageObjectiveCategoryFacade,
   EmergencyEventFacade,
+  TodayPageFacade,
+  PageGroupFacade,
   PageUserFacade,
   UserFacade,
   PageUserAdminFacade,
+  NewsPaperFacade,
+  ManipulateFacade,
+  ManipulatePostFacade,
   // other 
   {
     provide: SWIPER_CONFIG,

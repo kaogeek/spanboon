@@ -15,16 +15,15 @@ import { UserLike } from '../models/UserLike';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
-
 export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
-    private DEFAULT_SEARCH_LIMIT = 10;
+    private DEFAULT_SEARCH_LIMIT = 4;
     private DEFAULT_SEARCH_OFFSET = 0;
 
     constructor(
         private postsService: PostsService,
         private s3Service: S3Service,
-        private userLikeService: UserLikeService
+        private userLikeService: UserLikeService,
     ) {
         super();
     }
@@ -62,7 +61,6 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
                 }
-
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
@@ -94,14 +92,12 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 if (endDateTime !== undefined && endDateTime !== null) {
                     dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
                 }
-
                 if (dateTimeAndArray.length > 0) {
                     postMatchStmt['$and'] = dateTimeAndArray;
                 } else {
                     // default if startDateTime and endDateTime is not defined.
                     postMatchStmt.startDateTime = { $lte: today };
                 }
-
                 const postStmt = [
                     { $match: postMatchStmt },
                     {
@@ -172,8 +168,8 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 const postAggregate = await this.postsService.aggregate(postStmt);
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? 'โพสต์ใหม่ ๆ ที่เกิดขึ้นในเดือนนี้' : this.config.title;
-                result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
+                result.title = (this.config === undefined || this.config.title === undefined) ? 'โพสต์ใหม่ ๆ ที่เกิดขึ้นในวันนี้' : this.config.title;
+                result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในวันนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
@@ -224,7 +220,6 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
             }
         });
     }
-
     private parsePageField(page: any): any {
         const pageResult: any = {};
 

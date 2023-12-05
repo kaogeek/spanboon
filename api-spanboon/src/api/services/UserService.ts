@@ -80,7 +80,7 @@ export class UserService {
         if (count) {
             return this.userLoginRepository.count();
         } else {
-            return this.userLoginRepository.find(condition);
+            return this.find(condition);
         }
     }
 
@@ -145,7 +145,6 @@ export class UserService {
                 id: user.id,
                 username: user.username,
                 uniqueId: user.uniqueId,
-                email: user.email,
                 displayName: user.displayName,
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -159,7 +158,9 @@ export class UserService {
                 coverSignURL,
                 banned: user.banned,
                 isAdmin: user.isAdmin,
-                isSubAdmin: user.isSubAdmin
+                isSubAdmin: user.isSubAdmin,
+                createdDate: user.createdDate,
+                updateDate: user.updateDate
             };
             user = clearItem;
         }
@@ -174,14 +175,10 @@ export class UserService {
             const signURL = await ImageUtil.generateAssetSignURL(this.assetService, imageURL, { prefix: '/file/' });
             const coverSignURL = await ImageUtil.generateAssetSignURL(this.assetService, coverURL, { prefix: '/file/' });
 
-            console.log('signURL >>>> ', signURL);
-            console.log('coverSignURL >>>> ', coverSignURL);
-
             const clearItem = {
                 id: user._id,
                 username: user.username,
                 uniqueId: user.uniqueId,
-                email: user.email,
                 displayName: user.displayName,
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -195,7 +192,11 @@ export class UserService {
                 coverPosition: user.coverPosition,
                 banned: user.banned,
                 isAdmin: user.isAdmin,
-                isSubAdmin: user.isSubAdmin
+                isSubAdmin: user.isSubAdmin,
+                createdDate: user.createdDate,
+                updateDate: user.updateDate,
+                province: user.province,
+                membership: user.membership
             };
             user = clearItem;
         }
@@ -235,7 +236,9 @@ export class UserService {
                         coverPosition: user.coverPosition,
                         banned: user.banned,
                         isAdmin: user.isAdmin,
-                        isSubAdmin: user.isSubAdmin
+                        isSubAdmin: user.isSubAdmin,
+                        createdDate: user.createdDate,
+                        updateDate: user.updateDate
                     };
                     user = clearItem;
                 }

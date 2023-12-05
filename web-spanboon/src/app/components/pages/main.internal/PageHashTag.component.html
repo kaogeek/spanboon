@@ -219,7 +219,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เหตุการณ์ด่วน'" [isDetail]="true"
+                            <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เกาะทุกก้าว'" [isDetail]="true"
                                 [data]="resEmergency" [dataParam]="emergency" (click)="getEmergency($event)"
                                 (loadMore)="loadMore($event)"></card-checkbox>
                             <card-checkbox [title]="'สิ่งที่กำลังทำ'" [data]="resObjective" [isObjective]="true"
@@ -429,8 +429,8 @@
                                     [isShowProfile]="true" [isSearchHashTag]="false"
                                     [isUserPage]="isLogin() && isNotAccess" (action)="actionComment($event,index)"
                                     (comment)="createComment($event,index)" [pageUser]="pageUser" [isPage]="isNotAccess"
-                                    [isNotAccess]="isNotAccess" [isShowUser]="false"
-                                    (delete)="deletePost($event,index)"></post-data>
+                                    [isNotAccess]="isNotAccess" [isShowUser]="false" (delete)="deletePost($event,index)"
+                                    (hide)="hidePost($event,index)" (report)="reportPost($event,index)"></post-data>
                             </ng-container>
                             <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true" [isShowCard2]="true">
                             </Preload-card>
@@ -556,7 +556,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เหตุการณ์ด่วน'" [isDetail]="true"
+                            <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เกาะทุกก้าว'" [isDetail]="true"
                                 [data]="resEmergency" [dataParam]="emergency" (click)="getEmergency($event)"
                                 (loadMore)="loadMore($event)" [isLoadMorePageEmergency]="isLoadMorePageEmergency">
                             </card-checkbox>

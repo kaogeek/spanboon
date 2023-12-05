@@ -28,7 +28,7 @@ import { UserTagRequest } from './requests/UserTagRequest';
 import { AuthenticationId } from '../models/AuthenticationId';
 import { CheckUniqueIdUserRequest } from './requests/CheckUniqueIdUserRequest';
 import { GetUserLoginDataResponse } from './responses/getUserLoginDataResponse';
-import { CheckUserUniqueIdRequest } from './requests/checkUserUniqueIdRequest';
+import { CheckUserUniqueIdRequest } from './requests/CheckUserUniqueIdRequest';
 import { UNIQUEID_LOG_ACTION, UNIQUEID_LOG_TYPE } from '../../constants/UniqueIdHistoryAction';
 import { UniqueIdHistory } from '../models/UniqueIdHistory';
 import { UniqueIdHistoryService } from '../services/UniqueIdHistoryService';
@@ -46,6 +46,10 @@ import { SocialPostLogs } from '../models/SocialPostLogs';
 import { NotificationService } from '../services/NotificationService';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
+import { PageAccessLevelService } from '../services/PageAccessLevelService';
+import { ManipulateService } from '../services/ManipulateService';
+import { DeleteUserService } from '../services/DeleteUserSerivce';
+import { CheckEmailUserRequest } from './requests/CheckEmailUserRequest';
 @JsonController('/user')
 export class UserController {
     constructor(
@@ -62,6 +66,9 @@ export class UserController {
         private socialPostLogsService: SocialPostLogsService,
         private notificationService: NotificationService,
         private deviceTokenService: DeviceTokenService,
+        private pageAccessLevelService: PageAccessLevelService,
+        private manipulateService: ManipulateService,
+        private deleteUserService: DeleteUserService
     ) { }
 
     // Logout API
@@ -88,11 +95,9 @@ export class UserController {
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
         }
-
         if (mode === 'all') {
             logoutAll = true;
         }
-
         if (logoutAll) {
             const authenIds: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: uid } });
             if (!authenIds) {
@@ -143,6 +148,152 @@ export class UserController {
                 const deleteErrorResponse: any = { status: 0, message: 'Cannot delete accesstoken' };
                 return res.status(400).send(deleteErrorResponse);
             }
+        }
+    }
+
+    @Post('/notification/settings')
+    @Authorized('user')
+    public async settingsUserProfile(@Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const user = await this.userService.findOne({ _id: userId });
+        if (user) {
+            const query = { _id: userId };
+            const newValues = {
+                $set:
+                {
+                    subscribeEmail: req.body.sendEmail,
+                    subscribeNoti: req.body.subscribeNoti
+
+                }
+            };
+            const update = await this.userService.update(query, newValues);
+            if (update) {
+                const successResponseF = ResponseUtil.getSuccessResponse('Successfully Update Status.', undefined);
+                return res.status(200).send(successResponseF);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot Update.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Find User.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/delete')
+    @Authorized('user')
+    public async deleteUser(@Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const user = await this.userService.findOne({ _id: userId });
+        if (user) {
+            // access page 
+            const pageAccess = await this.pageService.findOne({ ownerUser: user.id });
+            if (pageAccess !== undefined) {
+                const permission = await this.pageAccessLevelService.findOne({ page: pageAccess.id, user: pageAccess.ownerUser, level: 'OWNER' });
+                if (permission) {
+                    await this.deleteUserService.deleteUserPageAccessOwn(permission.user);
+                    const successResponseF = ResponseUtil.getSuccessResponse('Update delete user is sucess.', undefined);
+                    return res.status(200).send(successResponseF);
+                }
+            } else {
+                const deleteUser = await this.deleteUserService.deleteUserNoPage(user.id);
+                if (deleteUser) {
+                    const successResponseF = ResponseUtil.getSuccessResponse('Update delete user is sucess.', undefined);
+                    return res.status(200).send(successResponseF);
+                }
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Find User.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/ua')
+    @Authorized('user')
+    public async uaVersion(@Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const user = await this.userService.findOne({ _id: userId });
+        if (user) {
+            const query = { _id: userId };
+            const newValues = {
+                $set:
+                {
+                    ua: req.body.ua,
+                    uaVersion: req.body.uaVersion,
+                    tos: req.body.tos,
+                    tosVersion: req.body.tosVersion
+                }
+            };
+            const update = await this.userService.update(query, newValues);
+            if (update) {
+                const successResponseF = ResponseUtil.getSuccessResponse('Successfully Accepted Ua and Tos.', undefined);
+                return res.status(200).send(successResponseF);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot Update.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Find User.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+    @Get('/subject/search')
+    @Authorized('user')
+    public async subject(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const uid = new ObjectID(req.user.id);
+        if (mode !== undefined) {
+            mode = mode.toLocaleLowerCase();
+        }
+        const userObjId = await this.userService.findOne({ _id: ObjectID(uid) });
+        if (userObjId.subjectAttention !== undefined && userObjId.subjectAttention !== null) {
+            const ErrorResponse: any = { status: 0, message: 'You already selected subjectAttention.' };
+            return res.status(400).send(ErrorResponse);
+        }
+        if (uid !== undefined) {
+            // subject 
+            const contentPage = await this.pageService.aggregate([
+                { $match: { subject: { $ne: null } } },
+                { $group: { _id: { subject: '$subject' } } }
+            ]);
+            if (contentPage !== undefined && contentPage !== null) {
+                const successResponse = ResponseUtil.getSuccessResponse('Search HashTag.', contentPage);
+                return res.status(200).send(successResponse);
+            }
+        } else {
+            const ErrorResponse: any = { status: 0, message: 'Error maybe login is not success.' };
+            return res.status(400).send(ErrorResponse);
+        }
+    }
+
+    @Post('/subject')
+    @Authorized('user')
+    public async subjectUser(@Body({ validate: true }) userHashtag: UserTagRequest, @QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const uid = new ObjectID(req.user.id);
+        const userContent = await this.userService.findOne({ _id: uid });
+        if (mode !== undefined) {
+            mode = mode.toLocaleLowerCase();
+        }
+        if (uid === undefined && uid === null) {
+            const ErrorResponse: any = { status: 0, message: 'Error maybe login is not success.' };
+            return res.status(400).send(ErrorResponse);
+        }
+        if (userHashtag.subject.length > 5) {
+            const ErrorResponse: any = { status: 0, message: 'Error Please select content at less than or equal 5.' };
+            return res.status(400).send(ErrorResponse);
+        }
+        if (userContent.subjectAttention !== undefined && userContent.subjectAttention !== null && userContent.subjectAttention.length > 0) {
+            const ErrorResponse: any = { status: 0, message: 'You have been selected content.' };
+            return res.status(400).send(ErrorResponse);
+        }
+        const query = { _id: uid };
+        const newValues = { $set: { subjectAttention: userHashtag.subject } };
+        const update = await this.userService.update(query, newValues);
+        if (update) {
+            const successResponse = ResponseUtil.getSuccessResponse('Update HashTag is successfully.', newValues);
+            return res.status(200).send(successResponse);
+        } else {
+            const ErrorResponse: any = { status: 0, message: 'Cannot be update.' };
+            return res.status(400).send(ErrorResponse);
         }
     }
 
@@ -225,6 +376,10 @@ export class UserController {
         let result = {};
         let userFollowerStmt;
         const space = ' ';
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const interval = 30;
         // find page
         const user = await this.userService.findOne({ _id: userObjId });
         if (user === undefined) {
@@ -283,41 +438,148 @@ export class UserController {
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
                 const whoFollowYou = await this.userService.findOne({ _id: userFollow.userId });
+                const userFollows = await this.userFollowService.find({ userId: userObjId, subjectType: SUBJECT_TYPE.USER });
+                let firstPerson = undefined;
+                let secondPerson = undefined;
+                let firstObj = undefined;
+                let secondObj = undefined;
                 const tokenFCMId = await this.deviceTokenService.find({ userId: userFollow.subjectId });
-                const notification_follower = whoFollowYou.displayName + space + 'กดติดตามคุณ';
-                const link = `/profile/${whoFollowYou.id}`;
-                const notificationId = await this.notificationService.createNotificationFCM(
-                    followCreate.subjectId,
-                    USER_TYPE.USER,
-                    req.user.id + '',
-                    USER_TYPE.USER,
-                    NOTIFICATION_TYPE.FOLLOW,
-                    notification_follower,
-                    link,
-                    whoFollowYou.displayName,
-                    whoFollowYou.imageURL
-                );
-                for (const tokenFCM of tokenFCMId) {
-                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
-                        await this.notificationService.sendNotificationFCM(
-                            followCreate.subjectId,
-                            USER_TYPE.USER,
-                            req.user.id + '',
-                            USER_TYPE.USER,
-                            NOTIFICATION_TYPE.FOLLOW,
-                            notification_follower,
-                            link,
-                            tokenFCM.Tokens,
-                            whoFollowYou.displayName,
-                            whoFollowYou.imageURL,
-                            notificationId.id
-                        );
+                let notification_follower = undefined;
+                let link = undefined;
+
+                if (userFollows.length > 0 && userFollows.length < 5) {
+                    link = `/profile/${whoFollowYou.id}`;
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        whoFollowYou.displayName,
+                        whoFollowYou.imageURL
+                    );
+                    notification_follower = whoFollowYou.displayName + space + 'กดติดตามคุณ';
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                whoFollowYou.displayName,
+                                whoFollowYou.imageURL,
+                            );
+                        }
                     }
-                    else {
-                        continue;
+                } else if (userFollows.length > 5 && userFollows.length <= 20 && minutes % interval === 0) {
+                    firstObj = userFollows[userFollows.length - 1].subjectId;
+                    secondObj = userFollows[userFollows.length - 2].subjectId;
+                    firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
+                    secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + space + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    link = `/profile/${firstPerson.id}`;
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        firstPerson.displayName,
+                        firstPerson.imageURL
+                    );
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                firstPerson.displayName,
+                                firstPerson.imageURL,
+                            );
+                        }
+                    }
+                } else if (userFollows.length > 20 && userFollows.length <= 500 && hours % 3 === 0) {
+                    firstObj = userFollows[userFollows.length - 1].subjectId;
+                    secondObj = userFollows[userFollows.length - 2].subjectId;
+                    firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
+                    secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + space + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    link = `/profile/${firstPerson.id}`;
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        firstPerson.displayName,
+                        firstPerson.imageURL
+                    );
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                firstPerson.displayName,
+                                firstPerson.imageURL,
+                            );
+                        }
+                    }
+                } else if (userFollows.length > 500 && hours % 5 === 0) {
+                    firstObj = userFollows[userFollows.length - 1].subjectId;
+                    secondObj = userFollows[userFollows.length - 2].subjectId;
+                    firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
+                    secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + space + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    link = `/profile/${firstPerson.id}`;
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        firstPerson.displayName,
+                        firstPerson.imageURL
+                    );
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                firstPerson.displayName,
+                                firstPerson.imageURL,
+                            );
+                        }
                     }
                 }
-                // USER TO USER
                 const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: followUserObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.USER, action: ENGAGEMENT_ACTION.FOLLOW } });
                 if (engagement) {
                     userEngagement.isFirst = false;
@@ -343,7 +605,83 @@ export class UserController {
             }
         }
     }
-
+    @Get('/follow/notification')
+    public async userfollowNotification(@Res() res: any, @Req() req: any): Promise<any> {
+        const space = ' ';
+        let firstUser = undefined;
+        let secondUser = undefined;
+        let link = undefined;
+        const today = moment().toDate();
+        const thirtyMoment = new Date(today.getTime() - 3000000);
+        const followNoti = await this.notificationService.aggregate(
+            [
+                {
+                    $match: { toUserType: 'USER', fromUserType: 'USER', type: 'FOLLOW', deleted: false, createdDate: { $gte: thirtyMoment, $lte: today } }
+                }
+            ]
+        );
+        if (followNoti.length > 0) {
+            let notification_follower = undefined;
+            const toUser = [];
+            for (const user of followNoti) {
+                toUser.push(user.toUser);
+            }
+            const following = await this.notificationService.aggregate(
+                [
+                    {
+                        $match: { toUser: { $in: toUser }, toUserType: 'USER', fromUserType: 'USER', type: 'FOLLOW', deleted: false, createdDate: { $gte: thirtyMoment, $lte: today } },
+                    },
+                    {
+                        $sort: { createdDate: -1 }
+                    }
+                ]
+            );
+            if (following.length > 0) {
+                for (let i = 0; i < following.length; i++) {
+                    if (i === 3) {
+                        firstUser = await this.userService.findOne({ _id: ObjectID(following[0].fromUser) });
+                        secondUser = await this.userService.findOne({ _id: ObjectID(following[1].fromUser) });
+                        notification_follower = firstUser.displayName + space + 'และ' + space + secondUser.displayName + space + 'กดติดตามคุณ' + space + 'และอื่นๆ';
+                        link = `/profile/${firstUser.id}`;
+                        break;
+                    } else if (i === 2 && following.length === 2) {
+                        firstUser = await this.userService.findOne({ _id: ObjectID(following[0].fromUser) });
+                        secondUser = await this.userService.findOne({ _id: ObjectID(following[1].fromUser) });
+                        notification_follower = firstUser.displayName + space + 'และ' + space + secondUser.displayName + space + 'กดติดตามคุณ';
+                        link = `/profile/${firstUser.id}`;
+                        break;
+                    } else {
+                        firstUser = await this.userService.findOne({ _id: ObjectID(following[0].fromUser) });
+                        notification_follower = firstUser.displayName + space + 'กดติดตามคุณ';
+                        link = `/profile/${firstUser.id}`;
+                    }
+                }
+            }
+            const tokenFCMtoUser = await this.deviceTokenService.find({ userId: toUser[0] });
+            if (tokenFCMtoUser.length > 0) {
+                for (const tokenFCM of tokenFCMtoUser) {
+                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                        await this.notificationService.sendNotificationFCM(
+                            firstUser.id,
+                            USER_TYPE.USER,
+                            toUser[0],
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notification_follower,
+                            link,
+                            tokenFCM.Tokens,
+                            firstUser.displayName,
+                            firstUser.imageURL,
+                        );
+                    }
+                    else {
+                        continue;
+                    }
+                }
+            }
+        }
+        return res.status(200).send(followNoti);
+    }
     /**
      * @api {get} /api/user/config/:name Get User Config API
      * @apiGroup User
@@ -625,6 +963,25 @@ export class UserController {
             return res.status(400).send(errorResponse);
         }
     }
+    @Get('/report/manipulate')
+    public async getReportUser(@Res() res: any, @Req() req: any): Promise<any> {
+        const getUserReport = await this.manipulateService.aggregate(
+            [
+                {
+                    $match: {
+                        type: 'REPORT_USER'
+                    }
+                }
+            ]
+        );
+        if (getUserReport.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully get manipulate report user.', getUserReport);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot get manipulate report user.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
 
     /**
      * @api {put} /api/user/:id/item Update UserProvideItems API
@@ -755,11 +1112,9 @@ export class UserController {
             return res.status(400).send(errorResponse);
         }
     }
-
     @Post('/uniqueid/check')
-    public async checkUniqueIdUser(@Body({ validate: true }) user: CheckUniqueIdUserRequest, @Res() res: any): Promise<any> {
+    public async checkUniqueIdUser(@Body({ validate: true }) user: CheckUniqueIdUserRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const uniqueId = user.uniqueId;
-
         const checkValid = await this.checkUniqueIdValid(uniqueId);
         if (checkValid.status === 1) {
             return res.status(200).send(checkValid);
@@ -767,7 +1122,17 @@ export class UserController {
             return res.status(200).send(checkValid);
         }
     }
-
+    @Post('/email/check')
+    public async checkEmailUser(@Body({ validate: true }) user: CheckEmailUserRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const email = user.email;
+        const checkValid = await this.checkEmailValid(email);
+        if (checkValid.status === 1) {
+            return res.status(200).send(checkValid);
+        } else {
+            return res.status(200).send(checkValid);
+        }
+    }
+    
     @Get('/:id')
     @Authorized('user')
     public async getLoginUser(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
@@ -926,6 +1291,25 @@ export class UserController {
             }
         } else {
             return ResponseUtil.getErrorResponse('UniqueId is required', undefined);
+        }
+    }
+
+    private async checkEmailValid(email: string): Promise<any> {
+        if (email !== null && email !== undefined && email !== '') {
+            if (email.match(/\s/g)) {
+                return ResponseUtil.getErrorResponse('Spacebar is not allowed', undefined);
+            }
+
+            const checkEmailUserQuey = { email: new RegExp('^' + email + '$', 'i') };
+            const checkEmailUser: User = await this.userService.findOne(checkEmailUserQuey);
+
+            if (checkEmailUser !== null && checkEmailUser !== undefined) {
+                return ResponseUtil.getErrorResponse('email can not use', false);
+            } else {
+                return ResponseUtil.getSuccessResponse('email can use', true);
+            }
+        } else {
+            return ResponseUtil.getErrorResponse('email is required', undefined);
         }
     }
 }

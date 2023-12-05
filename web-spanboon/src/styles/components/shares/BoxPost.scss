@@ -281,6 +281,10 @@
 
               > .mat-select-trigger {
                 > .mat-select-value {
+                  max-width: 100%;
+                  width: 110px;
+                  display: flex;
+                  justify-content: center;
                 }
               }
             }
@@ -463,11 +467,15 @@
       > .box-left {
         flex: 0 0 auto;
         display: flex;
-        width: calc(25% - #{$padding-side-wrapper-tool-post});
+        width: calc(30% - #{$padding-side-wrapper-tool-post});
         // padding: 0 $padding-side-wrapper-tool-post;
         justify-content: center;
         align-items: center;
         border-right: $width-border solid $border-color;
+
+        @media (max-width: $large) {
+          width: calc(25% - #{$padding-side-wrapper-tool-post});
+        }
 
         > .mat-form-field {
           > .mat-form-field-wrapper {
@@ -673,6 +681,7 @@
         }
 
         > .edit-post {
+          cursor: pointer;
           color: $black;
           @include font-size-9($font-head-500);
         }
@@ -795,7 +804,7 @@
       }
 
       > .looking {
-        background-color: $brandcolor3;
+        background-color: $brandcolor2;
       }
 
       > .lookingWhite {
@@ -1379,6 +1388,10 @@
     right: 0;
     left: 0;
     top: 0;
+
+    @media (max-width: $small) {
+      display: none;
+    }
   }
 
   .sg-vertical-sub-menu

@@ -9,7 +9,7 @@ import { AuthenManager } from '../../services/services';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogAlert } from '../shares/dialog/DialogAlert.component';
 import { EventEmitter, OnInit } from '@angular/core';
-import { PLATFORM_NAME_TH, PLATFORM_NAME_ENG, PLATFORM_SOPPORT_EMAIL, PLATFORM_URL, PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY_TALE, PLATFORM_STORY, MESSAGE, BACKGROUND_IMAGE } from '../../../custom/variable';
+import { PLATFORM_NAME_TH, PLATFORM_NAME_ENG, PLATFORM_SOPPORT_EMAIL, PLATFORM_URL, PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY_TALE, PLATFORM_STORY, MESSAGE, BACKGROUND_IMAGE, PLATFORM_MEMBERSHIP_TEXT } from '../../../custom/variable';
 import { Router } from '@angular/router';
 
 const TOKEN_KEY: string = 'token';
@@ -29,6 +29,7 @@ export abstract class AbstractPage implements OnInit {
   public PLATFORM_NEEDS_TEXT: string = PLATFORM_NEEDS_TEXT;
   public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT;
   public PLATFORM_GENERAL_TEXT: string = PLATFORM_GENERAL_TEXT;
+  public PLATFORM_MEMBERSHIP_TEXT: string = PLATFORM_MEMBERSHIP_TEXT;
   public PLATFORM_STORY: string = PLATFORM_STORY;
   public PLATFORM_STORY_TALE: string = PLATFORM_STORY_TALE;
   public BACKGROUND_IMAGE: string = BACKGROUND_IMAGE;
@@ -141,6 +142,63 @@ export abstract class AbstractPage implements OnInit {
         bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
         bottomColorText2: "black",
         btDisplay1: "none"
+      }
+    });
+  }
+
+  public showDialogEngagementMember(text?: any): void {
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: text ? text : 'กดไลค์สำหรับสมาชิกพรรคเท่านั้น',
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+        btDisplay1: "none",
+        options: 'mfp',
+        type: 'engage',
+        userId: user.id,
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+      }
+    });
+  }
+
+  public showDialogMember(text?: any): void {
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+        btDisplay1: "none",
+        options: 'mfp',
+        type: 'binding',
+        userId: user.id,
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+      }
+    });
+  }
+
+  public showAlertRedirectDialog(text: any, cancelText?: string, redirect?: any): void {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: text,
+        bottomText1: (cancelText) ? cancelText : MESSAGE.TEXT_BUTTON_CANCEL,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+        bottomColorText2: "black",
+        btDisplay1: "none"
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.router.navigateByUrl(redirect);
       }
     });
   }

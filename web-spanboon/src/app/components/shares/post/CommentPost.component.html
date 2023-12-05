@@ -9,9 +9,20 @@
         <div class="comment-img" (click)="clickToUser(comment.page ? comment.page : comment.user)" *ngIf="!isImgSing">
             <ng-container *ngIf="!!comment!.user!.signURL || !!comment!.user!.imageURL; else elseImage">
                 <div class="menu-user" (click)="menuProfile(comment.page ? comment.page : comment.user);">
-                    <img class="image-profile-comment"
-                        src="{{testIimageURL(comment.user.signURL ? comment.user.signURL : comment.user.imageURL)}}"
-                        alt="">
+                    <ng-container *ngIf="!!comment.commentAsPage; else elsePageImg">
+                        <ng-container *ngIf="!!comment.page.imageURL; else elseImagePage">
+                            <img class="image-profile-comment"
+                                src="{{testIimageURL(apiBaseURL + comment.page.imageURL + '/image')}}" alt="">
+                        </ng-container>
+                        <ng-template #elseImagePage>
+                            <span class="image-profile displayName">{{comment.page.name | slice:0:1}}</span>
+                        </ng-template>
+                    </ng-container>
+                    <ng-template #elsePageImg>
+                        <img class="image-profile-comment"
+                            src="{{testIimageURL(comment.user.signURL ? comment.user.signURL : comment.user.imageURL)}}"
+                            alt="">
+                    </ng-template>
                 </div>
             </ng-container>
             <ng-template #elseImage>
@@ -44,8 +55,9 @@
         </div>
         <div class="comment-input">
             <div class="comment-i_u">
-                <span class="username"
-                    (click)="clickToUser(comment.page?comment.page:comment.user)">{{comment.page?comment.page.name:comment.user.displayName}}</span>
+                <div class="displayProfile"><span class="username"
+                        (click)="clickToUser(comment.page?comment.page:comment.user)">{{comment.page?comment.page.name:comment.user.displayName}}</span>
+                </div>
                 <input *ngIf="comment.isEdit" #textcomment id="textcomment" class="comment-comment comment-edit"
                     placeholder="แสดงความคิดเห็น..." (keyup.enter)="commentActionSave('EDIT',comment,i)"
                     [(ngModel)]="commentEdit" type="text">
@@ -64,8 +76,8 @@
                     <span (click)="commentAction('EDIT',comment,i)" *ngIf="checkAccessCustom(comment.user.id)"
                         class="like">แก้ไข</span>
                     <span *ngIf="checkAccessCustom(comment.user.id)">•</span>
-                    <span (click)="commentAction('DELETE',comment,i)" *ngIf="checkAccessCustom(comment.user.id)"
-                        class="like">ลบ</span>
+                    <span (click)="commentAction('DELETE',comment,i)"
+                        *ngIf="checkAccessCustom(comment.user.id) || isNotAccess" class="like">ลบ</span>
                     <span *ngIf="checkAccessCustom(comment.user.id)">•</span>
                     <span>{{comment && comment.createdDate | dateFormat}}</span>
                 </ng-container>

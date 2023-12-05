@@ -25,6 +25,8 @@ export class CommentPost {
   @Input()
   public commentdata: any;
   @Input()
+  public isNotAccess: boolean
+  @Input()
   public isLogin: boolean;
   @Input()
   public isImgSing: boolean = false;
@@ -40,6 +42,9 @@ export class CommentPost {
     this.postCommentFacade = postCommentFacade;
   }
 
+  public ngOnInit(): void {
+  }
+
   public commentAction(action: any, comment: any, index: number) {
     if (!this.editPost) {
       this.editPost = true;
@@ -49,6 +54,7 @@ export class CommentPost {
         setTimeout(() => {
           document.getElementById('textcomment').focus();
         }, 200);
+        this.editPost = false;
       }
     }
     if (action === 'CANCEL') {
@@ -66,6 +72,7 @@ export class CommentPost {
 
   public commentActionSave(action: any, comment: any, index: number) {
     this.submit.emit({ action: action, commentdata: comment.id, index: index, commentEdit: this.commentEdit });
+    this.editPost = false;
   }
 
   public testIimageURL(data: any): string {
@@ -83,6 +90,10 @@ export class CommentPost {
     } else {
       window.open('/page/' + pageId, '_blank');
     }
+  }
+
+  public clickDeleteComment(data: any) {
+    let pageId = data._id ? data._id : data.id;
   }
 
   public menuProfile(data: any) {

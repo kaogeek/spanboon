@@ -44,8 +44,7 @@ body {
 
 body {
     margin: 0;
-    overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
     scrollbar-color: $brandcolor $white;
     scrollbar-width: thin;
     scroll-behavior: smooth;

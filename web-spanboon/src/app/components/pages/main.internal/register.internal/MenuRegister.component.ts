@@ -19,6 +19,7 @@ import * as $ from 'jquery';
 import { GoogleLoginProvider, SocialAuthService, SocialUser } from 'angularx-social-login';
 import { TwitterService } from "../../../../services/facade/TwitterService.service";
 import { CheckMergeUserFacade } from "src/app/services/facade/CheckMergeUserFacade.service";
+import { SeoService } from "src/app/services/SeoService.service";
 
 const PAGE_NAME: string = 'register/menu';
 
@@ -37,6 +38,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
     private observManager: ObservableManager;
     private twitterService: TwitterService;
     private checkMergeUserFacade: CheckMergeUserFacade;
+    private seoService: SeoService;
 
     public authenManager: AuthenManager;
     public dialog: MatDialog;
@@ -57,6 +59,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
         social: undefined,
     };
 
+    private regis_merge: string = 'register.merge';
+
     public dataUser: any;
 
     //twitter
@@ -73,7 +77,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
         observManager: ObservableManager,
         twitterService: TwitterService,
         _ngZone: NgZone,
-        checkMergeUserFacade: CheckMergeUserFacade) {
+        checkMergeUserFacade: CheckMergeUserFacade,
+        seoService: SeoService) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.authenManager = authenManager;
         this.activatedRoute = activatedRoute;
@@ -83,13 +88,17 @@ export class MenuRegister extends AbstractPage implements OnInit {
         this.observManager = observManager;
         this.twitterService = twitterService;
         this.checkMergeUserFacade = checkMergeUserFacade;
+        this.seoService = seoService;
 
         this.activatedRoute.params.subscribe(param => {
             this.redirection = param['redirection'];
         });
+
+        this.observManager.createSubject(this.regis_merge);
     }
 
     ngOnInit(): void {
+        this.seoService.updateTitle("สมัครสมาชิก");
         super.ngOnInit();
         this.checkLoginAndRedirection();
 
@@ -249,6 +258,15 @@ export class MenuRegister extends AbstractPage implements OnInit {
                             queryParams: { mode: 'google' }
                         }
                         this.router.navigate(['/register'], navigationExtras);
+                    } else if (statusMsg === "This Email not exists") {
+                        let navigationExtras: NavigationExtras = {
+                            state: {
+                                accessToken: this.googleToken,
+                                redirection: this.redirection
+                            },
+                            queryParams: { mode: 'google' }
+                        }
+                        this.router.navigate(['/register'], navigationExtras);
                     } else if (err.error.message === 'Baned PageUser.') {
                         this.dialog.open(DialogAlert, {
                             disableClose: true,
@@ -331,18 +349,23 @@ export class MenuRegister extends AbstractPage implements OnInit {
 
         this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
             if (data.data.status === 2) {
-                let dialog = this.dialog.open(DialogAlert, {
-                    disableClose: true,
-                    data: {
-                        text: "พบแอคเคาท์ในระบบแล้ว กรุณาเข้าสู่ระบบด้วยโหมดเฟสบุ๊ค",
-                        btDisplay1: "none"
-                    }
+                this.observManager.publish(this.regis_merge, {
+                    data: data.data,
+                    token: this.accessToken.fbtoken
                 });
-                dialog.afterClosed().subscribe((res) => {
-                    if (res) {
-                        this.router.navigate(['/login']);
-                    }
-                });
+                this.router.navigate(['/login']);
+                // let dialog = this.dialog.open(DialogAlert, {
+                //     disableClose: true,
+                //     data: {
+                //         text: "พบแอคเคาท์ในระบบแล้ว กรุณาเข้าสู่ระบบด้วยโหมดเฟสบุ๊ค",
+                //         btDisplay1: "none"
+                //     }
+                // });
+                // dialog.afterClosed().subscribe((res) => {
+                //     if (res) {
+                //         this.router.navigate(['/login']);
+                //     }
+                // });
             } else {
                 this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
                     // login success redirect to main page
@@ -378,7 +401,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
             }
         }).catch((error) => {
             const statusMsg = error.error.message;
-            if (statusMsg === "User was not found.") {
+            if (statusMsg === "User was not found." && error.error.status === 0) {
                 let navigationExtras: NavigationExtras = {
                     state: {
                         accessToken: this.accessToken,
@@ -387,7 +410,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
                     queryParams: { mode: 'facebook' }
                 }
                 this.router.navigate(['/register'], navigationExtras);
-            } else if (statusMsg === 'Baned PageUser.') {
+            } else if (statusMsg === 'Baned PageUser.' && error.error.status === 0) {
                 this.dialog.open(DialogAlert, {
                     disableClose: true,
                     data: {
@@ -397,6 +420,15 @@ export class MenuRegister extends AbstractPage implements OnInit {
                         btDisplay1: "none"
                     }
                 });
+            } else if (statusMsg === "This Email not exists" && error.error.status === 0) {
+                let navigationExtras: NavigationExtras = {
+                    state: {
+                        accessToken: this.accessToken,
+                        redirection: this.redirection
+                    },
+                    queryParams: { mode: 'facebook' }
+                }
+                this.router.navigate(['/register'], navigationExtras);
             }
         });
     }

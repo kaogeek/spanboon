@@ -56,4 +56,9 @@ export class UserReportContentService {
             return this.userReportContentRepository.find(condition);
         }
     }
+
+        // delete Many
+        public async deleteMany(query: any, options?: any): Promise<any> {
+            return await this.userReportContentRepository.deleteMany(query, options);
+        }
 }

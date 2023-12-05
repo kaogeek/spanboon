@@ -16,6 +16,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogWarningComponent } from '../../shares/DialogWarningComponent.component';
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
+import { PageGroupFacade } from '../../../services/facade/PageGroupFacade.service';
+import { PROVINCE_LIST } from '../../../constants/Province';
 
 const PAGE_NAME: string = "page";
 
@@ -33,33 +35,62 @@ export class PostPage extends AbstractPage implements OnInit {
     public pageFacade: PageFacade;
     private authenManager: AuthenManager;
     private router: Router;
-
+    public isSave: boolean = false;
+    public pageGroupFacade: PageGroupFacade;
+    public pageGroups: any = [];
+    public stackGroups: any = [];
     public dataForm: Page;
     public valueBool: boolean;
     public valuetring: string;
     public valueNum: number;
     public orinalDataForm: Page;
     public submitted = false;
+    public isOfficialPage: {};
+    public orderBy: any = {};
+    public provinces;
+    public default_province;
 
-    constructor(pageFacade: PageFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
+    constructor(pageFacade: PageFacade, pageGroupFacade: PageGroupFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
         this.pageFacade = pageFacade;
+        this.pageGroupFacade = pageGroupFacade;
         this.router = router;
         this.authenManager = authenManager;
         // if (!this.authenManager.isCurrentUserType()) {
         //     this.router.navigateByUrl("/main/home_content/pageslide")
         // }
+        this.orderBy = { createdDate: -1 };
         this.fieldTable = [
             {
                 name: "name",
                 label: "ชื่อ",
-                width: "700pt",
+                width: "330pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
                 formatDate: false,
                 formatId: false,
                 align: "left"
             },
+            {
+                name: "group",
+                label: "กลุ่ม",
+                width: "150pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "left"
+            },
+            {
+                name: "province",
+                label: "จังหวัด",
+                width: "150pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "left"
+            }
         ];
         this.actions = {
             isOfficial: true,
@@ -68,7 +99,7 @@ export class PostPage extends AbstractPage implements OnInit {
             isUnApprove: false,
             isSelect: false,
             isCreate: false,
-            isEdit: false,
+            isEdit: true,
             isDelete: true,
             isComment: false,
             isBack: false
@@ -78,11 +109,23 @@ export class PostPage extends AbstractPage implements OnInit {
 
     public ngOnInit() {
         this.search();
+        this.getProvince();
+    }
+
+    public getProvince() {
+        this.pageFacade.getProvince().then((res) => {
+            if (res) {
+                this.provinces = res;
+                this.default_province = res;
+            }
+        })
     }
 
     private setFields(): void {
         this.dataForm = new Page();
         this.dataForm.name = "";
+        this.dataForm.group = "";
+        this.dataForm.province = "";
         this.valueBool = true;
         this.valuetring = "";
         this.valueNum = 0;
@@ -133,6 +176,10 @@ export class PostPage extends AbstractPage implements OnInit {
     }
 
     public clickEditForm(data: any): void {
+        const stackPageGroup = this.pageGroupFacade.finds().then((datas) => {
+            this.stackGroups = datas;
+        });
+
         this.drawer.toggle();
         this.valueBool = true;
         this.valuetring = "";
@@ -160,11 +207,19 @@ export class PostPage extends AbstractPage implements OnInit {
                         for (let d of data) {
                             if (d.name == res.name) {
                                 data[index] = res;
+                                this.isOfficialPage = {
+                                    official: true,
+                                    index: index,
+                                    data: res
+                                }
                                 break;
                             }
                             index++;
                         }
-                        this.table.searchData();
+                        this.table.isLoading = true;
+                        setTimeout(() => {
+                            this.table.setTableConfig(data);
+                        }, 1000);
                     }).catch((err: any) => {
                         this.dialogWarning(err.error.message);
                     });
@@ -177,11 +232,19 @@ export class PostPage extends AbstractPage implements OnInit {
                         for (let d of data) {
                             if (d.name == res.name) {
                                 data[index] = res;
+                                this.isOfficialPage = {
+                                    official: false,
+                                    index: index,
+                                    data: res
+                                }
                                 break;
                             }
                             index++;
                         }
-                        this.table.searchData();
+                        this.table.isLoading = true;
+                        setTimeout(() => {
+                            this.table.setTableConfig(data);
+                        }, 1000);
                     }).catch((err: any) => {
                         this.dialogWarning(err.error.message);
                     });
@@ -240,6 +303,20 @@ export class PostPage extends AbstractPage implements OnInit {
         });
     }
     public clickSave() {
-
+        let data = this.dataForm;
+        this.isSave = true;
+        this.submitted = true;
+        this.pageFacade.edit(data.id, data).then((res) => {
+            this.submitted = false;
+            this.isSave = false;
+            this.table.searchData();
+            this.drawer.toggle();
+        }).catch((err: any) => {
+            this.isSave = false;
+            this.table.searchData();
+            this.dialogWarning(err.error.message);
+        });
+    }
+    public seleceType(event) {
     }
 }

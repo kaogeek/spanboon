@@ -19,3 +19,8 @@ export * from './EmergencyEventFacade.service';
 export * from './PageFacade.service';
 export * from './PageUserFacade.service';
 export * from './PageUserAdminFacade.service';
+export * from './TodayPageFacade.service';
+export * from './PageGroupFacade.service';
+export * from './NewsPaperFacade.service';
+export * from './ManipulateFacade.service';
+export * from './ManipulatePostFacade.service';

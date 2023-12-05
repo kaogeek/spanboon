@@ -12,5 +12,8 @@ export class CheckUser {
     public twitterOauthTokenSecret: string;
     public twitterUserId: string; // ! remove when fix a bug when verify
     public apple: string;
+    public mobile: any;
+    public identification_number: any;
+    public id: any;
 
 }

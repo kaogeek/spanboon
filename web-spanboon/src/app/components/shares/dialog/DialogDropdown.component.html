@@ -1,0 +1,96 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="dialog customize-dropdown">
+    <div class="newcon-dropdown-dialog">
+        <div class="edit-h">
+            <span class="edit-head-one">{{data.title}}</span>
+            <div class="dialog-image-title-right">
+                <i class="material-icons" (click)="onClose()">
+                    clear
+                </i>
+            </div>
+        </div>
+        <ng-container *ngIf="data.type === 'USER'; else elseText">
+            <div class="edit-input">
+                <span>{{data.text}}</span>
+            </div>
+        </ng-container>
+        <ng-template #elseText>
+            <div class="edit-input">
+                <span>กรุณาเลือก </span>
+                <ng-container *ngFor="let item of page; let i = index">
+                    <ng-container *ngIf="page[i].province === false && nextPage === i">
+                        <span>จังหวัด </span>
+                    </ng-container>
+                    <ng-container *ngIf="page[i].group === false && nextPage === i">
+                        <span>กลุ่ม</span>
+                    </ng-container>
+                    <ng-container *ngIf="nextPage === i">
+                        <p>{{'ของเพจ ' + item.name}}</p>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </ng-template>
+        <div class="dropdown-province">
+            <ng-container *ngIf="data.type === 'USER'; else elseTemplate">
+                <mat-form-field appearance="none">
+                    <mat-select [(ngModel)]="selectedProvince" name="province" (selectionChange)="selectProv($event)"
+                        [ngModelOptions]="{standalone: true}" placeholder='จังหวัด'>
+                        <mat-option *ngFor="let province of provinces" [value]="province">
+                            {{province}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </ng-container>
+            <ng-template #elseTemplate>
+                <ng-container *ngFor="let item of page; let i = index">
+                    <ng-container *ngIf="page[i].province === false && nextPage === i">
+                        <mat-form-field appearance="none">
+                            <mat-select [(ngModel)]="selectedProvince" name="province"
+                                (selectionChange)="selectProv($event)" [ngModelOptions]="{standalone: true}"
+                                placeholder='จังหวัด'>
+                                <mat-option *ngFor="let province of provinces" [value]="province">
+                                    {{province}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </ng-container>
+                    <ng-container *ngIf="page[i].group === false && nextPage === i">
+                        <mat-form-field appearance="none">
+                            <mat-select [(ngModel)]="selectedGroup" name="group" (selectionChange)="selectGroup($event)"
+                                [ngModelOptions]="{standalone: true}" placeholder='กลุ่ม'>
+                                <mat-option *ngFor="let group of groups" [value]="group.detail">
+                                    {{group.detail}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </ng-container>
+                </ng-container>
+            </ng-template>
+        </div>
+        <div class="dialog-footer">
+            <div class="wizard-point" *ngIf="page.length > 1">
+                <ng-container *ngFor="let item of page; let i=index">
+                    <span class="point-page" (click)="changePage(i)" [ngClass]="{'select': i === nextPage}">●</span>
+                </ng-container>
+            </div>
+
+            <div class="group-butt">
+                <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
+                    {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
+
+                <div class=" butt but-submit" [ngClass]="{'disable': !selectedGroup && !selectedProvince}"
+                    [ngStyle]="{'display': data.btDisplay2}" appDebounceClick (debounceClick)="onConfirm()">
+                    {{data.bottomText2 ?
+                    data.bottomText2 : "ยืนยัน"}}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

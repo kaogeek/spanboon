@@ -8,12 +8,12 @@
 <div class="header-search" [class.show]="filled" (window:resize)="checkMenu($event)">
     <div class="search">
         <div class="wrapper-search">
-            <label class="material-icons icon-search-out" matRipple [matRippleCentered]="'centered'" for="searchInput"
-                (click)="clickShowSearch()" [ngStyle]="{'opacity': !SearchShow ? '1' : '0'}">
+            <label #buttonSearch class="material-icons icon-search-out" matRipple [matRippleCentered]="'centered'"
+                for="searchInput" (click)="searchShow()" [ngStyle]="{'opacity': !SearchShow ? '1' : '0'}">
                 search
             </label>
             <div class="home-back-left" *ngIf="SearchShow" matRipple [matRippleCentered]="'centered'"
-                (click)="clickHideSearch(); search.value ='' ">
+                (click)="clickHideSearch('show'); search.value ='' ">
                 <svg class="home-back" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 443.52 443.52"
                     style="enable-background:new 0 0 443.52 443.52;" xml:space="preserve">
@@ -34,7 +34,7 @@
                     [ngClass]="{'filled': filled }" (keyup.enter)="onClickSearchLink($event); search.value =''"
                     [ngStyle]="{'width' : !SearchShow ? '0' : '100%'}" autocomplete="off">
                 <span matRipple [matRippleCentered]="'centered'" class="material-icons close" *ngIf="filled"
-                    (click)="clickHideSearch(); search.value='';">
+                    (click)="clickHideSearch('show'); search.value='';">
                     close
                 </span>
             </div>
@@ -301,4 +301,4 @@
         </div>
     </div>
 </div>
-<div class="backdrop-active" *ngIf="filled" (click)="clickHideSearch(); search.value ='' "></div>
+<div class="backdrop-active" *ngIf="filled" (click)="clickHideSearch('show'); search.value ='' "></div>

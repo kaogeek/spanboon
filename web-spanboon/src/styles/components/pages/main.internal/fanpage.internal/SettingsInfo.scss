@@ -6,544 +6,662 @@
  */
 
 .settings-flex {
-    padding: 10pt 0;
-    display: flex;
-    flex-direction: row;
+  padding: 10pt 0;
+  display: flex;
+  flex-direction: row;
 
-    > .settings-left {
-        width: 300px;
-        margin-right: 10pt;
+  > .settings-left {
+    width: 300px;
+    margin-right: 10pt;
 
-        > .settings-list {
-            border-radius: 4px;
-            border: 1px solid $border-color;
-            background: $white;
+    > .settings-list {
+      border-radius: 4px;
+      border: 1px solid $border-color;
+      background: $white;
 
-            > .list-item-menu {
-                display: flex;
-                flex-direction: row;
-                justify-content: flex-start;
-                align-items: center;
-                padding: 13px 10px;
-                border-top: 1px solid $border-color;
-                @include pointer();
-                @include font-size-9($font-head-500);
-                opacity: 0.7;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                color: $black;
-
-                &:hover {
-                    background: #f5f6f7;
-                }
-
-                &.active {
-                    opacity: 1;
-                }
-
-                > .settings-icon {
-                    margin-right: 8pt;
-                    color: $brandcolor2;
-                }
-
-                > .settings-title {
-                }
-            }
-        }
-    }
-
-    > .settings-right {
-        width: calc(100% - 300px - 10pt);
-        border-radius: 4px;
-        border: 1px solid $border-color;
-        background: $white;
-        padding-bottom: 20pt;
-        // padding: 20pt;
-    }
-}
-
-.fanpage-info {
-    > .info-title {
-        @include font-size-8($font-head-500);
-        margin: 15pt 50pt 5pt 50pt;
-        height: 30pt;
-    }
-
-    > .card-info {
-        position: relative;
+      > .list-item-menu {
         display: flex;
         flex-direction: row;
-        padding: 10pt;
-        margin: 0 40pt;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 13px 10px;
+        border-top: 1px solid $border-color;
+        @include pointer();
+        @include font-size-9($font-head-500);
+        opacity: 0.7;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: $black;
 
-        &::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 10pt;
-            right: 10pt;
-            border-top: 1px solid $border-color;
+        &:hover {
+          background: #f5f6f7;
         }
 
         &.active {
-            background: rgba($bg-fog-gray, 0.4);
+          opacity: 1;
         }
 
-        > .card-left {
-            width: 120pt;
-            padding-right: 15pt;
-
-            > .header {
-                @include font-size-10($font-head-500);
-            }
+        > .settings-icon {
+          margin-right: 8pt;
+          color: $brandcolor2;
         }
 
-        > .card-right {
-            width: calc(100% - 120pt - 15pt);
-
-            > .card-detail {
-                > .mat-radio-group {
-                    display: flex;
-                    flex-direction: column;
-
-                    > .mat-radio-button {
-                        margin-bottom: 3pt;
-                        width: fit-content;
-                        @include font-size-9($font-head-400);
-                    }
-
-                    > .mat-radio-checked {
-                        @include font-size-9($font-head-600);
-                    }
-                }
-
-                > .set-time-to-date {
-                    margin-top: 8pt;
-
-                    > .date-time {
-                        // display: flex;
-                        // flex-direction: row;
-                        // align-items: center;
-                        // margin: 5pt 0;
-
-                        > .card-date {
-                            display: flex;
-                            flex-direction: row;
-                            align-items: center;
-                            margin: 5pt 0;
-
-                            > .date {
-                                width: 100pt;
-                            }
-
-                            > .time {
-                                > .to {
-                                    font-size: 20pt;
-                                    height: 20pt;
-                                    font-weight: 900;
-                                    margin: 0 5pt;
-                                }
-                            }
-
-                            > .add-time,
-                            > .remove-time {
-                                width: 26pt;
-                                height: 26pt;
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                border: 1px solid $border-color;
-                                border-radius: 4px;
-                                cursor: pointer;
-                                margin-left: 5pt;
-                                background: $white;
-                                font-size: 16pt;
-                                font-weight: 900;
-
-                                &::selection {
-                                    background: rgb(245, 246, 247);
-                                }
-
-                                &:hover {
-                                    background: rgb(235, 237, 240);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                > .div-map {
-                    width: 100%;
-                    height: 300px;
-                    margin: 8pt 0;
-                }
-
-                > .div-checkbox {
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: flex-start;
-                    // align-items: center;
-                    @include font-size-10($font-head-400);
-                    margin-top: 8pt;
-                    color: $black;
-
-                    >.mat-checkbox {
-                        >.mat-checkbox-layout {
-                            >.mat-checkbox-label {
-                                > .checkbox-confirm { 
-                                    @include font-size-10($font-head-500);
-                                }
-                            }
-                        }
-                    } 
-                }
-
-                > .card-bottom {
-                    display: none;
-
-                    &.active {
-                        display: block;
-                    }
-
-                    > .card-title {
-                        padding-top: 8pt;
-                        @include font-size-10($font-head-400);
-                        color: rgba($black, 0.5);
-                    }
-                    > .display-name {
-                        margin-top: 3px;
-                        @include font-size-9($font-head-500);
-                        word-break: break-all;
-                        padding: 0 13px;
-                    }
-
-                    > .card-confirm {
-                        padding-top: 8pt;
-
-                        > .save-card {
-                            color: $white;
-                            background: $brandcolor2;
-                            opacity: 0.7;
-                            @include font-size-10($font-head-500);
-
-                            &.active {
-                                opacity: 1;
-
-                                &:hover {
-                                    opacity: 0.9;
-                                }
-                            }
-                        }
-
-                        > .cancel-card {
-                            color: $brandcolor2;
-                            background: transparent;
-                            @include font-size-10($font-head-500);
-
-                            &:hover {
-                                > .mat-button-wrapper {
-                                    color: rgba($brandcolor2, 0.95);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        > .settings-title {
         }
+      }
+    }
+  }
+
+  > .settings-right {
+    width: calc(100% - 300px - 10pt);
+    border-radius: 4px;
+    border: 1px solid $border-color;
+    background: $white;
+    padding-bottom: 20pt;
+    // padding: 20pt;
+  }
+}
+
+.fanpage-info {
+  > .info-title {
+    @include font-size-8($font-head-500);
+    margin: 15pt 50pt 5pt 50pt;
+    height: 30pt;
+  }
+
+  > .card-info {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    padding: 10pt;
+    margin: 0 40pt 10px 40pt;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 10pt;
+      right: 10pt;
+      border-top: 1px solid $border-color;
     }
 
-    .crop-input {
-        position: relative;
+    &.active {
+      background: rgba($bg-fog-gray, 0.4);
+    }
+
+    > .card-left {
+      width: 120pt;
+      padding-right: 15pt;
+
+      > .header {
+        @include font-size-10($font-head-500);
+      }
+
+      > .header-delete {
+        @include font-size-10($font-head-500);
         display: flex;
-        align-items: center;
 
-        > label {
-            position: absolute;
-            left: 9pt;
-            @include font-size-8($font-content-light);
-            bottom: 6pt;
+        > span {
+          @include font-size-9($font-head-500);
+          margin-top: 30px;
+          color: red;
+          flex: 0 0 auto;
+          text-decoration: unset;
+
+          &:hover {
+            text-decoration: underline;
+            cursor: pointer;
+          }
         }
+      }
+    }
 
-        > .input-data {
-            padding-right: 26pt;
-        }
+    > .delete-page {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+    }
 
-        .icon-check,
-        .icon-close {
-            // .icon-check , .icon-close{
-            width: 16pt;
-            height: 16pt;
-            position: absolute;
-            right: 6pt;
-            border-radius: 50%;
-            font-size: 12pt;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+    > .card-right {
+      width: calc(100% - 120pt - 15pt);
 
-            &::selection {
-                background: transparent;
+      > .card-detail {
+        > .form-group {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          width: 100%;
+          height: 35pt;
+          margin-bottom: 15pt;
+          gap: 15px;
+
+          > .slide-email {
+            > mat-slide-toggle {
+              display: flex;
+              background-color: #fff;
+              border: 0.7px solid rgba(0, 0, 0, 0.3);
+              width: 50pt;
+              height: 28pt;
+              border-radius: 25px;
+
+              > label {
+                justify-content: center;
+              }
             }
+          }
         }
 
-        .icon-check {
-            // color: $white;
-            // background: green;
-        }
+        > .dropdown-province {
+          .mat-form-field {
+            > .mat-form-field-wrapper {
+              > .mat-form-field-flex {
+                background-color: white;
 
-        .icon-close {
-            @include pointer();
-            // color: $white;
-            // background: red;
-        }
-    }
+                > .mat-form-field-infix {
+                  border: 1px solid #e5e5e5;
+                  border-radius: 4px;
 
-    .input-data {
-        border: 1px solid $border-color;
-        width: calc(100% - 16pt);
-        border-radius: 4px;
-        padding: 0 8pt;
-        height: 26pt;
-        @include font-size-10($font-content-light);
-    }
-
-    .textarea {
-        resize: vertical;
-        min-height: 80pt;
-        padding: 5pt 8pt;
-
-        &:focus {
-            outline: none !important;
-        }
-    }
-
-    .mat-checkbox {
-        // display: flex;
-        // justify-content: center;
-        // align-items: center;
-        > .mat-checkbox-layout {
-            margin-bottom: 0;
-
-            > .mat-checkbox-inner-container {
-                width: 14pt;
-                height: 14pt;
-
-                > .mat-checkbox-fram {
-                    // border-color: $black;
+                  .mat-select {
+                    > .mat-select-trigger {
+                      > .mat-select-value {
+                        > span {
+                          margin-left: 10px;
+                        }
+                      }
+                    }
+                  }
                 }
+              }
             }
-
-            > .mat-checkbox-label {
-                @include font-size-9($font-head-500);
-            }
+          }
         }
+
+        > .mat-radio-group {
+          display: flex;
+          flex-direction: column;
+
+          > .mat-radio-button {
+            margin-bottom: 3pt;
+            width: fit-content;
+            @include font-size-9($font-head-400);
+          }
+
+          > .mat-radio-checked {
+            @include font-size-9($font-head-600);
+          }
+        }
+
+        > .set-time-to-date {
+          margin-top: 8pt;
+
+          > .date-time {
+            // display: flex;
+            // flex-direction: row;
+            // align-items: center;
+            // margin: 5pt 0;
+
+            > .card-date {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              margin: 5pt 0;
+
+              > .date {
+                width: 100pt;
+              }
+
+              > .time {
+                > .to {
+                  font-size: 20pt;
+                  height: 20pt;
+                  font-weight: 900;
+                  margin: 0 5pt;
+                }
+              }
+
+              > .add-time,
+              > .remove-time {
+                width: 26pt;
+                height: 26pt;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid $border-color;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-left: 5pt;
+                background: $white;
+                font-size: 16pt;
+                font-weight: 900;
+
+                &::selection {
+                  background: rgb(245, 246, 247);
+                }
+
+                &:hover {
+                  background: rgb(235, 237, 240);
+                }
+              }
+            }
+          }
+        }
+
+        > .div-map {
+          width: 100%;
+          height: 300px;
+          margin: 8pt 0;
+        }
+
+        > .div-checkbox {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          // align-items: center;
+          @include font-size-10($font-head-400);
+          margin-top: 8pt;
+          color: $black;
+
+          > .mat-checkbox {
+            > .mat-checkbox-layout {
+              > .mat-checkbox-label {
+                > .checkbox-confirm {
+                  @include font-size-10($font-head-500);
+                }
+              }
+            }
+          }
+        }
+
+        > .card-bottom {
+          display: none;
+
+          &.active {
+            display: block;
+          }
+
+          > .card-title {
+            padding-top: 8pt;
+            @include font-size-10($font-head-400);
+            color: rgba($black, 0.5);
+            word-break: break-word;
+          }
+
+          > .display-name {
+            margin-top: 3px;
+            @include font-size-9($font-head-500);
+            word-break: break-all;
+            padding: 0 13px;
+          }
+
+          > .card-confirm {
+            padding-top: 8pt;
+
+            > .save-card {
+              color: $white;
+              background: $brandcolor2;
+              opacity: 0.7;
+              @include font-size-10($font-head-500);
+
+              &.active {
+                opacity: 1;
+
+                &:hover {
+                  opacity: 0.9;
+                }
+              }
+            }
+
+            > .cancel-card {
+              color: $brandcolor2;
+              background: transparent;
+              @include font-size-10($font-head-500);
+
+              &:hover {
+                > .mat-button-wrapper {
+                  color: rgba($brandcolor2, 0.95);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .crop-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    > label {
+      position: absolute;
+      left: 9pt;
+      @include font-size-8($font-content-light);
+      bottom: 6pt;
     }
 
-    .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
-    .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
-        background: $brandcolor2;
+    > .input-data {
+      padding-right: 26pt;
     }
 
-    .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
-    .mat-checkbox-checked.mat-accent .mat-checkbox-background {
-        background: $brandcolor2;
+    .icon-check,
+    .icon-close {
+      // .icon-check , .icon-close{
+      width: 16pt;
+      height: 16pt;
+      position: absolute;
+      right: 6pt;
+      border-radius: 50%;
+      font-size: 12pt;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::selection {
+        background: transparent;
+      }
     }
 
-    // --------------
-
-    .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-        border-color: $brandcolor2;
+    .icon-check {
+      // color: $white;
+      // background: green;
     }
 
-    .mat-radio-button.mat-accent .mat-radio-inner-circle {
-        color: $brandcolor2;
-        background-color: $brandcolor2;
+    .icon-close {
+      @include pointer();
+      // color: $white;
+      // background: red;
     }
+  }
 
-    .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
-        background-color: $brandcolor2;
+  .input-data {
+    border: 1px solid $border-color;
+    width: calc(100% - 16pt);
+    border-radius: 4px;
+    padding: 0 8pt;
+    height: 26pt;
+    @include font-size-10($font-content-light);
+  }
+
+  .textarea {
+    resize: vertical;
+    min-height: 80pt;
+    padding: 5pt 8pt;
+
+    &:focus {
+      outline: none !important;
     }
+  }
+
+  .mat-checkbox {
+    // display: flex;
+    // justify-content: center;
+    // align-items: center;
+    > .mat-checkbox-layout {
+      margin-bottom: 0;
+
+      > .mat-checkbox-inner-container {
+        width: 14pt;
+        height: 14pt;
+
+        > .mat-checkbox-fram {
+          // border-color: $black;
+        }
+      }
+
+      > .mat-checkbox-label {
+        @include font-size-9($font-head-500);
+      }
+    }
+  }
+
+  .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent
+    .mat-ripple-element,
+  .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent
+    .mat-ripple-element {
+    background: $brandcolor2;
+  }
+
+  .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
+  .mat-checkbox-checked.mat-accent .mat-checkbox-background {
+    background: $brandcolor2;
+  }
+
+  // --------------
+
+  .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+    border-color: $brandcolor2;
+  }
+
+  .mat-radio-button.mat-accent .mat-radio-inner-circle {
+    color: $brandcolor2;
+    background-color: $brandcolor2;
+  }
+
+  .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+    background-color: $brandcolor2;
+  }
+}
+
+.delete-page {
+  > .delete-card {
+    margin-left: 5pt;
+    width: 70pt;
+    min-width: 70pt;
+    color: $white;
+    background: red;
+    opacity: 1;
+    @include font-size-9($font-head-500);
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
 }
 
 @media (max-width: $large) {
-    .fanpage-info {
-        > .info-title {
-            @include font-size-9($font-head-500);
-        }
-        > .card-info {
-            > .card-left {
-                > .header {
-                    @include font-size-10($font-head-500);
-                }
-            }
-            > .card-right {
-                @include font-size-10($font-head-500);
-                > .card-detail {
-                    > .input-data {
-                        @include font-size-10($font-head-500);
-                    }
-                    //             > .card-bottom {
-                    //                 > .card-title {
-                    //                     font-size: 11px;
-                    //                 }
-                    //                 > .card-confirm {
-                    //                     text-align: end;
-                    //                     > .save-card {
-                    //                         @include font-size-11($font-head-500);
-                    //                     }
-                    //                     > .cancel-card {
-                    //                         @include font-size-11($font-head-500);
-                    //                     }
-                    //                 }
-                    // }
-                    > .div-checkbox {
-                        align-items: center;
-                        @include font-size-11($font-head-500);
-                    }
-                }
-            }
-        }
+  .fanpage-info {
+    > .info-title {
+      @include font-size-9($font-head-500);
     }
+
+    > .card-info {
+      > .card-left {
+        > .header {
+          @include font-size-10($font-head-500);
+        }
+      }
+
+      > .card-right {
+        @include font-size-10($font-head-500);
+
+        > .card-detail {
+          > .input-data {
+          }
+
+          //             > .card-bottom {
+          //                 > .card-title {
+          //                     font-size: 11px;
+          //                 }
+          //                 > .card-confirm {
+          //                     text-align: flex-end;
+          //                     > .save-card {
+          //                         @include font-size-11($font-head-500);
+          //                     }
+          //                     > .cancel-card {
+          //                         @include font-size-11($font-head-500);
+          //                     }
+          //                 }
+          // }
+          > .div-checkbox {
+            align-items: center;
+            @include font-size-11($font-head-500);
+          }
+        }
+      }
+    }
+  }
 }
 
 @media (max-width: $lmedium) {
-    .fanpage-info {
-        > .info-title {
-            margin: 15pt 30pt 5pt 30pt;
-            @include font-size-9($font-head-500);
-        }
-        > .card-info {
-            margin: 0 20pt;
-
-            > .card-left {
-                width: 88pt;
-                > .header {
-                    @include font-size-10($font-head-500);
-                }
-            }
-            > .card-right {
-                width: calc(100% - 88pt - 15pt);
-                @include font-size-10($font-head-500);
-                > .card-detail {
-                    > .input-data {
-                        @include font-size-10($font-head-500);
-                    }
-                    //             > .card-bottom {
-                    //                 > .card-title {
-                    //                     font-size: 11px;
-                    //                 }
-                    //                 > .card-confirm {
-                    //                     text-align: end;
-                    //                     > .save-card {
-                    //                         @include font-size-11($font-head-500);
-                    //                     }
-                    //                     > .cancel-card {
-                    //                         @include font-size-11($font-head-500);
-                    //                     }
-                    //                 }
-                    // }
-                    > .div-checkbox {
-                        align-items: center;
-                        @include font-size-11($font-head-500);
-                    }
-                }
-            }
-        }
+  .fanpage-info {
+    > .info-title {
+      margin: 15pt 30pt 5pt 30pt;
+      @include font-size-9($font-head-500);
     }
+
+    > .card-info {
+      margin: 0 20pt;
+
+      > .card-left {
+        width: 88pt;
+
+        > .header {
+          @include font-size-10($font-head-500);
+        }
+      }
+
+      > .card-right {
+        width: calc(100% - 88pt - 15pt);
+        @include font-size-10($font-head-500);
+
+        > .card-detail {
+          > .input-data {
+          }
+
+          //             > .card-bottom {
+          //                 > .card-title {
+          //                     font-size: 11px;
+          //                 }
+          //                 > .card-confirm {
+          //                     text-align: flex-end;
+          //                     > .save-card {
+          //                         @include font-size-11($font-head-500);
+          //                     }
+          //                     > .cancel-card {
+          //                         @include font-size-11($font-head-500);
+          //                     }
+          //                 }
+          // }
+          > .div-checkbox {
+            align-items: center;
+            @include font-size-11($font-head-500);
+          }
+        }
+      }
+    }
+  }
 }
 
 @media (max-width: $medium) {
-    .fanpage-info {
-        > .info-title {
-        }
-        > .card-info {
-            flex-direction: column;
-
-            > .card-left {
-                > .header {
-                    @include font-size-10($font-head-500);
-                }
-            }
-            > .card-right {
-                width: 100%;
-                padding-top: 8pt;
-                @include font-size-9($font-head-500);
-                > .card-detail {
-                    > .input-data {
-                        @include font-size-10($font-content-light);
-                    }
-                    > .card-bottom {
-                        > .card-title {
-                            font-size: 11px;
-                        }
-                        > .card-confirm {
-                            text-align: end;
-                            > .save-card {
-                                @include font-size-11($font-head-500);
-                            }
-                            > .cancel-card {
-                                @include font-size-11($font-head-500);
-                            }
-                        }
-                    }
-                    > .div-checkbox {
-                        align-items: center;
-                        @include font-size-10($font-head-500);
-                    }
-                }
-            }
-        }
+  .fanpage-info {
+    > .info-title {
     }
+
+    > .card-info {
+      flex-direction: column;
+
+      > .card-left {
+        > .header {
+          @include font-size-10($font-head-500);
+        }
+      }
+
+      > .card-right {
+        width: 100%;
+        padding-top: 8pt;
+        @include font-size-9($font-head-500);
+
+        > .card-detail {
+          > .input-data {
+            @include font-size-10($font-content-light);
+          }
+
+          > .card-bottom {
+            > .card-title {
+              font-size: 11px;
+            }
+
+            > .card-confirm {
+              text-align: flex-end;
+
+              > .save-card {
+                @include font-size-11($font-head-500);
+              }
+
+              > .cancel-card {
+                @include font-size-11($font-head-500);
+              }
+            }
+          }
+
+          > .div-checkbox {
+            align-items: center;
+            @include font-size-10($font-head-500);
+          }
+        }
+      }
+    }
+  }
 }
 
 @media (max-width: $small) {
-    .fanpage-info {
-        min-height: calc(100vh - 39pt);
-        > .info-title {
-            margin: 15pt 16pt 5pt 16pt;
-            @include font-size-9($font-head-500);
-        }
-        > .card-info {
-            margin: 0 5pt;
-            flex-direction: column;
+  .fanpage-info {
+    min-height: calc(100vh - 39pt);
 
-            > .card-left {
-                > .header {
-                    @include font-size-10($font-head-500);
-                }
-            }
-            > .card-right {
-                width: 100%;
-                padding-top: 8pt;
-                @include font-size-9($font-head-500);
-                > .card-detail {
-                    > .card-bottom {
-                        > .card-title {
-                            font-size: 11px;
-                        }
-                        > .card-confirm {
-                            text-align: end;
-                            > .save-card {
-                                @include font-size-11($font-head-500);
-                            }
-                            > .cancel-card {
-                                @include font-size-11($font-head-500);
-                            }
-                        }
-                    }
-                    > .div-checkbox {
-                        align-items: center;
-                        @include font-size-10($font-head-500);
-                    }
-                }
-                > .crop-input {
-                    > .input-data {
-                        @include font-size-10($font-head-500);
-                    }
-                }
-            }
-        }
+    > .info-title {
+      margin: 15pt 16pt 5pt 16pt;
+      @include font-size-9($font-head-500);
     }
+
+    > .card-info {
+      margin: 0 5pt;
+      flex-direction: column;
+
+      > .card-left {
+        > .header {
+          @include font-size-10($font-head-500);
+        }
+      }
+
+      > .card-right {
+        width: 100%;
+        padding-top: 8pt;
+        @include font-size-9($font-head-500);
+
+        > .card-detail {
+          > .card-bottom {
+            > .card-title {
+              font-size: 11px;
+            }
+
+            > .card-confirm {
+              text-align: flex-end;
+
+              > .save-card {
+                @include font-size-11($font-head-500);
+              }
+
+              > .cancel-card {
+                @include font-size-11($font-head-500);
+              }
+            }
+          }
+
+          > .div-checkbox {
+            align-items: center;
+            @include font-size-10($font-head-500);
+          }
+        }
+
+        > .crop-input {
+          > .input-data {
+            @include font-size-10($font-head-500);
+          }
+        }
+      }
+    }
+  }
 }

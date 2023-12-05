@@ -22,7 +22,6 @@ import moment from 'moment';
 import { ConfigService } from '../services/ConfigService';
 import { SEARCH_ENGAGEMENT_ACCESSIBLE_DATE, DEFAULT_SEARCH_ENGAGEMENT_ACCESSIBLE_DATE } from '../../constants/SystemConfig';
 import { Config } from '../models/Config';
-
 @JsonController('/hashtag')
 export class HashTagController {
     constructor(
@@ -48,7 +47,8 @@ export class HashTagController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get('/:id')
-    public async findHashTag(@Param('id') id: string, @Res() res: any): Promise<any> {
+    public async findHashTag(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+
         const objId = new ObjectID(id);
 
         const hashTag: HashTag = await this.hashTagService.findOne({ where: { _id: objId } });
@@ -87,7 +87,8 @@ export class HashTagController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/search')
-    public async searchHashTag(@Body({ validate: true }) filter: SearchFilter, @Res() res: any): Promise<any> {
+    public async searchHashTag(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+
         if (ObjectUtil.isObjectEmpty(filter)) {
             return res.status(200).send([]);
         }
@@ -139,7 +140,8 @@ export class HashTagController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/:id/post/search')
-    public async searchHashTagInPost(@Body({ validate: true }) filter: SearchFilter, @Param('id') hashTagId: string, @Res() res: any): Promise<any> {
+    public async searchHashTagInPost(@Body({ validate: true }) filter: SearchFilter, @Param('id') hashTagId: string, @Res() res: any, @Req() req: any): Promise<any> {
+
         const tagNames = [];
         let hashTagInPosts: HashTag;
 
@@ -192,6 +194,7 @@ export class HashTagController {
      */
     @Post('/trend')
     public async searchTrendHashTag(@Body({ validate: true }) search: SearchHashTagRequest, @Res() res: any, @Req() req: any): Promise<any> {
+
         let name;
         let limit;
         let offset;

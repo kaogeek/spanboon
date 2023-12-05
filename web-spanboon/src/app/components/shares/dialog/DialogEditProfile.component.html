@@ -15,56 +15,6 @@
         </div>
     </div>
     <div class="wrapper-body-edit-profile">
-        <form #register="ngForm">
-            <label class="form-label-error">
-                <span *ngIf="isCheck">
-                    กรุณากรอกชื่อที่ต้องการแสดง
-                </span>
-            </label>
-            <div class="form-group-div" >
-                <div class="form-group">
-                    <div class="form-col">
-                        <input type="text" [class.error-msg]="isCheck" id="displayName" name="displayName" placeholder="ชื่อที่ต้องการแสดง"
-                            class="input-text" [(ngModel)]="data.displayName" required>
-                    </div> 
-                </div>
-                
-                <div class="form-group">
-                    <div class="form-col">
-                        <input type="text" name="firstName" id="firstName"  placeholder="ชื่อ"
-                            class="input-text-group" [(ngModel)]="data.firstName" required>
-                    </div>
-                    <div class="form-col">
-                        <input type="text" name="lastName" id="lastName"  placeholder="นามสกุล" 
-                        class="input-text-group" [(ngModel)]="data.lastName" required >
-                    </div>
-                </div> 
-     
-                <label for="birthdate" class="form-label">วันเกิด</label>
-                <div class="form-group">
-                    <mat-form-field>
-                        <input #birthdate matInput [matDatepicker]="dp3" placeholder="" name="birthdate" [(ngModel)]="data.birthdate"
-                            [min]="minDate" [max]="maxDate" required>
-                        <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
-                        <mat-datepicker #dp3 disabled="false"></mat-datepicker>
-                    </mat-form-field>
-    
-                </div>
-                <label for="male female custom" class="form-label" >เพศ</label>
-                <div class="form-group">
-                    <div class="div-gender">
-                        <mat-radio-group class="custom-control-input" name="gender" [(ngModel)]="data.gender">
-                            <mat-radio-button [value]="0">ชาย</mat-radio-button>
-                            <mat-radio-button [value]="1">หญิง</mat-radio-button>
-                        </mat-radio-group>
-                    </div>
-                </div>
-            </div>
-     
-        </form>
-    </div> 
-    <div class="wrapper-footer">
-        <!-- <button mat-button (click)="onNoClick()">No Thanks</button> -->
-        <button mat-button (click)="editProfile()" >ยืนยัน</button>
+        <edit-profile-card [dataProfile]="data" (success)="eventCheckClose($event)"></edit-profile-card>
     </div>
 </div>

@@ -23,10 +23,39 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>ชื่อ *</label>
-                                        <input type="text" class="form-control" [(ngModel)]="dataForm.name" [ngModelOptions]="{standalone: true}">
-                                        <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="submitted && dataForm.name.trim() === ''">
-                                            กรุณาใส่ ชื่อ
+                                        <div class="input-post-page">
+                                            <label>ชื่อ *</label>
+                                            <input type="text" class="form-control" [(ngModel)]="dataForm.name"
+                                                [ngModelOptions]="{standalone: true}">
+                                            <div class="alert alert-danger" style="margin-top: 5pt;"
+                                                *ngIf="submitted && dataForm.name.trim() === ''">
+                                                กรุณาใส่ ชื่อ
+                                            </div>
+                                            <label style='margin-top:15px'>กลุ่ม *</label>
+                                            <mat-form-field appearance="none" class="input-post-page">
+                                                <mat-select [(ngModel)]="dataForm.group" name="group"
+                                                    placeholder='กรุณาเลือกกลุ่ม' required>
+                                                    <mat-option>* ไม่เลือกกลุ่มใดๆ *</mat-option>
+                                                    <mat-option *ngFor="let stackGroup of stackGroups"
+                                                        [value]="stackGroup.detail">
+                                                        {{stackGroup.detail}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                            <label style='margin-top:15px'>จังหวัด *</label>
+                                            <mat-form-field appearance="none" class="input-post-page">
+                                                <mat-select #selectProvince [(ngModel)]="dataForm.province"
+                                                    name="province" placeholder='กรุณาเลือกจังหวัด' required>
+                                                    <!-- <mat-select-filter *ngIf="selectProvince.focused"
+                                                        [array]="default_province" [color]="'#ffb250'"
+                                                        [placeholder]="'ค้นหาจังหวัดที่จะเลือก'"
+                                                        (filteredReturn)="provinces = $event"></mat-select-filter> -->
+                                                    <mat-option>* ไม่เลือกจังหวัดใดๆ *</mat-option>
+                                                    <mat-option *ngFor="let province of provinces" [value]="province">
+                                                        {{province}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
                                         </div>
                                     </div>
                                 </div>
@@ -42,7 +71,10 @@
         </mat-drawer>
         <mat-drawer-content>
             <div class="main-content">
-                <admin-table-component #table [facade]="pageFacade" [isApprovePage]="'true'" [title]="'ตรวจสอบเพจ'" (official)="clickOfficial($event)" (ban)="clickBan($event)" [fieldTable]="fieldTable" [actions]="actions" (delete)="clickDelete($event)"></admin-table-component>
+                <admin-table-component #table [orderBy]="orderBy" [facade]="pageFacade" [isApprovePage]="'true'"
+                    [title]="'ตรวจสอบเพจ'" (official)="clickOfficial($event)" (ban)="clickBan($event)"
+                    [fieldTable]="fieldTable" [actions]="actions" [isOfficialPage]="isOfficialPage"
+                    (edit)="clickEditForm($event)" (delete)="clickDelete($event)"></admin-table-component>
             </div>
         </mat-drawer-content>
     </mat-drawer-container>

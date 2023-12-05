@@ -118,6 +118,43 @@ export class MAILService {
             });
         });
     }
+    // push notification
+    public static pushNotification(emailContent: any, email: any, Subject: any): Promise<any> {
+        const emailData = undefined;
+        return new Promise((resolve, reject) => {
+            const transporter = nodemailer.createTransport(smtpTransport({
+                host: mail.HOST,
+                port: mail.PORT,
+                secure: mail.SECURE,
+                auth: {
+                    user: mail.AUTH.user,
+                    pass: mail.AUTH.pass,
+                },
+            }));
+            ejs.renderFile('./views/emailTemplate.ejs', { emailContent, emailData }, (err, data) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    const mailOptions = {
+                        from: '"' + process.env.MAIL_FROM_NAME + '" <' + mail.FROM + '>',
+                        to: email,
+                        subject: Subject,
+                        html: data,
+                    };
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        if (error) {
+                            reject(error);
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                            resolve(info);
+                        }
+                    });
+                }
+            });
+        });
+    }
+
     // contact Us
     public static contactMail(emailContent: string, Subject: any, adminId: any): Promise<any> {
         const emailData = undefined;
@@ -153,4 +190,39 @@ export class MAILService {
             });
         });
     }
+    public static kaokaiToday(emailContent: any, email: any, Subject: any): Promise<any>{
+        const emailData = undefined;
+        console.log('Subject',Subject);
+        return new Promise((resolve, reject) => {
+            const transporter = nodemailer.createTransport(smtpTransport({
+                host: mail.HOST,
+                port: mail.PORT,
+                secure: mail.SECURE,
+                auth: {
+                    user: mail.AUTH.user,
+                    pass: mail.AUTH.pass,
+                },
+            }));
+            ejs.renderFile('./views/emailTemplate.ejs', { emailContent, emailData }, (err, data) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    const mailOptions = {
+                        from: '"' + process.env.MAIL_FROM_NAME + '" <' + mail.FROM + '>',
+                        to: email,
+                        subject: Subject,
+                        html: data,
+                    };
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        if (error) {
+                            reject(error);
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                            resolve(info);
+                        }
+                    });
+                }
+            });
+        });    }
 }

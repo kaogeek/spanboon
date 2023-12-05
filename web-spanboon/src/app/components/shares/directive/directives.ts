@@ -6,8 +6,10 @@
  */
 
 export * from './DebounceClick.directive';
+export * from './DebounceScroll.directive';
 export * from './AutoScale.directive';
 export * from './DragAndDrop.directive';
 export * from './Preload.directive';
 export * from './Shake.directive';
-export * from './Highlight.directive'; 
+export * from './Highlight.directive';
+export * from './HorizontalScroll.directive'; 

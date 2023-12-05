@@ -44,7 +44,60 @@ export class PageNotificationService {
         return result;
     }
 
-    public async notifyToPageUserFcm(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
+    public async notifyToPageUserObjective(
+        toPageId: string,
+        pageLevel?: string[],
+        fromUserId?: string,
+        fromUserType?: string,
+        notificationType?: string,
+        title?: string,
+        link?: string,
+        displayName?: any,
+        image?: any,
+        count?: any,
+        mode?: any,
+        joinObjectiveId?: string
+        ): Promise<any> {
+        // check pageId
+        const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
+        if (page === undefined) {
+            return [];
+        }
+        const checkMode = mode;
+        const pageAccess = await this.pageAccessLevelService.getAllPageUserAccess(toPageId, pageLevel);
+        const result: Notification[] = [];
+        if (pageAccess) {
+            const addedUesr = [];
+            for (const userAccess of pageAccess) {
+                const userId = userAccess.user + '';
+                // const pageId = userAccess.page + '';
+
+                if (addedUesr.indexOf(userId) >= 0) {
+                    continue;
+                }
+                const notification = await this.notificationService.createUserNotificationObjective(
+                    userId,
+                    fromUserId,
+                    fromUserType,
+                    notificationType,
+                    title,
+                    link,
+                    displayName,
+                    image,
+                    count,
+                    checkMode,
+                    joinObjectiveId,
+
+                );
+                result.push(notification);
+
+                addedUesr.push(userId);
+            }
+        }
+        return result;
+    }
+
+    public async notifyToPageUserFcm(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, displayName?: any, image?: any, count?: any): Promise<any> {
         // check pageId
         const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
         if (page === undefined) {
@@ -67,18 +120,17 @@ export class PageNotificationService {
                     notificationType,
                     title,
                     link,
-                    data,
                     displayName,
                     image,
-                    count
+                    count,
+                    notificationType,
+                    undefined,
                 );
-
                 result.push(notification);
 
                 addedUesr.push(userId);
             }
         }
-
         return result;
     }
     public async notifyToPageUser(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any, displayName?: any): Promise<any> {

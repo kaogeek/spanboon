@@ -22,3 +22,6 @@ export * from './ValidateStandardItemCategoryRequest';
 export * from './BanRequest';
 export * from './Asset';
 export * from './Page';
+export * from './Today';
+export * from './NewsPaper';
+export * from './Manipulate';

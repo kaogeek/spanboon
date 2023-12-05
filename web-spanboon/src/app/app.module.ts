@@ -6,7 +6,7 @@
  */
 
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, ViewContainerRef } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -42,6 +42,7 @@ import { initializeApp } from "firebase/app";
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 initializeApp(environment.firebase);
 
@@ -55,10 +56,11 @@ import {
   MatTooltipModule, MatSnackBarModule, MatTableModule, MatSortModule, MatPaginatorModule, MatNativeDateModule, MatCardModule, MatRippleModule, MAT_DIALOG_DATA, MatDialogRef, MatBadgeModule, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_SNACK_BAR_DEFAULT_OPTIONS
 } from '@angular/material';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { DeviceDetectorModule } from 'ngx-device-detector';
 
 import {
   PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, PipeThFormatDatetime,
-  PipeThDatetime, HighlightText, ConvertTextNotification
+  PipeThDatetime, HighlightText, HighlightTextEvent, ConvertTextNotification
 } from './components/shares/pipes/pipes';
 
 import {
@@ -67,6 +69,7 @@ import {
   DragAndDrop,
   Preload,
   Shake,
+  HorizontalScrollDirective,
   Highlight
 } from './components/shares/directive/directives';
 
@@ -81,10 +84,13 @@ import {
 
   // page
   HomePage,
+  OfficialPage,
   LoginPage,
   ProfilePage,
   NotificationAllPage,
   forgotPasswordPage,
+  PolicyPage,
+  TermsOfServicePage,
   // FanPage,
   MainPage,
   Redirect,
@@ -94,6 +100,10 @@ import {
   MenuRegister,
   FulfillPage,
   PageHashTag,
+  EventSearch,
+  LoginMemberProcessing,
+  MemberProcess,
+  MobileProcessing,
   PageRecommended,
   StoryPage,
   PostPage,
@@ -102,14 +112,20 @@ import {
   SettingsAdminRoles,
   SecurityInfo,
   AboutPage,
-  Policy,
-  TOS,
+  PolicyV1,
+  PolicyV2,
+  TermsOfServiceV1,
+  TermsOfServiceV2,
+  KnowledgeCenter,
   // timeline 
   ObjectiveTimeline,
   EmergencyEventTimeline,
   // shares
   DialogImage,
   DialogAlert,
+  DialogProfile,
+  DialogAboutUs,
+  DialogConfirmInput,
   DialogShare,
   DialogPassword,
   DialogManageImage,
@@ -125,6 +141,9 @@ import {
   DialogFulfillAllocate,
   DialogAlertAllocate,
   DialogPreview,
+  DialogCheckBox,
+  DialogPoliciesAndTerms,
+  DialogDropdown,
   AlertComponent,
   TooltipProfile,
   PreloadCard,
@@ -134,9 +153,11 @@ import {
   CardContentHome,
   CollapsibleHead,
   CardChatFulfill,
+  EditProfileCard,
   ChatMessage,
   ChatFulfill,
   FulfillItemCard,
+  CardPostContentHome,
   //
   SpanBoonButton,
   ButtonSocial,
@@ -206,6 +227,7 @@ import {
   TagEvent,
   CardFulfillItem,
   HomePageV3,
+  AppleAppSite,
 } from './components/components';
 
 // remove when finished test
@@ -253,6 +275,8 @@ import {
   RecommendFacade,
   UserEngagementFacade,
   CheckMergeUserFacade,
+  UserSubjectFacade,
+  BindingMemberFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -296,6 +320,7 @@ const COMPONENTS: any[] = [
   FooterMobile,
   // Pages
   HomePage,
+  OfficialPage,
   HomePageV3,
   NotificationAllPage,
   LoginPage,
@@ -307,8 +332,11 @@ const COMPONENTS: any[] = [
   PostPage,
   SettingsFanPage,
   AboutPage,
-  Policy,
-  TOS,
+  PolicyV1,
+  PolicyV2,
+  TermsOfServiceV1,
+  TermsOfServiceV2,
+  KnowledgeCenter,
   SettingsInfo,
   SettingsAdminRoles,
   SecurityInfo,
@@ -316,8 +344,14 @@ const COMPONENTS: any[] = [
   MenuRegister,
   FulfillPage,
   PageHashTag,
+  EventSearch,
+  LoginMemberProcessing,
+  MemberProcess,
+  MobileProcessing,
   PageRecommended,
   Redirect,
+  PolicyPage,
+  TermsOfServicePage,
   // timeline 
   ObjectiveTimeline,
   EmergencyEventTimeline,
@@ -327,6 +361,9 @@ const COMPONENTS: any[] = [
   DialogImage,
   AlertComponent,
   DialogAlert,
+  DialogProfile,
+  DialogAboutUs,
+  DialogConfirmInput,
   DialogShare,
   DialogPassword,
   DialogManageImage,
@@ -348,6 +385,9 @@ const COMPONENTS: any[] = [
   DialogInput,
   DialogFulfillAllocate,
   DialogPreview,
+  DialogCheckBox,
+  DialogPoliciesAndTerms,
+  DialogDropdown,
   TagEvent,
   TooltipProfile,
   PreloadCard,
@@ -357,6 +397,7 @@ const COMPONENTS: any[] = [
   CollapsibleHead,
   NotificationCard,
   CardChatFulfill,
+  EditProfileCard,
   ChatMessage,
   ChatFulfill,
   FulfillItemCard,
@@ -403,6 +444,7 @@ const COMPONENTS: any[] = [
   CardCreateStoryImage,
   CardCreateStoryVideo,
   CardCreateStoryTitleText,
+  CardPostContentHome,
   NeedsCard,
   //
   BoxPost,
@@ -411,6 +453,7 @@ const COMPONENTS: any[] = [
   FulfillItem,
   FulFillMenu,
   AuthenCheckPage,
+  AppleAppSite,
   NotificationCheckPage,
   Loading,
   IconUser,
@@ -433,6 +476,7 @@ const PIPE_CLASSES: any[] = [
   PipeThFormatDatetime,
   PipeThDatetime,
   HighlightText,
+  HighlightTextEvent,
   ConvertTextNotification,
   SafePipe,
   RemoveBadWords
@@ -445,6 +489,7 @@ const DIRECTIVE_CLASSES: any[] = [
   DragAndDrop,
   Preload,
   Shake,
+  HorizontalScrollDirective,
   Highlight
 ];
 
@@ -488,6 +533,8 @@ const SERVICE_CLASSES: any[] = [
   AboutPageFacade,
   TwitterService,
   RecommendFacade,
+  UserSubjectFacade,
+  BindingMemberFacade,
   UserEngagementFacade,
   {
     provide: SocialAuthService,
@@ -527,6 +574,7 @@ registerLocaleData(localeFr, 'th-TH', localeFrExtra);
 
   imports: [
     CountdownModule,
+    InfiniteScrollModule,
     BrowserModule,
     FontAwesomeModule,
     NgOtpInputModule,
@@ -562,6 +610,7 @@ registerLocaleData(localeFr, 'th-TH', localeFrExtra);
     MatTooltipModule, MatSnackBarModule, MatTableModule, MatSortModule, MatPaginatorModule, MatNativeDateModule, MatCardModule,
     MatRippleModule, MatBadgeModule, OverlayModule,
     CommonModule,
+    DeviceDetectorModule.forRoot(),
     ToastrModule.forRoot({
       maxOpened: 10,
       newestOnTop: true

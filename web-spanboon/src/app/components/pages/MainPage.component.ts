@@ -5,17 +5,25 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, HostListener, ViewChild, ElementRef, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { ObservableManager } from '../../services/ObservableManager.service';
 import * as $ from 'jquery';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AbstractPage } from './AbstractPage';
 import { MatDialog } from '@angular/material';
-import { DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
 import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
 import { filter } from 'rxjs/internal/operators/filter';
+import { DialogPost } from '../shares/dialog/DialogPost.component';
+import { DialogPoliciesAndTerms } from '../shares/dialog/DialogPoliciesAndTerms.component';
+import {
+  getSupportedInputTypes,
+  Platform,
+  supportsPassiveEventListeners,
+  supportsScrollBehavior,
+} from '@angular/cdk/platform';
 
+const PAGE_USER: string = 'pageUser';
 declare var $: any;
 const PAGE_NAME: string = '';
 
@@ -24,6 +32,9 @@ const PAGE_NAME: string = '';
   templateUrl: './MainPage.component.html',
 })
 export class MainPage extends AbstractPage implements OnInit {
+  supportedInputTypes = Array.from(getSupportedInputTypes()).join(', ');
+  supportsPassiveEventListeners = supportsPassiveEventListeners();
+  supportsScrollBehavior = supportsScrollBehavior();
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
@@ -37,6 +48,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public isPost: boolean = false;
   public isprofile: boolean = false;
   public isLoading: boolean;
+  public isUA: boolean = false;
   public user: any;
   public data: any;
   public isDev: boolean = true;
@@ -53,7 +65,14 @@ export class MainPage extends AbstractPage implements OnInit {
 
   @ViewChild("mainpage", { static: true }) mainpage: ElementRef;
 
-  constructor(observManager: ObservableManager, router: Router, private route: ActivatedRoute, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog, userAccessFacade: UserAccessFacade) {
+  constructor(observManager: ObservableManager,
+    router: Router,
+    private route: ActivatedRoute,
+    routeActivated: ActivatedRoute,
+    authenManager: AuthenManager,
+    dialog: MatDialog,
+    userAccessFacade: UserAccessFacade,
+    public platform: Platform) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
     this.authenManager = authenManager;
@@ -80,8 +99,9 @@ export class MainPage extends AbstractPage implements OnInit {
       }
     });
 
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(async (event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
+        this.hidebar = this.authenManager.getHidebar();
         const url: string = decodeURI(this.router.url);
         const path = url.split('/')[1];
         if (url === "/home" || '/' + path === "/page" || '/' + path === "/profile" || url === "/recommend") {
@@ -89,6 +109,36 @@ export class MainPage extends AbstractPage implements OnInit {
         }
         if (url === '/login' || (path === "fulfill")) {
           this.isPost = false;
+        }
+        if (this.isLogin() && this.hidebar) {
+          let token = localStorage.getItem('token');
+          let mode = localStorage.getItem('mode');
+          this.authenManager.checkAccountStatus(token, mode, { updateUser: true }).then((res) => {
+            if (res) {
+              this.isUA = true;
+              localStorage.setItem(PAGE_USER, JSON.stringify(res.user));
+              sessionStorage.setItem(PAGE_USER, JSON.stringify(res.user));
+              this.observManager.createSubject('setting.account');
+              this.observManager.publish('setting.account', {
+                data: res.user
+              });
+
+              if (this.isUA && !res.user.tosVersion && !res.user.uaVersion) {
+                const policy = this.authenManager.checkVersionPolicy('v2', this.user);
+                const tos = this.authenManager.checkVersionTos('v2', this.user);
+                if (!policy || this.authenManager.getParams('policy')) {
+                  this._dialogPolicy();
+                }
+
+                if (!tos || this.authenManager.getParams('tos')) {
+                  this._dialogTerms();
+                }
+                this.isUA = false;
+              }
+            }
+          }).catch((err) => {
+            if (err) { }
+          })
         }
       }
     });
@@ -100,8 +150,20 @@ export class MainPage extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.hidebar = this.authenManager.getHidebar();
     const isLogin: boolean = this.isLogin();
+
+    // const url: string = decodeURI(this.router.url);
+    // const path = url.split('/')[1];
+    // console.log("url", url)
+    // console.log("path", path)
+    // let mobileDevice = this.isMobileDevice();
+    // if (mobileDevice && path === "home") {
+    //   if (this.platform.ANDROID) {
+    //     setTimeout(() => {
+    //       this.router.navigateByUrl('/.well-known/apple-app-site-association');
+    //     }, 8000);
+    //   }
+    // }
 
     // if (isLogin) {
     //   this.searchAccessPage();
@@ -116,7 +178,7 @@ export class MainPage extends AbstractPage implements OnInit {
     // }
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     var prev = 0;
     // var spanboonHome = $('#menubottom'); 
     $(window).scroll(() => {
@@ -169,6 +231,17 @@ export class MainPage extends AbstractPage implements OnInit {
 
   public isShowFooter(): boolean {
     return !this.router.url.includes('profile') && !this.router.url.includes('page');
+  }
+
+  public isMobileDevice(): boolean {
+    let isMobile;
+    if (this.platform.IOS || this.platform.ANDROID) {
+      isMobile = true;
+    } else {
+      isMobile = false;
+    }
+
+    return isMobile;
   }
 
   public scrollTop(event?) {
@@ -326,14 +399,44 @@ export class MainPage extends AbstractPage implements OnInit {
     return await this.userAccessFacade.getPageAccess();
   }
 
-  private openLoading() {
-    this.isLoading = true;
-  }
-
   private stopLoading(): void {
     setTimeout(() => {
       this.isLoading = false;
     }, 1000);
+  }
+
+  private _dialogPolicy() {
+    const dialogRef = this.dialog.open(DialogPoliciesAndTerms, {
+      autoFocus: false,
+      restoreFocus: false,
+      disableClose: true,
+      data: {
+        mode: 'policy'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.authenManager.setPolicy('v2');
+      }
+    });
+  }
+
+  private _dialogTerms() {
+    const dialogRef = this.dialog.open(DialogPoliciesAndTerms, {
+      autoFocus: false,
+      restoreFocus: false,
+      disableClose: true,
+      data: {
+        mode: 'terms'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.authenManager.setTos('v2');
+      }
+    });
   }
 }
 
@@ -350,7 +453,6 @@ export * from './main.internal/StoryPage.component';
 export * from './main.internal/PostPage.component';
 export * from './main.internal/PageHashTag.component';
 export * from './main.internal/PageRecommended.component';
-export * from './main.internal/Policy.component';
 export * from './main.internal/register.internal/MenuRegister.component';
 export * from './main.internal/register.internal/RegisterPage.component';
 export * from './main.internal/profile.internal/profile';
@@ -358,4 +460,10 @@ export * from './main.internal/fanpage.internal/fanpage';
 export * from './main.internal/fulfill.internal/fulfill';
 export * from './main.internal/timeline.internal/timeline';
 export * from './main.internal/NotificationAllPage.component';
-export * from './main.internal/TOS.component';
+export * from './main.internal/PolicyPage.component';
+export * from './main.internal/TermsOfServicePage.component';
+export * from './main.internal/EventSearch.component';
+export * from './main.internal/LoginMemberProcessing.component';
+export * from './main.internal/MemberProcess.component';
+export * from './main.internal/MobileProcessing.component';
+export * from './main.internal/KnowledgeCenter.component';

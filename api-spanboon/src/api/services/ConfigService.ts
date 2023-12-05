@@ -25,7 +25,9 @@ export class ConfigService {
     public async findOne(config: any): Promise<any> {
         return await this.configRepository.findOne(config);
     }
-
+    public async find(findCondition: any):  Promise<any> {
+        return await this.configRepository.find(findCondition);
+    }
     // find all config
     public async findAll(): Promise<Config[]> {
         return await this.configRepository.find();
@@ -39,6 +41,10 @@ export class ConfigService {
     public async getConfig(name: string): Promise<any> {
         const condition = { name };
         return await this.configRepository.findOne(condition);
+    }
+
+    public async aggregate(query: any, options?: any): Promise<any> {
+        return await this.configRepository.aggregate(query, options).toArray();
     }
 
     // config List

@@ -6,48 +6,128 @@
  */
 
 import { Injectable } from "@angular/core";
+import { MatDialog } from '@angular/material';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
 import { AbstractFacade } from "./AbstractFacade";
 import { MainPageModel } from '../../models/models';
-
 @Injectable()
 export class MainPageSlideFacade extends AbstractFacade {
 
   public cacheImageAutoScaleMainPage: number;
-
-  constructor(http: HttpClient, authMgr: AuthenManager) {
+  protected dialog: MatDialog;
+  constructor(http: HttpClient, authMgr: AuthenManager
+  ) {
     super(http, authMgr);
-  }
 
-  public getMainPageModel(userId?: string, offset?: string, section?: string, date?: string): Promise<any[]> {
+  }
+  public getMainPageModelV3(userId?: string, date?: any, offset?: string, section?: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/main/content';
+      let url: string = this.baseURL + '/main/content/v3';
+
       if (offset !== undefined) {
-        url = (url + '?offset=' + offset)
+        url += `?offset=${offset}`;
       }
       if (section !== undefined) {
-        url = (url + '&section=' + section)
+        url += `&section=${section}`;
       }
       if (date !== undefined) {
-        url = (url + '&date=' + date)
+        url += `?date=${date}`;
       }
-      let option = this.authMgr.getDefaultOptions();
-      let httpOptions
-      if (userId !== null && userId !== undefined) {
-        let headers = new HttpHeaders({
+
+      let httpOptions: any = {
+        headers: this.authMgr.getDefaultOptions()
+      };
+      if (userId) {
+        httpOptions.headers = new HttpHeaders({
           'userid': userId
         });
-        httpOptions = {
-          headers: headers
-        };
-      } else {
-        httpOptions = {
-          headers: option
-        };
       }
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
-        resolve(response.data as MainPageModel[]);
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public snapshot(dataId: any, date: any): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/hot';
+      let body: any = {
+        newsObj: dataId,
+        createdDate: date
+      };
+
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public bottomContent(userId?: string, offset?: number, limit?: number, ReadPost?: 'isReadPost' | 'pageFollowings' | 'emergencyFollowings' | 'objectiveFollowings' | 'userFollowings' | 'followingProvinces' | 'followingContent', filter?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/bottom/trend';
+      let read: string;
+      if (ReadPost === 'isReadPost' && !!userId) {
+        read = 'isReadPost=true&pageFollowings=false&emergencyFollowings=false&objectiveFollowings=false&userFollowings=false&followingProvinces=false&followingContent=false';
+      } else if (ReadPost === 'pageFollowings') {
+        read = 'isReadPost=false&pageFollowings=true&emergencyFollowings=false&objectiveFollowings=false&userFollowings=false&followingProvinces=false&followingContent=false';
+      } else if (ReadPost === 'emergencyFollowings') {
+        read = 'isReadPost=false&pageFollowings=false&emergencyFollowings=true&objectiveFollowings=false&userFollowings=false&followingProvinces=false&followingContent=false';
+      } else if (ReadPost === 'objectiveFollowings') {
+        read = 'isReadPost=false&pageFollowings=false&emergencyFollowings=false&objectiveFollowings=true&userFollowings=false&followingProvinces=false&followingContent=false';
+      } else if (ReadPost === 'userFollowings') {
+        read = 'isReadPost=false&pageFollowings=false&emergencyFollowings=false&objectiveFollowings=false&userFollowings=true&followingProvinces=false&followingContent=false';
+      } else if (ReadPost === 'followingProvinces') {
+        read = 'isReadPost=false&pageFollowings=false&emergencyFollowings=false&objectiveFollowings=false&userFollowings=false&followingProvinces=true&followingContent=false';
+      } else if (ReadPost === 'followingContent' && !!userId) {
+        read = 'isReadPost=false&pageFollowings=false&emergencyFollowings=false&objectiveFollowings=false&userFollowings=false&followingProvinces=false&followingContent=true';
+      } else if (ReadPost === 'isReadPost' && userId === null) {
+        read = 'isReadPost=true&followingContent=false'
+      } else if (ReadPost === 'followingContent' && userId === null) {
+        read = 'isReadPost=false&followingContent=true'
+      }
+
+      if (offset !== undefined) {
+        url += `?limit=${limit}&offset=${offset}&${read}`;
+      }
+
+      let body;
+      if (!!filter) {
+        body = filter
+      }
+
+      let httpOptions: any = {
+        headers: this.authMgr.getDefaultOptions()
+      };
+      if (userId) {
+        httpOptions.headers = new HttpHeaders({
+          'userid': userId
+        });
+      }
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getDate(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/days/check';
+
+      let httpOptions: any = {
+        headers: this.authMgr.getDefaultOptions()
+      };
+
+      this.http.post(url, httpOptions).toPromise().then((response: any) => {
+        resolve(response.data);
       }).catch((error: any) => {
         reject(error);
       });
@@ -63,6 +143,40 @@ export class MainPageSlideFacade extends AbstractFacade {
       }
 
       this.http.post(url, body).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public readContent(userId: string, postId: any[], mode?: string, token?: string): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/is/read';
+      if (!!mode) localStorage.setItem('mode', mode);
+      if (!!token) localStorage.setItem('token', token);
+      let body: any = {
+        userId: userId,
+        postId: postId,
+        isRead: true
+      };
+
+      let option = this.authMgr.getDefaultOptions(userId);
+
+      this.http.post(url, body, option).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getReadPost(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/user/readed';
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

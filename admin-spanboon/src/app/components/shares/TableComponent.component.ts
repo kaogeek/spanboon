@@ -5,16 +5,20 @@
  * Author: Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter, SimpleChanges, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource, MatTable } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogDeleteComponent } from './DialogDeleteComponent.component';
 import { DialogWarningComponent } from './DialogWarningComponent.component';
 import { SearchFilter } from '../../models/SearchFilter';
 import { FormControl } from '@angular/forms';
+import { CdkDragDrop, CdkDragMove, moveItemInArray } from '@angular/cdk/drag-drop';
+import { EmergencyEventFacade } from '../../services/facade/EmergencyEventFacade.service';
+import { element } from 'protractor';
 
+const speed = 10;
 const SEARCH_LIMIT: number = 0;
 const SEARCH_OFFSET: number = 0;
 const DEFAULT_DATE_TIME_FORMAT: string = "dd-MM-yyyy HH:mm:ss";
@@ -22,7 +26,8 @@ const ITEMS_PER_PAGE: string = 'รายการต่อหน้า';
 const BASE_MODEL: string[] = [
     'createdDate',
     'createdByUsername',
-    'modifiedDate',
+    'updateDate',
+    'updateByUsername',
     'action'
 ];
 const LOGS_BASE_MODEL: string[] = [
@@ -69,11 +74,14 @@ export interface ActionTable {
     templateUrl: './TableComponent.component.html'
 })
 export class TableComponent implements OnInit {
-
+    @ViewChild('table') table: MatTable<FieldTable>;
+    @ViewChild('scrollEl') scrollEl: ElementRef<HTMLElement>;
     private dialog: MatDialog;
 
     @Input()
     public facade: any;
+    @Input()
+    public orderBy: any;
     @Input()
     public isUser: any;
     @Input()
@@ -100,6 +108,10 @@ export class TableComponent implements OnInit {
     public userAdmin: boolean;
     @Input()
     public isBanfilter: boolean;
+    @Input()
+    public isOfficialPage: {};
+    @Input()
+    public manipulate: boolean;
     public fieldSearchs: string[];
     @Output() official: EventEmitter<any> = new EventEmitter();
     @Output() ban: EventEmitter<any> = new EventEmitter();
@@ -124,6 +136,10 @@ export class TableComponent implements OnInit {
     public displayedColumns: string[];
     public isLoading: boolean;
     public isBans: boolean;
+    public isEmer: boolean = false;
+    public isReport: boolean = false;
+    public isTodayPage: boolean = false;
+    public isNews: boolean = false;
     public isShowSelect: boolean;
     public dataSource: MatTableDataSource<any>;
     public filters = new FormControl();
@@ -135,12 +151,18 @@ export class TableComponent implements OnInit {
     public arr: any[]
     public seletc: any[]
     public selected: any
+    public selectItem: any;
+    public item: any[];
+    public offsetUser: number = 100;
+    public limitUser: number = 100;
 
-    constructor(dialog: MatDialog) {
+    emergencyEventFacade: EmergencyEventFacade;
+    constructor(dialog: MatDialog, emergencyEventFacade: EmergencyEventFacade) {
+        this.emergencyEventFacade = emergencyEventFacade;
         this.dialog = dialog;
         this.search = "";
-        this.fieldSearch = []
-        this.fieldSearchs = ["ที่ถูกระงับ",]
+        this.fieldSearch = [];
+        this.fieldSearchs = ["ที่ถูกระงับ"];
         this.data = [];
     }
 
@@ -176,19 +198,19 @@ export class TableComponent implements OnInit {
             this.searchData();
         }
         this.widthAction = this.getWidthAction();
-        this.sort.sortChange.subscribe(() =>
-            this.searchData(false, true)
-        );
-        this.paginator.page.subscribe(() =>
-            this.nextPage()
-        )
+        this.sort.sortChange.subscribe(() => {
+            this.searchData(false, true);
+        });
+        this.paginator.page.subscribe(() => {
+            this.nextPage();
+        });
         if (this.isUser === true) {
             this.fieldOpen = [{ viwe: "All", value: "ทั้งหมด" }, { viwe: "OP", value: "ใช้งาน" }, { viwe: "CO", value: "ไม่ถูกใช้งาน" }, { viwe: "ADMIN", value: "ผู้ดูแล" }];
-            this.Open.setValue(this.fieldOpen[0].value)
+            this.Open.setValue(this.fieldOpen[0].value);
         }
         if (this.isPin === true) {
             this.fieldOpen = [{ viwe: "All", value: "ทั้งหมด" }, { viwe: "PIN", value: "ที่ปักหมุด" },];
-            this.Open.setValue(this.fieldOpen[0].value)
+            this.Open.setValue(this.fieldOpen[0].value);
         }
     }
 
@@ -201,7 +223,7 @@ export class TableComponent implements OnInit {
     public banPage(isNextPage?: boolean, isSort?: boolean): void {
         this.isBans = !this.isBans
         this.isLoading = true;
-        const o: any[] = []
+        const o: any[] = [];
         let search: SearchFilter = new SearchFilter();
         search.orderBy = {};
         if (!this.isBans) {
@@ -211,24 +233,22 @@ export class TableComponent implements OnInit {
         }
         search.relation = this.relation;
         search.count = false;
-        let facade: any;
-        facade = this.facade.search(search);
-        facade.then((res: any) => {
+        this.facade.search(search).then((res: any) => {
             if (this.user) {
                 for (let r of res) {
                     if (!r.isAdmin) {
-                        o.push(r)
+                        o.push(r);
                     }
                 }
-                res = o
+                res = o;
             }
             if (this.userAdmin) {
                 for (let r of res) {
                     if (r.isAdmin) {
-                        o.push(r)
+                        o.push(r);
                     }
                 }
-                res = o
+                res = o;
             }
             this.setTableConfig(res);
             this.isLoading = false;
@@ -241,7 +261,11 @@ export class TableComponent implements OnInit {
         });
     }
 
-    public searchData(isNextPage?: boolean, isSort?: boolean): void {
+    public keyUp() {
+        this.searchData(null, null, 'search');
+    }
+
+    public searchData(isNextPage?: boolean, isSort?: boolean, data?: any): void {
         this.isLoading = true;
         this.seletc = [];
         this.arr = [];
@@ -249,65 +273,76 @@ export class TableComponent implements OnInit {
         search.whereConditions = {};
         if (this.search.trim() !== "") {
             for (let field of this.filters.value) {
-                search.whereConditions[field] = { $regex: '^' + this.search + '.*' };
+                search.whereConditions[field] = { $regex: this.search };
             }
         }
-        search.limit = SEARCH_LIMIT;
-        search.orderBy = {};
-        search.offset = isNextPage ? this.paginator.length : SEARCH_OFFSET;
+        search.limit = this.manipulate ? this.limitUser : SEARCH_LIMIT;
+        search.orderBy = this.orderBy;
+        search.offset = this.manipulate ? this.offsetUser : (isNextPage ? this.paginator.length : SEARCH_OFFSET);
         search.relation = this.relation;
         search.count = false;
-        let facade: any;
-        facade = this.facade.search(search);
-        facade.then((res: any) => {
-            console.log('res', res)
-            const o: any[] = []
+        if (data === 'search') {
+            search.offset = 0;
+            search.limit = 0;
+        }
+        if (isNextPage) {
+            search.offset = this.offsetUser + 100;
+            this.offsetUser + 100;
+        }
+        let stack = [];
+        this.facade.search(search).then((res: any) => {
+            const o: any[] = [];
+
             if (this.isApprovePage) {
                 for (let r of res) {
                     if (r.approveUser === "") {
                         r.approveUser = 1
                     }
                     if (r.approveUser === null || r.approveUser === undefined || r.approveUser === '') {
-                        o.push(r)
+                        o.push(r);
                     }
                 }
-                res = o
+                res = o;
             }
             if (this.active) {
                 for (let r of res) {
                     if (r.active) {
-                        o.push(r)
+                        o.push(r);
                     }
                 }
-                res = o
+                res = o;
             }
             if (this.user) {
                 for (let r of res) {
-                    o.push(r)
+                    o.push(r);
                     // if (!r.isAdmin) {
-                    //     o.push(r)
+                    //     o.push(r);
                     // }
                 }
-                res = o
+                res = o;
             }
             if (this.userAdmin) {
                 for (let r of res) {
                     if (r.isAdmin) {
-                        o.push(r)
+                        o.push(r);
                     }
                 }
-                res = o
+                res = o;
             }
-            if (isNextPage) {
-                for (let r of res) {
-                    this.data.push(r);
+            if (isNextPage && this.manipulate) {
+                let array = this.data;
+                for (let data of res) {
+                    array.push(data);
                 }
+                this.data = array;
+            } else if (isNextPage && !this.manipulate) {
+                this.data = res;
             } else {
                 this.paginator.pageIndex = 0;
                 this.data = res ? res : [];
             }
             this.setTableConfig(this.data);
-            this.isLoading = false;
+            // this.isLoading = false;
         }).catch((err: any) => {
             if (!this.parentId) {
                 this.dialogWarning(err.error.message);
@@ -320,9 +355,9 @@ export class TableComponent implements OnInit {
 
     public disChek(data: any): boolean {
         if (data.standardItemId != null && data.standardItemId != undefined) {
-            return false
+            return false;
         } else {
-            return true
+            return true;
         }
     }
 
@@ -335,9 +370,48 @@ export class TableComponent implements OnInit {
         this.isLoading = false;
         this.dataSource = new MatTableDataSource<any>(this.data);
         this.paginator._intl.itemsPerPageLabel = ITEMS_PER_PAGE;
-        this.paginator._intl.getRangeLabel = (page: number, pageSize: number, length: number) => { if (length == 0 || pageSize == 0) { return `0 ของ ${length}`; } length = Math.max(length, 0); const startIndex = page * pageSize; const endIndex = startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize; return `${startIndex + 1} - ${endIndex} ของ ${length}`; };
+        this.paginator._intl.getRangeLabel = (page: number, pageSize: number, length: number) => {
+            if (length == 0 || pageSize == 0) {
+                return `0 ของ ${length}`;
+            }
+            length = Math.max(length, 0);
+            const startIndex = page * pageSize;
+            const endIndex = startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize;
+            return `${startIndex + 1} - ${endIndex} ของ ${length}`;
+        };
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+    }
+    dropTable(event: CdkDragDrop<FieldTable[]>) {
+        if (this.isInvalidDragEvent) {
+            this.isInvalidDragEvent = false;
+            return;
+        }
+        const prevIndex = this.dataSource.filteredData.findIndex((d) => d === event.item.data);
+        let body = {
+            'previousIndex': prevIndex,
+            'currentIndex': event.currentIndex,
+            'filteredData': this.dataSource.filteredData
+        }
+        moveItemInArray(this.dataSource.filteredData, prevIndex, event.currentIndex);
+        this.dataSource = new MatTableDataSource<any>(this.data);
+        let dataItem = this.dataSource.filteredData[event.currentIndex].id;
+        this.emergencyEventFacade.editSelect(dataItem, body).then((res: any) => {
+            if (res) {
+                this.searchData();
+            }
+        }).catch((err: any) => {
+        })
+        // this.table.renderRows();
+    }
+    isInvalidDragEvent: boolean = false;
+    onInvalidDragEventMouseDown() {
+        this.isInvalidDragEvent = true;
+    }
+    dragStarted(event) {
+        if (this.isInvalidDragEvent) {
+            document.dispatchEvent(new Event('mouseup'));
+        }
     }
 
     public getWidthAction(): string {
@@ -362,69 +436,67 @@ export class TableComponent implements OnInit {
 
     public searchDataByfield(data: any) {
         this.isLoading = true;
-        const o: any[] = []
+        const o: any[] = [];
         let search: SearchFilter = new SearchFilter();
         search.orderBy = {};
         search.whereConditions = {};
         search.relation = this.relation;
         search.count = false;
-        let facade: any;
-        facade = this.facade.search(search);
-        facade.then((res: any) => {
+        this.facade.search(search).then((res: any) => {
             if (this.user) {
                 if (data === 'OP') {
                     for (let r of res) {
                         if (r.banned === false) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 } if (data === 'CO') {
                     for (let r of res) {
 
                         if (r.banned === true) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 } if (data === 'ADMIN') {
                     for (let r of res) {
 
                         if (r.isAdmin === true) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 }
             } else if (this.isPin) {
                 if (data === 'ALL') {
                     for (let r of res) {
-                        o.push(r)
+                        o.push(r);
                     }
-                    res = o
+                    res = o;
                 } if (data === 'PIN') {
                     for (let r of res) {
                         if (r.isPin === true) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 }
             } else {
                 if (data === 'OP') {
                     for (let r of res) {
                         if (r.standardItemId != null && r.standardItemId != undefined) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 } if (data === 'CO') {
                     for (let r of res) {
                         if (r.standardItemId === null) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 }
             }
             this.setTableConfig(res);
@@ -471,16 +543,16 @@ export class TableComponent implements OnInit {
     public onSelect(data: any): void {
         if (this.arr.length != 0) {
             if (this.arr.includes(data._id)) {
-                this.arr.splice((this.arr.indexOf(data._id)), 1)
-                this.seletc.splice((this.seletc.indexOf(data._id)), 1)
+                this.arr.splice((this.arr.indexOf(data._id)), 1);
+                this.seletc.splice((this.seletc.indexOf(data._id)), 1);
 
             } else {
-                this.arr.push(data._id)
-                this.seletc.push(data)
+                this.arr.push(data._id);
+                this.seletc.push(data);
             }
         } else {
-            this.arr.push(data._id)
-            this.seletc.push(data)
+            this.arr.push(data._id);
+            this.seletc.push(data);
         }
     }
 

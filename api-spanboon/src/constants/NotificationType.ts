@@ -18,5 +18,6 @@ export const NOTIFICATION_TYPE = {
     POST: 'POST',
     CHAT: 'CHAT',
     COMMENT: 'COMMENT',
-    FOLLOW:'FOLLOW'
+    FOLLOW: 'FOLLOW',
+    OBJECTIVE: 'OBJECTIVE'
 };

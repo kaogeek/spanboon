@@ -99,16 +99,14 @@ export class ControlAction {
   constructor(private assetFacade: AssetFacade) {
     setTimeout(() => {
       if (this.accessPage !== undefined && this.accessPage !== null) {
-        for (let accessPage of this.accessPage) {
-        }
         if (this.accessPage[0].imageURL !== null && this.accessPage[0].imageURL !== '') {
-          this.selectedAccessPageimges = this.accessPage[0]
-          this.isImges = true
-          this.isDis = false
+          this.selectedAccessPageimges = this.accessPage[0];
+          this.isImges = true;
+          this.isDis = false;
         } else {
           this.selectedAccessPageimges = this.accessPage[0].displayName || this.accessPage[0].name;
-          this.isImges = false
-          this.isDis = true
+          this.isImges = false;
+          this.isDis = true;
         }
       }
     }, 1000);
@@ -116,24 +114,25 @@ export class ControlAction {
 
   public ngOnInit(): void {
     this.valueSub();
+    if (!!this.accessPage) this.emitpage.emit(this.accessPage[0]);
   }
 
   public selectAccessPage(page: any) {
     if (!!page.signURL) {
-      this.selectedAccessPageimges = page
-      this.isImges = true
-      this.isDis = false
+      this.selectedAccessPageimges = page;
+      this.isImges = true;
+      this.isDis = false;
       this.emitpage.emit(page);
     } else if (!!page.imageURL) {
-      this.selectedAccessPageimges = page
-      this.isImges = true
-      this.isDis = false
+      this.selectedAccessPageimges = page;
+      this.isImges = true;
+      this.isDis = false;
       this.emitpage.emit(page);
     } else {
       this.selectedAccessPageimges = page.displayName || page.name;
-      this.isImges = false
-      this.isDis = true
-      this.emitpage.emit(page)
+      this.isImges = false;
+      this.isDis = true;
+      this.emitpage.emit(page);
     }
   }
 

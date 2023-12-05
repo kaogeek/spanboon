@@ -49,13 +49,26 @@ export class Notification extends BaseModel {
     @Column({ name: 'data' })
     public data: any;
 
+    @Column({ name: 'mode' })
+    public mode: string;
+
+    @Column({ name: 'pageId' })
+    public pageId: ObjectID;
+
+    @Column({ name: 'imageURL' })
+    public imageURL:string;
+
+    @Column({ name: 'joinObjectiveId'})
+    public joinObjectiveId: ObjectID;
+
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
     }
 
     @BeforeUpdate()
-    public async updateDetails(): Promise<void> {
+    public updateDetails(): any {
         this.updateDate = moment().toDate();
     }
 }
