@@ -1598,11 +1598,6 @@ export class VotingController {
                                         as:'voted'
                                     }
                                 },
-                                {
-                                    $unwind: {
-                                        path: '$voted',
-                                    },
-                                },
                             ],
                             as: 'voteChoice',
                             },
@@ -1632,11 +1627,6 @@ export class VotingController {
                                 ],
                                 as:'voted'
                             }
-                        },
-                        {
-                            $unwind: {
-                                path: '$voted',
-                            },
                         },
                     ]
                 }
