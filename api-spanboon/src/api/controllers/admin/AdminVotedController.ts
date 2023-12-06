@@ -388,7 +388,7 @@ export class AdminVotedController {
         );
         if(voteAggs.length > 0){
             for(const vote of voteAggs){
-                if(vote.countSupport >= vote.minSupport){
+                if(vote.approved !== true && vote.countSupport >= vote.minSupport){
                     // auto approve
                     const query = {_id: new ObjectID(vote._id)};
                     const newValues = {
@@ -423,7 +423,7 @@ export class AdminVotedController {
         const voteAggs = await this.votingEventService.aggregate([]);
         if(voteAggs.length > 0){
             for(const vote of voteAggs){
-                if(today.getTime() > vote.endVoteDatetime.getTime()) {
+                if(vote.closed !== true && today.getTime() > vote.endVoteDatetime.getTime()) {
                     const query = {_id: new ObjectID(vote._id)};
                     const newValues = {
                         $set:{

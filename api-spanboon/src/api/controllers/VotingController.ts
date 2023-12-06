@@ -1592,11 +1592,16 @@ export class VotingController {
                                                 }
                                             },
                                             {
-                                                $count:'passing_scores'
+                                                $count:'votedCount'
                                             }
                                         ],
                                         as:'voted'
                                     }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$voted',
+                                    },
                                 },
                             ],
                             as: 'voteChoice',
@@ -1622,12 +1627,17 @@ export class VotingController {
                                         }
                                     },
                                     {
-                                        $count:'passing_scores'
+                                        $count:'votedCount'
                                     }
                                 ],
                                 as:'voted'
                             }
-                        }
+                        },
+                        {
+                            $unwind: {
+                                path: '$voted',
+                            },
+                        },
                     ]
                 }
             },
@@ -2371,7 +2381,7 @@ export class VotingController {
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
-        votingEvent.hashTag = createHashTag.name;
+        votingEvent.hashTag = createHashTag;
         // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
         votingEvent.status = status;
         votingEvent.createAsPage = pageObjId;
