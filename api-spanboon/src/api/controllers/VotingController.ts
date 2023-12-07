@@ -483,6 +483,90 @@ export class VotingController {
         }
     }
 
+    // user vote type text
+    @Post('/user/vote/text/:voteItemId')
+    public async VoteTypeText(@Body({ validate: true }) search: FindVoteRequest,@Param ('voteItemId') voteItemId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const whereConditions:any = search.whereConditions;
+        if( whereConditions.showVoterName === false) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot get any users name.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const take = filter.limit ? filter.limit : 10;
+        const offset = filter.offset ? filter.offset : 0;
+        const objIds = new ObjectID(voteItemId);
+        if(objIds === undefined && objIds === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Vote Item Id is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        
+        if(whereConditions.voteChoice !== null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Search for a vote where the type is text and voteChoice is null.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const voteItem = await this.votedService.aggregate(
+            [
+                {
+                    $match:{
+                        voteItemId:objIds,
+                        voteChoiceId:whereConditions.voteChoice
+                    }
+                },
+                {
+                    $lookup:{
+                        from: 'User',
+                        let: {'userId':'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:
+                                    {
+                                        $eq:['$$userId','$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $project:{
+                                    _id:1,
+                                    username:1,
+                                    firstName:1,
+                                    lastName:1,
+                                    displayName:1,
+                                    uniqueId:1,
+                                    imageURL:1,
+                                    s3ImageURL:1
+                                }
+                            },
+                            {
+                                $limit: take
+                            },
+                            {
+                                $skip: offset
+                            }
+                        ],
+                        as:'user'
+                    }
+                }
+            ]
+        );
+
+        if(voteItem.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteItem);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists user.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     @Post('/own/search/')
     @Authorized('user')
     public async searchVotedOwner(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
@@ -1592,7 +1676,7 @@ export class VotingController {
                                                 }
                                             },
                                             {
-                                                $count:'passing_scores'
+                                                $count:'votedCount'
                                             }
                                         ],
                                         as:'voted'
@@ -1622,12 +1706,12 @@ export class VotingController {
                                         }
                                     },
                                     {
-                                        $count:'passing_scores'
+                                        $count:'votedCount'
                                     }
                                 ],
                                 as:'voted'
                             }
-                        }
+                        },
                     ]
                 }
             },
@@ -2371,7 +2455,7 @@ export class VotingController {
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
-        votingEvent.hashTag = createHashTag.name;
+        votingEvent.hashTag = createHashTag;
         // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
         votingEvent.status = status;
         votingEvent.createAsPage = pageObjId;
