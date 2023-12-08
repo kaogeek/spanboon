@@ -554,6 +554,11 @@ export class VotingController {
                         ],
                         as:'user'
                     }
+                },
+                {
+                    $unwind:{
+                        path:'$user'
+                    }
                 }
             ]
         );
