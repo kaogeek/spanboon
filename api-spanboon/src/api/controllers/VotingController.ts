@@ -1766,31 +1766,31 @@ export class VotingController {
                 }
             },
             {
-                $lookup:{
-                    from:'User',
-                    let:{userId:'$userId'},
-                    pipeline:[
+                $lookup: {
+                    from: 'User',
+                    let: { 'userId': '$userId' },
+                    pipeline: [
                         {
-                            $match:{
-                                $expr:{
-                                    $eq:['$$userId','$_id']
+                            $match: {
+                                $expr: {
+                                    $eq: ['$$userId', '$_id']
                                 }
                             }
                         },
-                        { $sample: { size: 5 } },
                         {
-                            $project:{
-                                _id:1,
-                                displayName:1,
-                                uniqueId:1,
-                                imageURL:1,
-                                s3ImageURL:1
+                            $project: {
+                                _id: 1,
+                                displayName: 1,
+                                uniqueId: 1,
+                                imageURL: 1,
+                                s3ImageURL: 1
                             }
-                        }
+                        },
                     ],
-                    as:'user'
+                    as: 'user'
                 }
-            },
+            },       
+            { $sample: { size: 5 } },     
             {
                 $project:{
                     user:1
