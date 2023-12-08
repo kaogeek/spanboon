@@ -1043,13 +1043,8 @@ export class VotingController {
         };
         response['userSupport'] = getSupports;
         response['count'] = countUser[0] ? countUser[0].count: 0;
-        if (response['userSupport'].length > 0 ) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any user support is succesful.', response);
-            return res.status(200).send(successResponse);
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists user.', undefined);
-            return res.status(400).send(errorResponse);
-        }
+        const successResponse = ResponseUtil.getSuccessResponse('Search lists any user support is succesful.', response);
+        return res.status(200).send(successResponse);
     }
 
     // ใกล้ปิด vote
