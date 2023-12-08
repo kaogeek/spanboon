@@ -55,8 +55,7 @@ export class DialogPostCrad extends AbstractPage {
   public setTimeoutAutocomp: any;
   public resDataObjective: any[] = [];
   public prefix: any;
-  public posts: any
-  public support: any;
+  public posts: any;
   public voteSuccess: boolean = false;
 
   public questions: any[] = [];
@@ -106,7 +105,6 @@ export class DialogPostCrad extends AbstractPage {
       } else {
         this.posts = this.data.choice.voteItem;
       }
-      this.support = this.data.support;
       if (this.posts.length > 0) {
         for (let index = 0; index < this.posts.length; index++) {
           if (this.posts[index].voteChoice !== undefined) {
@@ -410,10 +408,8 @@ export class DialogPostCrad extends AbstractPage {
   public voteSupport(id) {
     this.voteFacade.voteSupport(id).then((res) => {
       if (res) {
-        this.data.post.countSupport++;
-        this.data.post.userSupport.push(res.data);
         if (this.data.support !== undefined) {
-          this.posts.push({
+          this.data.support.userSupport.push({
             user: {
               _id: res.userId,
               imageURL: res.imageURL,
@@ -424,6 +420,8 @@ export class DialogPostCrad extends AbstractPage {
             }
           });
         }
+        this.data.post.countSupport++;
+        this.data.post.userSupport.push(res.data);
         this.showAlertDialog("คุณได้สนับสนุนโหวตนี้");
       }
     }).catch((err) => {
