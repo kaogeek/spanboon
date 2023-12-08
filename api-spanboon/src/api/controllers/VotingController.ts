@@ -2990,7 +2990,21 @@ export class VotingController {
             const newValue = { $set: { countSupport: userSupports.length  } };
             const update = await this.votingEventService.update(query, newValue);
             if (update) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully create User Support.', create);
+                const response:any = {};
+                response.createdDate = create.createdDate;
+                response.createdTime = create.createdTime;
+                response.id = create.id;
+                response.userId = create.userId;
+                response.votingId = create.votingId;
+                response.userId = user.id;
+                response.username = user.username;
+                response.firstName = user.firstName;
+                response.lastName = user.lastName;
+                response.displayName = user.displayName;
+                response.uniqueId = user.uniqueId;
+                response.imageURL = user.imageURL;
+                response.s3ImageURL = user.s3ImageURL;
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully create User Support.', response);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot create a user support.', undefined);
