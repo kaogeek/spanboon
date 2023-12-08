@@ -963,9 +963,8 @@ export class VotingController {
     }
 
     // supported ???
-    @Post('/supported/:id')
-    @Authorized('user')
-    public async userSupportVote(@Body({ validate: true}) search: FindVoteRequest,@Param ('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+    @Get('/get/support/:id')
+    public async getSupport(@Body({ validate: true}) search: FindVoteRequest,@Param ('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }
@@ -973,19 +972,82 @@ export class VotingController {
         if (filter === undefined) {
             filter = new SearchFilter();
         }
-        const userObjId = new ObjectID(req.user.id);
         const objIds = new ObjectID(id);
         if(objIds === undefined && objIds === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Vote Id is undefined.', undefined);
             return res.status(400).send(errorResponse);
         }
 
-        const userSupport = await this.userSupportService.findOne({userId:userObjId, votingId:objIds});
-        if (userSupport !== undefined && userSupport !== null) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search user support is success.', userSupport);
+        const getSupports = await this.userSupportService.aggregate(
+            [
+                {
+                    $match:{
+                        votingId:objIds,
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'User',
+                        let:{userId:'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$userId','$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    username: 1,
+                                    firstName: 1,
+                                    lastName: 1,
+                                    imageURL: 1,
+                                    s3ImageURL: 1
+                                }
+                            }
+                        ],
+                        as:'user'
+                    }
+                },
+                {
+                    $project: {
+                        _id:0,
+                        user:1
+                    }
+                },
+                {
+                    $unwind:{
+                        path:'$user'
+                    }
+                },
+                { $sample: { size: 5 } },
+            ]
+        );
+        const countUser = await this.userSupportService.aggregate(
+            [
+                {
+                    $match:{
+                        votingId:objIds,
+                    }
+                },
+                {
+                    $count:'count'
+                }
+            ]
+        );
+        const response:any = {
+            'userSupport':{},
+            'count':null,
+        };
+        response['userSupport'] = getSupports;
+        response['count'] = countUser[0].count;
+        if (response['userSupport'].length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any user is succesful.', response);
             return res.status(200).send(successResponse);
         } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find user support.', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists user.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
@@ -1624,7 +1686,7 @@ export class VotingController {
         }
         const take = filter.limit ? filter.limit : 10;
         const offset = filter.offset ? filter.offset : 0;
-
+        
         const voteItem = await this.voteItemService.aggregate([
             {
                 $match: {
