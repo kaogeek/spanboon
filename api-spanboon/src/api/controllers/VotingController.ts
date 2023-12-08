@@ -3016,12 +3016,11 @@ export class VotingController {
                             {
                                 votingId: signleType.votingId,
                                 userId: new ObjectID(userId),
-                                voteItemId: signleType.id,
-                                voteChoiceId: new ObjectID(choice.voteChoiceId)
+                                voteItemId: signleType.id                            
                             }
                         );
                         if(voted !== undefined) {
-                            return voted
+                            return voted;
                         }
                     }
 
