@@ -919,7 +919,7 @@ export class VotingController {
                 {
                     $lookup:{
                         from:'UserSupport',
-                        let:{'id':'$_id'},
+                        let:{id:'$_id'},
                         pipeline:[
                             {
                                 $match:{
@@ -1696,12 +1696,42 @@ export class VotingController {
                                                 }
                                             },
                                             {
-                                                $count:'votedCount'
+                                                $lookup:{
+                                                    from:'User',
+                                                    let:{'userId':'$userId'},
+                                                    pipeline:[
+                                                        {
+                                                            $match:{
+                                                                $expr:{
+                                                                    $eq:['$$userId','$_id']
+                                                                }
+                                                            }
+                                                        },
+                                                        { $sample: { size: 5 } },
+                                                        {
+                                                            $project: {
+                                                                _id: 1,
+                                                                displayName:1,
+                                                                uniqueId:1,
+                                                                firstName: 1,
+                                                                lastName: 1,
+                                                                imageURL: 1,
+                                                                s3ImageURL: 1
+                                                            }
+                                                        }
+                                                    ],
+                                                    as:'user'
+                                                }
                                             }
                                         ],
                                         as:'voted'
                                     }
                                 },
+                                {
+                                    $addFields: {
+                                        userCount: { $size: '$voted' }
+                                    }
+                                }
                             ],
                             as: 'voteChoice',
                             },
@@ -1726,12 +1756,42 @@ export class VotingController {
                                         }
                                     },
                                     {
-                                        $count:'votedCount'
+                                        $lookup:{
+                                            from:'User',
+                                            let:{'userId':'$userId'},
+                                            pipeline:[
+                                                {
+                                                    $match:{
+                                                        $expr:{
+                                                            $eq:['$$userId','$_id']
+                                                        }
+                                                    }
+                                                },
+                                                { $sample: { size: 5 } },
+                                                {
+                                                    $project: {
+                                                        _id: 1,
+                                                        displayName:1,
+                                                        uniqueId:1,
+                                                        firstName: 1,
+                                                        lastName: 1,
+                                                        imageURL: 1,
+                                                        s3ImageURL: 1
+                                                    }
+                                                }
+                                            ],
+                                            as:'user'
+                                        }
                                     }
                                 ],
                                 as:'voted'
                             }
                         },
+                        {
+                            $addFields: {
+                                userCount: { $size: '$voted' }
+                            }
+                        }
                     ]
                 }
             },
