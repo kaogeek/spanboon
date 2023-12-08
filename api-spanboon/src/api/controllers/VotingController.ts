@@ -1790,6 +1790,11 @@ export class VotingController {
                     as: 'user'
                 }
             },       
+            {
+                $unwind:{
+                    path:'$user'
+                }
+            },
             { $sample: { size: 5 } },     
             {
                 $project:{
