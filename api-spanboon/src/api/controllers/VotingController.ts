@@ -1696,42 +1696,12 @@ export class VotingController {
                                                 }
                                             },
                                             {
-                                                $lookup:{
-                                                    from:'User',
-                                                    let:{'userId':'$userId'},
-                                                    pipeline:[
-                                                        {
-                                                            $match:{
-                                                                $expr:{
-                                                                    $eq:['$$userId','$_id']
-                                                                }
-                                                            }
-                                                        },
-                                                        { $sample: { size: 5 } },
-                                                        {
-                                                            $project: {
-                                                                _id: 1,
-                                                                displayName:1,
-                                                                uniqueId:1,
-                                                                firstName: 1,
-                                                                lastName: 1,
-                                                                imageURL: 1,
-                                                                s3ImageURL: 1
-                                                            }
-                                                        }
-                                                    ],
-                                                    as:'user'
-                                                }
+                                                $count:'votedCount'
                                             }
                                         ],
                                         as:'voted'
                                     }
                                 },
-                                {
-                                    $addFields: {
-                                        userCount: { $size: '$voted' }
-                                    }
-                                }
                             ],
                             as: 'voteChoice',
                             },
@@ -1756,42 +1726,12 @@ export class VotingController {
                                         }
                                     },
                                     {
-                                        $lookup:{
-                                            from:'User',
-                                            let:{'userId':'$userId'},
-                                            pipeline:[
-                                                {
-                                                    $match:{
-                                                        $expr:{
-                                                            $eq:['$$userId','$_id']
-                                                        }
-                                                    }
-                                                },
-                                                { $sample: { size: 5 } },
-                                                {
-                                                    $project: {
-                                                        _id: 1,
-                                                        displayName:1,
-                                                        uniqueId:1,
-                                                        firstName: 1,
-                                                        lastName: 1,
-                                                        imageURL: 1,
-                                                        s3ImageURL: 1
-                                                    }
-                                                }
-                                            ],
-                                            as:'user'
-                                        }
+                                        $count:'votedCount'
                                     }
                                 ],
                                 as:'voted'
                             }
                         },
-                        {
-                            $addFields: {
-                                userCount: { $size: '$voted' }
-                            }
-                        }
                     ]
                 }
             },
@@ -1819,8 +1759,62 @@ export class VotingController {
                 $skip: offset
             }
         ]);
-        if (voteItem.length>0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Get VoteItem is success.', voteItem);
+        const voteEvent = await this.votedService.aggregate([
+            {
+                $match:{
+                    votingId:voteObjId
+                }
+            },
+            {
+                $lookup:{
+                    from:'User',
+                    let:{userId:'$userId'},
+                    pipeline:[
+                        {
+                            $match:{
+                                $expr:{
+                                    $eq:['$$userId','$_id']
+                                }
+                            }
+                        },
+                        { $sample: { size: 5 } },
+                        {
+                            $project:{
+                                _id:1,
+                                displayName:1,
+                                uniqueId:1,
+                                imageURL:1,
+                                s3ImageURL:1
+                            }
+                        }
+                    ],
+                    as:'user'
+                }
+            },
+        ]);
+        const voteCount = await this.votedService.aggregate(
+            [
+                {
+                    $match:{
+                        votingId:voteObjId
+                    }
+                },
+                {
+                    $count:'count'
+                }
+            ]
+        );
+        const response:any = {
+            'votingEvent':{},
+            'voted':{},
+            'voteCount':{},
+        };
+        response['votingEvent'] = voteItem;
+        response['voted'] = voteEvent;
+        response['voteCount'] = voteCount[0].count;
+        
+        if (response['votingEvent'].length>0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Get VoteItem is success.', response);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Not found Vote Item.', undefined);
