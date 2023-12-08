@@ -917,6 +917,26 @@ export class VotingController {
                     }
                 },
                 {
+                    $lookup:{
+                        from:'UserSupport',
+                        let:{'id':'$_id'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:
+                                    {
+                                        $eq:['$$id','$votingId']
+                                    }
+                                }
+                            },
+                            {
+                                $match: { userId: userObjId }
+                            }
+                        ],
+                        as:'userSupport'
+                    }
+                },
+                {
                     $limit: take
                 },
                 {
@@ -2983,8 +3003,28 @@ export class VotingController {
                 }
             } else {
                 // type single, multi
-                // type text
                 if(choice.voteChoiceId !== undefined){
+                    // check single type ?
+                    const signleType = await this.voteItemService.findOne(
+                        {
+                            _id: new ObjectID(voteObject.voteItemId),
+                            votingId: new ObjectID(voteEventId),
+                            type: 'single'
+                        });
+                    if(signleType !== undefined) {
+                        voted = await this.votedService.findOne(
+                            {
+                                votingId: signleType.votingId,
+                                userId: new ObjectID(userId),
+                                voteItemId: signleType.id,
+                                voteChoiceId: new ObjectID(choice.voteChoiceId)
+                            }
+                        );
+                        if(voted !== undefined) {
+                            return voted
+                        }
+                    }
+
                     voted = await this.votedService.findOne(
                         {
                             votingId: new ObjectID(voteEventId),
@@ -2994,6 +3034,7 @@ export class VotingController {
                         }
                     );
                 } else {
+                    // type text
                     voted = await this.votedService.findOne(
                         {
                             votingId: new ObjectID(voteEventId),
