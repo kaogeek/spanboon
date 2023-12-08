@@ -1791,6 +1791,11 @@ export class VotingController {
                     as:'user'
                 }
             },
+            {
+                $project:{
+                    user:1
+                }
+            }
         ]);
         const voteCount = await this.votedService.aggregate(
             [
