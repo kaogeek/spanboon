@@ -1805,15 +1805,15 @@ export class VotingController {
             ]
         );
         const response:any = {
-            'votingEvent':{},
+            'voteItem':{},
             'voted':{},
             'voteCount':{},
         };
-        response['votingEvent'] = voteItem;
+        response['voteItem'] = voteItem;
         response['voted'] = voteEvent;
         response['voteCount'] = voteCount[0].count;
-        
-        if (response['votingEvent'].length>0) {
+
+        if (response['voteItem'].length>0) {
             const successResponse = ResponseUtil.getSuccessResponse('Get VoteItem is success.', response);
             return res.status(200).send(successResponse);
         } else {
