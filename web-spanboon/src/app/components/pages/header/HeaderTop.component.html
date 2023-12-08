@@ -150,6 +150,7 @@
         <btn-notification class="menu-nofitication list-right-menu" [noti]="notificationList"
             [notiObj]="notificationObjectList" *ngIf="isLogin()">
         </btn-notification>
+        <btn-menu-list class="menu-list list-right-menu"></btn-menu-list>
         <!-- <notification-check-page (noti)="Notification($event)"></notification-check-page> -->
         <btn-menu-profile class="menu-profile list-right-menu"></btn-menu-profile>
         <btn-list-page *ngIf="isLogin()" class="menu-page list-right-menu" [link]="'/page'"></btn-list-page>

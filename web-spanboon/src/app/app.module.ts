@@ -76,6 +76,11 @@ import {
 import { AppComponent } from './app.component';
 import { APP_ROUTES } from './app-routing.module'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  NgxMatDatetimePickerModule,
+  NgxMatNativeDateModule,
+  NgxMatTimepickerModule
+} from '@angular-material-components/datetime-picker';
 
 import {
   HeaderTop,
@@ -107,6 +112,7 @@ import {
   PageRecommended,
   StoryPage,
   PostPage,
+  VotePage,
   SettingsFanPage,
   SettingsInfo,
   SettingsAdminRoles,
@@ -126,6 +132,7 @@ import {
   DialogProfile,
   DialogAboutUs,
   DialogConfirmInput,
+  DialogCreateVote,
   DialogShare,
   DialogPassword,
   DialogManageImage,
@@ -144,6 +151,7 @@ import {
   DialogCheckBox,
   DialogPoliciesAndTerms,
   DialogDropdown,
+  DialogList,
   AlertComponent,
   TooltipProfile,
   PreloadCard,
@@ -151,6 +159,7 @@ import {
   CardContact,
   NotificationCard,
   CardContentHome,
+  CardContentVote,
   CollapsibleHead,
   CardChatFulfill,
   EditProfileCard,
@@ -228,6 +237,7 @@ import {
   CardFulfillItem,
   HomePageV3,
   AppleAppSite,
+  MenuList,
 } from './components/components';
 
 // remove when finished test
@@ -277,6 +287,7 @@ import {
   CheckMergeUserFacade,
   UserSubjectFacade,
   BindingMemberFacade,
+  VoteEventFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -330,6 +341,7 @@ const COMPONENTS: any[] = [
   FanPage,
   StoryPage,
   PostPage,
+  VotePage,
   SettingsFanPage,
   AboutPage,
   PolicyV1,
@@ -364,6 +376,7 @@ const COMPONENTS: any[] = [
   DialogProfile,
   DialogAboutUs,
   DialogConfirmInput,
+  DialogCreateVote,
   DialogShare,
   DialogPassword,
   DialogManageImage,
@@ -388,12 +401,14 @@ const COMPONENTS: any[] = [
   DialogCheckBox,
   DialogPoliciesAndTerms,
   DialogDropdown,
+  DialogList,
   TagEvent,
   TooltipProfile,
   PreloadCard,
   PreloadData,
   CardContact,
   CardContentHome,
+  CardContentVote,
   CollapsibleHead,
   NotificationCard,
   CardChatFulfill,
@@ -418,6 +433,7 @@ const COMPONENTS: any[] = [
   Notification,
   ManagePage,
   MenuProfile,
+  MenuList,
   SettingAccount,
   //
   CommentPost,
@@ -536,6 +552,7 @@ const SERVICE_CLASSES: any[] = [
   UserSubjectFacade,
   BindingMemberFacade,
   UserEngagementFacade,
+  VoteEventFacade,
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig
@@ -610,6 +627,9 @@ registerLocaleData(localeFr, 'th-TH', localeFrExtra);
     MatTooltipModule, MatSnackBarModule, MatTableModule, MatSortModule, MatPaginatorModule, MatNativeDateModule, MatCardModule,
     MatRippleModule, MatBadgeModule, OverlayModule,
     CommonModule,
+    NgxMatDatetimePickerModule,
+    NgxMatNativeDateModule,
+    NgxMatTimepickerModule,
     DeviceDetectorModule.forRoot(),
     ToastrModule.forRoot({
       maxOpened: 10,

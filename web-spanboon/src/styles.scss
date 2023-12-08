@@ -21,7 +21,11 @@ $newconsensus-web-accent: mat-palette($mat-pink, A200, A100, A400);
 // The warn palette is optional (defaults to red).
 $newconsensus-web-warn: mat-palette($mat-red);
 // Create the theme object (a Sass map containing all of the palettes).
-$newconsensus-web-theme: mat-light-theme($newconsensus-web-primary, $newconsensus-web-accent, $newconsensus-web-warn);
+$newconsensus-web-theme: mat-light-theme(
+  $newconsensus-web-primary,
+  $newconsensus-web-accent,
+  $newconsensus-web-warn
+);
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
@@ -37,48 +41,48 @@ $newconsensus-web-theme: mat-light-theme($newconsensus-web-primary, $newconsensu
 
 html,
 body {
-    height: auto;
-    width: 100%;
-    // -webkit-tap-highlight-color: transparent;
+  height: auto;
+  width: 100%;
+  // -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    margin: 0;
-    overflow-x: hidden;
-    scrollbar-color: $brandcolor $white;
-    scrollbar-width: thin;
-    scroll-behavior: smooth;
-    background-color: $white;
+  margin: 0;
+  overflow-x: hidden;
+  scrollbar-color: $brandcolor $white;
+  scrollbar-width: thin;
+  scroll-behavior: smooth;
+  background-color: $white;
 }
 
 figure {
-    img {
-        max-width: 100%;
-    }
+  img {
+    max-width: 100%;
+  }
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 p {
-    margin-top: 0;
-    margin-bottom: 10px;
+  margin-top: 0;
+  margin-bottom: 10px;
 }
 
 .dialog {
-    width: 800px;
-    max-width: 100%;
+  width: 800px;
+  max-width: 100%;
 
-    &.wrapper-dialog-doing,
-    &.dialog-post {
-        width: 1200px;
-    }
+  &.wrapper-dialog-doing,
+  &.dialog-post {
+    width: 1200px;
+  }
 
-    &.customize-alert {
-        width: unset;
-        max-width: unset;
-    }
+  &.customize-alert {
+    width: unset;
+    max-width: unset;
+  }
 }
 
 // .cdk-overlay-container {
@@ -94,46 +98,46 @@ p {
 //     }
 // }
 .cdk-global-overlay-wrapper {
-    >.cdk-overlay-pane {
-        .mat-dialog-container {
-            padding: unset;
-        }
-
-        .mat-dialog-title {
-            margin: unset;
-        }
+  > .cdk-overlay-pane {
+    .mat-dialog-container {
+      padding: unset;
     }
+
+    .mat-dialog-title {
+      margin: unset;
+    }
+  }
 }
 
 // for dialog alert
 .cdk-overlay-pane {
-    max-width: 90vw !important;
+  // max-width: 90vw !important;
 }
 
 .mat-dialog-content {
-    margin: unset !important;
-    padding: unset !important;
-    // max-height: unset;
+  margin: unset !important;
+  padding: unset !important;
+  // max-height: unset;
 }
 
 @media only screen and (max-width: $large) {
-    .customize-dialog {
-        max-width: 100vw !important;
-        min-height: 100vh !important;
-    }
+  .customize-dialog {
+    max-width: 100vw !important;
+    min-height: 100vh !important;
+  }
 }
 
 @media only screen and (max-width: $medium) {
-    .cdk-global-overlay-wrapper {
-        // align-items: flex-start !important;
-    }
+  .cdk-global-overlay-wrapper {
+    // align-items: flex-start !important;
+  }
 
-    .customize-dialog {
-        max-width: 100vw !important;
-        height: 100%;
-        min-height: calc(100vh - 7em) !important;
-        overflow-y: auto;
-    }
+  .customize-dialog {
+    max-width: 100vw !important;
+    height: 100%;
+    min-height: calc(100vh - 7em) !important;
+    overflow-y: auto;
+  }
 }
 
 // @media (max-width: $medium) {
@@ -231,13 +235,13 @@ p {
 //------------------------------------------------------------------//
 
 textarea {
-    outline: none;
-    @include font-size-9($font-head-200);
+  outline: none;
+  @include font-size-9($font-head-200);
 }
 
 textarea:focus,
 input:focus {
-    outline: none;
+  outline: none;
 }
 
 // .mat-form-field {
@@ -308,263 +312,265 @@ input:focus {
 //     font-weight: 600;
 // }
 .readonly {
-    background: #efefef !important;
+  background: #efefef !important;
 }
 
 #canvas-wrap {
-    position: relative;
+  position: relative;
 }
 
 /* Make this a positioned parent */
 #overlay {
-    top: 20px;
-    left: 30px;
+  top: 20px;
+  left: 30px;
 }
 
 #canvas-wrap {
-    position: relative;
-    width: auto;
-    height: auto;
-    overflow: hidden;
+  position: relative;
+  width: auto;
+  height: auto;
+  overflow: hidden;
 }
 
 #canvas-wrap canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    background-color: #fbfbfc;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  background-color: #fbfbfc;
 }
 
 @media (max-width: $large) {
-    #canvas-wrap canvas {
-        display: none !important;
-    }
+  #canvas-wrap canvas {
+    display: none !important;
+  }
 }
 
 .noticardblock {
-    z-index: 99;
-    position: fixed;
-    left: 1%;
-    bottom: 2%;
+  z-index: 99;
+  position: fixed;
+  left: 1%;
+  bottom: 2%;
 }
 
 .wrapper-notification-copy {
-    box-shadow: 0px 6px 15px #0000001a;
-    background-color: white;
+  box-shadow: 0px 6px 15px #0000001a;
+  background-color: white;
 
-    .mat-menu-title {
+  .mat-menu-title {
+    display: flex;
+    flex-direction: column;
+    padding: 0 15pt;
+
+    > .text {
+      @include font-size-8($font-head-500);
+    }
+
+    > .select-noti-list {
+      @include font-size-10($font-head-400);
+      padding: 10pt 0pt;
+
+      > .list {
+        cursor: pointer;
+        color: black;
+        background: #eeeeee 0% 0% no-repeat padding-box;
+        border-radius: 25px;
+        padding: 7px 15px;
+        margin-right: 10px;
+      }
+
+      > .select {
+        color: #ee7623 !important;
+        background: #ee762329 0% 0% no-repeat padding-box !important;
+      }
+    }
+  }
+
+  > .test {
+    padding: 20px;
+    @include font-size-6($font-head-500);
+  }
+
+  > .select-noti-list {
+    @include font-size-10($font-head-400);
+    padding: 10pt 0pt;
+
+    > .list {
+      cursor: pointer;
+      color: black;
+      background: #eeeeee 0% 0% no-repeat padding-box;
+      border-radius: 25px;
+      padding: 7px 15px;
+      margin-right: 10px;
+    }
+
+    > .select {
+      color: #ee7623 !important;
+      background: #ee762329 0% 0% no-repeat padding-box !important;
+    }
+  }
+
+  button.mat-menu-item {
+    width: unset !important;
+  }
+
+  .mat-menu-item {
+    overflow: unset !important;
+    line-height: 0px !important;
+  }
+
+  .mat-menu-content {
+    padding: unset !important;
+  }
+
+  .wrapper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40pt;
+    padding: 0 15pt;
+    border-bottom: $width-border solid $border-separator;
+    @include font-size-10($font-head-500);
+
+    > .wrapper-noti {
+    }
+
+    > .wrapper-setting {
+      cursor: pointer;
+    }
+  }
+
+  .noti-sc {
+    overflow-y: auto;
+    // max-height: calc(100vh - 40pt - 40pt - 55pt);
+    z-index: 9999;
+
+    .not-foun-noti {
+      @include font-size-9($font-head-500);
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .wrapper-list {
+      display: flex;
+      transition: 0.5s;
+      justify-content: space-between;
+      padding: 10pt;
+      align-items: center;
+      cursor: pointer;
+      border-bottom: $width-border solid $border-separator;
+
+      &:hover {
+        transition: 0.5s;
+        background-color: $background-hover;
+      }
+
+      &.active {
+        // background-color: rgb(243, 243, 243);
+        background: rgb(255, 255, 255);
+      }
+
+      &.dis {
+        display: none;
+      }
+
+      > div {
         display: flex;
-        flex-direction: column;
-        padding: 0 15pt;
-
-        >.text {
-            @include font-size-8($font-head-500);
-        }
-
-        >.select-noti-list {
-            @include font-size-10($font-head-400);
-            padding: 10pt 0pt;
-
-            >.list {
-                cursor: pointer;
-                color: black;
-                background: #eeeeee 0% 0% no-repeat padding-box;
-                border-radius: 25px;
-                padding: 7px 15px;
-                margin-right: 10px;
-            }
-
-            >.select {
-                color: #ee7623 !important;
-                background: #ee762329 0% 0% no-repeat padding-box !important;
-            }
-        }
-    }
-
-    >.test {
-        padding: 20px;
-        @include font-size-6($font-head-500);
-    }
-
-    >.select-noti-list {
-        @include font-size-10($font-head-400);
-        padding: 10pt 0pt;
-
-        >.list {
-            cursor: pointer;
-            color: black;
-            background: #eeeeee 0% 0% no-repeat padding-box;
-            border-radius: 25px;
-            padding: 7px 15px;
-            margin-right: 10px;
-        }
-
-        >.select {
-            color: #ee7623 !important;
-            background: #ee762329 0% 0% no-repeat padding-box !important;
-        }
-    }
-
-    button.mat-menu-item {
-        width: unset !important;
-    }
-
-    .mat-menu-item {
-        overflow: unset !important;
-        line-height: 0px !important;
-    }
-
-    .mat-menu-content {
-        padding: unset !important;
-    }
-
-    .wrapper-header {
-        display: flex;
+        width: 100%;
         justify-content: space-between;
         align-items: center;
-        height: 40pt;
-        padding: 0 15pt;
-        border-bottom: $width-border solid $border-separator;
-        @include font-size-10($font-head-500);
 
-        >.wrapper-noti {}
+        > .wrapper-list-div {
+          display: flex;
+          align-items: center;
 
-        >.wrapper-setting {
-            cursor: pointer;
+          > .user-noti {
+            padding: 5pt 10pt;
+
+            > .img {
+              width: 34pt;
+              height: 34pt;
+              border-radius: 50%;
+              object-fit: cover;
+            }
+
+            > .none-image {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-color: $brandcolor2;
+              color: $white;
+              @include font-size-10($font-head-500);
+            }
+          }
+
+          > .wrapper-message {
+            @include font-size-10($font-head-500);
+
+            > .top {
+              color: $black;
+
+              > .name {
+                display: contents;
+                font-weight: bold;
+              }
+            }
+
+            > .wrapper-time {
+              display: flex;
+              align-items: center;
+              color: $color-gray;
+              @include font-size-11($font-head-100);
+
+              &:hover {
+                color: rgba($brandcolor2, 0.95);
+              }
+
+              svg {
+                width: $width-time;
+                height: $height-time;
+                padding-right: 5pt;
+              }
+            }
+          }
         }
+
+        > .wrapper-setting {
+        }
+      }
     }
 
-    .noti-sc {
-        overflow-y: auto;
-        // max-height: calc(100vh - 40pt - 40pt - 55pt);
-        z-index: 9999;
-
-        .not-foun-noti {
-            @include font-size-9($font-head-500);
-            height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .wrapper-list {
-            display: flex;
-            transition: 0.5s;
-            justify-content: space-between;
-            padding: 10pt;
-            align-items: center;
-            cursor: pointer;
-            border-bottom: $width-border solid $border-separator;
-
-            &:hover {
-                transition: 0.5s;
-                background-color: $background-hover;
-            }
-
-            &.active {
-                // background-color: rgb(243, 243, 243);
-                background: rgb(255, 255, 255);
-            }
-
-            &.dis {
-                display: none;
-            }
-
-            >div {
-                display: flex;
-                width: 100%;
-                justify-content: space-between;
-                align-items: center;
-
-                >.wrapper-list-div {
-                    display: flex;
-                    align-items: center;
-
-                    >.user-noti {
-                        padding: 5pt 10pt;
-
-                        >.img {
-                            width: 34pt;
-                            height: 34pt;
-                            border-radius: 50%;
-                            object-fit: cover;
-                        }
-
-                        >.none-image {
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            background-color: $brandcolor2;
-                            color: $white;
-                            @include font-size-10($font-head-500);
-                        }
-                    }
-
-                    >.wrapper-message {
-                        @include font-size-10($font-head-500);
-
-                        >.top {
-                            color: $black;
-
-                            >.name {
-                                display: contents;
-                                font-weight: bold;
-                            }
-                        }
-
-                        >.wrapper-time {
-                            display: flex;
-                            align-items: center;
-                            color: $color-gray;
-                            @include font-size-11($font-head-100);
-
-                            &:hover {
-                                color: rgba($brandcolor2, 0.95);
-                            }
-
-                            svg {
-                                width: $width-time;
-                                height: $height-time;
-                                padding-right: 5pt;
-                            }
-                        }
-                    }
-                }
-
-                >.wrapper-setting {}
-            }
-        }
-
-        .preload {
-            padding: unset;
-        }
-
-        .eorror {
-            width: 100%;
-            width: 100%;
-            height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            @include font-size-8($font-head-500);
-        }
+    .preload {
+      padding: unset;
     }
 
-    .wrapper-all-footer {
-        border-top: $width-border solid $border-separator;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 40pt;
-        background-color: $bg-grey;
-        @include pointer();
-        @include font-size-10($font-head-500);
-        user-select: none;
+    .eorror {
+      width: 100%;
+      width: 100%;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      @include font-size-8($font-head-500);
     }
+  }
+
+  .wrapper-all-footer {
+    border-top: $width-border solid $border-separator;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40pt;
+    background-color: $bg-grey;
+    @include pointer();
+    @include font-size-10($font-head-500);
+    user-select: none;
+  }
 }
 
 .width-500 {
-    width: 500pt !important;
-    max-width: 500pt !important;
+  width: 500pt !important;
+  max-width: 500pt !important;
 }

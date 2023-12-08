@@ -47,7 +47,7 @@ export class DialogAlert {
     }
   }
 
-  onClose(): void {
+  onClose(value?: any): void {
     this.isbottom = false
     this.dialogRef.close(this.isbottom);
 

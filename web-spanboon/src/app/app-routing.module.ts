@@ -21,7 +21,7 @@ import {
   PageHashTag,
   PageRecommended,
   SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
-  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch, LoginMemberProcessing, MemberProcess, MobileProcessing, KnowledgeCenter,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch, LoginMemberProcessing, MemberProcess, MobileProcessing, KnowledgeCenter, VotePage,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -264,6 +264,20 @@ export const APP_ROUTES: Routes = [
       {
         path: KnowledgeCenter.PAGE_NAME,
         component: KnowledgeCenter,
+      },
+      {
+        path: VotePage.PAGE_NAME,
+        component: VotePage,
+        children: [
+          {
+            path: '',
+            component: VotePage,
+          },
+          {
+            path: ':id',
+            component: VotePage,
+          }
+        ]
       },
       // {
       //   path: NotificationAllPage.PAGE_NAME,

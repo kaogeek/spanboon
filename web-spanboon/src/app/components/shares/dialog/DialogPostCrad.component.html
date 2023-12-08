@@ -4,27 +4,237 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-<div class="dialog_post_card">
+<ng-container *ngIf="data.vote; else elseTemplate">
+    <div *ngIf="!voteSuccess" class="dialog-vote-card">
+        <div class="wrapper-card">
+            <img class="close-icon" src="../../../../assets/img/icons/votepage/close.svg" (click)="onClose()">
+            <div class="card-wrapper">
+                <div class="image">
+                    <div class="wrapper-image">
+                        <div class="image-cover-blur"
+                            [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(' +  apiBaseURL + data.post.coverPageURL + ')'}">
+                        </div>
+                        <img class="image-vote" [src]="apiBaseURL + data.post.coverPageURL" alt="">
+                    </div>
+                    <div class="bottom-image">
+                        <div class="user-profile">
+                            <img [src]="apiBaseURL + user.imageURL + '/image'" alt="">
+                        </div>
+                        <ng-container *ngIf="!data.post.approved; else elseTemplate">
+                            <div class="owner-name">
+                                <span>{{user.firstName !== undefined ? user.firstName : user.pageUsername}}</span>
+                                <mat-progress-bar mode="buffer" [bufferValue]="0" [value]="supportValue">
+                                </mat-progress-bar>
+                                <ng-container
+                                    *ngIf="(data.post.minSupport - data.post.countSupport) <= 0; else elseMinSupport">
+                                    <span>กระทู้ของคุณได้รับฉันทมติให้เปิดโหวต</span>
+                                </ng-container>
+                                <ng-template #elseMinSupport>
+                                    <span>ยังต้องการอีก {{data.post.minSupport - data.post.countSupport}} เสียง
+                                        เพื่อเปิดโหวต</span>
+                                </ng-template>
+                            </div>
+                        </ng-container>
+                        <ng-template #elseTemplate>
+                            <div class="owner-name">
+                                <span>{{user.firstName !== undefined ? user.firstName : user.pageUsername}}</span>
+                                <ng-container *ngIf="!data.post.closed; else elseClosedVote">
+                                    <span>ปิดโหวตใน {{data.post.endVoteDay}}วัน {{data.post.endVoteHour <= 0 ? '' :
+                                            data.post.endVoteHour + 'ชม.' }}</span>
+                                </ng-container>
+                                <ng-template #elseClosedVote>
+                                    <span>ปิดโหวตแล้ว</span>
+                                </ng-template>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+                <div class="box-content">
+                    <div class="title">
+                        <p>{{data.post.title}}</p>
+                    </div>
+                    <div class="title detail">
+                        <p>{{data.post.detail}}</p>
+                    </div>
+                    <hr>
+                    <div class="user-vote">
+                        <ng-container *ngIf="(data.support === undefined); else elseSupportUser">
+                            <ng-container *ngFor="let item of data.choice.voted">
+                                <div class="user-profile">
+                                    <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="data.choice.voted.length <= 5">
+                                <span>{{data.choice.voted[data.choice.voted.length - 1].user.displayName}}
+                                    ...คนเหล่านี้โหวตแล้ว</span>
+                            </ng-container>
+                            <ng-container *ngIf="data.choice.voted.length > 5">
+                                <span>{{data.choice.voted[data.choice.voted.length - 1].user.displayName}} ...และอีก
+                                    {{data.choice.voteCount - data.choice.voted.length}}
+                                    คนโหวตแล้ว</span>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #elseSupportUser>
+                            <ng-container *ngFor="let item of data.support.userSupport">
+                                <div class="user-profile">
+                                    <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="posts.length <= 5 && posts.length > 0">
+                                <span>{{data.support.userSupport[data.support.userSupport.length - 1].user.displayName}}
+                                    ...คนเหล่านี้สนับสนุนแล้ว</span>
+                            </ng-container>
+                            <ng-container *ngIf="posts.length > 5 && posts.length > 0">
+                                <span>{{data.support.userSupport[data.support.userSupport.length - 1].user.displayName}}
+                                    ...และอีก
+                                    {{data.choice.voteCount - data.support.userSupport.length}}
+                                    สนับสนุนแล้ว</span>
+                            </ng-container>
+                            <ng-container *ngIf="posts.length === 0">
+                                <span style="margin-left: 0px;padding: 9px;">ขณะนี้ยังไม่มีคนสนับสนุนโหวตนี้</span>
+                            </ng-container>
+                        </ng-template>
+                    </div>
+                    <hr>
+                    <ng-container *ngIf="data.post.approved; else elseApproved">
+                        <div class="start" *ngIf="!data.post.closed">
+                            <span>เริ่มเลย</span>
+                        </div>
+                        <ng-container *ngFor="let item of posts;let index = index">
+                            <div class="question">
+                                <span>คำถามที่ {{item.ordering}}</span>
+                                <img *ngIf="!!item!.coverPageURL" [src]="apiBaseURL + item?.coverPageURL" alt="">
+                                <span class="title">{{item.title}}</span>
+                                <ng-container *ngFor="let choice of item.voteChoice;let i = index">
+                                    <ng-container *ngIf="item.type === 'single'; else elseMultiple">
+                                        <div class="wrapper-choice"
+                                            [ngClass]="{'active': singleAns === choice.title,'closed': data.post.closed}"
+                                            (click)="chooseChoice(item,choice,index,i,item.type);singleAns = choice.title">
+                                            <div class="choice">
+                                                <div class="image" *ngIf="!!choice.coverPageURL">
+                                                    <img [src]="apiBaseURL + choice.coverPageURL" alt="">
+                                                </div>
+                                                <div class="answer">
+                                                    <span>{{choice.title}}</span>
+                                                    <div class="border-white" *ngIf="!data.post.closed"
+                                                        (click)="addOrRemoveActive(choice,'single','remove',index); $event.stopPropagation()">
+                                                        <button mat-icon-button *ngIf="singleAns === choice.title">
+                                                            <mat-icon>done</mat-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <ng-container
+                                                    *ngIf="(data.post.closed && data.post.showVoteResult) || (!data.post.showVoteResult) && data.menu === 'result'">
+                                                    <span>{{item.voteChoice[i].voted.length > 0 ?
+                                                        item.voteChoice[i].voted[0].votedCount : 0}}</span>
+                                                </ng-container>
+                                            </div>
+                                            <ng-container
+                                                *ngIf="(data.post.closed && data.post.showVoteResult) || (!data.post.showVoteResult)">
+                                                <mat-progress-bar mode="'buffer'"
+                                                    [value]="voteChoiceValue[index].value[i]"></mat-progress-bar>
+                                            </ng-container>
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #elseMultiple>
+                                        <div class="wrapper-choice"
+                                            [ngClass]="{'active': choice.active,'closed': data.post.closed}"
+                                            (click)="!choice.active ? chooseChoice(item,choice,index,i,item.type) : null;
+                                            choice.active ? addOrRemoveActive(choice,'multi','remove',index,i) : addOrRemoveActive(choice,'multi','add',index,i)">
+                                            <div class="choice">
+                                                <div class="image" *ngIf="!!choice.coverPageURL">
+                                                    <img [src]="apiBaseURL + choice.coverPageURL" alt="">
+                                                </div>
+                                                <div class="answer">
+                                                    <span>{{choice.title}}</span>
+                                                    <mat-icon *ngIf="choice.active" class="material-icons-round"
+                                                        (click)="addOrRemoveActive(choice,'multi','remove',index,i); $event.stopPropagation()">done</mat-icon>
+                                                </div>
+                                                <ng-container
+                                                    *ngIf="(data.post.closed && data.post.showVoteResult) || (!data.post.showVoteResult) && data.menu === 'result'">
+                                                    <span>{{item.voteChoice[i].voted.length > 0 ?
+                                                        item.voteChoice[i].voted[0].votedCount : 0}}</span>
+                                                </ng-container>
+                                            </div>
+                                            <ng-container
+                                                *ngIf="(data.post.closed && data.post.showVoteResult) || (!data.post.showVoteResult)">
+                                                <mat-progress-bar mode="'buffer'"
+                                                    [value]="voteChoiceValue[index].value[i]"></mat-progress-bar>
+                                            </ng-container>
+                                        </div>
+                                    </ng-template>
+                                </ng-container>
+                                <ng-container *ngIf="item.type === 'text'">
+                                    <ng-container *ngIf="data.post.closed; else elseCloseText">
+                                        <button mat-button class="button-vote close"
+                                            (click)="seeVoteTextUser(item._id)">
+                                            <span [innerHTML]="'ดูทั้งหมด (' + item.voted[0].votedCount + ')'"></span>
+                                        </button>
+                                    </ng-container>
+                                    <ng-template #elseCloseText>
+                                        <input [ngStyle]="{'pointer-events': data.post.closed ? 'none' : 'unset'}"
+                                            type="text" placeholder="ตอบคำถาม" [(ngModel)]="answerTextbox"
+                                            (keyup)="setAnswer(item,index)">
+                                    </ng-template>
+                                </ng-container>
+                                <div class="next" *ngIf="!data.post.closed && index === posts.length - 1">
+                                    <span (click)="isLogin() ? next() : checkLogin()">ถัดไป</span>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                    <ng-template #elseApproved>
+                        <div class="wrapper-button">
+                            <ng-container *ngIf="data.post.userSupport.length > 0; else elseSupport">
+                                <span class="button-vote close"
+                                    (click)="unVoteSupport(data.post._id)">ยกเลิกสนับสนุน</span>
+                            </ng-container>
+                            <ng-template #elseSupport>
+                                <span class="button-vote submit" (click)="voteSupport(data.post._id)">สนับสนุน</span>
+                            </ng-template>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <span mat-dialog-title class="onClose" (click)="onClose($event)">
-        <svg version="1.1" width="20px" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 41.756 41.756"
-            style="enable-background:new 0 0 41.756 41.756;" xml:space="preserve">
-            <g>
-                <path d="M27.948,20.878L40.291,8.536c1.953-1.953,1.953-5.119,0-7.071c-1.951-1.952-5.119-1.952-7.07,0L20.878,13.809L8.535,1.465
-		c-1.951-1.952-5.119-1.952-7.07,0c-1.953,1.953-1.953,5.119,0,7.071l12.342,12.342L1.465,33.22c-1.953,1.953-1.953,5.119,0,7.071
-		C2.44,41.268,3.721,41.755,5,41.755c1.278,0,2.56-0.487,3.535-1.464l12.343-12.342l12.343,12.343
-		c0.976,0.977,2.256,1.464,3.535,1.464s2.56-0.487,3.535-1.464c1.953-1.953,1.953-5.119,0-7.071L27.948,20.878z" />
-            </g>
-        </svg>
-    </span>
+    <div *ngIf="voteSuccess" class="dialog-vote-card">
+        <div class="wrapper-card vote-success">
+            <img class="close-icon" src="../../../../assets/img/icons/votepage/close.svg" (click)="onClose()">
+            <div class="card">
+                <span>{{data.post.service ? data.post.service : 'ขอขอบคุณสำหรับเวลาและการโหวตของท่าน'}}</span>
+                <div class="success-vote" (click)="onClose()">
+                    <span>เสร็จสิ้น</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>
+<ng-template #elseTemplate>
+    <div class="dialog_post_card">
 
-    <mat-dialog-content [class.hide]="isRepost">
-        <post-data *ngIf="!showLoading" [itemPost]="data.post" [ownerPost]="data.user" [isComments]="isLogin()"
-            [isUserPage]="false" [isShowUser]="true" [isNotAccess]="data.isNotAccess" [isPage]="data.isNotAccess"
-            (action)="actionComment($event)" [pageUser]="data.pageUser" (comment)="createComment($event)">
-        </post-data>
-        <Preload-card *ngIf="showLoading" [isShowCard4]="true" [class]="'preload-profile'">
-        </Preload-card>
-    </mat-dialog-content>
-</div>
+        <span mat-dialog-title class="onClose" (click)="onClose($event)">
+            <svg version="1.1" width="20px" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 41.756 41.756"
+                style="enable-background:new 0 0 41.756 41.756;" xml:space="preserve">
+                <g>
+                    <path
+                        d="M27.948,20.878L40.291,8.536c1.953-1.953,1.953-5.119,0-7.071c-1.951-1.952-5.119-1.952-7.07,0L20.878,13.809L8.535,1.465
+            c-1.951-1.952-5.119-1.952-7.07,0c-1.953,1.953-1.953,5.119,0,7.071l12.342,12.342L1.465,33.22c-1.953,1.953-1.953,5.119,0,7.071
+            C2.44,41.268,3.721,41.755,5,41.755c1.278,0,2.56-0.487,3.535-1.464l12.343-12.342l12.343,12.343
+            c0.976,0.977,2.256,1.464,3.535,1.464s2.56-0.487,3.535-1.464c1.953-1.953,1.953-5.119,0-7.071L27.948,20.878z" />
+                </g>
+            </svg>
+        </span>
+
+        <mat-dialog-content [class.hide]="isRepost">
+            <post-data *ngIf="!showLoading" [itemPost]="data.post" [ownerPost]="data.user" [isComments]="isLogin()"
+                [isUserPage]="false" [isShowUser]="true" [isNotAccess]="data.isNotAccess" [isPage]="data.isNotAccess"
+                (action)="actionComment($event)" [pageUser]="data.pageUser" (comment)="createComment($event)">
+            </post-data>
+            <Preload-card *ngIf="showLoading" [isShowCard4]="true" [class]="'preload-profile'">
+            </Preload-card>
+        </mat-dialog-content>
+    </div>
+</ng-template>

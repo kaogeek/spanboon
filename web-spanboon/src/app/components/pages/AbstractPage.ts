@@ -146,7 +146,7 @@ export abstract class AbstractPage implements OnInit {
     });
   }
 
-  public showDialogEngagementMember(text?: any): void {
+  public showDialogEngagementMember(text?: any, type?: string): void {
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
@@ -156,7 +156,7 @@ export abstract class AbstractPage implements OnInit {
         bottomColorText2: "black",
         btDisplay1: "none",
         options: 'mfp',
-        type: 'engage',
+        type: type ? type : 'engage',
         userId: user.id,
       },
     });

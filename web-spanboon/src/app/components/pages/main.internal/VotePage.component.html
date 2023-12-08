@@ -1,0 +1,130 @@
+<div class="wrapper-vote-page">
+    <div class="wrapper-left">
+        <div class="menu-wrapper">
+            <p>Vote</p>
+            <ng-container *ngFor="let item of menuList">
+                <div *ngIf="item.isLogin === isLogin()" class="menu-box" [class.active]="activeMenu === item.status"
+                    [routerLink]="!!item.status ? ['', 'vote', item.status] : ['','vote']"
+                    (click)="activeMenu = item.status;changeMenu(activeMenu)">
+                    <div class="icon">
+                        <img [src]="item.status === activeMenu ? item.icon2 : item.icon">
+                    </div>
+                    <span>{{item.name}}</span>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    <div class="wrapper-right">
+        <div class="menu-wrapper" [ngStyle]="{'top': !isRes ? '59px' : '0'}">
+            <ng-container *ngFor="let item of menuList">
+                <div *ngIf="item.isLogin === isLogin()" class="menu-box" [class.active]="activeMenu === item.status"
+                    [routerLink]="!!item.status ? ['', 'vote', item.status] : ['','vote']"
+                    (click)="activeMenu = item.status;changeMenu(activeMenu)">
+                    <span [class.active]="activeMenu === item.status">{{item.name}}</span>
+                </div>
+            </ng-container>
+        </div>
+        <div class="content-wrapper">
+            <div class="search-header">
+                <div class="search">
+                    <label class="material-icons icon-search" for="searchInput">
+                        search
+                    </label>
+                    <input #searchInput id="searchInput" type="search" [placeholder]="'ค้นหาโหวต'">
+                    <!-- (keyup.enter)="searchValue($event.target.value)" -->
+                </div>
+                <div class="create-vote" *ngIf="isLogin()" (click)="openDialogCreateVote()">
+                    <img src="../../../../assets/img/icons/votepage/create.svg">
+                    <span>สร้างโหวต</span>
+                </div>
+            </div>
+            <ng-container *ngIf="activeUrl === undefined">
+                <div class="header-content">
+                    <p>ปักหมุด</p>
+                    <span>ดูทั้งหมด</span>
+                </div>
+                <hr>
+                <div class="wrapper-content">
+                    <ng-container *ngFor="let data of voteData">
+                        <ng-container *ngIf="data?.approved && data?.pin">
+                            <card-content-vote #pinContent class="pin-content-data" [model]="data" [title]="data.title"
+                                (openDialog)="openDialogPost(data)" (deleteVote)="deleteDataVote($event)"
+                                [image]="data.coverPageURL"></card-content-vote>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </ng-container>
+
+            <!-- <ng-container *ngIf="checkLengthMyVote('my-vote')"> -->
+            <ng-container *ngIf="activeUrl === 'my-vote' || activeUrl === undefined">
+                <div class="header-content">
+                    <p>โหวตของฉัน</p>
+                    <span>ดูทั้งหมด</span>
+                </div>
+                <hr>
+                <div class="wrapper-content">
+                    <ng-container *ngFor="let data of voteData">
+                        <ng-container *ngIf="data?.user?._id === userId">
+                            <card-content-vote #myVoteContent class="myvote-content-data" [model]="data"
+                                [title]="data.title" (openDialog)="openDialogPost(data)"
+                                (deleteVote)="deleteDataVote($event)" [image]="data.coverPageURL"></card-content-vote>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="activeUrl === 'support'">
+                <div class="header-content">
+                    <p>ล่ารายชื่อ</p>
+                    <span>ดูทั้งหมด</span>
+                </div>
+                <hr>
+                <div class="wrapper-content">
+                    <ng-container *ngFor="let data of voteData">
+                        <ng-container *ngIf="data?.status === 'support'">
+                            <card-content-vote #supportContent class="support-content-data" [model]="data"
+                                [title]="data.title" (openDialog)="openDialogPost(data)"
+                                (deleteVote)="deleteDataVote($event)" [image]="data.coverPageURL"></card-content-vote>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="activeUrl === 'open'">
+                <div class="header-content">
+                    <p>โหวตที่เปิดอยู่</p>
+                    <span>ดูทั้งหมด</span>
+                </div>
+                <hr>
+                <div class="wrapper-content">
+                    <ng-container *ngFor="let data of voteData">
+                        <ng-container *ngIf="data?.status === 'vote' && !data.closed">
+                            <card-content-vote [model]="data" [title]="data.title" (openDialog)="openDialogPost(data)"
+                                (deleteVote)="deleteDataVote($event)" [image]="data.coverPageURL"></card-content-vote>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="activeUrl === 'result'">
+                <div class="header-content">
+                    <p>ปิดโหวตแล้ว</p>
+                    <span>ดูทั้งหมด</span>
+                </div>
+                <hr>
+                <div class="wrapper-content">
+                    <ng-container *ngFor="let data of voteData">
+                        <ng-container *ngIf="data.closed">
+                            <card-content-vote #myVoteContent class="myvote-content-data" [model]="data"
+                                [title]="data.title" (openDialog)="openDialogPost(data)"
+                                (deleteVote)="deleteDataVote($event)" [image]="data.coverPageURL"></card-content-vote>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </ng-container>
+
+        </div>
+    </div>
+</div>
+
+<loading *ngIf="isLoading"></loading>

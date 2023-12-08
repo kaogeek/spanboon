@@ -1,0 +1,53 @@
+<mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="clickDeleteVote()">
+        <mat-icon>delete</mat-icon>
+        <span class="vote-remove">ลบโหวต</span>
+    </button>
+</mat-menu>
+<div class="card-content">
+    <div class="container-content" (click)="clickDialog()">
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="icon-button" (click)="$event.stopPropagation()">
+            <mat-icon>more_vert</mat-icon>
+        </button>
+        <img class="image-content-vote" [src]="apiBaseURL + image">
+        <div class="logo-img">
+            <ng-container *ngIf="model.user !== undefined; else elsePageImage">
+                <ng-container *ngIf="!!model!.user!.imageURL; else elseUserImageNull">
+                    <img class="image-owner" [src]="apiBaseURL + model.user.imageURL + '/image'" alt="">
+                </ng-container>
+                <ng-template #elseUserImageNull>
+                    <img src="../../../../assets/img/logo/mfp-border.svg" alt="">
+                </ng-template>
+            </ng-container>
+            <ng-template #elsePageImage>
+                <ng-container *ngIf="!!model!.page!.imageURL; else elsePageImageNull">
+                    <img class="image-owner" [src]="apiBaseURL + model.page.imageURL + '/image'" alt="">
+                </ng-container>
+                <ng-template #elsePageImageNull>
+                    <img src="../../../../assets/img/logo/mfp-border.svg" alt="">
+                </ng-template>
+            </ng-template>
+            <span>{{model.user !== undefined ? model.user.firstName : model.page.pageUsername}}</span>
+        </div>
+    </div>
+    <div class="owner-post" (click)="clickDialog()">
+        <p class="owner-name" [innerHTML]="title"></p>
+    </div>
+    <ng-container *ngIf="!model.closed; else elseClosed">
+        <span class="vote-time">
+            <ng-container *ngIf="model.endVoteDay > 0">
+                <span>ปิดโหวตใน </span>
+                <span>{{model.endVoteDay}}</span>
+                <span> วัน </span>
+            </ng-container>
+            <ng-container *ngIf="model.endVoteHour > 0">
+                <span>{{model.endVoteHour}}</span>
+                <span>ชม.</span>
+            </ng-container>
+        </span>
+    </ng-container>
+    <!-- {{model.endVoteHour <= 0 ? '' : model.endVoteHour + 'ชม.' }} -->
+    <ng-template #elseClosed>
+        <span class="vote-time">ปิดโหวตแล้ว</span>
+    </ng-template>
+</div>

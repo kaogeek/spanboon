@@ -1,0 +1,23 @@
+<div class="dialog-list">
+    <div class="list-header">
+        <span [innerHTML]="'คำตอบ'"></span>
+        <button mat-mini-fab (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    <div class="wrapper-list-content">
+        <div class="list-content">
+            <ng-container *ngFor="let item of data.model">
+                <div class="list">
+                    <div class="user">
+                        <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
+                        <span [innerHTML]="item.user.firstName + ' ' + item.user.lastName"></span>
+                    </div>
+                    <div class="content">
+                        <span>{{item.answer}}</span>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>

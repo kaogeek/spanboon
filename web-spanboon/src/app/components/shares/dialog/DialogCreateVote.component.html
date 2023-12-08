@@ -1,0 +1,433 @@
+<div class="dialog-create-vote">
+    <div class="vote-header">
+        <span [innerHTML]="!isAddQuestion ? 'สร้างโหวต' : 'เลือกแบบคำถาม'"></span>
+        <button mat-mini-fab (click)="onClose(false)">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    <div class="vote-content">
+        <div class="vote-content-left" *ngIf="!isAddQuestion">
+            <button mat-button [ngClass]="{'question-type': typeQuestion !== 'settings'}"
+                (click)="changeQuestion(null,'settings')">
+                <div class="wrapper-butt-menu">
+                    <i
+                        [ngClass]="typeQuestion === 'settings' ? 'material-icons' : 'material-icons-outlined'">settings</i>
+                    <span>ตั้งค่าโหวต</span>
+                </div>
+            </button>
+            <ng-container *ngFor="let item of listQuestion;let index = index">
+                <button mat-button [ngClass]="{'question-type': index !== indexPage}"
+                    (click)="changeQuestion(index,item.typeChoice,false)">
+                    <div class="wrapper-butt-menu">
+                        <div class="butt-menu">
+                            <i [ngClass]="indexPage === index ? 'material-icons' : 'material-icons-outlined'"
+                                style="transform: scaleX(-1) rotate(-90deg)">note</i>
+                            <span>#คำถามที่ {{index+1}}</span>
+                            <!-- <span>{{item.typeChoice === 'single' ? '#'+(index+1)+' Checkbox' : (item.typeChoice ===
+                                    'multi' ? '#'+(index+1)+'
+                                    Multiple' : '#'+(index+1)+' Textbox')}}</span> -->
+                        </div>
+                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="icon-button">
+                            <mat-icon>more_horiz</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item [ngClass]="{'disabled-move': indexPage === 0}"
+                                (click)="movePosition('up',indexPage, indexPage-1)">
+                                <mat-icon>north</mat-icon>
+                                <span class="vote-move">เลื่อนขึ้นบน</span>
+                            </button>
+                            <button mat-menu-item [ngClass]="{'disabled-move': indexPage === lastIndexPage}"
+                                (click)="movePosition('down',indexPage, indexPage+1)">
+                                <mat-icon>south</mat-icon>
+                                <span class="vote-move">เลื่อนลงล่าง</span>
+                            </button>
+                            <button mat-menu-item (click)="removeQuestion(indexPage)">
+                                <mat-icon>close</mat-icon>
+                                <span class="vote-remove">ลบคำถาม</span>
+                            </button>
+                        </mat-menu>
+                    </div>
+                </button>
+            </ng-container>
+            <ng-container *ngIf="listQuestion.length >= 1">
+                <button mat-button [ngClass]="{'question-type': typeQuestion !== 'thanks'}"
+                    (click)="changeQuestion(null,'thanks')">
+                    <div class="wrapper-butt-menu">
+                        <i [ngClass]="typeQuestion === 'thanks' ? 'material-icons' : 'material-icons-outlined'"
+                            style="transform: scaleX(-1) rotate(-90deg)">note</i>
+                        <span>หน้าขอบคุณ</span>
+                    </div>
+                </button>
+            </ng-container>
+        </div>
+        <div #voteContent class="vote-content-right" *ngIf="!isAddQuestion">
+            <ng-container *ngIf="typeQuestion === 'settings'">
+                <div class="title">
+                    <span>หน้าปก</span>
+                </div>
+                <div class="image" [ngClass]="{'none-image': image.coverPageURL === null}" (click)="fileInput.click()">
+                    <ng-container *ngIf="image.coverPageURL === null; else elseImage">
+                        <img src="../../../../assets/img/icons/votepage/add-photo.svg">
+                        <span>อัพโหลดรูปหน้าปก</span>
+                    </ng-container>
+                    <ng-template #elseImage>
+                        <img class="data-image" [src]="apiBaseURL + image.coverPageURL">
+                    </ng-template>
+                    <div class="image-upload">
+                        <label for="file-input-cover">
+                        </label>
+                        <input #fileInput id="file-input-cover" type="file" (change)="onFileSelect($event,'main')"
+                            accept="image/*" />
+                    </div>
+                </div>
+                <div class="vote-box">
+                    <span>ชื่อการโหวต</span>
+                    <input type="text" placeholder="ตั้งชื่อการโหวต" [(ngModel)]="title">
+                </div>
+                <div class="vote-box">
+                    <span>คำอธิบาย</span>
+                    <!-- <input type="text" placeholder="เพิ่มคำอธิบาย"> -->
+                    <textarea style="resize: none;" name="detail" cols="30" rows="3" placeholder="เพิ่มคำอธิบาย"
+                        [(ngModel)]="detail"></textarea>
+                </div>
+                <div class="vote-box choose-user">
+                    <span>สร้างโหวตโดย</span>
+                    <div class="vote-dropdown-user">
+                        <mat-form-field appearance="none">
+                            <ng-container *ngIf="selectUser === user.displayName; else elseDefaultImage">
+                                <img [src]="apiBaseURL + user.imageURL + '/image'" alt="">
+                                <span>{{user.displayName}}</span>
+                            </ng-container>
+                            <ng-template #elseDefaultImage>
+                                <ng-container *ngIf="!!selectUser!.imageURL; else elseImageNull">
+                                    <img [src]="apiBaseURL + selectUser.imageURL + '/image'" alt="">
+                                </ng-container>
+                                <ng-template #elseImageNull>
+                                    <span class="image-null">{{selectUser.name | slice: 0:1}}</span>
+                                </ng-template>
+                            </ng-template>
+                            <mat-select [(ngModel)]="selectUser" (selectionChange)="selectUserCreate($event)"
+                                [ngModelOptions]="{standalone: true}">
+                                <mat-select-trigger>
+                                    <span>{{selectUser.name ? selectUser.name : selectUser.displayName}}</span>
+                                </mat-select-trigger>
+                                <mat-option class="user-option" [value]="user">
+                                    <img [src]="apiBaseURL + user.imageURL + '/image'" alt="">
+                                    <span>{{user.displayName}}</span>
+                                </mat-option>
+                                <ng-container *ngFor="let item of userPage;let index = index">
+                                    <mat-option class="user-option" [value]="item.page">
+                                        <ng-container *ngIf="!!item!.page!.imageURL; else elseImageUser">
+                                            <img [src]="apiBaseURL + item.page.imageURL + '/image'" alt="">
+                                        </ng-container>
+                                        <ng-template #elseImageUser>
+                                            <span class="image-null">{{item.page.name | slice: 0:1}}</span>
+                                        </ng-template>
+                                        <span>{{item.page.name}}</span>
+                                    </mat-option>
+                                </ng-container>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="vote-type-user">
+                    <span>ผู้มีสิทธิ์โหวต</span>
+                    <div class="vote-dropdown-type">
+                        <mat-form-field appearance="none">
+                            <mat-select [(ngModel)]="selectTypeUser" (selectionChange)="selectType()"
+                                [ngModelOptions]="{standalone: true}">
+                                <mat-option [value]="'สมาชิก'">เฉพาะสมาชิก</mat-option>
+                                <mat-option [value]="'ทั่วไป'">ทั่วไป</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="wrapper-vote-time">
+                    <div class="vote-time first">
+                        <span>เริ่มโหวต</span>
+                        <mat-form-field>
+                            <input matInput [ngxMatDatetimePicker]="pickerStart" [formControl]="dateStart">
+                            <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+                            <ngx-mat-datetime-picker #pickerStart [stepHour]="stepHour" [stepMinute]="stepMinute"
+                                [color]="color" [enableMeridian]="false">
+                            </ngx-mat-datetime-picker>
+                        </mat-form-field>
+                    </div>
+                    <hr>
+                    <div class="vote-time second">
+                        <span>สิ้นสุดการโหวต</span>
+                        <mat-form-field>
+                            <input matInput [ngxMatDatetimePicker]="pickerEnd" [formControl]="dateEnd">
+                            <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+                            <ngx-mat-datetime-picker #pickerEnd [stepHour]="stepHour" [stepMinute]="stepMinute"
+                                [color]="color" [enableMeridian]="false">
+                            </ngx-mat-datetime-picker>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="wrapper-vote-option option">
+                    <div class="vote-option">
+                        <span>แสดงผลโหวตเมื่อปิดโหวตเท่านั้น</span>
+                        <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isShowVoteResult"
+                            [color]="'#ee7623'"></mat-slide-toggle>
+                    </div>
+                    <hr>
+                    <div class="vote-option">
+                        <span>แสดงชื่อผู้โหวต</span>
+                        <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isShowVoterName"
+                            [color]="'#ee7623'"></mat-slide-toggle>
+                    </div>
+                </div>
+                <div class="vote-type-user">
+                    <span>แฮชแท็ก</span>
+                    <div class="vote-dropdown-type">
+                        <mat-form-field appearance="none">
+                            <mat-select [(ngModel)]="hashtag" (selectionChange)="selectHashtag($event)"
+                                [ngModelOptions]="{standalone: true}" placeholder="เลือกแฮชแท็ก">
+                                <ng-container *ngFor="let item of listHashtag">
+                                    <mat-option [value]="item">{{item}}</mat-option>
+                                </ng-container>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="typeQuestion !== 'settings'">
+                <ng-container *ngIf="typeQuestion === 'single'">
+                    <span class="title">คำถามที่ {{indexPage+1}} (Checkbox)</span>
+                    <div class="image" [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURLItem === null}"
+                        (click)="fileInput.click()">
+                        <ng-container *ngIf="listQuestion[indexPage]?.coverPageURLItem === null else elseImageSingle">
+                            <img src="../../../../assets/img/icons/votepage/add-photo.svg">
+                            <span>อัพโหลดรูปหน้าปก</span>
+                        </ng-container>
+                        <ng-template #elseImageSingle>
+                            <img class="data-image" [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURLItem">
+                        </ng-template>
+                        <div class="image-upload">
+                            <label for="file-input-cover">
+                            </label>
+                            <input #fileInput id="file-input-cover" type="file"
+                                (change)="onFileSelect($event,'question')" accept="image/*" />
+                        </div>
+                    </div>
+                    <div class="vote-box">
+                        <span>คำถาม</span>
+                        <input id="inputSingleQuestion" type="text" placeholder="ตั้งคำถาม" [(ngModel)]="titleQuestion"
+                            (keyup)="setFieldData(indexPage,true,true)">
+                    </div>
+                    <div class="vote-box">
+                        <span>ตัวเลือก</span>
+                    </div>
+                    <div class="wrapper-vote-box in-question">
+                        <ng-container *ngFor="let ans of listInputAns;let index = index">
+                            <div class="vote-option">
+                                <input id="answerSingle" name="answer" type="text"
+                                    placeholder="{{index+1}}. ใส่ตัวเลือก" value="" (input)="onType()">
+                                <div class="image"
+                                    [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURLItem === null}"
+                                    (click)="fileInput.click()">
+                                    <ng-container
+                                        *ngIf="listQuestion[indexPage]?.voteChoice[index]?.coverPageURL === null else elseImageChoiceSingle">
+                                        <img src="../../../../assets/img/icons/votepage/add-photo.svg">
+                                    </ng-container>
+                                    <ng-template #elseImageChoiceSingle>
+                                        <img class="data-image"
+                                            [src]="apiBaseURL + listQuestion[indexPage]?.voteChoice[index]?.coverPageURL">
+                                    </ng-template>
+                                    <div class="image-upload">
+                                        <label for="file-input-cover">
+                                        </label>
+                                        <input #fileInput id="file-input-cover" type="file"
+                                            (change)="onFileSelect($event,'choice',index)" accept="image/*" />
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="typeQuestion === 'multi'">
+                    <span class="title">คำถามที่ {{indexPage+1}} (Multiple Choice)</span>
+                    <div class="image" [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURLItem === null}"
+                        (click)="fileInput.click()">
+                        <ng-container *ngIf="listQuestion[indexPage]?.coverPageURLItem === null else elseImageMultiple">
+                            <img src="../../../../assets/img/icons/votepage/add-photo.svg">
+                            <span>อัพโหลดรูปหน้าปก</span>
+                        </ng-container>
+                        <ng-template #elseImageMultiple>
+                            <img class="data-image" [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURLItem">
+                        </ng-template>
+                        <div class="image-upload">
+                            <label for="file-input-cover">
+                            </label>
+                            <input #fileInput id="file-input-cover" type="file"
+                                (change)="onFileSelect($event,'question')" accept="image/*" />
+                        </div>
+                    </div>
+                    <div class="vote-box">
+                        <span>คำถาม</span>
+                        <input id="inputMultiQuestion" type="text" placeholder="ตั้งคำถาม" [(ngModel)]="titleQuestion"
+                            (keyup)="setFieldData(indexPage,true,true)">
+                    </div>
+                    <div class="vote-box">
+                        <span>ตัวเลือก</span>
+                    </div>
+                    <div class="wrapper-vote-box in-question">
+                        <ng-container *ngFor="let ans of listInputAns;let index = index">
+                            <div class="vote-option">
+                                <input id="answerMulti" name="answer" type="text" placeholder="{{index+1}}. ใส่ตัวเลือก"
+                                    value="" (input)="onType()">
+                                <div class="image"
+                                    [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURLItem === null}"
+                                    (click)="fileInput.click()">
+                                    <ng-container
+                                        *ngIf="listQuestion[indexPage]?.voteChoice[index]?.coverPageURL === null else elseImageChoiceSingle">
+                                        <img src="../../../../assets/img/icons/votepage/add-photo.svg">
+                                    </ng-container>
+                                    <ng-template #elseImageChoiceSingle>
+                                        <img class="data-image"
+                                            [src]="apiBaseURL + listQuestion[indexPage]?.voteChoice[index]?.coverPageURL">
+                                    </ng-template>
+                                    <div class="image-upload">
+                                        <label for="file-input-cover">
+                                        </label>
+                                        <input #fileInput id="file-input-cover" type="file"
+                                            (change)="onFileSelect($event,'choice',index)" accept="image/*" />
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="typeQuestion === 'text'">
+                    <span class="title">คำถามที่ {{indexPage+1}} (Textbox)</span>
+                    <div class="image" [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURLItem === null}"
+                        (click)="fileInput.click()">
+                        <ng-container *ngIf="listQuestion[indexPage]?.coverPageURLItem === null else elseImageText">
+                            <img src="../../../../assets/img/icons/votepage/add-photo.svg">
+                            <span>อัพโหลดรูปหน้าปก</span>
+                        </ng-container>
+                        <ng-template #elseImageText>
+                            <img class="data-image" [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURLItem">
+                        </ng-template>
+                        <div class="image-upload">
+                            <label for="file-input-cover">
+                            </label>
+                            <input #fileInput id="file-input-cover" type="file"
+                                (change)="onFileSelect($event,'question')" accept="image/*" />
+                        </div>
+                    </div>
+                    <div class="vote-box">
+                        <span>คำถาม</span>
+                        <input type="text" placeholder="ตั้งคำถาม" [(ngModel)]="titleQuestion"
+                            (keyup)="setFieldData(indexPage,true,true)">
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="typeQuestion === 'thanks'">
+                    <span class="title">หน้าขอบคุณ</span>
+                    <div class="vote-box">
+                        <span>ข้อความขอบคุณ</span>
+                        <input type="text" placeholder="ข้อความขอบคุณ" [(ngModel)]="thanksMessage">
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+        <ng-container *ngIf="isAddQuestion">
+            <div class="wrapper-vote-content">
+                <div class="vote-question-type" [class.active]="voteQuestionType === 'single'"
+                    (click)="selectVoteQuestionType('single')">
+                    <div class="vote-type-icon">
+                        <mat-icon>check</mat-icon>
+                    </div>
+                    <span>คำตอบเดียว</span>
+                </div>
+                <div class="vote-question-type" [class.active]="voteQuestionType === 'multi'"
+                    (click)="selectVoteQuestionType('multi')">
+                    <div class="vote-type-icon">
+                        <img src="../../../../assets/img/icons/votepage/double-correct.svg">
+                    </div>
+                    <span>หลายคำตอบ</span>
+                </div>
+                <div class="vote-question-type" [class.active]="voteQuestionType === 'text'"
+                    (click)="selectVoteQuestionType('text')">
+                    <div class="vote-type-icon">
+                        Aa
+                    </div>
+                    <span>กล่องข้อความ</span>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+    <div class="vote-footer-menu" *ngIf="!isAddQuestion">
+        <button mat-button [ngClass]="{'question-type': typeQuestion !== 'settings'}"
+            (click)="changeQuestion(null,'settings')">
+            <div class="wrapper-butt-menu">
+                <i [ngClass]="typeQuestion === 'settings' ? 'material-icons' : 'material-icons-outlined'">settings</i>
+                <span>ตั้งค่าโหวต</span>
+            </div>
+        </button>
+        <ng-container *ngFor="let item of listQuestion;let index = index">
+            <button mat-button [ngClass]="{'question-type': index !== indexPage}"
+                (click)="changeQuestion(index,item.typeChoice,false)">
+                <div class="wrapper-butt-menu">
+                    <div class="butt-menu">
+                        <i [ngClass]="indexPage === index ? 'material-icons' : 'material-icons-outlined'"
+                            style="transform: scaleX(-1) rotate(-90deg)">note</i>
+                        <span>#คำถามที่ {{index+1}}</span>
+                        <!-- <span>{{item.typeChoice === 'single' ? '#'+(index+1)+' Checkbox' : (item.typeChoice ===
+                                    'multi' ? '#'+(index+1)+'
+                                    Multiple' : '#'+(index+1)+' Textbox')}}</span> -->
+                    </div>
+                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="icon-button">
+                        <mat-icon>more_horiz</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item [ngClass]="{'disabled-move': indexPage === 0}"
+                            (click)="movePosition('up',indexPage, indexPage-1)">
+                            <mat-icon>north</mat-icon>
+                            <span class="vote-move">เลื่อนขึ้นบน</span>
+                        </button>
+                        <button mat-menu-item [ngClass]="{'disabled-move': indexPage === lastIndexPage}"
+                            (click)="movePosition('down',indexPage, indexPage+1)">
+                            <mat-icon>south</mat-icon>
+                            <span class="vote-move">เลื่อนลงล่าง</span>
+                        </button>
+                        <button mat-menu-item (click)="removeQuestion(indexPage)">
+                            <mat-icon>close</mat-icon>
+                            <span class="vote-remove">ลบคำถาม</span>
+                        </button>
+                    </mat-menu>
+                </div>
+            </button>
+        </ng-container>
+        <ng-container *ngIf="listQuestion.length >= 1">
+            <button mat-button [ngClass]="{'question-type': typeQuestion !== 'thanks'}"
+                (click)="changeQuestion(null,'thanks')">
+                <div class="wrapper-butt-menu">
+                    <i [ngClass]="typeQuestion === 'thanks' ? 'material-icons' : 'material-icons-outlined'"
+                        style="transform: scaleX(-1) rotate(-90deg)">note</i>
+                    <span>หน้าขอบคุณ</span>
+                </div>
+            </button>
+        </ng-container>
+    </div>
+    <div class="vote-footer" [ngClass]="{'add-question': isAddQuestion}">
+        <button *ngIf="!isAddQuestion" mat-button (click)="clickAddQuestion()">
+            <div class="wrapper-add-vote">
+                <mat-icon>add</mat-icon>
+                <span>เพิ่มคำถาม</span>
+            </div>
+        </button>
+        <div class="wrapper-button-footer">
+            <button mat-button class="button-vote close" (click)="!isAddQuestion ? onClose() : back()">
+                <span>{{!isAddQuestion ? 'ยกเลิก' : 'ย้อนกลับ'}}</span>
+            </button>
+            <button mat-button class="button-vote submit"
+                (click)="!isAddQuestion ? createVote() : next(voteQuestionType)">
+                <span>{{!isAddQuestion ? 'สร้างโหวต' : 'ถัดไป'}}</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<loading *ngIf="isLoading"></loading>
