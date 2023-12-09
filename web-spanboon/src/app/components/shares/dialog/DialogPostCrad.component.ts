@@ -5,9 +5,9 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, Inject, EventEmitter } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { PageFacade, AuthenManager, AssetFacade, PostFacade, PostCommentFacade, PostActionService } from '../../../services/services';
+import { Component, Inject, EventEmitter, Input } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, ThemePalette } from '@angular/material';
+import { PageFacade, AuthenManager, AssetFacade, PostFacade, PostCommentFacade, PostActionService, VoteEventFacade } from '../../../services/services';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { Router } from '@angular/router';
@@ -16,6 +16,10 @@ import { RePost } from '../../../models/RePost';
 import { CommentPosts } from '../../../models/CommentPosts';
 import { DialogShare } from './DialogShare.component';
 import { DialogAlert } from './DialogAlert.component';
+import { environment } from '../../../../environments/environment';
+import { MESSAGE } from '../../../../custom/variable';
+import { SearchFilter } from 'src/app/models/SearchFilter';
+import { DialogList } from './DialogList.component';
 
 const PAGE_NAME: string = 'postcard';
 const SEARCH_LIMIT: number = 10;
@@ -26,16 +30,18 @@ const SEARCH_OFFSET: number = 0;
   templateUrl: './DialogPostCrad.component.html',
 })
 export class DialogPostCrad extends AbstractPage {
+  @Input()
+  color: ThemePalette
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
   public dialog: MatDialog;
 
   private postFacade: PostFacade;
-  private pageFacade: PageFacade;
-  private assetFacade: AssetFacade;
   private postCommentFacade: PostCommentFacade;
   private postActionService: PostActionService;
+  private voteFacade: VoteEventFacade;
+  public apiBaseURL = environment.apiBaseURL;
 
   public isLoading: boolean;
   public isShowCheckboxTag: boolean;
@@ -49,21 +55,35 @@ export class DialogPostCrad extends AbstractPage {
   public setTimeoutAutocomp: any;
   public resDataObjective: any[] = [];
   public prefix: any;
+  public posts: any;
+  public voteSuccess: boolean = false;
 
-  public Editor = ClassicEditor;
+  public questions: any[] = [];
+  public singleAns: any;
+  public user: any;
+  public isClosed: boolean;
+  public isShowVoteResult: boolean;
+  public menuType: any;
+  public answerTextbox: any;
+
+  public supportValue: number = 0;
+  public voteChoiceValue: any[] = [];
 
   files: FileHandle[] = [];
 
-  constructor(public dialogRef: MatDialogRef<DialogPostCrad>, @Inject(MAT_DIALOG_DATA) public data: any, postCommentFacade: PostCommentFacade, postActionService: PostActionService, pageFacade: PageFacade, assetFacade: AssetFacade, postFacade: PostFacade,
+  constructor(public dialogRef: MatDialogRef<DialogPostCrad>, @Inject(MAT_DIALOG_DATA) public data: any,
+    postCommentFacade: PostCommentFacade,
+    postActionService: PostActionService,
+    postFacade: PostFacade,
+    voteFacade: VoteEventFacade,
     dialog: MatDialog, authenManager: AuthenManager, router: Router) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
     this.authenManager = authenManager;
     this.postCommentFacade = postCommentFacade;
     this.postActionService = postActionService;
-    this.pageFacade = pageFacade;
-    this.assetFacade = assetFacade;
     this.postFacade = postFacade;
+    this.voteFacade = voteFacade;
     this.imageCover = {}
     this.prefix = {};
 
@@ -74,6 +94,57 @@ export class DialogPostCrad extends AbstractPage {
     setTimeout(() => {
       this.showLoading = false
     }, 1500);
+    if (this.data.vote) {
+      this.supportValue = this.calculatePercentage();
+      if (this.data.support !== undefined) {
+        if (this.data.support.userSupport.length > 0) {
+          this.posts = this.data.support.userSupport;
+        } else {
+          this.posts = [];
+        }
+      } else {
+        this.posts = this.data.choice.voteItem;
+      }
+      if (this.posts.length > 0) {
+        for (let index = 0; index < this.posts.length; index++) {
+          if (this.posts[index].voteChoice !== undefined) {
+            this.voteChoiceValue.push({
+              maxValue: this._getVoteMaxCount(index),
+              value: [],
+            });
+            for (let i = 0; i < this.posts[index].voteChoice.length; i++) {
+              if (this.posts[index].voteChoice[i].voted.length > 0) {
+                this.voteChoiceValue[index].value.push(this.posts[index].voteChoice[i].voted[0].votedCount);
+              } else {
+                this.voteChoiceValue[index].value.push(0);
+              }
+            }
+          }
+        }
+        const arraySum = arr => arr.reduce((acc, val) => acc + val, 0);
+        let percentagesPerVoteChoiceValue = this.voteChoiceValue.map(voteChoiceValue => {
+          let sumOfValues = arraySum(voteChoiceValue.value);
+          return voteChoiceValue.value.map(value => (value / sumOfValues) * 100);
+        });
+        for (let index = 0; index < this.voteChoiceValue.length; index++) {
+          this.voteChoiceValue[index].value = percentagesPerVoteChoiceValue[index];
+        }
+        this.voteChoiceValue.forEach(obj => delete obj.maxValue);
+      }
+      if (this.data.post.page !== undefined && this.data.post.page !== null) {
+        this.user = this.data.post.page;
+      } else {
+        this.user = this.data.post.user;
+      }
+      this.menuType = this.data.menu;
+      this.isClosed = this.data.post.closed;
+      this.isShowVoteResult = this.data.post.showVoteResult;
+      if (this.posts.length > 0) {
+        for (let index = 0; index < this.posts.length; index++) {
+          this.questions.push(index);
+        }
+      }
+    }
   }
   public ngOnDestroy(): void {
     super.ngOnDestroy();
@@ -82,10 +153,6 @@ export class DialogPostCrad extends AbstractPage {
   public async actionComment(action: any, index?: number) {
     this.isLoginCh();
     let Arr: any = { posts: [this.data.post] };
-    let pageInUser: any[];
-    let data: RePost = new RePost();
-    let dataPost: any;
-    let userAsPage: any;
     this.prefix.header = 'header';
     this.prefix.detail = 'post';
     if (action.mod === 'REBOON') {
@@ -159,6 +226,18 @@ export class DialogPostCrad extends AbstractPage {
     });
   }
 
+  public calculatePercentage(): number {
+    let min = this.data.post.minSupport;
+    let value = this.data.post.countSupport;
+    return (100 * value) / min;
+  }
+
+  public calculatePercentageChoice(): number {
+    let max = this._getVoteMaxCount();
+    let value = this.data.post.countSupport;
+    return (100 * value) / max;
+  }
+
   public createComment(comment: any, index?: number) {
     let commentPosts = new CommentPosts
     if (comment.userAsPage.id !== undefined && comment.userAsPage.id !== null) {
@@ -203,11 +282,253 @@ export class DialogPostCrad extends AbstractPage {
     return;
   }
 
-  onClose(data) {
+  public onClose(data?) {
     this.dialogRef.close(false);
   }
 
   onFileSelect() { }
 
   onConfirm() { }
+
+  public chooseChoice(question: any, choice: any, index: number, choiceIndex: number, type: any) {
+    if (type === 'single') {
+      if (this.questions[index].voteChoice === undefined) {
+        this.questions[index] = {
+          type: question.type,
+          voteItemId: question._id,
+          voteChoice: [
+            {
+              answer: choice.title,
+              voteChoiceId: choice._id
+            }
+          ]
+        };
+      } else {
+        this.questions[index].voteChoice = [
+          {
+            answer: choice.title,
+            voteChoiceId: choice._id
+          }
+        ];
+      }
+    } else if (type === 'multi') {
+      if (this.questions[index].voteChoice === undefined) {
+        this.questions[index] = {
+          type: question.type,
+          voteItemId: question._id,
+          voteChoice: [
+            {
+              answer: choice.title,
+              voteChoiceId: choice._id
+            }
+          ]
+        };
+      } else {
+        if (this.questions[index].voteChoice.length > 0) {
+          this.questions[index].voteChoice.push({
+            answer: choice.title,
+            voteChoiceId: choice._id
+          });
+        } else {
+          this.questions[index].voteChoice.push({
+            answer: choice.title,
+            voteChoiceId: choice._id
+          });
+        }
+        let data = this.questions[index].voteChoice.findIndex(x => x.answer === choice.title);
+        let array = this.questions[index].voteChoice.filter((value, i, self) =>
+          self.findIndex(item => item.answer === value.answer && item.voteChoiceId === value.voteChoiceId) === i
+        );
+        this.questions[index].voteChoice = array;
+      }
+    }
+  }
+
+  public next() {
+    for (let index = 0; index < this.questions.length; index++) {
+      if (this.questions[index].voteChoice === undefined) {
+        this.showAlertDialog("กรุณาตอบคำถามให้ครบทุกข้อ");
+        return
+      }
+    }
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    if (this.data.post.type === 'member') {
+      if (user.membership) {
+        this.voteFacade.voting(this.data.post._id, this.questions).then((res) => {
+          if (res) {
+            this.voteSuccess = true;
+          }
+        }).catch((err) => {
+          console.log("err", err)
+          if (err) {
+            if (err.error.message === "You have been already voted.") {
+              this.showAlertDialog("คุณได้โหวตไปแล้ว");
+            }
+          }
+        });
+      } else {
+        this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+      }
+    } else {
+      this.voteFacade.voting(this.data.post._id, this.questions).then((res) => {
+        if (res) {
+          this.voteSuccess = true;
+        }
+      }).catch((err) => {
+        console.log("err", err)
+        if (err) {
+          if (err.error.message === "You have been already voted.") {
+            this.showAlertDialog("คุณได้โหวตไปแล้ว");
+          }
+        }
+      });
+    }
+  }
+
+  public checkLogin() {
+    if (!this.isLogin()) {
+      let dialog = this.dialog.open(DialogAlert, {
+        disableClose: false,
+        data: {
+          text: MESSAGE.TEXT_TITLE_LOGIN,
+          bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+          bottomColorText2: "black",
+          btDisplay1: "none"
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          this.onClose();
+          this.router.navigate(["/login", { redirection: this.router.url }]);
+        }
+      });
+    }
+  }
+
+  public voteSupport(id) {
+    this.voteFacade.voteSupport(id).then((res) => {
+      if (res) {
+        if (this.data.support !== undefined) {
+          this.data.support.userSupport.push({
+            user: {
+              _id: res.userId,
+              imageURL: res.imageURL,
+              firstName: res.firstName,
+              displayName: res.displayName,
+              s3ImageURL: res.s3ImageURL,
+              username: res.username,
+            }
+          });
+        }
+        this.data.post.countSupport++;
+        this.data.post.userSupport.push(res.data);
+        this.showAlertDialog("คุณได้สนับสนุนโหวตนี้");
+      }
+    }).catch((err) => {
+      if (err) {
+        console.log("err", err);
+        if (err.error.message === "You have been supported.") {
+          this.showAlertDialog("คุณได้ทำการโหวตไปแล้ว");
+        }
+      }
+    });
+  }
+
+  public unVoteSupport(id) {
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    let index = this._findUserSupportIndex(user.id);
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: false,
+      data: {
+        text: "คุณต้องการยกเลิกการสนับสนุนโหวตนี้หรือไม่",
+        bottomText2: 'ใช่',
+        bottomText1: 'ไม่',
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.voteFacade.unVoteSupport(id).then((res) => {
+          this.data.post.countSupport--;
+          this.data.post.userSupport.splice(0, 1);
+          this.posts.splice(index, 1);
+        }).catch((err) => {
+          if (err) {
+            console.log("err", err);
+            if (err.error.message === "Not found user support.") {
+              this.showAlertDialog("คุณยังไม่ได้ทำการสนับสนุนโหวตนี้");
+            }
+          }
+        });
+      }
+    });
+  }
+
+  private _findUserSupportIndex(userId) {
+    return this.posts.findIndex(post => post.user._id === userId);
+  }
+
+  public addOrRemoveActive(item, type, mode, index?, choiceIndex?) {
+    if (type === 'single') {
+      if (mode === 'remove') {
+        this.singleAns = undefined;
+        this.questions[index] = [];
+      }
+    }
+    if (type === 'multi') {
+      if (mode === 'remove') {
+        item.active = false;
+        this.questions[index].voteChoice.splice(choiceIndex, 1);
+      } else {
+        item.active = true;
+      }
+    }
+  }
+
+  public setAnswer(question, index) {
+    this.questions[index] = {
+      voteItemId: question._id,
+      voteChoice: [],
+      type: question.type,
+      answer: this.answerTextbox,
+    };
+  }
+
+  private _getVoteMaxCount(index?) {
+    let value: number = 0;
+    if (this.posts[index].voteChoice !== undefined) {
+      for (let i = 0; i < this.posts[index].voteChoice.length; i++) {
+        if (this.posts[index].voteChoice[i].voted.length > 0) {
+          value += this.posts[index].voteChoice[i].voted[0].votedCount;
+        }
+      }
+    }
+
+    return value;
+  }
+
+  public seeVoteTextUser(id: string) {
+    let search: SearchFilter = new SearchFilter();
+    search.limit = 8;
+    search.offset = 0;
+    let whereConditions = {
+      "voteChoice": null
+    };
+    this.voteFacade.getTextUserVote(id, search, whereConditions).then((res) => {
+      if (res) {
+        let dialog = this.dialog.open(DialogList, {
+          panelClass: 'panel-backgroud-vote',
+          disableClose: true,
+          data: {
+            model: res,
+          }
+        });
+        dialog.afterClosed().subscribe((res) => {
+          if (res) {
+          }
+        });
+      }
+    }).catch((err) => {
+      if (err) { }
+    });
+  }
 }

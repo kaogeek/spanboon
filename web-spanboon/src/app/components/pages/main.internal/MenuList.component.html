@@ -1,0 +1,16 @@
+<button mat-button [matMenuTriggerFor]="menu" class="btn-menu-list">
+    <mat-icon>apps</mat-icon>
+</button>
+<mat-menu class="wrapper-menu-list" #menu="matMenu" xPosition="before">
+    <div class="container">
+        <span>เมนู</span>
+        <div class="menu-list">
+            <ng-container *ngFor="let item of menuList">
+                <div class="menu" *ngIf="item.active" [routerLink]="item.link">
+                    <img [src]="item.image" alt="">
+                    <span>{{item.title}}</span>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</mat-menu>

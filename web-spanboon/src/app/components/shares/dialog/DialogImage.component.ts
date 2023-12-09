@@ -53,7 +53,6 @@ export class DialogImage {
     const inputimage = document.getElementById("inputimage");
     if (inputimage != null) {
       this.dialogRef.close(this.imageCropData);
-
     }
   }
 
@@ -74,14 +73,14 @@ export class DialogImage {
   }
 
   public getImageData() {
-    fetch(this.imageCropData.image)
-      .then(res => res.blob())
-      .then(blob => {
-        var fd = new FormData()
-        fd.append('image', blob, 'filename')
-        // Upload
-        // fetch('upload', {method: 'POST', body: fd})
-      })
+    // fetch(this.imageCropData.image)
+    //   .then(res => res.blob())
+    //   .then(blob => {
+    //     var fd = new FormData()
+    //     fd.append('image', blob, 'filename')
+    //     // Upload
+    //     // fetch('upload', {method: 'POST', body: fd})
+    //   })
   }
 
   public ngOnInit(): void {

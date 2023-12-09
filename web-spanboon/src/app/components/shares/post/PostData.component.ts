@@ -271,15 +271,17 @@ export class PostData {
   }
 
   public onClickComment(data: any) {
-    if (!this.isLogin()) {
-      this.showAlertDialog();
+    if (this.value !== '' && this.value !== undefined && this.value !== null) {
+      if (!this.isLogin()) {
+        this.showAlertDialog();
+      }
+      this.comment.emit({ value: this.value, pageId: this.itemPost._id, userAsPage: this.user });
+      setTimeout(() => {
+        this.isComment = true
+        this.value = ''
+        this.getComment();
+      }, 500);
     }
-    this.comment.emit({ value: this.value, pageId: this.itemPost._id, userAsPage: this.user });
-    setTimeout(() => {
-      this.isComment = true
-      this.value = ''
-      this.getComment();
-    }, 500);
   }
 
   public isLogin(): boolean {

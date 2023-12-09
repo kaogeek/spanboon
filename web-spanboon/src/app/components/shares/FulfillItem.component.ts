@@ -11,7 +11,6 @@ import { MatDialog, MatDialogRef } from '@angular/material';
 import { Router } from '@angular/router';
 import { AuthenManager, FulfillFacade, AssetFacade } from '../../services/services';
 import { environment } from 'src/environments/environment';
-import { isArray } from 'util';
 import { AbstractPage } from '../pages/AbstractPage';
 import { DialogFulfill } from './dialog/DialogFulfill.component';
 import * as $ from 'jquery';
@@ -221,7 +220,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                             isFrom
                         });
                     } else if (isFrom === 'FULFILL') {
-                        if (isArray(fulfillItem)) {
+                        if (Array.isArray(fulfillItem)) {
                             for (const item of fulfillItem) {
                                 pendingQty = item.quantity - item.fulfillQuantity;
 

@@ -1,0 +1,280 @@
+.wrapper-vote-page {
+  min-height: 100vh;
+  display: flex;
+
+  > .wrapper-left {
+    height: 100%;
+    width: 270px;
+    flex: 0 0 auto;
+
+    @media (max-width: $medium) {
+      display: none;
+    }
+
+    > .menu-wrapper {
+      position: fixed;
+      width: 230px;
+      height: 100%;
+      margin: 25px 20px;
+      display: flex;
+      flex-direction: column;
+
+      > p {
+        margin-top: 10px;
+        color: #525252;
+        @include font-size-6($font-head-500);
+      }
+
+      > .menu-box {
+        background-color: unset;
+        padding: 12px 10px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+
+        &.active {
+          background-color: $brandcolor4;
+
+          > .icon {
+            background-color: $brandcolor2;
+          }
+
+          > span {
+            color: $brandcolor2;
+          }
+        }
+
+        > .icon {
+          background-color: #f3f3f3;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          > img {
+            width: 16px;
+            height: 16px;
+          }
+        }
+
+        > span {
+          color: #525252;
+          @include font-size-9($font-head-500);
+        }
+      }
+    }
+  }
+  > .wrapper-right {
+    width: 100%;
+    background-color: #e5e5e5;
+
+    > .menu-wrapper {
+      display: none;
+
+      @media (max-width: $medium) {
+        display: flex;
+        padding: 10px 5px;
+        justify-content: space-between;
+        box-shadow: 0px 0px 5px 0px rgba($black, 0.2);
+        background-color: #fff;
+        position: sticky;
+        z-index: 1;
+
+        > .menu-box {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          @include pointer;
+          @include font-size-11($font-head-500);
+
+          > span {
+            padding: 8px;
+            min-width: 85px;
+            flex: 1 1 0%;
+
+            &.active {
+              border: 1px solid #113154;
+              background-color: #113154;
+              border-radius: 20px;
+              color: $white;
+            }
+          }
+        }
+      }
+
+      @media (max-width: 510px) {
+        > .menu-box {
+          > span {
+            min-width: unset !important;
+          }
+        }
+      }
+    }
+
+    > .content-wrapper {
+      width: auto;
+      margin: 20px 50px;
+
+      @media (max-width: $medium) {
+        margin: 20px 20px;
+      }
+
+      > .search-header {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        position: relative;
+        gap: 25px;
+
+        @media (max-width: $medium) {
+          gap: 15px;
+        }
+
+        > .search {
+          height: 40px;
+          width: 85%;
+          display: flex;
+          flex: 1 1 0%;
+
+          > .icon-search {
+            opacity: 0.5;
+            padding-left: 10px;
+            height: 40px;
+            width: 40px;
+            position: absolute;
+            left: 0;
+            font-size: 18pt;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+          > input {
+            @include font-size-10($font-head-500);
+            padding: 0 50px 0 50px;
+            width: 100%;
+            border-radius: 80px;
+            border: 1px solid #e5e5e5;
+          }
+        }
+
+        > .create-vote {
+          @include font-size-9($font-head-500);
+          display: flex;
+          gap: 5px;
+          color: #fff;
+          background-color: $brandcolor2;
+          border-radius: 8px;
+          padding: 8px 8px;
+          cursor: pointer;
+        }
+      }
+
+      > .header-content {
+        width: 100%;
+        display: flex;
+        margin: 60px 0 0 0;
+        justify-content: space-between;
+
+        > p {
+          @include font-size-7($font-head-500);
+        }
+
+        > span {
+          cursor: pointer;
+          color: $brandcolor2;
+          @include font-size-10($font-head-500);
+        }
+      }
+
+      > hr {
+        margin: 0;
+      }
+
+      > .wrapper-content {
+        margin-top: 15px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 17px;
+
+        @media (max-width: $xlarge) {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (max-width: $large) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: $small) {
+          grid-template-columns: repeat(1, 1fr);
+        }
+
+        > card-content-vote {
+          box-shadow: 0px 0px 5px 0px rgba($black, 0.2);
+          border-radius: 16px;
+          overflow: hidden;
+          position: relative;
+        }
+
+        > .card-post {
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0px 0px 5px 0px rgba($black, 0.2);
+          @include pointer;
+          height: 330px;
+          border-radius: 16px;
+
+          > .posts {
+            > .image {
+              position: relative;
+
+              > img {
+                aspect-ratio: 16/9;
+                object-fit: cover;
+                width: 100%;
+              }
+
+              > .icon {
+                bottom: 0px;
+                position: absolute;
+                display: flex;
+                margin: 0 0 5px 5px;
+                justify-content: center;
+                align-items: center;
+                gap: 7px;
+
+                > img {
+                  width: 20px;
+                  height: 20px;
+                  border: 2px solid #fff;
+                  border-radius: 11px;
+                  padding: 3px;
+                }
+
+                > span {
+                  color: #fff;
+                  @include font-size-10($font-head-500);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      > .data-not-found {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 256px;
+        background-color: $white;
+        border-radius: 16px;
+        @include font-size-7($font-head-500);
+      }
+    }
+  }
+}

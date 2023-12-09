@@ -38,3 +38,5 @@ export * from './DialogCheckBox.component';
 export * from './DialogPoliciesAndTerms.component';
 export * from './DialogDropdown.component';
 export * from './DialogProfile.component';
+export * from './DialogCreateVote.component';
+export * from './DialogList.component';

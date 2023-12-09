@@ -1,0 +1,91 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.btn-menu-list {
+  width: 40px;
+  height: 40px;
+  border-radius: 50% !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: unset !important;
+  padding: unset !important;
+  position: relative;
+  @include pointer();
+  transition: 0.3s background-color ease;
+
+  &:active {
+    background-color: $border-color;
+  }
+
+  &.active {
+    svg {
+      g,
+      path {
+        fill: $brandcolor2 !important;
+      }
+    }
+  }
+
+  > .mat-button-wrapper {
+    > mat-icon {
+      width: 30px;
+      height: 30px;
+      font-size: 30px;
+    }
+  }
+}
+
+.wrapper-menu-list {
+  background-color: #f0f5f6;
+
+  > .mat-menu-content {
+    padding: 20px !important;
+
+    > .container {
+      display: flex;
+      flex-direction: column;
+
+      > span {
+        @include font-size-6($font-head-500);
+        color: $black;
+        margin-bottom: 10px;
+      }
+
+      > .menu-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 30px;
+        margin-top: 10px;
+
+        > .menu {
+          display: flex;
+          align-items: flex-start;
+          flex-direction: column;
+          border-radius: 5px;
+          padding: 15px 20px;
+          width: 150px;
+          background: $white;
+          box-shadow: 0px 0px 5px 0px rgba($black, 0.2);
+          @include pointer();
+
+          > img {
+            width: 60px;
+            height: 30px;
+            margin-bottom: 5px;
+          }
+
+          > span {
+            @include font-size-8($font-head-500);
+            color: $black;
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+}

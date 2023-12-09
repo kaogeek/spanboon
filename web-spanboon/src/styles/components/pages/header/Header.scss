@@ -11,21 +11,23 @@
 }
 
 .header-top {
-  position: sticky;
+  position: fixed;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   padding: 0 40pt;
   height: $height-header-top;
   top: 0pt !important;
   background-color: $white;
-  // transform: translateY(0); 
+  // transform: translateY(0);
   transition: all 0.3s ease-in-out;
   -webkit-transition: all 0.3s ease-in-out;
   -moz-transition: all 0.3s ease-in-out;
   -ms-transition: all 0.3s ease-in-out;
   z-index: 1000;
 
-  >.wrapper-logo {
+  > .wrapper-logo {
     flex: 0 0 auto;
     display: flex;
     flex-direction: row;
@@ -34,16 +36,16 @@
     @include font-size-7($font-head-500);
     @include pointer();
 
-    >.icon-spanboon {
+    > .icon-spanboon {
       height: 40pt;
     }
 
-    >.name-spanboon {
+    > .name-spanboon {
       margin-left: 5pt;
     }
   }
 
-  >.middle {
+  > .middle {
     position: absolute;
     width: 100%;
     left: 0;
@@ -53,14 +55,14 @@
     align-items: center;
     pointer-events: none;
 
-    >.wrapper-home {
+    > .wrapper-home {
       display: flex;
       align-items: center;
       @include font-size-8($font-head-500);
       margin: 0 auto;
       pointer-events: auto;
 
-      >.icon {
+      > .icon {
         display: flex;
         padding: 0 10pt;
         align-items: center;
@@ -86,30 +88,30 @@
           }
         }
 
-        >.icon-home {
+        > .icon-home {
           height: $height-icon;
           width: $width-icon;
         }
 
-        >.icon-recommend {
+        > .icon-recommend {
           width: $width-icon-recommend;
         }
 
-        >.label-name {
+        > .label-name {
           padding: 5pt;
         }
       }
     }
   }
 
-  >.wrapper-menu {
+  > .wrapper-menu {
     display: flex;
     align-items: center;
     justify-content: flex-end;
     padding: 10pt 0 10pt 10pt;
     border-left: $width-border solid $bg-fog-gray2;
 
-    >.label-date {
+    > .label-date {
       display: flex;
       padding: 0 10pt;
       align-items: center;
@@ -118,21 +120,21 @@
       width: 20px;
     }
 
-    >.about-us-icon {
+    > .about-us-icon {
       width: 40px;
       height: 40px;
       justify-content: center;
       align-items: center;
       display: flex;
 
-      >svg {
+      > svg {
         width: 20px;
         height: 20px;
         display: block;
       }
     }
 
-    >.icon-social {
+    > .icon-social {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -149,16 +151,17 @@
         background-color: #2851a3;
       }
 
-      >.icon {
+      > .icon {
         height: 15px;
         width: 15px;
       }
     }
 
-    >.menu-search {}
+    > .menu-search {
+    }
 
-    >.menu-chat,
-    >.menu-fulfill {
+    > .menu-chat,
+    > .menu-fulfill {
       width: 40px;
       height: 40px;
       border-radius: 50%;
@@ -173,22 +176,22 @@
       }
     }
 
-    >.menu-chat>svg {
+    > .menu-chat > svg {
       height: 22px;
       width: 22px;
     }
 
-    >.menu-fulfill>svg {
+    > .menu-fulfill > svg {
       height: 24px;
       width: 24px;
     }
 
-    >.menu-user {
+    > .menu-user {
       display: flex;
       width: 13pt;
       @include pointer();
 
-      >.image-profile {
+      > .image-profile {
         border-radius: 50%;
         width: 25pt;
         height: 25pt;
@@ -196,34 +199,37 @@
       }
     }
 
-    >.list-right-menu {
+    > .list-right-menu {
       margin-right: 5px;
       display: flex;
       justify-content: center;
       align-items: center;
+      border: 1px solid $border-color;
+      background-color: $border-color;
+      border-radius: 50%;
 
       &.menu-nofitication {
         margin-right: 5pt;
       }
     }
 
-    >.menu-profile {
+    > .menu-profile {
       // display: flex;
       // align-items: center;
     }
 
-    >.menu-nofitication {
+    > .menu-nofitication {
       // display: flex;
       // padding: 0 15pt;
       // @include pointer();
     }
 
-    >.menu-page {
+    > .menu-page {
       // display: flex;
       // padding: 0 15pt;
     }
 
-    >.menu {
+    > .menu {
       // display: flex;
       // height: 30pt;
       // padding: 0 15pt;
@@ -248,20 +254,20 @@
   .header-top {
     padding: 0 15pt;
 
-    >.middle {
+    > .middle {
       display: none;
 
-      >.wrapper-home {}
+      > .wrapper-home {
+      }
     }
   }
 }
 
 @media (max-width: $lmedium) {
   .header-top {
-    >.wrapper-menu {
-
-      >.menu-chat,
-      >.menu-fulfill {
+    > .wrapper-menu {
+      > .menu-chat,
+      > .menu-fulfill {
         width: 36px;
         height: 36px;
       }
@@ -273,7 +279,7 @@
   .header-top {
     padding: 0 10pt;
 
-    >.wrapper-logo {
+    > .wrapper-logo {
       .name-spanboon {
         display: none;
       }
@@ -287,17 +293,17 @@
     padding: 0 0 0 10pt;
     border-bottom: 0.7px solid $border-color;
 
-    >.wrapper-logo {
-      >.icon-spanboon {
+    > .wrapper-logo {
+      > .icon-spanboon {
         width: 36pt;
       }
     }
 
-    >.wrapper-menu {
+    > .wrapper-menu {
       border-left: none;
 
-      >.menu-chat,
-      >.menu-fulfill {
+      > .menu-chat,
+      > .menu-fulfill {
         display: none;
       }
     }

@@ -77,7 +77,8 @@
     border: solid $brandcolor2 2px;
     color: white;
     border-radius: 4px;
-    box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%),
+    box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%),
+      0px 24px 38px 3px rgb(152 152 152 / 14%),
       0px 4px 10px 5px rgb(197 197 197 / 12%);
     @include font-size-10($font-head-500);
 
@@ -292,11 +293,35 @@ a {
   @include font-size-10($font-head-500);
 }
 
+.button-vote {
+  @include font-size-8($font-head-500);
+  display: flex;
+  gap: 5px;
+  border-radius: 8px;
+  padding: 8px 18px;
+  cursor: pointer;
+  min-width: 105px;
+  justify-content: center;
+
+  &.close {
+    color: $brandcolor2;
+    background-color: $white;
+    border: 1px solid $brandcolor2;
+  }
+
+  &.submit {
+    color: $white;
+    border: 1px solid $brandcolor2;
+    background-color: $brandcolor2;
+  }
+}
+
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;
   background-color: rgb(255, 255, 255);
-  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
 .cdk-drag-animating {
@@ -336,8 +361,10 @@ a {
   background-color: $brandcolor2;
 }
 
-.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
-.mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent
+  .mat-ripple-element,
+.mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent
+  .mat-ripple-element {
   background: $brandcolor2;
 }
 

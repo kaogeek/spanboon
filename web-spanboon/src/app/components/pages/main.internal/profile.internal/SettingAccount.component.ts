@@ -152,8 +152,4 @@ export class SettingAccount extends AbstractPage implements OnInit {
             }
         });
     }
-
-    public test() {
-        this.router.navigateByUrl('/.well-known/apple-app-site-association');
-    }
 }

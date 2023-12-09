@@ -634,7 +634,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     } else if (myType === "image") {
       Object.assign(this.resProfile, { isLoadingImage: true });
     }
-
     this.assetFacade.getPathFile(imageURL).then((res: any) => {
       if (res.status === 1) {
         if (myType === "image") {
