@@ -167,8 +167,14 @@
                                 <ng-container *ngIf="item.type === 'text'">
                                     <ng-container *ngIf="data.post.closed; else elseCloseText">
                                         <button mat-button class="button-vote close"
-                                            (click)="seeVoteTextUser(item._id)">
-                                            <span [innerHTML]="'ดูทั้งหมด (' + item.voted[0].votedCount + ')'"></span>
+                                            (click)="item.voted.length > 0 ? seeVoteTextUser(item._id) : null">
+                                            <ng-container *ngIf="item.voted.length > 0; else elseTextLength">
+                                                <span
+                                                    [innerHTML]="'ดูทั้งหมด (' + item.voted[0].votedCount + ')'"></span>
+                                            </ng-container>
+                                            <ng-template #elseTextLength>
+                                                <span [innerHTML]="'ดูทั้งหมด (0)'"></span>
+                                            </ng-template>
                                         </button>
                                     </ng-container>
                                     <ng-template #elseCloseText>
