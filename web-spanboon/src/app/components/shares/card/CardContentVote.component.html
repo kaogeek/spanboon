@@ -6,7 +6,8 @@
 </mat-menu>
 <div class="card-content">
     <div class="container-content" (click)="clickDialog()">
-        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="icon-button" (click)="$event.stopPropagation()">
+        <button *ngIf="userId === model.userId" mat-icon-button [matMenuTriggerFor]="menu" aria-label="icon-button"
+            (click)="$event.stopPropagation()">
             <mat-icon>more_vert</mat-icon>
         </button>
         <img class="image-content-vote" [src]="apiBaseURL + image">
@@ -16,7 +17,7 @@
                     <img class="image-owner" [src]="apiBaseURL + model.user.imageURL + '/image'" alt="">
                 </ng-container>
                 <ng-template #elseUserImageNull>
-                    <img src="../../../../assets/img/logo/mfp-border.svg" alt="">
+                    <span class="image-null">{{model.user.firstName | slice:0:1}}</span>
                 </ng-template>
             </ng-container>
             <ng-template #elsePageImage>
@@ -24,7 +25,7 @@
                     <img class="image-owner" [src]="apiBaseURL + model.page.imageURL + '/image'" alt="">
                 </ng-container>
                 <ng-template #elsePageImageNull>
-                    <img src="../../../../assets/img/logo/mfp-border.svg" alt="">
+                    <span class="image-null">{{model.page.pageUsername | slice:0:1}}</span>
                 </ng-template>
             </ng-template>
             <span>{{model.user !== undefined ? model.user.firstName : model.page.pageUsername}}</span>
