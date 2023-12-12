@@ -1,0 +1,71 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="admin-config-page">
+    <mat-drawer-container class="example-container" [hasBackdrop]="true">
+        <mat-drawer #drawer [mode]="'over'" [position]="'end'" [disableClose]="true">
+            <div class="form-admin">
+                <div class="wrapper">
+                    <div class="form-header">
+                        <h5 class="title">แก้ไข{{title | titlecase}}</h5>
+                    </div>
+                    <div class="form-body">
+                        <form>
+                            <div class="form-group">
+                                <label style="margin-left: 10px;">เปิด/ปิด</label>
+                                <ng-container>
+                                    <mat-slide-toggle [(ngModel)]="valueClosed"
+                                        [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
+                                </ng-container>
+                            </div>
+                            <div class="form-group">
+                                <label style="margin-left: 10px;">ผ่านการอนุมัติ</label>
+                                <ng-container>
+                                    <mat-slide-toggle [(ngModel)]="valueApproved"
+                                        [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
+                                </ng-container>
+                            </div>
+                            <div class="form-group">
+                                <label style="margin-left: 10px;">ปักหมุด</label>
+                                <ng-container>
+                                    <mat-slide-toggle [(ngModel)]="valuePin"
+                                        [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
+                                </ng-container>
+                            </div>
+                            <div class="form-group">
+                                <label style="margin-left: 10px;">แสดง/ไม่แสดง</label>
+                                <ng-container>
+                                    <mat-slide-toggle [(ngModel)]="valueShowed"
+                                        [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
+                                </ng-container>
+                            </div>
+                            <mat-form-field appearance="none" class="input-post-page">
+                                <mat-select [(ngModel)]="valueStatus" name="status" placeholder='กรุณาเลือกสถานะ'
+                                    required>
+                                    <mat-option *ngFor="let status of listStatus" [value]="status">
+                                        {{status}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </form>
+                    </div>
+                    <div class="wrapper-action">
+                        <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
+                        <button mat-raised-button class="btn-save" (click)="clickSave()">บันทึก</button>
+                    </div>
+                </div>
+            </div>
+        </mat-drawer>
+        <mat-drawer-content>
+            <div class="main-content">
+                <admin-table-component #table [isPin]="true" [facade]="voteEventFacade" [title]="'โหวต'"
+                    [fieldTable]="fieldTable" [actions]="actions" (create)="clickCreateForm()"
+                    (edit)="clickEditForm($event)" (delete)="clickDelete($event)"></admin-table-component>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>

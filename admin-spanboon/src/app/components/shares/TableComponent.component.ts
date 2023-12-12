@@ -558,7 +558,7 @@ export class TableComponent implements OnInit {
 
     public clickDelete(data: any): void {
         let dialogRef;
-        if (data.name || data.title) {
+        if (data.name || data.title && data.countSupport === undefined) {
             dialogRef = this.dialog.open(DialogDeleteComponent, {
                 data: data
             });

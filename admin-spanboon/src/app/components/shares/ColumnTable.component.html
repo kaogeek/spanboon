@@ -134,8 +134,11 @@
                     isSeeMore ? 'แสดงน้อยลง' : 'ดูเพิ่มเติม'}}</span>
             </ng-container>
             <ng-template #elseData>
+                <ng-container *ngIf="fieldTable.name === 'isPin'">
+                    {{data.pin ? data.pin : '-'}}
+                </ng-container>
                 <ng-container
-                    *ngIf="(fieldTable.name !== 'type') && (fieldTable.name !== 'field') && (fieldTable.name !== 'bucket1') && (fieldTable.name !== 'bucket2') && (fieldTable.name !== 'bucket3') && (fieldTable.name !== 'bucket4') && (fieldTable.name !== 'bucket5'); else elseBucket">
+                    *ngIf="(fieldTable.name !== 'type') && (fieldTable.name !== 'field') && (fieldTable.name !== 'bucket1') && (fieldTable.name !== 'bucket2') && (fieldTable.name !== 'bucket3') && (fieldTable.name !== 'bucket4') && (fieldTable.name !== 'bucket5') && (fieldTable.name !== 'isPin'); else elseBucket">
                     -
                 </ng-container>
                 <ng-template #elseBucket>

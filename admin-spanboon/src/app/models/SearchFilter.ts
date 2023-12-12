@@ -13,4 +13,5 @@ export class SearchFilter {
   public whereConditions: any;
   public orderBy: any;
   public count: boolean;
+  public keyword: string;
 }
