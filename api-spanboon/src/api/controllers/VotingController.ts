@@ -29,6 +29,9 @@ import {
     MIN_SUPPORT,
     DEFAULT_CLOSET_VOTE,
     CLOSET_VOTE,
+    DEFAULT_TRIGGER_VOTE,
+    TRIGGER_VOTE,
+    ELIGIBLE_VOTES,
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -956,10 +959,9 @@ export class VotingController {
                 },
             ]
         );
-        const concat = voteEventAggr.concat(countRows);
 
-        if (concat.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', concat);
+        if (voteEventAggr.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr,countRows);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
@@ -2235,7 +2237,29 @@ export class VotingController {
         const userObjId = new ObjectID(req.user.id);
         const today = moment().toDate();
         let minSupportValue = DEFAULT_MIN_SUPPORT;
+        // ELIGIBLE_VOTES
+        let triggerValue = DEFAULT_TRIGGER_VOTE;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
+        let eligibleValue = undefined;
         const configMinSupport = await this.configService.getConfig(MIN_SUPPORT);
+
+        if (triggerConfig) {
+            triggerValue = triggerConfig.value;
+        }
+
+        if (eligibleConfig) {
+            eligibleValue = eligibleConfig.value;
+        }
+        if(String(triggerValue) === 'true'){
+            const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+            const userObj = await this.userService.findOne({_id: userObjId});
+            if (split.includes(userObj.email) === false) {
+                const errorResponse = ResponseUtil.getErrorResponse('You have no permission to create the vote event.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
         if (configMinSupport) {
             minSupportValue = parseInt(configMinSupport.value, 10);
         }
@@ -2400,6 +2424,11 @@ export class VotingController {
                         await this.CreateVoteChoice(createVoteItem,voteItems);
                     }
                 }
+
+                const query = {_id: new ObjectID(result.assetId)};
+                const newValue = {$set : {expirationDate : null}};
+                await this.assetService.update(query,newValue);
+
                 const response: any = {};
                 response.id = result.id;
                 response.title = result.title;
@@ -2446,7 +2475,28 @@ export class VotingController {
         let pageData: Page[];
         const today = moment().toDate();
         let minSupportValue = DEFAULT_MIN_SUPPORT;
+        // ELIGIBLE_VOTES
+        let triggerValue = DEFAULT_TRIGGER_VOTE;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
+        let eligibleValue = undefined;
         const configMinSupport = await this.configService.getConfig(MIN_SUPPORT);
+
+        if (triggerConfig) {
+            triggerValue = triggerConfig.value;
+        }
+
+        if (eligibleConfig) {
+            eligibleValue = eligibleConfig.value;
+        }
+        if(String(triggerValue) === 'true'){
+            const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+            const userObj = await this.userService.findOne({_id: userObjId});
+            if (split.includes(userObj.email) === false) {
+                const errorResponse = ResponseUtil.getErrorResponse('You have no permission to create the vote event.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
         if (configMinSupport) {
             minSupportValue = parseInt(configMinSupport.value, 10);
         }
@@ -2629,6 +2679,10 @@ export class VotingController {
                         await this.CreateVoteChoice(createVoteItem,voteItems);
                     }
                 }
+                const query = {_id: new ObjectID(result.assetId)};
+                const newValue = {$set : {expirationDate : null}};
+                await this.assetService.update(query,newValue);
+
                 const response: any = {};
                 response.id = result.id;
                 response.title = result.title;

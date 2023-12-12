@@ -118,3 +118,8 @@ export const DEFAULT_CLOSET_VOTE = 5;
 export const CLOSET_VOTE = 'closet.vote';
 
 export const MFPHASHTAG = 'mfp.hashtag';
+
+export const DEFAULT_TRIGGER_VOTE = true;
+export const TRIGGER_VOTE = 'trigger_vote';
+
+export const ELIGIBLE_VOTES = 'eligible_voters';
