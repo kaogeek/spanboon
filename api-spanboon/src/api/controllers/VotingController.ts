@@ -1883,7 +1883,7 @@ export class VotingController {
         };
         response['voteItem'] = voteItem;
         response['voted'] = voteEvent;
-        response['voteCount'] = voteCount[0].count;
+        response['voteCount'] = voteCount[0] ? voteCount[0].count : 0;
 
         if (response['voteItem'].length>0) {
             const successResponse = ResponseUtil.getSuccessResponse('Get VoteItem is success.', response);
