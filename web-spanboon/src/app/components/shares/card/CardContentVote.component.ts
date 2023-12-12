@@ -6,6 +6,7 @@
  */
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AuthenManager } from 'src/app/services/AuthenManager.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -25,12 +26,16 @@ export class CardContentVote implements OnInit {
     @Output()
     public deleteVote: EventEmitter<any> = new EventEmitter();
 
+    public userId: any;
     public apiBaseURL = environment.apiBaseURL;
+    private authenManager: AuthenManager;
 
-    constructor() {
+    constructor(authenManager: AuthenManager) {
+        this.authenManager = authenManager;
     }
 
     ngOnInit(): void {
+        this.userId = this.authenManager.getCurrentUser().id;
     }
 
     public clickDialog(itempost?) {

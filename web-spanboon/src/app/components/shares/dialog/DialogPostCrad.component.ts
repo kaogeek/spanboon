@@ -450,7 +450,7 @@ export class DialogPostCrad extends AbstractPage {
         this.voteFacade.unVoteSupport(id).then((res) => {
           this.data.post.countSupport--;
           this.data.post.userSupport.splice(0, 1);
-          this.posts.splice(index, 1);
+          this.data.support.userSupport.splice(index, 1);
         }).catch((err) => {
           if (err) {
             console.log("err", err);

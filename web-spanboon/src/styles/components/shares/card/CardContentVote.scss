@@ -60,6 +60,19 @@
         align-items: center;
       }
 
+      > .image-null {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        border: 2px solid $white;
+        color: $white;
+        background-color: $brandcolor2;
+        @include font-size-10($font-head-500);
+      }
+
       > span {
         @include font-size-10($font-head-500);
         color: white;

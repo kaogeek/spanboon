@@ -18,7 +18,12 @@
                     </div>
                     <div class="bottom-image">
                         <div class="user-profile">
-                            <img [src]="apiBaseURL + user.imageURL + '/image'" alt="">
+                            <ng-container *ngIf="!!user.imageURL; else elseImageNull">
+                                <img [src]="apiBaseURL + user.imageURL + '/image'" alt="">
+                            </ng-container>
+                            <ng-template #elseImageNull>
+                                <span>{{user.firstName | slice:0:1}}</span>
+                            </ng-template>
                         </div>
                         <ng-container *ngIf="!data.post.approved; else elseTemplate">
                             <div class="owner-name">
@@ -74,7 +79,7 @@
                                     คนโหวตแล้ว</span>
                             </ng-container>
                             <ng-container *ngIf="data.choice.voted.length === 0">
-                                <span style="margin-left: 0px;padding: 9px;">ขณะนี้ยังไม่มีคนโหวตหัวข้อนี้</span>
+                                <span style="margin-left: 10px;padding: 9px;">ขณะนี้ยังไม่มีคนโหวตหัวข้อนี้</span>
                             </ng-container>
                         </ng-container>
                         <ng-template #elseSupportUser>
@@ -83,17 +88,19 @@
                                     <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
                                 </div>
                             </ng-container>
-                            <ng-container *ngIf="posts.length <= 5 && posts.length > 0">
+                            <ng-container
+                                *ngIf="data.support.userSupport.length <= 5 && data.support.userSupport.length > 0">
                                 <span>{{data.support.userSupport[data.support.userSupport.length - 1].user.displayName}}
                                     ...คนเหล่านี้สนับสนุนแล้ว</span>
                             </ng-container>
-                            <ng-container *ngIf="posts.length > 5 && posts.length > 0">
+                            <ng-container
+                                *ngIf="data.support.userSupport.length > 5 && data.support.userSupport.length > 0">
                                 <span>{{data.support.userSupport[data.support.userSupport.length - 1].user.displayName}}
                                     ...และอีก
                                     {{data.choice.voteCount - data.support.userSupport.length}}
                                     สนับสนุนแล้ว</span>
                             </ng-container>
-                            <ng-container *ngIf="posts.length === 0">
+                            <ng-container *ngIf="data.support.userSupport.length === 0">
                                 <span style="margin-left: 0px;padding: 9px;">ขณะนี้ยังไม่มีคนสนับสนุนโหวตนี้</span>
                             </ng-container>
                         </ng-template>
