@@ -1006,6 +1006,7 @@ export class VotingController {
                                 $project: {
                                     _id: 1,
                                     username: 1,
+                                    displayName:1,
                                     firstName: 1,
                                     lastName: 1,
                                     imageURL: 1,
@@ -2095,8 +2096,8 @@ export class VotingController {
     public async deleteVoteingEventOwner(@Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const voteObjId = new ObjectID(votingId);
-        // check exist?
 
+        // check exist?
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId, userId: userObjId });
         if (voteObj === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
