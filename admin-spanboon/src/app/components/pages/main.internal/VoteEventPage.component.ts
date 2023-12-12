@@ -108,20 +108,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
 
     }
 
-    public search(keyword: string) {
-        // let filter = new SearchFilter();
-        // filter.limit = SEARCH_LIMIT;
-        // filter.offset = SEARCH_OFFSET;
-        // filter.relation = [],
-        //     filter.whereConditions = {},
-        //     filter.count = false;
-        // this.voteEventFacade.search(filter, keyword).then((res: any) => {
-        // }).catch((err: any) => {
-        // })
-    }
-
     public ngOnInit() {
-        this.search('5555');
     }
 
     private setFields(): void {
