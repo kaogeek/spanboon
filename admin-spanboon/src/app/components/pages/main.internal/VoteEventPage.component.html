@@ -11,7 +11,7 @@
             <div class="form-admin">
                 <div class="wrapper">
                     <div class="form-header">
-                        <h5 class="title">แก้ไข{{title | titlecase}}</h5>
+                        <h5 class="title">แก้ไข</h5>
                     </div>
                     <div class="form-body">
                         <form>
@@ -63,8 +63,8 @@
         <mat-drawer-content>
             <div class="main-content">
                 <admin-table-component #table [isPin]="true" [facade]="voteEventFacade" [title]="'โหวต'"
-                    [fieldTable]="fieldTable" [actions]="actions" (create)="clickCreateForm()"
-                    (edit)="clickEditForm($event)" (delete)="clickDelete($event)"></admin-table-component>
+                    [fieldTable]="fieldTable" [actions]="actions" (edit)="clickEditForm($event)"
+                    (delete)="clickDelete($event)"></admin-table-component>
             </div>
         </mat-drawer-content>
     </mat-drawer-container>
