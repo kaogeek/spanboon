@@ -28,7 +28,8 @@ import {
   PageCategoryPage,
   TodayPage,
   PageGroup,
-  NewsPaperPage
+  NewsPaperPage,
+  VoteEventPage
 } from './components/components';
 import { TodayPageV2 } from './components/pages/main.internal/TodayPageV2.component';
 import { ManipulatePage } from './components/pages/main.internal/ManipulatePage.component';
@@ -121,6 +122,10 @@ const routes: Routes = [
       {
         path: UserAdminPage.PAGE_NAME,
         component: UserAdminPage
+      },
+      {
+        path: VoteEventPage.PAGE_NAME,
+        component: VoteEventPage
       },
     ]
   },

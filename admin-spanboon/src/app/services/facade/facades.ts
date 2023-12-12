@@ -24,3 +24,4 @@ export * from './PageGroupFacade.service';
 export * from './NewsPaperFacade.service';
 export * from './ManipulateFacade.service';
 export * from './ManipulatePostFacade.service';
+export * from './VoteEventFacade.service';

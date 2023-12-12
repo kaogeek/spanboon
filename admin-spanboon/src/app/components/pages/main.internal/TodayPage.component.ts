@@ -111,6 +111,7 @@ export class TodayPage extends AbstractPage implements OnInit {
     public value_stack_first: any = [];
     public value_stack_second: any = [];
     public value_stack_third: any = [];
+    public value_stacks: any = [];
     public nameOneTitle: string;
     public nameTwoTitle: string;
     public nameThreeTitle: string;
@@ -608,6 +609,20 @@ export class TodayPage extends AbstractPage implements OnInit {
                     }
                 }
                 if ((data.field !== 'count') && (data.field !== 'score')) {
+                    // !
+                    // for (let a = 0; a < data.buckets.length; a++) {
+                    //     for (let i = 0; i < data.buckets[a].values.length; i++) {
+                    //         let miniBucket = { 'textPosition': i };
+                    //         const bucketMiniF = this.testBuckets_first.push(miniBucket);
+                    //         if (bucketMiniF !== undefined) {
+                    //             let stackFirstValues = { 'index': i, 'value': dataComp[0][i].title ? dataComp[0][i].title : dataComp[0][i].name, '_id': dataComp[0][i]._id };
+                    //             this.value_stacks[a] = [];
+                    //             this.value_stacks[a].push(stackFirstValues);
+                    //             console.log("val" + a, this.value_stacks[a])
+                    //         }
+                    //     }
+                    // }
+                    // !
                     if (data.buckets[0] !== undefined) {
                         for (let i = 0; i < data.buckets[0].values.length; i++) {
                             let miniBucket = { 'textPosition': i };
@@ -643,6 +658,7 @@ export class TodayPage extends AbstractPage implements OnInit {
             }
         }).catch((err) => {
             if (err) {
+                console.log("err")
                 if (data.buckets.length > 0) {
                     for (let i = 0; i < data.buckets.length; i++) {
                         let stackBucket = { 'position': i };
@@ -763,6 +779,23 @@ export class TodayPage extends AbstractPage implements OnInit {
         }
 
         if (this.edit === undefined) {
+            // !
+            // if (this.value_stacks.length > 0) {
+            //     for(let i = 0; i < this.value_stacks.length; i++){
+            //         let value_stack = this.value_stacks[i];
+            //         if (value_stack.length > 0) {
+            //             console.log("this", value_stack)
+            //             for (const valueStack_f of value_stack) {
+            //                 if ((this.selectedValueField === 'group') || (this.selectedValueField === 'hashtag')) {
+            //                     bucketF.push(valueStack_f.value);
+            //                 } else {
+            //                     bucketF.push(valueStack_f._id);
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+            // !
             if (this.value_stack_first.length > 0) {
                 for (const valueStack_f of this.value_stack_first) {
                     if ((this.selectedValueField === 'group') || (this.selectedValueField === 'hashtag')) {
@@ -799,7 +832,6 @@ export class TodayPage extends AbstractPage implements OnInit {
             result.limit = this.limit;
             result.buckets = buckets;
             result.position = this.selectedPosition;
-
             if ((result.field === 'count') || (result.field === 'score')) {
                 result.buckets = [];
             }
