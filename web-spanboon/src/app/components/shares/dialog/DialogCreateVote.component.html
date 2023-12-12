@@ -358,7 +358,7 @@
             </div>
         </ng-container>
     </div>
-    <div class="vote-footer-menu" *ngIf="!isAddQuestion">
+    <div class="vote-footer-menu" *ngIf="!isAddQuestion" [ngClass]="{'add-question': listQuestion.length > 0}">
         <button mat-button [ngClass]="{'question-type': typeQuestion !== 'settings'}"
             (click)="changeQuestion(null,'settings')">
             <div class="wrapper-butt-menu">
@@ -367,13 +367,13 @@
             </div>
         </button>
         <ng-container *ngFor="let item of listQuestion;let index = index">
-            <button mat-button [ngClass]="{'question-type': index !== indexPage}"
+            <button mat-button [ngClass]="{'question-type': index !== indexPage}" style="padding: 8px 0 8px 16px;"
                 (click)="changeQuestion(index,item.typeChoice,false)">
                 <div class="wrapper-butt-menu">
                     <div class="butt-menu">
                         <i [ngClass]="indexPage === index ? 'material-icons' : 'material-icons-outlined'"
                             style="transform: scaleX(-1) rotate(-90deg)">note</i>
-                        <span>#คำถามที่ {{index+1}}</span>
+                        <span>#{{index+1}}</span>
                         <!-- <span>{{item.typeChoice === 'single' ? '#'+(index+1)+' Checkbox' : (item.typeChoice ===
                                     'multi' ? '#'+(index+1)+'
                                     Multiple' : '#'+(index+1)+' Textbox')}}</span> -->
