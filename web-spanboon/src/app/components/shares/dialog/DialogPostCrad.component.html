@@ -64,14 +64,17 @@
                                     <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
                                 </div>
                             </ng-container>
-                            <ng-container *ngIf="data.choice.voted.length <= 5">
+                            <ng-container *ngIf="data.choice.voted.length <= 5 && data.choice.voted.length > 0">
                                 <span>{{data.choice.voted[data.choice.voted.length - 1].user.displayName}}
                                     ...คนเหล่านี้โหวตแล้ว</span>
                             </ng-container>
-                            <ng-container *ngIf="data.choice.voted.length > 5">
+                            <ng-container *ngIf="data.choice.voted.length > 5 && data.choice.voted.length > 0">
                                 <span>{{data.choice.voted[data.choice.voted.length - 1].user.displayName}} ...และอีก
                                     {{data.choice.voteCount - data.choice.voted.length}}
                                     คนโหวตแล้ว</span>
+                            </ng-container>
+                            <ng-container *ngIf="data.choice.voted.length === 0">
+                                <span style="margin-left: 0px;padding: 9px;">ขณะนี้ยังไม่มีคนโหวตหัวข้อนี้</span>
                             </ng-container>
                         </ng-container>
                         <ng-template #elseSupportUser>

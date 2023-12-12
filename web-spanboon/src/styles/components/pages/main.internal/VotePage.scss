@@ -156,7 +156,7 @@
           }
           > input {
             @include font-size-10($font-head-500);
-            padding: 0 50px 0 50px;
+            padding: 0 15px 0 50px;
             width: 100%;
             border-radius: 80px;
             border: 1px solid #e5e5e5;
@@ -166,12 +166,22 @@
         > .create-vote {
           @include font-size-9($font-head-500);
           display: flex;
+          align-items: center;
           gap: 5px;
           color: #fff;
           background-color: $brandcolor2;
           border-radius: 8px;
           padding: 8px 8px;
           cursor: pointer;
+
+          @media (max-width: $medium) {
+            padding: 8px 5px;
+            @include font-size-10($font-head-500);
+
+            > img {
+              width: 20px;
+            }
+          }
         }
       }
 
