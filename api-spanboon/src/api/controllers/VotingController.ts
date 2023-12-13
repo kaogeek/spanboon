@@ -1896,6 +1896,39 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
     }
+    // http://localhost:9000/api/voting/voted/own/:
+    @Get('/voted/own/:votingId')
+    @Authorized('user')
+    public async VotedOwn(@Param('votingId') votingId: string,@Res() res: any, @Req() req: any): Promise<any>{
+        const userObjIds = new ObjectID(req.user.id);
+        const voteObjId = new ObjectID(votingId);
+
+        const user = await this.userService.findOne({ _id: userObjIds });
+        if (user !== undefined && user !== null && user.banned === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been banned.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        if (user === undefined && user === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Not found the user.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const voteObj = await this.votingEventService.findOne({ _id: voteObjId });
+        if (voteObj === undefined && voteObj === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const voted = await this.votedService.find({votingId: voteObjId, userId: userObjIds});
+        if(voted.length > 0){
+            const successResponse = ResponseUtil.getSuccessResponse('Find any list votes is success.', voted);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any votes.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+    }
 
     // First
     @Put('/own/:votingId')
