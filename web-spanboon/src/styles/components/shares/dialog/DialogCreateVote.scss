@@ -60,6 +60,7 @@
       background-color: $white;
       box-shadow: 1px 0px 10px 0px rgba($black, 0.1);
       padding: 16px;
+      overflow-y: scroll;
 
       @media (max-width: $medium) {
         display: none;
