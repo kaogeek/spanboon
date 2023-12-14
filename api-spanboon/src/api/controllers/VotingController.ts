@@ -408,6 +408,27 @@ export class VotingController {
         }
     }
 
+    @Post('/permissible')
+    @Authorized('user')
+    public async permissible(@Res() res: any, @Req() req: any): Promise<any> {
+        const userObjIds = new ObjectID(req.user.id);
+        let eligibleValue = undefined;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        if (eligibleConfig) {
+            eligibleValue = eligibleConfig.value;
+        }
+        const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+        const userObj = await this.userService.findOne({_id: userObjIds});
+        if (split.includes(userObj.email) === false) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have no permission to create the vote event.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const successResponse = ResponseUtil.getSuccessResponse('You good to go.', undefined);
+        return res.status(200).send(successResponse);
+
+    }
+
     // voteChoice -> who votes
     @Post('/user/vote/:voteChoiceId')
     public async userVoteChoice(@Body({ validate: true }) search: FindVoteRequest,@Param ('voteChoiceId') voteChoiceId: string, @Res() res: any, @Req() req: any): Promise<any> {
@@ -488,7 +509,7 @@ export class VotingController {
 
     // user vote type text
     @Post('/user/vote/text/:voteItemId')
-    public async VoteTypeText(@Body({ validate: true }) search: FindVoteRequest,@Param ('voteItemId') voteItemId: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async voteTypeText(@Body({ validate: true }) search: FindVoteRequest,@Param ('voteItemId') voteItemId: string, @Res() res: any, @Req() req: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }
@@ -1896,7 +1917,6 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
     }
-    // http://localhost:9000/api/voting/voted/own/:
     @Get('/voted/own/:votingId')
     @Authorized('user')
     public async VotedOwn(@Param('votingId') votingId: string,@Res() res: any, @Req() req: any): Promise<any>{
