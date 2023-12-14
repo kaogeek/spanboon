@@ -486,22 +486,36 @@
       background-color: $white;
       height: 75px;
       box-shadow: 0px -1px 4px rgba($black, 0.1);
-      display: flex;
+      display: grid;
       align-items: center;
       justify-content: space-between;
       padding: 0 16px;
       gap: 12px;
+      grid-template-columns: 1fr 1fr 1fr;
+
+      &.add-question {
+        height: auto;
+        padding: 10px 16px;
+      }
 
       > button {
         width: 100%;
         padding: 8px 16px;
         background-color: $brandcolor4;
 
+        @media (max-width: $small) {
+          padding: 8px 4px;
+        }
+
         .wrapper-butt-menu {
           display: flex;
           align-items: center;
           gap: 12px;
           position: relative;
+
+          @media (max-width: $small) {
+            gap: 4px;
+          }
 
           > .butt-menu {
             display: flex;
@@ -511,6 +525,10 @@
 
             > span {
               @include font-size-9($font-head-500);
+
+              @media (max-width: $small) {
+                @include font-size-10($font-head-500);
+              }
             }
 
             > span,
@@ -526,6 +544,10 @@
 
           > span {
             @include font-size-9($font-head-500);
+
+            @media (max-width: $small) {
+              @include font-size-10($font-head-500);
+            }
           }
 
           > span,

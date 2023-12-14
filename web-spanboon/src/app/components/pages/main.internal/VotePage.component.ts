@@ -190,8 +190,8 @@ export class VotePage extends AbstractPage implements OnInit {
           } else {
             this.voteData = [...this.voteData, ...res];
           }
-          this._getEndVoteTime(res);
           setTimeout(() => {
+            this._getEndVoteTime(res);
             let data = this._removeDuplicateIds(this.voteData);
             this.voteData = data;
             this.isLoading = false;
@@ -213,8 +213,8 @@ export class VotePage extends AbstractPage implements OnInit {
           } else {
             this.voteData = [...this.voteData, ...res];
           }
-          this._getEndVoteTime(res);
           setTimeout(() => {
+            this._getEndVoteTime(res);
             let data = this._removeDuplicateIds(this.voteData);
             this.voteData = data;
             this.isLoading = false;
