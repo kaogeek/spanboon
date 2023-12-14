@@ -95,7 +95,12 @@
                     <div class="vote-dropdown-user">
                         <mat-form-field appearance="none">
                             <ng-container *ngIf="selectUser === user.displayName; else elseDefaultImage">
-                                <img [src]="apiBaseURL + user.imageURL + '/image'" alt="">
+                                <ng-container *ngIf="!!user.imageURL; else elseImageNullDefault">
+                                    <img [src]="apiBaseURL + user.imageURL + '/image'" alt="">
+                                </ng-container>
+                                <ng-template #elseImageNullDefault>
+                                    <span class="image-null">{{user.displayName | slice: 0:1}}</span>
+                                </ng-template>
                                 <span>{{user.displayName}}</span>
                             </ng-container>
                             <ng-template #elseDefaultImage>
@@ -103,7 +108,8 @@
                                     <img [src]="apiBaseURL + selectUser.imageURL + '/image'" alt="">
                                 </ng-container>
                                 <ng-template #elseImageNull>
-                                    <span class="image-null">{{selectUser.name | slice: 0:1}}</span>
+                                    <span class="image-null">{{selectUser.name ? (selectUser.name | slice: 0:1 ) :
+                                        (selectUser.displayName | slice: 0:1)}}</span>
                                 </ng-template>
                             </ng-template>
                             <mat-select [(ngModel)]="selectUser" (selectionChange)="selectUserCreate($event)"
@@ -112,7 +118,12 @@
                                     <span>{{selectUser.name ? selectUser.name : selectUser.displayName}}</span>
                                 </mat-select-trigger>
                                 <mat-option class="user-option" [value]="user">
-                                    <img [src]="apiBaseURL + user.imageURL + '/image'" alt="">
+                                    <ng-container *ngIf="!!user.imageURL; else elseImageNullDefault">
+                                        <img [src]="apiBaseURL + user.imageURL + '/image'" alt="">
+                                    </ng-container>
+                                    <ng-template #elseImageNullDefault>
+                                        <span class="image-null">{{user.displayName | slice: 0:1}}</span>
+                                    </ng-template>
                                     <span>{{user.displayName}}</span>
                                 </mat-option>
                                 <ng-container *ngFor="let item of userPage;let index = index">
@@ -134,7 +145,7 @@
                     <span>ผู้มีสิทธิ์โหวต</span>
                     <div class="vote-dropdown-type">
                         <mat-form-field appearance="none">
-                            <mat-select [(ngModel)]="selectTypeUser" (selectionChange)="selectType()"
+                            <mat-select [(ngModel)]="selectTypeUser" (selectionChange)="selectType()" disabled
                                 [ngModelOptions]="{standalone: true}">
                                 <mat-option [value]="'สมาชิก'">เฉพาะสมาชิก</mat-option>
                                 <mat-option [value]="'ทั่วไป'">ทั่วไป</mat-option>
@@ -146,7 +157,8 @@
                     <div class="vote-time first">
                         <span>เริ่มโหวต</span>
                         <mat-form-field>
-                            <input matInput [ngxMatDatetimePicker]="pickerStart" [formControl]="dateStart">
+                            <input matInput [readonly]="true" [ngxMatDatetimePicker]="pickerStart"
+                                [formControl]="dateStart">
                             <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
                             <ngx-mat-datetime-picker #pickerStart [stepHour]="stepHour" [stepMinute]="stepMinute"
                                 [color]="color" [enableMeridian]="false">
@@ -157,7 +169,8 @@
                     <div class="vote-time second">
                         <span>สิ้นสุดการโหวต</span>
                         <mat-form-field>
-                            <input matInput [ngxMatDatetimePicker]="pickerEnd" [formControl]="dateEnd">
+                            <input matInput [readonly]="true" [ngxMatDatetimePicker]="pickerEnd"
+                                [formControl]="dateEnd">
                             <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
                             <ngx-mat-datetime-picker #pickerEnd [stepHour]="stepHour" [stepMinute]="stepMinute"
                                 [color]="color" [enableMeridian]="false">
@@ -181,13 +194,23 @@
                 <div class="vote-type-user">
                     <span>แฮชแท็ก</span>
                     <div class="vote-dropdown-type">
-                        <mat-form-field appearance="none">
+                        <!-- <mat-form-field appearance="none">
                             <mat-select [(ngModel)]="hashtag" (selectionChange)="selectHashtag($event)"
                                 [ngModelOptions]="{standalone: true}" placeholder="เลือกแฮชแท็ก">
                                 <ng-container *ngFor="let item of listHashtag">
                                     <mat-option [value]="item">{{item}}</mat-option>
                                 </ng-container>
                             </mat-select>
+                        </mat-form-field> -->
+                        <mat-form-field>
+                            <span>#</span>
+                            <input type="text" aria-label="Number" matInput [formControl]="hashTag"
+                                [matAutocomplete]="auto">
+                            <mat-autocomplete #auto="matAutocomplete">
+                                <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                                    {{option}}
+                                </mat-option>
+                            </mat-autocomplete>
                         </mat-form-field>
                     </div>
                 </div>

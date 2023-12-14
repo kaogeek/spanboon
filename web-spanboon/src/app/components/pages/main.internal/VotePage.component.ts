@@ -5,20 +5,19 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, NgZone, EventEmitter, ViewChild, ElementRef, HostListener } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { AuthenManager } from '../../../services/AuthenManager.service';
+import { Component, ElementRef, EventEmitter, NgZone, OnInit, ViewChild, HostListener } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import { AbstractPage } from '../AbstractPage';
+import { Subject, fromEvent } from 'rxjs';
+import { VoteEventFacade } from 'src/app/services/facade/VoteEventFacade.service';
+import { AuthenManager } from 'src/app/services/AuthenManager.service';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { MatDialog } from '@angular/material';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 import { SearchFilter } from 'src/app/models/SearchFilter';
-import { VoteEventFacade } from 'src/app/services/services';
-import { environment } from 'src/environments/environment';
+import { DialogCreateVote } from '../../shares/dialog/DialogCreateVote.component';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
-import { Subject, fromEvent } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
-import * as moment from 'moment';
-import { DialogCreateVote } from '../../components';
 
 const PAGE_NAME: string = 'vote';
 @Component({
@@ -239,30 +238,6 @@ export class VotePage extends AbstractPage implements OnInit {
     });
   }
 
-  private _searchValue(value?: string) {
-    if (value === 'support') {
-      this.searchVoteContent({
-        "status": 'support'
-      });
-    } else if (value === 'open') {
-      this.searchVoteContent({
-        "status": 'vote',
-      });
-    } else if (value === 'my-vote') {
-      this.searchVoteContent({
-        "approved": false,
-        "closed": false
-      }, true);
-    } else if (value === 'result') {
-      this.searchVoteContent({
-        "approved": true,
-        "status": 'vote'
-      });
-    } else if (value === undefined) {
-      this.searchVoteContent();
-    }
-  }
-
   public searchValue(value?) {
     this.isLoading = true;
     if (this.activeUrl === 'support') {
@@ -273,14 +248,10 @@ export class VotePage extends AbstractPage implements OnInit {
       }, false, value);
     } else if (this.activeUrl === 'open') {
       this.searchVoteContent({
-        "approved": true,
         "status": 'vote',
-        "close": false
       }, false, value);
     } else if (this.activeUrl === 'my-vote') {
       this.searchVoteContent({
-        "approved": false,
-        "closed": false
       }, true, value);
     } else if (this.activeUrl === 'result') {
       this.searchVoteContent({

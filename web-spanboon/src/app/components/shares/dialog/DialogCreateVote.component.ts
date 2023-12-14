@@ -14,8 +14,8 @@ import { FormControl } from '@angular/forms';
 import { FileHandle } from '../directive/DragAndDrop.directive';
 import * as $ from 'jquery';
 import { Asset } from 'src/app/models/Asset';
-import { debounceTime } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { debounceTime, map, startWith } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
 import { VoteEventFacade } from 'src/app/services/facade/VoteEventFacade.service';
 import { AuthenManager } from 'src/app/services/AuthenManager.service';
 import { DialogAlert } from './DialogAlert.component';
@@ -84,6 +84,9 @@ export class DialogCreateVote extends AbstractPage {
     s3CoverPageURL: null
   };
 
+  public hashTag = new FormControl();
+  public filteredOptions: Observable<string[]>;
+
   //question variable
   public titleQuestion: any;
   public indexQuestion = 1;
@@ -109,11 +112,23 @@ export class DialogCreateVote extends AbstractPage {
     this._getAccessUser();
     this._getVoteHashtag();
 
+    this.filteredOptions = this.hashTag.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      );
+
     this.input
       .pipe(debounceTime(this.debounceTimeMs))
       .subscribe((text) => {
         this._performInput();
       });
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.listHashtag.filter(option => option.toLowerCase().includes(filterValue));
   }
 
   private _performInput() {
@@ -321,7 +336,7 @@ export class DialogCreateVote extends AbstractPage {
       status: this.status,
       createAsPage: this.createAsPage,
       type: this.type,
-      hashTag: this.hashtag !== undefined ? this.hashtag : "",
+      hashTag: this.hashTag.value !== '' ? this.hashTag.value : "",
       pin: false,
       showVoterName: this.isShowVoterName,
       showVoteResult: this.isShowVoteResult,
@@ -430,6 +445,10 @@ export class DialogCreateVote extends AbstractPage {
             this.isLoading = false;
             this.showAlertDialog("กรุณาเพิ่มคำถามของโหวต");
           }
+          if (err.error.message === 'You have no permission to create the vote event.') {
+            this.isLoading = false;
+            this.showAlertDialog("คุณไม่มีสิทธิ์สร้างกิจกรรมโหวต");
+          }
         }
       });
     } else {
@@ -459,6 +478,10 @@ export class DialogCreateVote extends AbstractPage {
           if (err.error.message === 'Cannot create a voting Item, Vote Choice is empty.') {
             this.isLoading = false;
             this.showAlertDialog("กรุณาเพิ่มคำถามของโหวต");
+          }
+          if (err.error.message === 'You have no permission to create the vote event.') {
+            this.isLoading = false;
+            this.showAlertDialog("คุณไม่มีสิทธิ์สร้างกิจกรรมโหวต");
           }
         }
       });

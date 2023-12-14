@@ -238,7 +238,7 @@
 
                       &.image-null {
                         border: 2px solid $white;
-                        width: 44.18px;
+                        width: 40px;
                         height: 40px;
                         border-radius: 50%;
                         margin-left: 16px;
@@ -247,6 +247,8 @@
                         justify-content: center;
                         color: $white;
                         background-color: $brandcolor2;
+                        flex: 0 0 auto;
+                        @include font-size-8($font-head-500);
                         box-shadow: 0px 0px 10px 0px rgba($black, 0.1);
                       }
                     }
@@ -293,10 +295,18 @@
                 background-color: white;
 
                 > .mat-form-field-infix {
+                  display: flex;
                   border: 0.7px solid rgb($white, 1);
                   background-color: $brandcolor4;
                   border-radius: 4px;
                   padding: 10px 0;
+
+                  > span,
+                  input {
+                    padding-left: 5px;
+                    color: $brandcolor2;
+                    @include font-size-9($font-head-500);
+                  }
 
                   .mat-select {
                     > .mat-select-trigger {
@@ -309,6 +319,10 @@
                     }
                   }
                 }
+              }
+
+              > .mat-form-field-underline {
+                background-color: unset;
               }
             }
           }
@@ -425,7 +439,14 @@
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
-      padding: 40px;
+      padding: 25px 40px 40px 40px;
+
+      @media (max-width: $medium) {
+        display: grid;
+        margin: 0 auto;
+        gap: 20px;
+        padding: 25px 0 40px 4px;
+      }
 
       > .vote-question-type {
         display: flex;
@@ -496,6 +517,8 @@
       &.add-question {
         height: auto;
         padding: 10px 16px;
+        max-height: 120px;
+        overflow-y: scroll;
       }
 
       > button {
@@ -587,6 +610,10 @@
     padding: 0 16px;
     gap: 12px;
 
+    @media (max-width: $small) {
+      padding: 0 10px;
+    }
+
     &.add-question {
       justify-content: end;
     }
@@ -595,16 +622,31 @@
       border: 1px solid;
       background-color: $brandcolor3;
       border-radius: 8px;
+      flex: 0 0 auto;
+
+      @media (max-width: $small) {
+        padding: 0 6px;
+      }
 
       .wrapper-add-vote {
         gap: 10px;
         display: flex;
         align-items: center;
 
+        @media (max-width: $small) {
+          gap: 6px;
+        }
+
         > mat-icon {
           border-radius: 50px;
           background-color: white;
           border: 1px solid $brandcolor3;
+
+          @media (max-width: $small) {
+            width: 18px;
+            height: 18px;
+            font-size: 18px;
+          }
         }
 
         > span {
@@ -623,6 +665,10 @@
         border-radius: 8px;
         min-width: 105px;
         @include font-size-10($font-head-500);
+
+        @media (max-width: $small) {
+          min-width: 90px;
+        }
 
         &.disabled {
           opacity: 0.5;
@@ -687,5 +733,12 @@
   > .vote-move,
   .vote-remove {
     @include font-size-10($font-head-500);
+  }
+}
+
+.mat-datepicker-content .mat-calendar {
+  @media (max-width: $medium) {
+    width: 230px !important;
+    height: 290px !important;
   }
 }

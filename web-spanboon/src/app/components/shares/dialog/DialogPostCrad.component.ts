@@ -56,10 +56,13 @@ export class DialogPostCrad extends AbstractPage {
   public resDataObjective: any[] = [];
   public prefix: any;
   public posts: any;
+  public ownVote: any;
+  public ownVoteText: any[] = [];
+  public isVoteAlready: boolean = false;
   public voteSuccess: boolean = false;
 
   public questions: any[] = [];
-  public singleAns: any;
+  public singleAns: any = undefined;
   public user: any;
   public isClosed: boolean;
   public isShowVoteResult: boolean;
@@ -95,6 +98,7 @@ export class DialogPostCrad extends AbstractPage {
       this.showLoading = false
     }, 1500);
     if (this.data.vote) {
+      this._getVotedOwn(this.data.post._id);
       this.supportValue = this.calculatePercentage();
       if (this.data.support !== undefined) {
         if (this.data.support.userSupport.length > 0) {
@@ -529,6 +533,48 @@ export class DialogPostCrad extends AbstractPage {
       }
     }).catch((err) => {
       if (err) { }
+    });
+  }
+
+  private _getVotedOwn(id: string) {
+    this.voteFacade.getVotedOwn(id).then((res) => {
+      if (res) {
+        this.ownVote = res;
+        for (let data of this.ownVote) {
+          if (data.voteChoiceId === null) {
+            this.ownVoteText.push(data);
+          }
+        }
+        this.isVoteAlready = true;
+        this._mapVoteChoice();
+      }
+    }).catch((err) => {
+      if (err) { }
+    });
+  }
+
+  private _mapVoteChoice() {
+    const mappedPosts = this.posts.map(post => {
+      if (post.voteChoice) {
+        post.voteChoice = post.voteChoice.map(voteChoice => {
+          const matchingOwnVote = this.ownVote.find(ownVote => ownVote.voteChoiceId === voteChoice._id);
+          if (matchingOwnVote) {
+            voteChoice.isVote = true;
+          }
+
+          return voteChoice;
+        });
+      }
+
+      return post;
+    });
+    const matchedData = this.posts.map(question => {
+      const matchedAnswer = this.ownVoteText.find(answer => answer.voteItemId === question._id);
+      if (matchedAnswer) {
+        question.answerData = matchedAnswer;
+      }
+
+      return question;
     });
   }
 }
