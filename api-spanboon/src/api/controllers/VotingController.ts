@@ -1953,7 +1953,7 @@ export class VotingController {
     // First
     @Put('/own/:votingId')
     @Authorized('user')
-    public async updateVoteingEventOwner(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async updateVoteingEvent(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const voteObjId = new ObjectID(votingId);
         const today = moment().toDate();
@@ -1968,7 +1968,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId, userId: userObjId });
-        if (voteObj === undefined && voteObj === null) {
+        if (voteObj === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -1987,9 +1987,38 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('The vote was closed.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        let query:any;
+        let newValues:any;
+
+        if(votingEventRequest.voteItem.length > 0){
+            for(const voteItem of votingEventRequest.voteItem){
+                const voteChoice = await this.UpdateVoteChoice(voteItem);
+                if(voteChoice === undefined) {
+                    const errorResponse = ResponseUtil.getErrorResponse('VoteChoice id is undefined.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+                // check id 
+                if(voteItem._id === undefined) {
+                    const errorResponse = ResponseUtil.getErrorResponse('VoteItem id is undefined.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+                query = { _id: new ObjectID(voteItem._id), votingId: voteObjId };
+                newValues = {
+                    $set: {
+                        ordering: voteItem.ordering,
+                        title: voteItem.title,
+                        coverPageURL: voteItem.coverPageURL,
+                        s3CoverPageURL: voteItem.s3CoverPageURL
+                    }
+                };
+                await this.voteItemService.update(query, newValues);
+            }
+        }
         
-        const query = { _id: voteObjId, userId: userObjId };
-        const newValues = {
+        query = { _id: voteObjId, userId: userObjId };
+        newValues = {
             $set: {
                 title: votingEventRequest.title,
                 detail: votingEventRequest.detail,
@@ -2002,146 +2031,12 @@ export class VotingController {
             }
         };
         const update = await this.votingEventService.update(query, newValues);
+        
         if (update) {
             const successResponse = ResponseUtil.getSuccessResponse('Update vote event is success.', undefined);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot update a VoteEvent.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-    }
-
-    // Second
-    @Put('/own/item/:votingId/:voteItemId')
-    @Authorized('user')
-    public async updateVoteItemOwner(@Body({ validate: true }) voteItemRequest: VoteItemRequest, @Param('votingId') votingId: string, @Param('voteItemId') voteItemId: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const userObjId = new ObjectID(req.user.id);
-        const voteObjId = new ObjectID(votingId);
-        const voteItemObjId = new ObjectID(voteItemId);
-        const voteItemObj = await this.voteItemService.findOne({_id:voteItemObjId});
-        // check exist?
-        const user = await this.userService.findOne({ _id: userObjId });
-        if (user !== undefined && user !== null && user.banned === true) {
-            const errorResponse = ResponseUtil.getErrorResponse('You have been banned.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-        if (user === undefined && user === null) {
-            const errorResponse = ResponseUtil.getErrorResponse('Not found the user.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-        const voteObj = await this.votingEventService.findOne({ _id: voteObjId, userId: userObjId });
-        if (voteObj === undefined && voteObj === null) {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        if(voteObj.approved === true) {
-            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        if(voteObj.closed === true) {
-            const errorResponse = ResponseUtil.getErrorResponse('The vote was closed.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        if(voteItemObj.type !== voteItemRequest.type){
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot chance the type VoteChoice.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        const query = { _id: voteItemObjId, votingId: voteObjId };
-        const newValues = {
-            $set: {
-                ordering: voteItemRequest.ordering,
-                title: voteItemRequest.title,
-                coverPageURL: voteItemRequest.coverPageURL,
-                s3CoverPageURL: voteItemRequest.s3CoverPageURL
-            }
-        };
-        const update = await this.voteItemService.update(query, newValues);
-        if (update) {
-            const successResponse = ResponseUtil.getSuccessResponse('Update vote item is success.', undefined);
-            return res.status(200).send(successResponse);
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot update a Vote item.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-    }
-
-    // Third
-    @Put('/own/choice/:votingId/:voteItemId/:voteChoiceId')
-    @Authorized('user')
-    public async updateVoteChoiceOwner(@Body({ validate: true }) voteItemRequest: VoteItemRequest, @Param('votingId') votingId: string, @Param('voteItemId') voteItemId: string, @Param('voteChoiceId') voteChoiceId: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const userObjId = new ObjectID(req.user.id);
-        const voteIngObjId = new ObjectID(votingId);
-        const voteItemObjId = new ObjectID(voteItemId);
-        const voteChoice = new ObjectID(voteChoiceId);
-        // check exist?
-        const user = await this.userService.findOne({ _id: userObjId });
-        if (user !== undefined && user !== null && user.banned === true) {
-            const errorResponse = ResponseUtil.getErrorResponse('You have been banned.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-        if (user === undefined && user === null) {
-            const errorResponse = ResponseUtil.getErrorResponse('Not found the user.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-        const voteObj = await this.votingEventService.findOne({ _id: voteIngObjId, userId: userObjId });
-        if (voteObj === undefined && voteObj === null) {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        if(voteObj.approved === true) {
-            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        if(voteObj.closed === true) {
-            const errorResponse = ResponseUtil.getErrorResponse('The vote was closed.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        // check item
-        const voteItemObj = await this.voteItemService.findOne({_id:voteItemObjId});
-        if(voteItemObj === undefined){
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a voteItem.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-        // check voteChoice
-        const voteChoiceItem = await this.voteChoiceService.findOne({_id:voteChoice});
-        if(voteChoiceItem === undefined){
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a voteItem.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        const query = { _id: voteChoice, voteItemId: voteItemObjId };
-        const newValues = {
-            $set: {
-                title: voteItemRequest.title,
-                coverPageURL: voteItemRequest.coverPageURL,
-                s3CoverPageURL: voteItemRequest.s3CoverPageURL
-            }
-        };
-        const update = await this.voteChoiceService.update(query, newValues);
-        if (update) {
-            const updateVoted = await this.votedService.updateMany(
-                {
-                    voting: voteIngObjId,
-                    voteItemId: voteItemObjId,
-                    voteChoiceId: voteChoice
-                },
-                { $set: { title: voteItemRequest.title } });
-            if (updateVoted) {
-                const successResponse = ResponseUtil.getSuccessResponse('Update vote choice event is success.', undefined);
-                return res.status(200).send(successResponse);
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot update a Vote choice.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot update a Vote choice.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
@@ -3220,7 +3115,25 @@ export class VotingController {
         } 
     }
 
-    // check spam vote
+    private async UpdateVoteChoice(voteItem:any): Promise<any>{
+        if(voteItem.voteChoice.length > 0){
+            for(const voteChoice of voteItem.voteChoice) {
+                if(voteChoice._id === undefined) {
+                    return undefined;
+                }
+                const query = {_id: new ObjectID(voteChoice._id)};
+                const newValues = {
+                    $set: {
+                        title: voteChoice.title,
+                        coverPageURL: voteChoice.coverPageURL,
+                        s3CoverPageURL: voteChoice.s3CoverPageURL
+                    }
+                };
+                await this.voteChoiceService.update(query, newValues);
+            }
+            return true;
+        }
+    }
 
     private async CheckSpamVote(voteObject:any,voteEventId:string,pageId:string,userId:string): Promise<any>{
         let voted:any = undefined;
