@@ -30,3 +30,4 @@ export * from './PostSwiperCard.component';
 export * from './CardContentHome.component';
 export * from './EditProfileCard.component';
 export * from './CardPostContentHome.component';
+export * from './CardContentVote.component';

@@ -44,6 +44,11 @@ export class VotingEventService {
         return await this.votingEventRepository.updateOne(query, newValue);
     }
 
+        // update many post
+    public async updateMany(query: any, newValue: any, options?: any): Promise<any> {
+        return await this.votingEventRepository.updateMany(query, newValue, options);
+    }
+
     public async aggregate(query: any, options?: any): Promise<any[]> {
         return await this.votingEventRepository.aggregate(query, options).toArray();
     }

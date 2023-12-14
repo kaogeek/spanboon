@@ -11,6 +11,7 @@ import { VoteItemService } from '../services/VoteItemService';
 import { VoteChoiceService } from '../services/VoteChoiceService';
 import { AssetService } from '../services/AssetService';
 import { UserService } from '../services/UserService';
+import { HashTagService } from '../services/HashTagService';
 import { UserSupportService } from '../services/UserSupportService';
 import { VotingEventModel } from '../models/VotingEventModel';
 // import { RetrieveVotingOptionsModel } from '../models/RetrieveVotingOptionsModel';
@@ -25,7 +26,12 @@ import { ObjectUtil } from '../../utils/ObjectUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import {
     DEFAULT_MIN_SUPPORT,
-    MIN_SUPPORT
+    MIN_SUPPORT,
+    DEFAULT_CLOSET_VOTE,
+    CLOSET_VOTE,
+    DEFAULT_TRIGGER_VOTE,
+    TRIGGER_VOTE,
+    ELIGIBLE_VOTES,
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -37,6 +43,7 @@ import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { Voted as VotedModel } from '../models/VotedModel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
+import { HashTag } from '../models/HashTag';
 
 @JsonController('/voting')
 export class VotingController {
@@ -53,11 +60,1004 @@ export class VotingController {
         private assetService: AssetService,
         private authenticationIdService:AuthenticationIdService,
         private inviteVoteService:InviteVoteService,
+        private hashTagService:HashTagService,
         // private retrieveVoteService: RetrieveVoteService
     ) { }
 
     @Post('/vote/search/')
     public async searchVoted(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+
+        const whereConditions = search.whereConditions;
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const keywords = search.keyword;
+        const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
+        const take = filter.limit ? filter.limit : 10;
+        const offset = filter.offset ? filter.offset : 0;
+        const matchVoteEvent: any = {};
+
+        if (whereConditions.approved !== undefined && whereConditions.approved !== null) {
+            matchVoteEvent.approved = whereConditions.approved;
+        }
+
+        if (whereConditions.closed !== undefined && whereConditions.closed !== null) {
+            matchVoteEvent.closed = whereConditions.closed;
+        }
+
+        if (whereConditions.status !== undefined && 
+            whereConditions.status.vote !== undefined && 
+            whereConditions.status.support !== undefined) 
+        {
+            matchVoteEvent.status = 
+            { $in: ['support','vote']};
+        }
+
+        if (whereConditions.status !== undefined && whereConditions.status.vote === undefined && whereConditions.status.support === undefined) {
+            matchVoteEvent.status = whereConditions.status;
+        }
+
+        if (whereConditions.type !== undefined && whereConditions.type !== null) {
+            matchVoteEvent.type = whereConditions.type;
+        }
+
+        if (whereConditions.pin !== undefined && whereConditions.pin !== null) {
+            matchVoteEvent.pin = whereConditions.pin;
+        }
+
+        if (whereConditions.showed !== undefined && whereConditions.showed !== null) {
+            matchVoteEvent.showVoteResult = whereConditions.showVoteResult;
+        }
+        const hashTags:any = [];
+        if(whereConditions.hashTag !== undefined && whereConditions.hashTag.length > 0) {
+            for(const hashTag of whereConditions.hashTag){
+                hashTags.push(String(hashTag));
+            }
+        }
+        if(hashTags.length >0) {
+            matchVoteEvent.hashTag = {$in:hashTags};
+        }
+        
+        if (keywords !== undefined && keywords !== null && keywords !== '') {
+            matchVoteEvent.title = exp;
+        }
+        const userObjId = req.headers.userid ? ObjectID(req.headers.userid) : undefined;
+        const voteEventAggr: any = await this.votingEventService.aggregate(
+            [
+                {
+                    $project: {
+                        _id: 1,
+                        createdDate: 1,
+                        title: 1,
+                        detail: 1,
+                        assertId: 1,
+                        coverPageURL: 1,
+                        s3CoverPageURL: 1,
+                        userId: 1,
+                        approved: 1,
+                        closed: 1,
+                        minSupport: 1,
+                        countSupport: 1,
+                        startVoteDatetime: 1,
+                        endVoteDatetime: 1,
+                        approveDatetime: 1,
+                        approveUsername: 1,
+                        updateDatetime: 1,
+                        closeDate:1,
+                        status: 1,
+                        createAsPage: 1,
+                        type: 1,
+                        public: 1,
+                        hashTag:1,
+                        pin: 1,
+                        showVoterName: 1,
+                        showVoteResult: 1,
+                        service:1,
+                        checkListName: {
+                            $cond: [
+                                {
+                                    $eq: ['$showVoterName', true]  // Check if 'showVoterName' is true
+                                },
+                                'Yes',
+                                'No'
+                            ]
+                        }
+                    }
+                },
+                {
+                    $project:{
+                        _id: 1,
+                        createdDate: 1,
+                        title: 1,
+                        detail: 1,
+                        assertId: 1,
+                        coverPageURL: 1,
+                        s3CoverPageURL: 1,
+                        userId: 1,
+                        approved: 1,
+                        closed: 1,
+                        minSupport: 1,
+                        countSupport: 1,
+                        startVoteDatetime: 1,
+                        endVoteDatetime: 1,
+                        approveDatetime: 1,
+                        approveUsername: 1,
+                        updateDatetime: 1,
+                        closeDate:1,
+                        status: 1,
+                        createAsPage: 1,
+                        type: 1,
+                        public: 1,
+                        hashTag:1,
+                        pin: 1,
+                        showVoterName: 1,
+                        showVoteResult: 1,
+                        voted:1,
+                        service:1,
+                        passing_scores:1,
+                        createPage: {
+                            $cond: [
+                                {
+                                    $ne: ['$createAsPage', null]  // Check if 'showVoterName' is true
+                                },
+                                'Yes',
+                                'No',
+                            ]
+                        }
+                    }
+                },
+                {
+                    $facet: {
+                        showVoterName: [
+                            {
+                                $match: {
+                                    createPage: 'Yes'
+                                },
+                                
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Page',
+                                    let: { 'createAsPage': '$createAsPage' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$createAsPage', '$_id']
+                                                }
+                                            },
+                                        },
+                                        {
+                                            $project: {
+                                                _id: 1,
+                                                name: 1,
+                                                pageUsername: 1,
+                                                isOfficial: 1,
+                                                imageURL: 1,
+                                                s3ImageURL: 1,
+                                                banned:1
+                                            }
+                                        }
+                                    ],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page'
+                                }
+                            }
+                        ],
+                        notShowVoterName: [
+                            {
+                                $match: {
+                                    createPage: 'No'
+                                }
+                            },
+                            {
+                                $lookup:{
+                                    from:'User',
+                                    let:{userId:'$userId'},
+                                    pipeline:[
+                                        {
+                                            $match:{
+                                                $expr:
+                                                {
+                                                    $eq:['$$userId','$_id']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                _id: 1,
+                                                username: 1,
+                                                firstName: 1,
+                                                lastName: 1,
+                                                imageURL: 1,
+                                                s3ImageURL: 1
+                                            }
+                                        }
+                                    ],
+                                    as:'user'
+                                }
+                            },
+                            {
+                                $unwind:{
+                                    path:'$user'
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    $addFields: {
+                        combinedResults: {
+                            $concatArrays: ['$showVoterName', '$notShowVoterName'],
+                        }
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$combinedResults',
+                    },
+                },
+                {
+                    $replaceRoot: {
+                        newRoot: '$combinedResults',
+                    },
+                },
+                {
+                    $project:{
+                        _id:1,
+                        createdDate:1,
+                        title:1,
+                        detail:1,
+                        coverPageURL:1,
+                        s3CoverPageURL:1,
+                        userId:1,
+                        approved:1,
+                        closed:1,
+                        minSupport:1,
+                        countSupport:1,
+                        startVoteDatetime:1,
+                        endVoteDatetime:1,
+                        closeDate:1,
+                        status:1,
+                        type:1,
+                        hashTag:1,
+                        pin:1,
+                        showVoterName:1,
+                        showVoteResult:1,
+                        voted:1,
+                        page:1,
+                        user:1,
+                        service:1,
+                    }
+                },
+                {
+                    $match: matchVoteEvent
+                },
+                {
+                    $lookup:{
+                        from:'VoteItem',
+                        let:{'id':'$_id'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:
+                                    {
+                                        $eq:['$$id','$votingId']
+                                    }
+                                }
+                            }
+                        ],
+                        as:'voteItem'
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'UserSupport',
+                        let:{'id':'$_id'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:
+                                    {
+                                        $eq:['$$id','$votingId']
+                                    }
+                                }
+                            },
+                            {
+                                $match: { userId: userObjId }
+                            }
+                        ],
+                        as:'userSupport'
+                    }
+                },
+                {
+                    $sort: {
+                        createdDate: -1
+                    }
+                },
+                {
+                    $limit: take
+                },
+                {
+                    $skip: offset
+                },
+            ]
+        );
+        const countRows = await this.votingEventService.aggregate(
+            [
+                {
+                    $count: 'passing_scores'
+                },
+            ]
+        );
+
+        if (voteEventAggr.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr,countRows);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    // voteChoice -> who votes
+    @Post('/user/vote/:voteChoiceId')
+    public async userVoteChoice(@Body({ validate: true }) search: FindVoteRequest,@Param ('voteChoiceId') voteChoiceId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const whereConditions:any = search.whereConditions;
+        if( whereConditions.showVoterName === false) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot get any users name.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const take = filter.limit ? filter.limit : 10;
+        const offset = filter.offset ? filter.offset : 0;
+        const objIds = new ObjectID(voteChoiceId);
+        if(objIds === undefined && objIds === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Vote Choice Id is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const voteChoice = await this.votedService.aggregate(
+            [
+                {
+                    $match:{
+                        voteChoiceId:objIds
+                    }
+                },
+                {
+                    $lookup:{
+                        from: 'User',
+                        let: {'userId':'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:
+                                    {
+                                        $eq:['$$userId','$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $project:{
+                                    _id:1,
+                                    username:1,
+                                    firstName:1,
+                                    lastName:1,
+                                    displayName:1,
+                                    uniqueId:1,
+                                    imageURL:1,
+                                    s3ImageURL:1
+                                }
+                            },
+                            {
+                                $limit: take
+                            },
+                            {
+                                $skip: offset
+                            }
+                        ],
+                        as:'user'
+                    }
+                }
+            ]
+        );
+
+        if(voteChoice.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteChoice);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists user.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    // user vote type text
+    @Post('/user/vote/text/:voteItemId')
+    public async VoteTypeText(@Body({ validate: true }) search: FindVoteRequest,@Param ('voteItemId') voteItemId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const whereConditions:any = search.whereConditions;
+        if( whereConditions.showVoterName === false) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot get any users name.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const take = filter.limit ? filter.limit : 10;
+        const offset = filter.offset ? filter.offset : 0;
+        const objIds = new ObjectID(voteItemId);
+        if(objIds === undefined && objIds === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Vote Item Id is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        
+        if(whereConditions.voteChoice !== null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Search for a vote where the type is text and voteChoice is null.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const voteItem = await this.votedService.aggregate(
+            [
+                {
+                    $match:{
+                        voteItemId:objIds,
+                        voteChoiceId:whereConditions.voteChoice
+                    }
+                },
+                {
+                    $lookup:{
+                        from: 'User',
+                        let: {'userId':'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:
+                                    {
+                                        $eq:['$$userId','$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $project:{
+                                    _id:1,
+                                    username:1,
+                                    firstName:1,
+                                    lastName:1,
+                                    displayName:1,
+                                    uniqueId:1,
+                                    imageURL:1,
+                                    s3ImageURL:1
+                                }
+                            },
+                            {
+                                $limit: take
+                            },
+                            {
+                                $skip: offset
+                            }
+                        ],
+                        as:'user'
+                    }
+                },
+                {
+                    $unwind:{
+                        path:'$user'
+                    }
+                }
+            ]
+        );
+
+        if(voteItem.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteItem);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists user.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/own/search/')
+    @Authorized('user')
+    public async searchVotedOwner(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+        const whereConditions = search.whereConditions;
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const keywords = search.keyword;
+        const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
+        const take = filter.limit ? filter.limit : 10;
+        const offset = filter.offset ? filter.offset : 0;
+        const matchVoteEvent: any = {};
+        if (whereConditions.approved !== undefined && whereConditions.approved !== null) {
+            matchVoteEvent.approved = whereConditions.approved;
+        }
+
+        if (whereConditions.closed !== undefined && whereConditions.closed !== null) {
+            matchVoteEvent.closed = whereConditions.closed;
+        }
+
+        if (whereConditions.status !== undefined && whereConditions.status !== null) {
+            matchVoteEvent.status = whereConditions.status;
+        }
+
+        if (whereConditions.type !== undefined && whereConditions.type !== null) {
+            matchVoteEvent.type = whereConditions.type;
+        }
+
+        if (whereConditions.pin !== undefined && whereConditions.pin !== null) {
+            matchVoteEvent.pin = whereConditions.pin;
+        }
+
+        if (whereConditions.showed !== undefined && whereConditions.showed !== null) {
+            matchVoteEvent.showVoteResult = whereConditions.showVoteResult;
+        }
+
+        if (userObjId !== undefined && userObjId !== null) {
+            matchVoteEvent.userId = userObjId;
+        }
+
+        if (keywords !== undefined && keywords !== null && keywords !== '') {
+            matchVoteEvent.title = exp;
+        }
+
+        const voteEventAggr = await this.votingEventService.aggregate(
+            [
+                {
+                    $project: {
+                        _id: 1,
+                        createdDate: 1,
+                        title: 1,
+                        detail: 1,
+                        assertId: 1,
+                        coverPageURL: 1,
+                        s3CoverPageURL: 1,
+                        userId: 1,
+                        approved: 1,
+                        closed: 1,
+                        minSupport: 1,
+                        countSupport: 1,
+                        startVoteDatetime: 1,
+                        endVoteDatetime: 1,
+                        approveDatetime: 1,
+                        approveUsername: 1,
+                        updateDatetime: 1,
+                        status: 1,
+                        createAsPage: 1,
+                        type: 1,
+                        hashTag:1,
+                        pin: 1,
+                        showVoterName: 1,
+                        showVoteResult: 1,
+                        service:1,
+                        votedCount:1,
+                        checkListName: {
+                            $cond: [
+                                {
+                                    $eq: ['$showVoterName', true]  // Check if 'showVoterName' is true
+                                },
+                                'Yes',
+                                'No'
+                            ]
+                        }
+                    }
+                },
+                {
+                    $facet: {
+                        showVoterName: [
+                            {
+                                $match: {
+                                    checkListName: 'Yes'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Voted',
+                                    let: { 'id': '$_id' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$id', '$votingId']
+                                                }
+                                            },
+
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'User',
+                                                let: { 'userId': '$userId' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: {
+                                                                $eq: ['$$userId', '$_id']
+                                                            }
+                                                        },
+                                                    },
+                                                    {
+                                                        $project: {
+                                                            _id: 1,
+                                                            username: 1,
+                                                            firstName: 1,
+                                                            lastName: 1,
+                                                            imageURL: 1,
+                                                            s3ImageURL: 1
+                                                        }
+                                                    }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user'
+                                            }
+                                        }
+                                    ],
+                                    as: 'voted'
+                                }
+                            },
+                        ],
+                        notShowVoterName: [
+                            {
+                                $match: {
+                                    checkListName: 'No'
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    $addFields: {
+                        combinedResults: {
+                            $concatArrays: ['$showVoterName', '$notShowVoterName'],
+                        }
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$combinedResults',
+                    },
+                },
+                {
+                    $replaceRoot: {
+                        newRoot: '$combinedResults',
+                    },
+                },
+                {
+                    $project:{
+                        _id: 1,
+                        createdDate: 1,
+                        title: 1,
+                        detail: 1,
+                        assertId: 1,
+                        coverPageURL: 1,
+                        s3CoverPageURL: 1,
+                        userId: 1,
+                        approved: 1,
+                        closed: 1,
+                        minSupport: 1,
+                        countSupport: 1,
+                        startVoteDatetime: 1,
+                        endVoteDatetime: 1,
+                        approveDatetime: 1,
+                        approveUsername: 1,
+                        updateDatetime: 1,
+                        status: 1,
+                        createAsPage: 1,
+                        type: 1,
+                        hashTag:1,
+                        pin: 1,
+                        showVoterName: 1,
+                        showVoteResult: 1,
+                        voted:1,
+                        service:1,
+                        votedCount:1,
+                        createPage: {
+                            $cond: [
+                                {
+                                    $ne: ['$createAsPage', null]  // Check if 'showVoterName' is true
+                                },
+                                'Yes',
+                                'No',
+                            ]
+                        }
+                    }
+                },
+                {
+                    $facet: {
+                        showVoterName: [
+                            {
+                                $match: {
+                                    createPage: 'Yes'
+                                },
+                                
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Page',
+                                    let: { 'createAsPage': '$createAsPage' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$createAsPage', '$_id']
+                                                }
+                                            },
+                                        },
+                                        {
+                                            $project: {
+                                                _id: 1,
+                                                name: 1,
+                                                pageUsername: 1,
+                                                isOfficial: 1,
+                                                imageURL: 1,
+                                                s3ImageURL: 1,
+                                                banned:1
+                                            }
+                                        }
+                                    ],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page'
+                                }
+                            }
+                        ],
+                        notShowVoterName: [
+                            {
+                                $match: {
+                                    createPage: 'No'
+                                }
+                            },
+                            {
+                                $lookup:{
+                                    from:'User',
+                                    let:{userId:'$userId'},
+                                    pipeline:[
+                                        {
+                                            $match:{
+                                                $expr:
+                                                {
+                                                    $eq:['$$userId','$_id']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                _id: 1,
+                                                username: 1,
+                                                firstName: 1,
+                                                lastName: 1,
+                                                imageURL: 1,
+                                                s3ImageURL: 1
+                                            }
+                                        }
+                                    ],
+                                    as:'user'
+                                }
+                            },
+                            {
+                                $unwind:{
+                                    path:'$user'
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    $addFields: {
+                        combinedResults: {
+                            $concatArrays: ['$showVoterName', '$notShowVoterName'],
+                        }
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$combinedResults',
+                    },
+                },
+                {
+                    $replaceRoot: {
+                        newRoot: '$combinedResults',
+                    },
+                },
+                {
+                    $project:{
+                        _id:1,
+                        createdDate:1,
+                        title:1,
+                        detail:1,
+                        coverPageURL:1,
+                        s3CoverPageURL:1,
+                        userId:1,
+                        approved:1,
+                        closed:1,
+                        minSupport:1,
+                        countSupport:1,
+                        startVoteDatetime:1,
+                        endVoteDatetime:1,
+                        status:1,
+                        type:1,
+                        hashTag:1,
+                        pin:1,
+                        showVoterName:1,
+                        showVoteResult:1,
+                        voted:1,
+                        page:1,
+                        user:1,
+                        service:1,
+                        votedCount:1,
+                    }
+                },
+                {
+                    $match: matchVoteEvent
+                },
+                {
+                    $sort: {
+                        createdDate: -1
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'UserSupport',
+                        let:{id:'$_id'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:
+                                    {
+                                        $eq:['$$id','$votingId']
+                                    }
+                                }
+                            },
+                            {
+                                $match: { userId: userObjId }
+                            }
+                        ],
+                        as:'userSupport'
+                    }
+                },
+                {
+                    $limit: take
+                },
+                {
+                    $skip: offset
+                }
+            ]
+        );
+        const countRows = await this.votingEventService.aggregate(
+            [
+                {
+                    $count: 'passing_scores'
+                },
+            ]
+        );
+
+        if (voteEventAggr.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr,countRows);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    // supported ???
+    @Get('/get/support/:id')
+    public async getSupport(@Body({ validate: true}) search: FindVoteRequest,@Param ('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const objIds = new ObjectID(id);
+        if(objIds === undefined && objIds === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Vote Id is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const getSupports = await this.userSupportService.aggregate(
+            [
+                {
+                    $match:{
+                        votingId:objIds,
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'User',
+                        let:{userId:'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$userId','$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    username: 1,
+                                    displayName:1,
+                                    firstName: 1,
+                                    lastName: 1,
+                                    imageURL: 1,
+                                    s3ImageURL: 1
+                                }
+                            }
+                        ],
+                        as:'user'
+                    }
+                },
+                {
+                    $project: {
+                        _id:0,
+                        user:1
+                    }
+                },
+                {
+                    $unwind:{
+                        path:'$user'
+                    }
+                },
+                { $sample: { size: 5 } },
+            ]
+        );
+        const countUser = await this.userSupportService.aggregate(
+            [
+                {
+                    $match:{
+                        votingId:objIds,
+                    }
+                },
+                {
+                    $count:'count'
+                }
+            ]
+        );
+        const response:any = {
+            'userSupport':{},
+            'count':null,
+        };
+        response['userSupport'] = getSupports;
+        response['count'] = countUser[0] ? countUser[0].count: 0;
+        const successResponse = ResponseUtil.getSuccessResponse('Search lists any user support is succesful.', response);
+        return res.status(200).send(successResponse);
+    }
+
+    // ใกล้ปิด vote
+    @Post('/closet/search')
+    public async ClosetEndVote(@Body({ validate: true }) search: FindVoteRequest,@Res() res: any, @Req() req: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }
@@ -99,6 +1099,7 @@ export class VotingController {
         if (keywords !== undefined && keywords !== null && keywords !== '') {
             matchVoteEvent.title = exp;
         }
+
         const voteEventAggr: any = await this.votingEventService.aggregate(
             [
                 {
@@ -403,491 +1404,36 @@ export class VotingController {
                 }
             ]
         );
-        if (voteEventAggr.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr);
-            return res.status(200).send(successResponse);
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-    }
 
-    @Post('/own/search/')
-    @Authorized('user')
-    public async searchVotedOwner(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const userObjId = new ObjectID(req.user.id);
-        if (ObjectUtil.isObjectEmpty(search)) {
-            return res.status(200).send([]);
-        }
-        const whereConditions = search.whereConditions;
-        let filter: any = search.filter;
-        if (filter === undefined) {
-            filter = new SearchFilter();
-        }
-        const keywords = search.keyword;
-        const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
-        const take = filter.limit ? filter.limit : 10;
-        const offset = filter.offset ? filter.offset : 0;
-        const matchVoteEvent: any = {};
-        if (whereConditions.approved !== undefined && whereConditions.approved !== null) {
-            matchVoteEvent.approved = whereConditions.approved;
+        let closetVoteValue = DEFAULT_CLOSET_VOTE;
+        const configClosetVote = await this.configService.getConfig(CLOSET_VOTE);
+        if (configClosetVote) {
+            closetVoteValue = parseInt(configClosetVote.value, 10);
         }
 
-        if (whereConditions.closed !== undefined && whereConditions.closed !== null) {
-            matchVoteEvent.closed = whereConditions.closed;
-        }
-
-        if (whereConditions.status !== undefined && whereConditions.status !== null) {
-            matchVoteEvent.status = whereConditions.status;
-        }
-
-        if (whereConditions.type !== undefined && whereConditions.type !== null) {
-            matchVoteEvent.type = whereConditions.type;
-        }
-
-        if (whereConditions.pin !== undefined && whereConditions.pin !== null) {
-            matchVoteEvent.pin = whereConditions.pin;
-        }
-
-        if (whereConditions.showed !== undefined && whereConditions.showed !== null) {
-            matchVoteEvent.showVoteResult = whereConditions.showVoteResult;
-        }
-
-        if (userObjId !== undefined && userObjId !== null) {
-            matchVoteEvent.userId = userObjId;
-        }
-
-        if (keywords !== undefined && keywords !== null && keywords !== '') {
-            matchVoteEvent.title = exp;
-        }
-
-        const voteEventAggr = await this.votingEventService.aggregate(
-            [
-                {
-                    $project: {
-                        _id: 1,
-                        createdDate: 1,
-                        title: 1,
-                        detail: 1,
-                        assertId: 1,
-                        coverPageURL: 1,
-                        s3CoverPageURL: 1,
-                        userId: 1,
-                        approved: 1,
-                        closed: 1,
-                        minSupport: 1,
-                        countSupport: 1,
-                        startVoteDatetime: 1,
-                        endVoteDatetime: 1,
-                        approveDatetime: 1,
-                        approveUsername: 1,
-                        updateDatetime: 1,
-                        status: 1,
-                        createAsPage: 1,
-                        type: 1,
-                        public: 1,
-                        pin: 1,
-                        showVoterName: 1,
-                        showVoteResult: 1,
-                        service:1,
-                        checkListName: {
-                            $cond: [
-                                {
-                                    $eq: ['$showVoterName', true]  // Check if 'showVoterName' is true
-                                },
-                                'Yes',
-                                'No'
-                            ]
-                        }
-                    }
-                },
-                {
-                    $facet: {
-                        showVoterName: [
-                            {
-                                $match: {
-                                    checkListName: 'Yes'
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'Voted',
-                                    let: { 'id': '$_id' },
-                                    pipeline: [
-                                        {
-                                            $match: {
-                                                $expr: {
-                                                    $eq: ['$$id', '$votingId']
-                                                }
-                                            },
-
-                                        },
-                                        {
-                                            $lookup: {
-                                                from: 'User',
-                                                let: { 'userId': '$userId' },
-                                                pipeline: [
-                                                    {
-                                                        $match: {
-                                                            $expr: {
-                                                                $eq: ['$$userId', '$_id']
-                                                            }
-                                                        },
-                                                    },
-                                                    {
-                                                        $project: {
-                                                            _id: 1,
-                                                            username: 1,
-                                                            firstName: 1,
-                                                            lastName: 1,
-                                                            imageURL: 1,
-                                                            s3ImageURL: 1
-                                                        }
-                                                    }
-                                                ],
-                                                as: 'user'
-                                            }
-                                        },
-                                        {
-                                            $unwind: {
-                                                path: '$user'
-                                            }
-                                        }
-                                    ],
-                                    as: 'voted'
-                                }
-                            },
-                        ],
-                        notShowVoterName: [
-                            {
-                                $match: {
-                                    checkListName: 'No'
-                                }
-                            }
-                        ]
-                    }
-                },
-                {
-                    $addFields: {
-                        combinedResults: {
-                            $concatArrays: ['$showVoterName', '$notShowVoterName'],
-                        }
-                    }
-                },
-                {
-                    $unwind: {
-                        path: '$combinedResults',
-                    },
-                },
-                {
-                    $replaceRoot: {
-                        newRoot: '$combinedResults',
-                    },
-                },
-                {
-                    $project:{
-                        _id: 1,
-                        createdDate: 1,
-                        title: 1,
-                        detail: 1,
-                        assertId: 1,
-                        coverPageURL: 1,
-                        s3CoverPageURL: 1,
-                        userId: 1,
-                        approved: 1,
-                        closed: 1,
-                        minSupport: 1,
-                        countSupport: 1,
-                        startVoteDatetime: 1,
-                        endVoteDatetime: 1,
-                        approveDatetime: 1,
-                        approveUsername: 1,
-                        updateDatetime: 1,
-                        status: 1,
-                        createAsPage: 1,
-                        type: 1,
-                        public: 1,
-                        pin: 1,
-                        showVoterName: 1,
-                        showVoteResult: 1,
-                        voted:1,
-                        service:1,
-                        createPage: {
-                            $cond: [
-                                {
-                                    $ne: ['$createAsPage', null]  // Check if 'showVoterName' is true
-                                },
-                                'Yes',
-                                'No',
-                            ]
-                        }
-                    }
-                },
-                {
-                    $facet: {
-                        showVoterName: [
-                            {
-                                $match: {
-                                    createPage: 'Yes'
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'Page',
-                                    let: { 'createAsPage': '$createAsPage' },
-                                    pipeline: [
-                                        {
-                                            $match: {
-                                                $expr: {
-                                                    $eq: ['$$createAsPage', '$_id']
-                                                }
-                                            },
-                                        },
-                                        {
-                                            $project: {
-                                                _id: 1,
-                                                name: 1,
-                                                pageUsername: 1,
-                                                isOfficial: 1,
-                                                imageURL: 1,
-                                                s3ImageURL: 1,
-                                                banned:1
-                                            }
-                                        }
-                                    ],
-                                    as: 'page'
-                                }
-                            },
-                            {
-                                $unwind: {
-                                    path: '$page'
-                                }
-                            }
-                        ],
-                        notShowVoterName: [
-                            {
-                                $match: {
-                                    createPage: 'No'
-                                }
-                            },
-                            {
-                                $lookup:{
-                                    from:'User',
-                                    let:{userId:'$userId'},
-                                    pipeline:[
-                                        {
-                                            $match:{
-                                                $expr:
-                                                {
-                                                    $eq:['$$userId','$_id']
-                                                }
-                                            }
-                                        },
-                                        {
-                                            $project: {
-                                                _id: 1,
-                                                username: 1,
-                                                firstName: 1,
-                                                lastName: 1,
-                                                imageURL: 1,
-                                                s3ImageURL: 1
-                                            }
-                                        }
-                                    ],
-                                    as:'user'
-                                }
-                            },
-                            {
-                                $unwind:{
-                                    path:'$user'
-                                }
-                            }
-                        ]
-                    }
-                },
-                {
-                    $addFields: {
-                        combinedResults: {
-                            $concatArrays: ['$showVoterName', '$notShowVoterName'],
-                        }
-                    }
-                },
-                {
-                    $unwind: {
-                        path: '$combinedResults',
-                    },
-                },
-                {
-                    $replaceRoot: {
-                        newRoot: '$combinedResults',
-                    },
-                },
-                {
-                    $project:{
-                        _id:1,
-                        createdDate:1,
-                        title:1,
-                        detail:1,
-                        coverPageURL:1,
-                        s3CoverPageURL:1,
-                        userId:1,
-                        approved:1,
-                        closed:1,
-                        minSupport:1,
-                        countSupport:1,
-                        startVoteDatetime:1,
-                        endVoteDatetime:1,
-                        status:1,
-                        type:1,
-                        pin:1,
-                        showVoterName:1,
-                        showVoteResult:1,
-                        voted:1,
-                        page:1,
-                        user:1,
-                        service:1
-                    }
-                },
-                {
-                    $match: matchVoteEvent
-                },
-                {
-                    $sort: {
-                        createdDate: -1
-                    }
-                },
-                {
-                    $limit: take
-                },
-                {
-                    $skip: offset
-                }
-            ]
-        );
-        if (voteEventAggr.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr);
-            return res.status(200).send(successResponse);
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-    }
-
-    // search this voteEvent, voteItems, voteChoices
-    @Post('/item/search/')
-    public async searchVoteItem(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const whereConditions = search.whereConditions;
-        let filter: any = search.filter;
-        if (filter === undefined) {
-            filter = new SearchFilter();
-        }
-        const keywords = search.keyword;
-        const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
-        const take = filter.limit ? filter.limit : 10;
-        const offset = filter.offset ? filter.offset : 0;
-        const matchVoteEvent: any = {};
-        if (whereConditions.approved !== undefined && whereConditions.approved !== null) {
-            matchVoteEvent.approved = whereConditions.approved;
-        }
-
-        if (whereConditions.closed !== undefined && whereConditions.closed !== null) {
-            matchVoteEvent.closed = whereConditions.closed;
-        }
-
-        if (whereConditions.status !== undefined && whereConditions.status !== null) {
-            matchVoteEvent.status = whereConditions.status;
-        }
-
-        if (whereConditions.type !== undefined && whereConditions.type !== null) {
-            matchVoteEvent.type = whereConditions.type;
-        }
-
-        if (whereConditions.pin !== undefined && whereConditions.pin !== null) {
-            matchVoteEvent.pin = whereConditions.pin;
-        }
-
-        if (whereConditions.showed !== undefined && whereConditions.showed !== null) {
-            matchVoteEvent.showVoteResult = whereConditions.showVoteResult;
-        }
-
-        if (keywords !== undefined && keywords !== null && keywords !== '') {
-            matchVoteEvent.title = exp;
-        }
-        const voteEventObjIds = new ObjectID(whereConditions._id);
-        const voteEventAggr = await this.voteItemService.aggregate([
-            {
-                $match:{
-                    _id:voteEventObjIds
-                }
-            },
-            {
-                $lookup :{
-                    from:'VoteChoice',
-                    let:{'id':'$_id'},
-                    pipeline:[
-                        {
-                            $match:{
-                                $expr:
-                                {
-                                    $eq:['$$id','$voteItemId']
-                                }
-                            }
-                        },
-                        {
-                            $lookup:{
-                                from:'Voted',
-                                let:{'id':'$_id'},
-                                pipeline:[
-                                    {
-                                        $match:{
-                                            $expr:
-                                            {
-                                                $eq:['$$id','$voteChoiceId']
-                                            }
-                                        }
-                                    },
-                                ],
-                                as:'voted'
-                            }
-                        },
-                        {
-                            $addFields:{
-                                votedCount: { $size: '$voted' }
-                            }
-                        },
-                        {
-                            $project:{
-                                _id:1,
-                                voteItemId:1,
-                                coverPageURL:1,
-                                s3coverPageURL:1,
-                                title:1,
-                                votedCount:1
-                            }
-                        }
-                    ],
-                    as:'voteChoice'
-                }
-            },
-            {
-                $limit: take
-            },
-            {
-                $skip: offset
+        const response:any = [];
+        const today = moment().toDate();
+        const closetValue = (24 * closetVoteValue) * 60 * 60 * 1000; // one day in milliseconds
+        const dateNow = new Date(today.getTime() + closetValue);
+        for(const closetVote of voteEventAggr) {
+            if (dateNow.getTime() > closetVote.endVoteDatetime.getTime() 
+                && closetVote.closed === false
+            ) {
+                response.push(closetVote);
+            } else {
+                continue;
             }
-        ]);
-        const voteItemObj = voteEventAggr.shift();
-        if (voteItemObj !== undefined && voteItemObj.voteChoice.length>0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteItemObj);
+        }
+
+        if (response.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', response);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
             return res.status(400).send(errorResponse);
         }
-        
     }
-    
+
     // ดูว่าใครมากด vote .
     @Post('/votes/cast/search')
     @Authorized('user')
@@ -1129,7 +1675,7 @@ export class VotingController {
 
     // get Item
     @Get('/item/vote/:votingId')
-    public async getItemVote(@Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async getItemVote(@Body({ validate: true}) search: FindVoteRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const voteObjId = new ObjectID(votingId);
 
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId });
@@ -1137,43 +1683,254 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const take = filter.limit ? filter.limit : 10;
+        const offset = filter.offset ? filter.offset : 0;
+        
         const voteItem = await this.voteItemService.aggregate([
-          {
-            $match: {
-              votingId: voteObjId,
-            },
-          },
-          {
-            $lookup: {
-              from: 'VoteChoice',
-              let: { id: '$_id' },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $eq: ['$$id', '$voteItemId'],
-                    },
-                  },
+            {
+                $match: {
+                votingId: voteObjId,
                 },
-              ],
-              as: 'voteChoice',
             },
-          },
-          {
-            $sort:{
-                ordering:-1
+            {
+                $sort:{
+                    ordering: 1
+                }
+            },
+            {
+                $project:{
+                    _id: 1,
+                    createdDate: 1,
+                    createdTime: 1,
+                    votingId: 1,
+                    assetId: 1,
+                    ordering: 1,
+                    type: 1,
+                    title: 1,
+                    coverPageURL: 1,
+                    s3CoverPageURL: 1,
+                    checkType: {
+                        $cond:[
+                            {
+                                $or:[
+                                {$eq:['$type','single']},
+                                {$eq:['$type','multi']}
+                            ]
+                            },
+                            'Yes',
+                            'No'
+                        ]
+                    }
+                }
+            },
+            {
+                $facet: {
+                    type: [
+                        {
+                            $match: {
+                                checkType: 'Yes'
+                            }, 
+                        },
+                        {
+                            $lookup: {
+                            from: 'VoteChoice',
+                            let: { id: '$_id' },
+                            pipeline: [
+                                {
+                                $match: {
+                                    $expr: {
+                                    $eq: ['$$id', '$voteItemId'],
+                                    },
+                                },
+                                },
+                                {
+                                    $lookup:{
+                                        from:'Voted',
+                                        let:{'id':'$_id'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$id','$voteChoiceId']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $count:'votedCount'
+                                            }
+                                        ],
+                                        as:'voted'
+                                    }
+                                },
+                            ],
+                            as: 'voteChoice',
+                            },
+                        },
+                    ],
+                    noType: [
+                        {
+                            $match: {
+                                checkType: 'No'
+                            }
+                        },
+                        {
+                            $lookup:{
+                                from:'Voted',
+                                let:{ id:'$_id'},
+                                pipeline:[
+                                    {
+                                        $match:{
+                                            $expr:{
+                                                $eq:['$$id','$voteItemId']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $count:'votedCount'
+                                    }
+                                ],
+                                as:'voted'
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                $addFields: {
+                    combinedResults: {
+                        $concatArrays: ['$type', '$noType'],
+                    }
+                }
+            },
+            {
+                $unwind: {
+                    path: '$combinedResults',
+                },
+            },
+            {
+                $replaceRoot: {
+                    newRoot: '$combinedResults',
+                },
+            },
+            {
+                $limit: take
+            },
+            {
+                $skip: offset
             }
-          }
         ]);
-        if (voteItem.length>0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Get VoteItem is success.', voteItem);
+        const voteEvent = await this.votedService.aggregate([
+            {
+                $match:{
+                    votingId:voteObjId
+                }
+            },
+            {
+                $lookup: {
+                    from: 'User',
+                    let: { 'userId': '$userId' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: ['$$userId', '$_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                displayName: 1,
+                                uniqueId: 1,
+                                imageURL: 1,
+                                s3ImageURL: 1
+                            }
+                        },
+                    ],
+                    as: 'user'
+                }
+            },       
+            {
+                $unwind:{
+                    path:'$user'
+                }
+            },
+            { $sample: { size: 5 } },     
+            {
+                $project:{
+                    user:1
+                }
+            }
+        ]);
+        const voteCount = await this.votedService.aggregate(
+            [
+                {
+                    $match:{
+                        votingId:voteObjId
+                    }
+                },
+                {
+                    $count:'count'
+                }
+            ]
+        );
+        const response:any = {
+            'voteItem':{},
+            'voted':{},
+            'voteCount':{},
+        };
+        response['voteItem'] = voteItem;
+        response['voted'] = voteEvent;
+        response['voteCount'] = voteCount[0] ? voteCount[0].count : 0;
+
+        if (response['voteItem'].length>0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Get VoteItem is success.', response);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Not found Vote Item.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
+    // http://localhost:9000/api/voting/voted/own/:
+    @Get('/voted/own/:votingId')
+    @Authorized('user')
+    public async VotedOwn(@Param('votingId') votingId: string,@Res() res: any, @Req() req: any): Promise<any>{
+        const userObjIds = new ObjectID(req.user.id);
+        const voteObjId = new ObjectID(votingId);
 
+        const user = await this.userService.findOne({ _id: userObjIds });
+        if (user !== undefined && user !== null && user.banned === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been banned.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        if (user === undefined && user === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Not found the user.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const voteObj = await this.votingEventService.findOne({ _id: voteObjId });
+        if (voteObj === undefined && voteObj === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const voted = await this.votedService.find({votingId: voteObjId, userId: userObjIds});
+        if(voted.length > 0){
+            const successResponse = ResponseUtil.getSuccessResponse('Find any list votes is success.', voted);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any votes.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+    }
+
+    // First
     @Put('/own/:votingId')
     @Authorized('user')
     public async updateVoteingEventOwner(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
@@ -1193,6 +1950,21 @@ export class VotingController {
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId, userId: userObjId });
         if (voteObj === undefined && voteObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (voteObj.status === 'vote') {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.approved === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.closed === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was closed.', undefined);
             return res.status(400).send(errorResponse);
         }
         
@@ -1219,6 +1991,7 @@ export class VotingController {
         }
     }
 
+    // Second
     @Put('/own/item/:votingId/:voteItemId')
     @Authorized('user')
     public async updateVoteItemOwner(@Body({ validate: true }) voteItemRequest: VoteItemRequest, @Param('votingId') votingId: string, @Param('voteItemId') voteItemId: string, @Res() res: any, @Req() req: any): Promise<any> {
@@ -1239,6 +2012,16 @@ export class VotingController {
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId, userId: userObjId });
         if (voteObj === undefined && voteObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.approved === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.closed === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was closed.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -1266,6 +2049,7 @@ export class VotingController {
         }
     }
 
+    // Third
     @Put('/own/choice/:votingId/:voteItemId/:voteChoiceId')
     @Authorized('user')
     public async updateVoteChoiceOwner(@Body({ validate: true }) voteItemRequest: VoteItemRequest, @Param('votingId') votingId: string, @Param('voteItemId') voteItemId: string, @Param('voteChoiceId') voteChoiceId: string, @Res() res: any, @Req() req: any): Promise<any> {
@@ -1286,6 +2070,16 @@ export class VotingController {
         const voteObj = await this.votingEventService.findOne({ _id: voteIngObjId, userId: userObjId });
         if (voteObj === undefined && voteObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.approved === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.closed === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was closed.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -1337,20 +2131,25 @@ export class VotingController {
     public async deleteVoteingEventOwner(@Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const voteObjId = new ObjectID(votingId);
-        // check exist?
 
+        // check exist?
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId, userId: userObjId });
-        if (voteObj === undefined && voteObj === null) {
+        if (voteObj === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+
         const voteItemObj = await this.voteItemService.findOne({ votingId: voteObj.id });
         const voteItems = await this.voteItemService.find({ votingId: voteObj.id });
         if (voteItems.length > 0) {
             for (const voteItem of voteItems) {
-                await this.assetService.delete({ _id: voteItem.assetId });
+                if (voteItem !== undefined && voteItem.assetId !== undefined){
+                    await this.assetService.delete({ _id: voteItem.assetId });
+                }
                 const voteChoiceList = await this.voteChoiceService.findOne({ voteItemId: voteItem.id });
-                await this.assetService.delete({ _id: voteChoiceList.assetId });
+                if(voteChoiceList !== undefined && voteChoiceList.assetId) {
+                    await this.assetService.delete({ _id: voteChoiceList.assetId });
+                }
             }
         }
 
@@ -1387,6 +2186,17 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        if (voteObj.approved === true ) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Delete Item, the status is approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (voteObj.closed === true ) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Delete Item, the status is closed.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         const voteItemObj = await this.voteItemService.findOne({ _id: voteItemObjId, votingId: voteObj.id });
         const voteChoices = await this.voteChoiceService.find({ voteItemId: voteItemObj.id });
         if (voteChoices.length > 0) {
@@ -1423,6 +2233,19 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        const voteEvent = await this.votingEventService.findOne({_id: voteItemObj.votingId});
+
+        if (voteEvent.approved === true ) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Delete Item, the status is approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (voteEvent.closed === true ) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Delete Item, the status is closed.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         const voteChoiceObj = await this.voteChoiceService.findOne({ _id: voteChoiceObjId, voteItemId: voteItemObjId });
         await this.assetService.delete({ _id: voteChoiceObj.assetId });
         await this.votedService.delete({ votingId: voteItemObj.votingId, voteItemId: voteItemObj.id, voteChoiceId: voteChoiceObjId });
@@ -1447,9 +2270,51 @@ export class VotingController {
         const userObjId = new ObjectID(req.user.id);
         const today = moment().toDate();
         let minSupportValue = DEFAULT_MIN_SUPPORT;
+        // ELIGIBLE_VOTES
+        let triggerValue = DEFAULT_TRIGGER_VOTE;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
+        let eligibleValue = undefined;
         const configMinSupport = await this.configService.getConfig(MIN_SUPPORT);
+
+        if (triggerConfig) {
+            triggerValue = triggerConfig.value;
+        }
+
+        if (eligibleConfig) {
+            eligibleValue = eligibleConfig.value;
+        }
+        if(String(triggerValue) === 'true'){
+            const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+            const userObj = await this.userService.findOne({_id: userObjId});
+            if (split.includes(userObj.email) === false) {
+                const errorResponse = ResponseUtil.getErrorResponse('You have no permission to create the vote event.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
         if (configMinSupport) {
             minSupportValue = parseInt(configMinSupport.value, 10);
+        }
+        let hashTagObjId:any = undefined;
+        let createHashTag:any = undefined;
+        const hashTag = votingEventRequest.hashTag;
+        if (hashTag !== undefined && hashTag !== null) {
+            hashTagObjId = await this.hashTagService.findOne({name:hashTag,personal:true});
+            if (hashTagObjId === undefined) {
+                const newHashTag: HashTag = new HashTag();
+                newHashTag.name = hashTag;
+                newHashTag.lastActiveDate = today;
+                newHashTag.count = 0;
+                newHashTag.iconURL = '';
+                newHashTag.personal = false;
+                createHashTag = await this.hashTagService.create(newHashTag);
+                if (createHashTag) {
+                    createHashTag = hashTag;
+                }
+            } else {
+                createHashTag = hashTagObjId.name;
+            }
         }
         // const adminIn = new ObjectID(votingEventRequest.adminId);
         // const needed = votingEventRequest.needed;
@@ -1566,6 +2431,7 @@ export class VotingController {
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
         // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
+        votingEvent.hashTag = createHashTag;
         votingEvent.status = status;
         votingEvent.createAsPage = null;
         votingEvent.type = type;
@@ -1591,6 +2457,11 @@ export class VotingController {
                         await this.CreateVoteChoice(createVoteItem,voteItems);
                     }
                 }
+
+                const query = {_id: new ObjectID(result.assetId)};
+                const newValue = {$set : {expirationDate : null}};
+                await this.assetService.update(query,newValue);
+
                 const response: any = {};
                 response.id = result.id;
                 response.title = result.title;
@@ -1611,6 +2482,7 @@ export class VotingController {
                 response.status = result.status;
                 response.createAsPage = result.createAsPage;
                 response.type = result.type;
+                response.hashTag = result.hashTag;
                 response.pin = result.pin;
                 response.showVoterName = result.showVoterName;
                 response.showVoteResult = result.showVoteResult;
@@ -1636,9 +2508,47 @@ export class VotingController {
         let pageData: Page[];
         const today = moment().toDate();
         let minSupportValue = DEFAULT_MIN_SUPPORT;
+        // ELIGIBLE_VOTES
+        let triggerValue = DEFAULT_TRIGGER_VOTE;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
+        let eligibleValue = undefined;
         const configMinSupport = await this.configService.getConfig(MIN_SUPPORT);
+
+        if (triggerConfig) {
+            triggerValue = triggerConfig.value;
+        }
+
+        if (eligibleConfig) {
+            eligibleValue = eligibleConfig.value;
+        }
+        if(String(triggerValue) === 'true'){
+            const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+            const userObj = await this.userService.findOne({_id: userObjId});
+            if (split.includes(userObj.email) === false) {
+                const errorResponse = ResponseUtil.getErrorResponse('You have no permission to create the vote event.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
         if (configMinSupport) {
             minSupportValue = parseInt(configMinSupport.value, 10);
+        }
+        let hashTagObjId:any = undefined;
+        let createHashTag:any = undefined;
+        const hashTag = votingEventRequest.hashTag;
+        if (hashTag !== undefined && hashTag !== null) {
+            hashTagObjId = await this.hashTagService.findOne({name:hashTag,personal:true});
+            if (hashTagObjId === undefined) {
+                const newHashTag: HashTag = new HashTag();
+                newHashTag.name = hashTag;
+                newHashTag.lastActiveDate = today;
+                newHashTag.count = 0;
+                newHashTag.iconURL = '';
+                newHashTag.personal = false;
+                createHashTag = await this.hashTagService.create(newHashTag);
+            } else {
+                createHashTag = hashTagObjId.name;
+            }
         }
         // const adminIn = new ObjectID(votingEventRequest.adminId);
         // const needed = votingEventRequest.needed;
@@ -1775,6 +2685,7 @@ export class VotingController {
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
+        votingEvent.hashTag = createHashTag;
         // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
         votingEvent.status = status;
         votingEvent.createAsPage = pageObjId;
@@ -1801,6 +2712,10 @@ export class VotingController {
                         await this.CreateVoteChoice(createVoteItem,voteItems);
                     }
                 }
+                const query = {_id: new ObjectID(result.assetId)};
+                const newValue = {$set : {expirationDate : null}};
+                await this.assetService.update(query,newValue);
+
                 const response: any = {};
                 response.id = result.id;
                 response.title = result.title;
@@ -1818,6 +2733,7 @@ export class VotingController {
                 response.approveDatetime = result.approveDatetime;
                 response.approveUsername = result.approveUsername;
                 response.updateDatetime = result.updateDatetime;
+                response.hashTag = result.hashTag;
                 response.status = result.status;
                 response.createAsPage = result.createAsPage;
                 response.type = result.type;
@@ -1847,7 +2763,6 @@ export class VotingController {
         const userObjId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(votedRequest.pageId);
         const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
-
         // status public, private, member
         if(voteEventObj.type === 'member'){
             const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
@@ -1910,7 +2825,6 @@ export class VotingController {
             for(const item of votedRequest.voteItem){
 
                 const voted = await this.CheckSpamVote(item,votingObjId,votedRequest.pageId,userObjId);
-
                 if(voted === undefined){
                     const voteItemObj = await this.voteItemService.findOne({ _id: new ObjectID(item.voteItemId) });
                     if (voteItemObj === undefined && voteItemObj === null) {
@@ -1918,12 +2832,13 @@ export class VotingController {
                         return res.status(400).send(errorResponse);
                     }
 
-                    if(item.voteChoice.length > 0){
+                    if(item.voteItemId !== undefined){
                         const create = await this.VoteChoice(item.voteItemId,item,votingObjId,userObjId,votedRequest.pageId);
+                        if(create === 'Select Vote Choice is empty.'){
+                            const errorResponse = ResponseUtil.getErrorResponse('Select Vote Choice is empty.', response);
+                            return res.status(400).send(errorResponse);
+                        }
                         response.push(create);
-                    } else {
-                        const errorResponse = ResponseUtil.getErrorResponse('Select Vote Choice is empty.', undefined);
-                        return res.status(400).send(errorResponse);
                     }
                 } else {
                     const aggsVote = await this.voteItemService.aggregate(
@@ -1967,7 +2882,7 @@ export class VotingController {
                             }
                         ]
                     );
-                    const errorResponse = ResponseUtil.getErrorResponse('You have been voted.', aggsVote);
+                    const errorResponse = ResponseUtil.getErrorResponse('You have been already voted.', aggsVote);
                     return res.status(400).send(errorResponse);
                 }
 
@@ -2168,7 +3083,21 @@ export class VotingController {
             const newValue = { $set: { countSupport: userSupports.length  } };
             const update = await this.votingEventService.update(query, newValue);
             if (update) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully create User Support.', create);
+                const response:any = {};
+                response.createdDate = create.createdDate;
+                response.createdTime = create.createdTime;
+                response.id = create.id;
+                response.userId = create.userId;
+                response.votingId = create.votingId;
+                response.userId = user.id;
+                response.username = user.username;
+                response.firstName = user.firstName;
+                response.lastName = user.lastName;
+                response.displayName = user.displayName;
+                response.uniqueId = user.uniqueId;
+                response.imageURL = user.imageURL;
+                response.s3ImageURL = user.s3ImageURL;
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully create User Support.', response);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot create a user support.', undefined);
@@ -2179,6 +3108,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
     }
+    
     // RetrieveVotingOptions ## Unsupport
     /*
     const query = {_id:votingObjId};
@@ -2223,17 +3153,34 @@ export class VotingController {
     }
 
     private async VoteChoice(voteItemId:string, voteItem:any, votingId: string,userId:string, pageId:string): Promise<any>{
-        for(const item of voteItem.voteChoice){            
+        const created:any = [];
+        if(voteItem.voteItemId !== undefined && voteItem.answer === undefined){
+            if (voteItem.voteChoice.length === 0) {
+                return 'Select Vote Choice is empty.';
+            }
+            for(const item of voteItem.voteChoice){ 
+                const voted = new VotedModel();
+                voted.votingId = new ObjectID(votingId);
+                voted.userId = new ObjectID(userId);
+                voted.pageId = pageId ? new ObjectID(pageId) : null;
+                voted.answer = item.answer;
+                voted.voteItemId = new ObjectID(voteItemId);
+                voted.voteChoiceId = new ObjectID(item.voteChoiceId);
+                const create = await this.votedService.create(voted);
+                created.push(create);
+            }
+        } else {
             const voted = new VotedModel();
             voted.votingId = new ObjectID(votingId);
             voted.userId = new ObjectID(userId);
             voted.pageId = pageId ? new ObjectID(pageId) : null;
-            voted.answer = item.answer;
-            voted.voteItemId = new ObjectID(voteItemId);
-            voted.voteChoiceId = new ObjectID(item.voteChoiceId);
+            voted.answer = voteItem.answer;
+            voted.voteItemId = new ObjectID(voteItem.voteItemId);
+            voted.voteChoiceId = null;
             const create = await this.votedService.create(voted);
-            return create;
+            created.push(create);
         }
+        return created;
     }
 
     private async CreateVoteChoice(createVoteItem:any,voteItems: any): Promise<any>{
@@ -2258,29 +3205,71 @@ export class VotingController {
     private async CheckSpamVote(voteObject:any,voteEventId:string,pageId:string,userId:string): Promise<any>{
         let voted:any = undefined;
         for(const choice of voteObject.voteChoice) {
-            if(pageId === undefined){
-                voted = await this.votedService.findOne(
-                    {
-                        votingId: new ObjectID(voteEventId),
-                        userId: new ObjectID(userId),
-                        voteItemId: new ObjectID(voteObject.voteItemId),
-                        voteChoiceId: new ObjectID(choice.voteChoiceId)
-                    }
-                );
+            if(pageId !== undefined){
+                if(choice.voteChoiceId !== undefined){
+                    voted = await this.votedService.findOne(
+                        {
+                            votingId: new ObjectID(voteEventId),
+                            pageId: new ObjectID(pageId),
+                            voteItemId: new ObjectID(voteObject.voteItemId),
+                            voteChoiceId: new ObjectID(choice.voteChoiceId)
+                        }
+                    );
+                } else {
+                    voted = await this.votedService.findOne(
+                        {
+                            votingId: new ObjectID(voteEventId),
+                            pageId: new ObjectID(pageId),
+                            voteItemId: new ObjectID(voteObject.voteItemId)
+                        }
+                    );
+                }
                 if(voted !== undefined) {
                     return voted;
                 } else {
                     return undefined;
                 }
             } else {
-                voted = await this.votedService.findOne(
-                    {
-                        votingId: new ObjectID(voteEventId),
-                        pageId: new ObjectID(pageId),
-                        voteItemId: new ObjectID(voteObject.voteItemId),
-                        voteChoiceId: new ObjectID(choice.voteChoiceId)
+                // type single, multi
+                if(choice.voteChoiceId !== undefined){
+                    // check single type ?
+                    const signleType = await this.voteItemService.findOne(
+                        {
+                            _id: new ObjectID(voteObject.voteItemId),
+                            votingId: new ObjectID(voteEventId),
+                            type: 'single'
+                        });
+                    if(signleType !== undefined) {
+                        voted = await this.votedService.findOne(
+                            {
+                                votingId: signleType.votingId,
+                                userId: new ObjectID(userId),
+                                voteItemId: signleType.id                            
+                            }
+                        );
+                        if(voted !== undefined) {
+                            return voted;
+                        }
                     }
-                );
+
+                    voted = await this.votedService.findOne(
+                        {
+                            votingId: new ObjectID(voteEventId),
+                            userId: new ObjectID(userId),
+                            voteItemId: new ObjectID(voteObject.voteItemId),
+                            voteChoiceId: new ObjectID(choice.voteChoiceId)
+                        }
+                    );
+                } else {
+                    // type text
+                    voted = await this.votedService.findOne(
+                        {
+                            votingId: new ObjectID(voteEventId),
+                            userId: new ObjectID(userId),
+                            voteItemId: new ObjectID(voteObject.voteItemId)
+                        }
+                    );
+                }
                 if(voted !== undefined) {
                     return voted;
                 } else {

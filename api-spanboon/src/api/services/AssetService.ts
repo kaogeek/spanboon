@@ -28,6 +28,11 @@ export class AssetService {
         return await this.assetRepository.find(findCondition);
     }
 
+    // find aggregate
+    public aggregate(query: any, options?: any): Promise<any[]> {
+        return this.assetRepository.aggregate(query, options).toArray();
+    }
+
     // find asset
     public findOne(findCondition: any): Promise<any> {
         return this.assetRepository.findOne(findCondition);

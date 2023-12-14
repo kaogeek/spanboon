@@ -1,0 +1,32 @@
+[
+  {
+    "image": "../../assets/img/menu-list/member.svg",
+    "title": "ระบบสมาชิก",
+    "link": "/member",
+    "active": false
+  },
+  {
+    "image": "../../assets/img/menu-list/vote.svg",
+    "title": "MFP Vote",
+    "link": "/vote",
+    "active": true
+  },
+  {
+    "image": "../../assets/img/menu-list/survey.svg",
+    "title": "Survey",
+    "link": "/survey",
+    "active": false
+  },
+  {
+    "image": "../../assets/img/menu-list/shop.svg",
+    "title": "ก้าวไกล Shop",
+    "link": "/shop",
+    "active": false
+  },
+  {
+    "image": "../../assets/img/menu-list/vote.svg",
+    "title": "กิจกรรม",
+    "link": "/activity",
+    "active": false
+  }
+]

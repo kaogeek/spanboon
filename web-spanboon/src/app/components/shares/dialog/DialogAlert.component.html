@@ -10,7 +10,7 @@
         <div class="edit-h">
             <span class="edit-head-one">{{data.title}}</span>
             <div class="dialog-image-title-right">
-                <i class="material-icons" (click)="onClose()">
+                <i class="material-icons" (click)="onClose('null')">
                     clear
                 </i>
             </div>
@@ -26,7 +26,7 @@
             </ng-container>
         </div>
         <div class="dialog-footer">
-            <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
+            <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose('false') ">
                 {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
             <div class="butt but-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
                 (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}</div>
@@ -64,6 +64,10 @@
             <ng-container *ngIf="data.type === 'engage'">
                 <span>คุณเป็นสมาชิกพรรคก้าวไกลแล้วหรือยัง?</span>
                 <span>คุณสามารถแสดงความคิดเห็นหรือกดไลค์ได้เมื่อเป็นสมาชิกพรรคเท่านั้น</span>
+            </ng-container>
+            <ng-container *ngIf="data.type === 'vote'">
+                <span>คุณเป็นสมาชิกพรรคก้าวไกลแล้วหรือยัง?</span>
+                <span>คุณสามารถโหวตหัวข้อนี้ได้เมื่อเป็นสมาชิกพรรคเท่านั้น</span>
             </ng-container>
 
         </div>

@@ -63,7 +63,8 @@ import {
   TodayPage,
   TodayPageV2,
   PageGroup,
-  NewsPaperPage
+  NewsPaperPage,
+  VoteEventPage
 } from './components/components';
 import {
   AuthenManager,
@@ -85,6 +86,7 @@ import {
   NewsPaperFacade,
   ManipulateFacade,
   ManipulatePostFacade,
+  VoteEventFacade,
 } from './services/services';
 import { UserFacade } from './services/facade/UserFacade.service';
 import {
@@ -140,7 +142,8 @@ const COMPONENTS: any[] = [
   PageGroup,
   ManipulatePage,
   ManipulatePost,
-  NewsPaperPage
+  NewsPaperPage,
+  VoteEventPage
 ];
 
 const PIPE_CLASSES: any[] = [
@@ -174,6 +177,7 @@ const SERVICE_CLASSES: any[] = [
   NewsPaperFacade,
   ManipulateFacade,
   ManipulatePostFacade,
+  VoteEventFacade,
   // other 
   {
     provide: SWIPER_CONFIG,

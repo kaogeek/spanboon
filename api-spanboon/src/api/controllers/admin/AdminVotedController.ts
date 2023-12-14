@@ -1,4 +1,4 @@
-import { JsonController, Res, Param, Post, Body, Req, Authorized, Put, Delete } from 'routing-controllers';
+import { JsonController, Res, Param, Post, Body, Req, Authorized, Put, Delete, Get } from 'routing-controllers';
 import { VotingEventRequest } from '../requests/VotingEventRequest';
 import { VotingEventService } from '../../services/VotingEventService';
 import { VoteItemService } from '../../services/VoteItemService';
@@ -14,6 +14,8 @@ import { ObjectID } from 'mongodb';
 import { SearchFilter } from '../requests/SearchFilterRequest';
 import { FindVoteRequest } from '../requests/FindVoteRequest';
 import { ObjectUtil } from '../../../utils/ObjectUtil';
+import { MFPHASHTAG } from '../../../constants/SystemConfig';
+import { ConfigService } from '../../services/ConfigService';
 import moment from 'moment';
 
 @JsonController('/admin/voted')
@@ -25,7 +27,8 @@ export class AdminVotedController {
         private votedService:VotedService,
         private userSupportService:UserSupportService,
         private userService:UserService,
-        private assetService:AssetService
+        private assetService:AssetService,
+        private configService:ConfigService
     ) { }
 
     @Post('/all/search/')
@@ -385,7 +388,7 @@ export class AdminVotedController {
         );
         if(voteAggs.length > 0){
             for(const vote of voteAggs){
-                if(vote.countSupport >= vote.minSupport){
+                if(vote.approved !== true && vote.countSupport >= vote.minSupport){
                     // auto approve
                     const query = {_id: new ObjectID(vote._id)};
                     const newValues = {
@@ -420,7 +423,7 @@ export class AdminVotedController {
         const voteAggs = await this.votingEventService.aggregate([]);
         if(voteAggs.length > 0){
             for(const vote of voteAggs){
-                if(today.getTime() > vote.endVoteDatetime.getTime()) {
+                if(vote.closed !== true && today.getTime() > vote.endVoteDatetime.getTime()) {
                     const query = {_id: new ObjectID(vote._id)};
                     const newValues = {
                         $set:{
@@ -443,4 +446,17 @@ export class AdminVotedController {
         return res.status(200).send(successResponse);
     }
 
+    // HashTag 
+    @Get('/hashtag')
+    public async HashTag(@Res() res: any, @Req() req: any): Promise<any> {
+        const mfpHashTag = await this.configService.getConfig(MFPHASHTAG);
+        const split = mfpHashTag.value.split(',');
+        if(split.length > 0){
+            const successResponse = ResponseUtil.getSuccessResponse('Get Mfp HashTag is success.', split);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('MFP HashTag is empty.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
 }

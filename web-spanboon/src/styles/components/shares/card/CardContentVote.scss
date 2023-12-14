@@ -1,0 +1,110 @@
+.card-content {
+  display: flex;
+  flex-direction: column;
+
+  .container-content {
+    position: relative;
+    flex: 1 1 0%;
+    @include pointer();
+
+    > button {
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      right: 6px;
+      top: 6px;
+      background-color: rgba($black, 0.15);
+
+      > .mat-button-wrapper {
+        display: flex;
+
+        > mat-icon {
+          font-size: 18px;
+          color: #f9fafa;
+        }
+      }
+    }
+
+    > .image-content-vote {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      @include font-size-9($font-head-500);
+
+      &.image-null {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background-color: #f8f8f8;
+      }
+    }
+
+    > .logo-img {
+      margin: 10px;
+      position: absolute;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      > .image-owner {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background-color: white;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      > .image-null {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        border: 2px solid $white;
+        color: $white;
+        background-color: $brandcolor2;
+        @include font-size-10($font-head-500);
+      }
+
+      > span {
+        @include font-size-10($font-head-500);
+        color: white;
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .owner-post {
+    padding: 10px 10px 0 10px;
+
+    > .owner-name {
+      @include font-size-8($font-head-500);
+      margin-bottom: 40pt;
+      color: black;
+      cursor: pointer;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-word;
+      display: -webkit-box;
+
+      &:hover {
+        color: rgba($brandcolor2, 0.95);
+      }
+    }
+  }
+
+  > .vote-time {
+    bottom: 0;
+    position: absolute;
+    padding: 10px;
+    @include font-size-11($font-head-500);
+  }
+}

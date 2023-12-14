@@ -24,3 +24,4 @@ export * from './main.internal/PageGroup.component';
 export * from './main.internal/NewsPaperPage.component';
 export * from './main.internal/ManipulatePage.component';
 export * from './main.internal/ManipulatePost.component';
+export * from './main.internal/VoteEventPage.component';

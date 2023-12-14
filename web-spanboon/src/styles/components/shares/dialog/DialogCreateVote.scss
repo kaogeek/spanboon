@@ -1,0 +1,691 @@
+.dialog-create-vote {
+  width: 1000px;
+  height: 800px;
+  background-color: #f0f5f6;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: $xlarge) {
+    width: 900px;
+    height: 750px;
+  }
+
+  @media (max-width: $large) {
+    width: 800px;
+    height: 650px;
+  }
+
+  @media (max-width: $lmedium) {
+    width: 700px;
+    height: 600px;
+  }
+
+  @media (max-width: $medium) {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  > .vote-header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 46pt;
+    padding: 0 65px;
+    background-color: $white;
+    box-shadow: 0px -1px 4px rgba($black, 0.25);
+
+    > span {
+      @include font-size-7($font-head-500);
+    }
+
+    > button {
+      position: absolute;
+      right: 16px;
+      z-index: 1;
+      background-color: $black;
+    }
+  }
+
+  > .vote-content {
+    flex: 1 1 0%;
+    display: flex;
+    overflow: hidden;
+
+    > .vote-content-left {
+      flex: 0 0 auto;
+      width: 240px;
+      background-color: $white;
+      box-shadow: 1px 0px 10px 0px rgba($black, 0.1);
+      padding: 16px;
+
+      @media (max-width: $medium) {
+        display: none;
+      }
+
+      > button {
+        width: 100%;
+        padding: 8px 16px;
+        background-color: $brandcolor4;
+
+        .wrapper-butt-menu {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          position: relative;
+
+          > .butt-menu {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            > span {
+              @include font-size-9($font-head-500);
+            }
+
+            > span,
+            > i {
+              color: $brandcolor2;
+            }
+          }
+
+          > button {
+            position: absolute;
+            right: 0;
+          }
+
+          > span {
+            @include font-size-9($font-head-500);
+          }
+
+          > span,
+          > i {
+            color: $brandcolor2;
+          }
+        }
+
+        &.question-type {
+          background-color: $white;
+
+          .wrapper-butt-menu {
+            > .butt-menu {
+              > i,
+              > span {
+                color: $black;
+              }
+            }
+            > i,
+            > span {
+              color: $black;
+            }
+          }
+        }
+      }
+    }
+
+    > .vote-content-right {
+      flex: 1 1 0%;
+      overflow-y: auto;
+      padding: 30px;
+
+      @media (max-width: $medium) {
+        padding: 10px;
+      }
+
+      > .title {
+        @include font-size-6($font-head-500);
+      }
+
+      > .image {
+        @include pointer;
+        height: auto;
+        border: 1px dashed;
+        border-radius: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin-top: 10px;
+
+        &.none-image {
+          height: 290px;
+        }
+
+        > span {
+          @include font-size-9($font-head-500);
+        }
+
+        > .image-upload {
+          > input {
+            display: none;
+          }
+        }
+
+        > .data-image {
+          object-fit: cover;
+          width: 100%;
+          border-radius: 16px;
+        }
+      }
+
+      > .vote-box {
+        display: flex;
+        flex-direction: column;
+        margin-top: 15pt;
+
+        > span {
+          @include font-size-10($font-head-500);
+        }
+
+        > input {
+          margin-top: 5px;
+          padding-left: 18px;
+          @include font-size-10($font-head-100);
+          height: 44px;
+          border-radius: 16px;
+          background-color: $white;
+          border: 1px solid $white;
+          box-shadow: 0px 0px 10px 0px rgba($black, 0.1);
+        }
+
+        > textarea {
+          margin-top: 5px;
+          padding: 10px 0 0 18px;
+          @include font-size-10($font-head-100);
+          border-radius: 16px;
+          background-color: $white;
+          border: 1px solid $white;
+          box-shadow: 0px 0px 10px 0px rgba($black, 0.1);
+        }
+
+        &.choose-user {
+          > .vote-dropdown-user {
+            margin: 5px 0 25px 0;
+            height: 31px;
+
+            > mat-form-field {
+              width: 100%;
+
+              > .mat-form-field-wrapper {
+                > .mat-form-field-flex {
+                  background-color: white;
+                  border-radius: 16px;
+
+                  > .mat-form-field-infix {
+                    border: 0.7px solid rgb($white, 1);
+                    background-color: $white;
+                    border-radius: 16px;
+                    padding: 5px 0;
+                    box-shadow: 0px 0px 10px 0px rgba($black, 0.1);
+                    display: flex;
+                    align-items: center;
+
+                    > img {
+                      width: 40px;
+                      height: 40px;
+                      margin-left: 16px;
+                      border: 2px solid $white;
+                      border-radius: 50%;
+                      box-shadow: 0px 0px 10px 0px rgba($black, 0.1);
+                    }
+
+                    > span {
+                      margin-left: 10px;
+                      @include font-size-10($font-head-500);
+
+                      &.image-null {
+                        border: 2px solid $white;
+                        width: 44.18px;
+                        height: 40px;
+                        border-radius: 50%;
+                        margin-left: 16px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: $white;
+                        background-color: $brandcolor2;
+                        box-shadow: 0px 0px 10px 0px rgba($black, 0.1);
+                      }
+                    }
+
+                    .mat-select {
+                      > .mat-select-trigger {
+                        > .mat-select-value {
+                          > span {
+                            margin-left: 10px;
+                            color: $black;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      > .vote-type-user {
+        border-radius: 16px;
+        justify-content: space-between;
+        align-items: center;
+        display: flex;
+        margin-top: 15pt;
+        border: 1px solid $white;
+        background-color: $white;
+        box-shadow: 0px 0px 10px 0px rgba($black, 0.1);
+        padding: 12px 18px;
+
+        > span {
+          @include font-size-9($font-head-500);
+        }
+
+        > .vote-dropdown-type {
+          height: 40px;
+
+          > mat-form-field {
+            > .mat-form-field-wrapper {
+              > .mat-form-field-flex {
+                background-color: white;
+
+                > .mat-form-field-infix {
+                  border: 0.7px solid rgb($white, 1);
+                  background-color: $brandcolor4;
+                  border-radius: 4px;
+                  padding: 10px 0;
+
+                  .mat-select {
+                    > .mat-select-trigger {
+                      > .mat-select-value {
+                        > span {
+                          margin-left: 10px;
+                          color: $brandcolor2;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      > .wrapper-vote-time,
+      > .wrapper-vote-option,
+      > .wrapper-vote-box {
+        margin-top: 15pt;
+        border-radius: 16px;
+        box-shadow: 0px 0px 10px 0px rgba($black, 0.1);
+        border: 1px solid $white;
+        background-color: $white;
+
+        &.option {
+          > .vote-option {
+            padding: 12px 18px;
+          }
+        }
+
+        &.in-question {
+          overflow: hidden;
+          margin-top: 5px;
+        }
+
+        > hr {
+          opacity: 0.5;
+          margin: 0;
+        }
+
+        > .vote-time {
+          padding: 12px 18px;
+        }
+
+        > .vote-time,
+        > .vote-option {
+          justify-content: space-between;
+          align-items: center;
+          display: flex;
+          gap: 15px;
+          border-bottom: 0.7px solid rgb($black, 0.08);
+
+          &:last-child {
+            border-bottom: unset;
+          }
+
+          > input {
+            flex: 1 1 0%;
+            border: unset;
+            height: 30px;
+            padding: 12px;
+            @include font-size-10($font-head-100);
+          }
+
+          > span {
+            @include font-size-9($font-head-500);
+          }
+
+          > mat-form-field {
+            height: 44px;
+            display: flex;
+            align-items: center;
+          }
+
+          > .image {
+            margin-right: 10px;
+            flex: 0 0 auto;
+
+            > img {
+              width: 40px;
+              height: 40px;
+              opacity: 0.4;
+              @include pointer;
+
+              &.data-image {
+                opacity: 1;
+                border-radius: 4px;
+              }
+            }
+
+            > .image-upload {
+              > input {
+                display: none;
+              }
+            }
+          }
+        }
+
+        > hr {
+          opacity: 0.1;
+        }
+      }
+
+      > .wrapper-button {
+        display: flex;
+        justify-content: end;
+        margin-top: 10px;
+
+        > .button-vote {
+          border-radius: 8px;
+          min-width: 105px;
+          @include font-size-10($font-head-500);
+
+          &.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+          }
+        }
+      }
+    }
+
+    > .wrapper-vote-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 40px;
+
+      > .vote-question-type {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        width: 170px;
+        height: 170px;
+        border-radius: 16px;
+        background-color: $white;
+        box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.16);
+        @include pointer;
+
+        &.active,
+        &:hover {
+          background-color: $brandcolor2;
+
+          > .vote-type-icon {
+            background-color: $brandcolor4;
+          }
+
+          > span {
+            color: $white;
+          }
+        }
+
+        > .vote-type-icon {
+          width: 84px;
+          height: 84px;
+          background-color: #f0f5f6;
+          border-radius: 16px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          @include font-size-7($font-head-500);
+
+          > mat-icon {
+            font-size: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+
+        > span {
+          @include font-size-9($font-head-500);
+        }
+      }
+    }
+  }
+
+  > .vote-footer-menu {
+    display: none;
+
+    @media (max-width: $medium) {
+      flex: 0 0 auto;
+      background-color: $white;
+      height: 75px;
+      box-shadow: 0px -1px 4px rgba($black, 0.1);
+      display: grid;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr 1fr;
+
+      &.add-question {
+        height: auto;
+        padding: 10px 16px;
+      }
+
+      > button {
+        width: 100%;
+        padding: 8px 16px;
+        background-color: $brandcolor4;
+
+        @media (max-width: $small) {
+          padding: 8px 4px;
+        }
+
+        .wrapper-butt-menu {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          position: relative;
+
+          @media (max-width: $small) {
+            gap: 4px;
+          }
+
+          > .butt-menu {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            > span {
+              @include font-size-9($font-head-500);
+
+              @media (max-width: $small) {
+                @include font-size-10($font-head-500);
+              }
+            }
+
+            > span,
+            > i {
+              color: $brandcolor2;
+            }
+          }
+
+          > button {
+            position: absolute;
+            right: 0;
+          }
+
+          > span {
+            @include font-size-9($font-head-500);
+
+            @media (max-width: $small) {
+              @include font-size-10($font-head-500);
+            }
+          }
+
+          > span,
+          > i {
+            color: $brandcolor2;
+          }
+        }
+
+        &.question-type {
+          background-color: $white;
+
+          .wrapper-butt-menu {
+            > .butt-menu {
+              > i,
+              > span {
+                color: $black;
+              }
+            }
+            > i,
+            > span {
+              color: $black;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  > .vote-footer {
+    flex: 0 0 auto;
+    background-color: $white;
+    height: 75px;
+    box-shadow: 0px -1px 4px rgba($black, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    gap: 12px;
+
+    &.add-question {
+      justify-content: end;
+    }
+
+    > button {
+      border: 1px solid;
+      background-color: $brandcolor3;
+      border-radius: 8px;
+
+      .wrapper-add-vote {
+        gap: 10px;
+        display: flex;
+        align-items: center;
+
+        > mat-icon {
+          border-radius: 50px;
+          background-color: white;
+          border: 1px solid $brandcolor3;
+        }
+
+        > span {
+          @include font-size-10($font-head-500);
+          color: $white;
+        }
+      }
+    }
+
+    > .wrapper-button-footer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      > .button-vote {
+        border-radius: 8px;
+        min-width: 105px;
+        @include font-size-10($font-head-500);
+
+        &.disabled {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}
+
+.panel-backgroud-vote {
+  max-width: unset !important;
+
+  > mat-dialog-container {
+    border-radius: 24px !important;
+    box-shadow: unset;
+
+    @media (max-width: $medium) {
+      border-radius: unset !important;
+    }
+  }
+}
+
+.user-option {
+  > .mat-option-text {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    > img {
+      width: 30px;
+      height: 30px;
+      border: 2px solid $white;
+      border-radius: 50%;
+      box-shadow: 0px 0px 10px 0px rgba($black, 0.1);
+    }
+
+    > .image-null {
+      border: 2px solid $white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $white;
+      background-color: $brandcolor2;
+    }
+  }
+  &:hover {
+    background-color: $brandcolor2 !important;
+    color: $white;
+  }
+}
+
+.mat-menu-item {
+  &.disabled-move {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  > .vote-move,
+  .vote-remove {
+    @include font-size-10($font-head-500);
+  }
+}

@@ -14,13 +14,9 @@ import axios from 'axios';
 export const jobSchedulerLoader: MicroframeworkLoader = (settings: MicroframeworkSettings | undefined) => {
     // Run Every Hour
     // Clear Temp File
-    schedule.scheduleJob('*/5 * * * *', () => {
-        axios.post(process.env.APP_DELETE_TEMP, {
-            headers: {
-                Origin: process.env.APP_API_PROCESSV3,
-                Referer: process.env.APP_API_PROCESSV3,
-            }
-        }).then((res) => {
+    schedule.scheduleJob('0 */1 * * *', () => {
+        axios.delete(process.env.APP_DELETE_TEMP)
+        .then((res) => {
             console.log(`Clear Temp File : ${res.status}`);
         }).catch((err) => {
             console.log('err: ' + err);

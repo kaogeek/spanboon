@@ -136,10 +136,24 @@ export class AssetController {
     public async deleteTempFiles(@Res() res: any): Promise<any> {
         const today = moment().toDate();
 
-        const assets: Asset[] = await this.assetService.find({ $and: [{ expirationDate: { $ne: null } }, { expirationDate: { $lt: today } }] });
-        const tempDeleted = [];
+        const assets: Asset[] = await this.assetService.aggregate(
+        [
+            {
+                $match: { 
+                    $and: 
+                    [
+                        { expirationDate: { $ne: null } }, 
+                        { expirationDate: { $lt: today } }
+                    ] 
+                }
+            },
+            {
+                $limit: 200
+            }
+        ]);
 
-        if (assets) {
+        const tempDeleted = [];
+        if (assets.length > 0) {
             for (const asset of assets) {
                 const assetObjId = new ObjectID(asset.id);
                 const query = { _id: assetObjId };
