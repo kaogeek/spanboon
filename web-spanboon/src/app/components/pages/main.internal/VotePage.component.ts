@@ -49,6 +49,7 @@ export class VotePage extends AbstractPage implements OnInit {
   public isLoading: boolean = false;
   public windowWidth: any;
   public isRes: boolean = false;
+  public isAllowCreate: boolean = false;
   public menuList: any[] = [
     {
       name: 'โหวตทั้งหมด',
@@ -117,6 +118,7 @@ export class VotePage extends AbstractPage implements OnInit {
   public ngOnInit() {
     if (this.isLogin()) {
       this.menuList[4].isLogin = true;
+      this._getPermissible();
     }
     this.userId = this.authenManager.getCurrentUser() ? this.authenManager.getCurrentUser().id : '';
     this.searchValue();
@@ -166,6 +168,12 @@ export class VotePage extends AbstractPage implements OnInit {
   //     }
   //   }
   // }
+
+  private _getPermissible() {
+    this.voteFacade.getPermissible().then((res) => {
+      this.isAllowCreate = true;
+    });
+  }
 
   public searchVoteContent(condition?, isOwn?, keyword?) {
     let search: SearchFilter = new SearchFilter();

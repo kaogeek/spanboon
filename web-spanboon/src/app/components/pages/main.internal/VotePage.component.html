@@ -33,7 +33,7 @@
                     <input #searchInput id="searchInput" type="search" [placeholder]="'ค้นหาโหวต'">
                     <!-- (keyup.enter)="searchValue($event.target.value)" -->
                 </div>
-                <div class="create-vote" *ngIf="isLogin()" (click)="openDialogCreateVote()">
+                <div class="create-vote" *ngIf="isAllowCreate" (click)="openDialogCreateVote()">
                     <img src="../../../../assets/img/icons/votepage/create.svg">
                     <span>สร้างโหวต</span>
                 </div>
