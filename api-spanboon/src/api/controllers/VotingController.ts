@@ -1,6 +1,6 @@
-import { JsonController, Res, Post, Body, Req, Authorized, Param, Delete, Put, Get } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Authorized, Param, Delete, Put, Get, QueryParam } from 'routing-controllers';
 import { VotingEventRequest } from './requests/VotingEventRequest';
-import { VoteItemRequest } from './requests/VoteItemRequest';
+import { VotingContentsRequest } from './requests/VotingContentsRequest';
 // import { UserSupportRequest } from './requests/UserSupportRequest';
 import { SupportRequest } from './requests/SupportRequest';
 import { FindVoteRequest } from './requests/FindVoteRequest';
@@ -32,6 +32,7 @@ import {
     DEFAULT_TRIGGER_VOTE,
     TRIGGER_VOTE,
     ELIGIBLE_VOTES,
+    MFPHASHTAG
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -427,6 +428,1389 @@ export class VotingController {
         const successResponse = ResponseUtil.getSuccessResponse('You good to go.', undefined);
         return res.status(200).send(successResponse);
 
+    }
+
+    @Post('/contents')
+    public async votingContents(@Body({ validate: true }) votingContentsRequest: VotingContentsRequest,@QueryParam('limit') limit: number, @QueryParam('offset') offset: number,@Res() res: any, @Req() req: any): Promise<any>{
+        const userObjId = new ObjectID(req.headers.userid);
+        const take = limit ? limit : 10;
+        const skips = offset ? offset : 0;
+        let pinned:any = undefined;
+        let myVote:any = undefined;
+        let supporter:any = undefined;
+        let closeVote:any = undefined;
+        let hashTagVote:any = undefined;
+
+        if(votingContentsRequest.pin === true) {
+            pinned = await this.votingEventService.aggregate(
+                [
+                    {
+                        $project: {
+                            _id: 1,
+                            createdDate: 1,
+                            title: 1,
+                            detail: 1,
+                            assertId: 1,
+                            coverPageURL: 1,
+                            s3CoverPageURL: 1,
+                            userId: 1,
+                            approved: 1,
+                            closed: 1,
+                            minSupport: 1,
+                            countSupport: 1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime: 1,
+                            approveDatetime: 1,
+                            approveUsername: 1,
+                            updateDatetime: 1,
+                            closeDate:1,
+                            status: 1,
+                            createAsPage: 1,
+                            type: 1,
+                            public: 1,
+                            hashTag:1,
+                            pin: 1,
+                            showVoterName: 1,
+                            showVoteResult: 1,
+                            service:1,
+                            checkListName: {
+                                $cond: [
+                                    {
+                                        $eq: ['$showVoterName', true]  // Check if 'showVoterName' is true
+                                    },
+                                    'Yes',
+                                    'No'
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $project:{
+                            _id: 1,
+                            createdDate: 1,
+                            title: 1,
+                            detail: 1,
+                            assertId: 1,
+                            coverPageURL: 1,
+                            s3CoverPageURL: 1,
+                            userId: 1,
+                            approved: 1,
+                            closed: 1,
+                            minSupport: 1,
+                            countSupport: 1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime: 1,
+                            approveDatetime: 1,
+                            approveUsername: 1,
+                            updateDatetime: 1,
+                            closeDate:1,
+                            status: 1,
+                            createAsPage: 1,
+                            type: 1,
+                            public: 1,
+                            hashTag:1,
+                            pin: 1,
+                            showVoterName: 1,
+                            showVoteResult: 1,
+                            voted:1,
+                            service:1,
+                            passing_scores:1,
+                            createPage: {
+                                $cond: [
+                                    {
+                                        $ne: ['$createAsPage', null]  // Check if 'showVoterName' is true
+                                    },
+                                    'Yes',
+                                    'No',
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $facet: {
+                            showVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'Yes'
+                                    },
+                                    
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Page',
+                                        let: { 'createAsPage': '$createAsPage' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$createAsPage', '$_id']
+                                                    }
+                                                },
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    name: 1,
+                                                    pageUsername: 1,
+                                                    isOfficial: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1,
+                                                    banned:1
+                                                }
+                                            }
+                                        ],
+                                        as: 'page'
+                                    }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$page'
+                                    }
+                                }
+                            ],
+                            notShowVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'No'
+                                    }
+                                },
+                                {
+                                    $lookup:{
+                                        from:'User',
+                                        let:{userId:'$userId'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$userId','$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    username: 1,
+                                                    firstName: 1,
+                                                    lastName: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1
+                                                }
+                                            }
+                                        ],
+                                        as:'user'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        path:'$user'
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields: {
+                            combinedResults: {
+                                $concatArrays: ['$showVoterName', '$notShowVoterName'],
+                            }
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$combinedResults',
+                        },
+                    },
+                    {
+                        $replaceRoot: {
+                            newRoot: '$combinedResults',
+                        },
+                    },
+                    {
+                        $project:{
+                            _id:1,
+                            createdDate:1,
+                            title:1,
+                            detail:1,
+                            coverPageURL:1,
+                            s3CoverPageURL:1,
+                            userId:1,
+                            approved:1,
+                            closed:1,
+                            minSupport:1,
+                            countSupport:1,
+                            startVoteDatetime:1,
+                            endVoteDatetime:1,
+                            closeDate:1,
+                            status:1,
+                            type:1,
+                            hashTag:1,
+                            pin:1,
+                            showVoterName:1,
+                            showVoteResult:1,
+                            voted:1,
+                            page:1,
+                            user:1,
+                            service:1,
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'VoteItem',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                }
+                            ],
+                            as:'voteItem'
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
+                        $match:{
+                            pin: true,
+                            approved: true
+                        }
+                    },
+                    {
+                        $sort: {
+                            createdDate: -1
+                        }
+                    },
+                    {
+                        $limit: take
+                    },
+                    {
+                        $skip: skips
+                    },
+                ]
+            );
+        }
+
+        if(votingContentsRequest.myVote === true) {
+            if(userObjId === undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('User id is undefined.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+
+            myVote = await this.votingEventService.aggregate(
+                [
+                    {
+                        $project: {
+                            _id: 1,
+                            createdDate: 1,
+                            title: 1,
+                            detail: 1,
+                            assertId: 1,
+                            coverPageURL: 1,
+                            s3CoverPageURL: 1,
+                            userId: 1,
+                            approved: 1,
+                            closed: 1,
+                            minSupport: 1,
+                            countSupport: 1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime: 1,
+                            approveDatetime: 1,
+                            approveUsername: 1,
+                            updateDatetime: 1,
+                            closeDate:1,
+                            status: 1,
+                            createAsPage: 1,
+                            type: 1,
+                            public: 1,
+                            hashTag:1,
+                            pin: 1,
+                            showVoterName: 1,
+                            showVoteResult: 1,
+                            service:1,
+                            checkListName: {
+                                $cond: [
+                                    {
+                                        $eq: ['$showVoterName', true]  // Check if 'showVoterName' is true
+                                    },
+                                    'Yes',
+                                    'No'
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $project:{
+                            _id: 1,
+                            createdDate: 1,
+                            title: 1,
+                            detail: 1,
+                            assertId: 1,
+                            coverPageURL: 1,
+                            s3CoverPageURL: 1,
+                            userId: 1,
+                            approved: 1,
+                            closed: 1,
+                            minSupport: 1,
+                            countSupport: 1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime: 1,
+                            approveDatetime: 1,
+                            approveUsername: 1,
+                            updateDatetime: 1,
+                            closeDate:1,
+                            status: 1,
+                            createAsPage: 1,
+                            type: 1,
+                            public: 1,
+                            hashTag:1,
+                            pin: 1,
+                            showVoterName: 1,
+                            showVoteResult: 1,
+                            voted:1,
+                            service:1,
+                            passing_scores:1,
+                            createPage: {
+                                $cond: [
+                                    {
+                                        $ne: ['$createAsPage', null]  // Check if 'showVoterName' is true
+                                    },
+                                    'Yes',
+                                    'No',
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $facet: {
+                            showVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'Yes'
+                                    },
+                                    
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Page',
+                                        let: { 'createAsPage': '$createAsPage' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$createAsPage', '$_id']
+                                                    }
+                                                },
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    name: 1,
+                                                    pageUsername: 1,
+                                                    isOfficial: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1,
+                                                    banned:1
+                                                }
+                                            }
+                                        ],
+                                        as: 'page'
+                                    }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$page'
+                                    }
+                                }
+                            ],
+                            notShowVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'No'
+                                    }
+                                },
+                                {
+                                    $lookup:{
+                                        from:'User',
+                                        let:{userId:'$userId'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$userId','$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    username: 1,
+                                                    firstName: 1,
+                                                    lastName: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1
+                                                }
+                                            }
+                                        ],
+                                        as:'user'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        path:'$user'
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields: {
+                            combinedResults: {
+                                $concatArrays: ['$showVoterName', '$notShowVoterName'],
+                            }
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$combinedResults',
+                        },
+                    },
+                    {
+                        $replaceRoot: {
+                            newRoot: '$combinedResults',
+                        },
+                    },
+                    {
+                        $project:{
+                            _id:1,
+                            createdDate:1,
+                            title:1,
+                            detail:1,
+                            coverPageURL:1,
+                            s3CoverPageURL:1,
+                            userId:1,
+                            approved:1,
+                            closed:1,
+                            minSupport:1,
+                            countSupport:1,
+                            startVoteDatetime:1,
+                            endVoteDatetime:1,
+                            closeDate:1,
+                            status:1,
+                            type:1,
+                            hashTag:1,
+                            pin:1,
+                            showVoterName:1,
+                            showVoteResult:1,
+                            voted:1,
+                            page:1,
+                            user:1,
+                            service:1,
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'VoteItem',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                }
+                            ],
+                            as:'voteItem'
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
+                        $match:{
+                            userId: userObjId
+                        }
+                    },
+                    {
+                        $sort: {
+                            createdDate: -1
+                        }
+                    },
+                    {
+                        $limit: take
+                    },
+                    {
+                        $skip: skips
+                    },
+                ]
+            );
+        }
+
+        if(votingContentsRequest.supporter === true) {
+            supporter = await this.votingEventService.aggregate(
+                [
+                    {
+                        $project: {
+                            _id: 1,
+                            createdDate: 1,
+                            title: 1,
+                            detail: 1,
+                            assertId: 1,
+                            coverPageURL: 1,
+                            s3CoverPageURL: 1,
+                            userId: 1,
+                            approved: 1,
+                            closed: 1,
+                            minSupport: 1,
+                            countSupport: 1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime: 1,
+                            approveDatetime: 1,
+                            approveUsername: 1,
+                            updateDatetime: 1,
+                            closeDate:1,
+                            status: 1,
+                            createAsPage: 1,
+                            type: 1,
+                            public: 1,
+                            hashTag:1,
+                            pin: 1,
+                            showVoterName: 1,
+                            showVoteResult: 1,
+                            service:1,
+                            checkListName: {
+                                $cond: [
+                                    {
+                                        $eq: ['$showVoterName', true]  // Check if 'showVoterName' is true
+                                    },
+                                    'Yes',
+                                    'No'
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $project:{
+                            _id: 1,
+                            createdDate: 1,
+                            title: 1,
+                            detail: 1,
+                            assertId: 1,
+                            coverPageURL: 1,
+                            s3CoverPageURL: 1,
+                            userId: 1,
+                            approved: 1,
+                            closed: 1,
+                            minSupport: 1,
+                            countSupport: 1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime: 1,
+                            approveDatetime: 1,
+                            approveUsername: 1,
+                            updateDatetime: 1,
+                            closeDate:1,
+                            status: 1,
+                            createAsPage: 1,
+                            type: 1,
+                            public: 1,
+                            hashTag:1,
+                            pin: 1,
+                            showVoterName: 1,
+                            showVoteResult: 1,
+                            voted:1,
+                            service:1,
+                            passing_scores:1,
+                            createPage: {
+                                $cond: [
+                                    {
+                                        $ne: ['$createAsPage', null]  // Check if 'showVoterName' is true
+                                    },
+                                    'Yes',
+                                    'No',
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $facet: {
+                            showVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'Yes'
+                                    },
+                                    
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Page',
+                                        let: { 'createAsPage': '$createAsPage' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$createAsPage', '$_id']
+                                                    }
+                                                },
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    name: 1,
+                                                    pageUsername: 1,
+                                                    isOfficial: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1,
+                                                    banned:1
+                                                }
+                                            }
+                                        ],
+                                        as: 'page'
+                                    }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$page'
+                                    }
+                                }
+                            ],
+                            notShowVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'No'
+                                    }
+                                },
+                                {
+                                    $lookup:{
+                                        from:'User',
+                                        let:{userId:'$userId'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$userId','$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    username: 1,
+                                                    firstName: 1,
+                                                    lastName: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1
+                                                }
+                                            }
+                                        ],
+                                        as:'user'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        path:'$user'
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields: {
+                            combinedResults: {
+                                $concatArrays: ['$showVoterName', '$notShowVoterName'],
+                            }
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$combinedResults',
+                        },
+                    },
+                    {
+                        $replaceRoot: {
+                            newRoot: '$combinedResults',
+                        },
+                    },
+                    {
+                        $project:{
+                            _id:1,
+                            createdDate:1,
+                            title:1,
+                            detail:1,
+                            coverPageURL:1,
+                            s3CoverPageURL:1,
+                            userId:1,
+                            approved:1,
+                            closed:1,
+                            minSupport:1,
+                            countSupport:1,
+                            startVoteDatetime:1,
+                            endVoteDatetime:1,
+                            closeDate:1,
+                            status:1,
+                            type:1,
+                            hashTag:1,
+                            pin:1,
+                            showVoterName:1,
+                            showVoteResult:1,
+                            voted:1,
+                            page:1,
+                            user:1,
+                            service:1,
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'VoteItem',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                }
+                            ],
+                            as:'voteItem'
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
+                        $match:{
+                            status: 'support'
+                        }
+                    },
+                    {
+                        $sort: {
+                            createdDate: -1
+                        }
+                    },
+                    {
+                        $limit: take
+                    },
+                    {
+                        $skip: skips
+                    },
+                ]
+            );
+        }
+
+        if(votingContentsRequest.closeVote === true) {
+            let closetVoteValue = DEFAULT_CLOSET_VOTE;
+            const configClosetVote = await this.configService.getConfig(CLOSET_VOTE);
+            if (configClosetVote) {
+                closetVoteValue = parseInt(configClosetVote.value, 10);
+            }
+    
+            const today = moment().toDate();
+            const closetValue = (24 * closetVoteValue) * 60 * 60 * 1000; // one day in milliseconds
+            const dateNow = new Date(today.getTime() + closetValue);
+
+            closeVote = await this.votingEventService.aggregate(
+                [
+                    {
+                        $project: {
+                            _id: 1,
+                            createdDate: 1,
+                            title: 1,
+                            detail: 1,
+                            assertId: 1,
+                            coverPageURL: 1,
+                            s3CoverPageURL: 1,
+                            userId: 1,
+                            approved: 1,
+                            closed: 1,
+                            minSupport: 1,
+                            countSupport: 1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime: 1,
+                            approveDatetime: 1,
+                            approveUsername: 1,
+                            updateDatetime: 1,
+                            closeDate:1,
+                            status: 1,
+                            createAsPage: 1,
+                            type: 1,
+                            public: 1,
+                            hashTag:1,
+                            pin: 1,
+                            showVoterName: 1,
+                            showVoteResult: 1,
+                            service:1,
+                            checkListName: {
+                                $cond: [
+                                    {
+                                        $eq: ['$showVoterName', true]  // Check if 'showVoterName' is true
+                                    },
+                                    'Yes',
+                                    'No'
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $project:{
+                            _id: 1,
+                            createdDate: 1,
+                            title: 1,
+                            detail: 1,
+                            assertId: 1,
+                            coverPageURL: 1,
+                            s3CoverPageURL: 1,
+                            userId: 1,
+                            approved: 1,
+                            closed: 1,
+                            minSupport: 1,
+                            countSupport: 1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime: 1,
+                            approveDatetime: 1,
+                            approveUsername: 1,
+                            updateDatetime: 1,
+                            closeDate:1,
+                            status: 1,
+                            createAsPage: 1,
+                            type: 1,
+                            public: 1,
+                            hashTag:1,
+                            pin: 1,
+                            showVoterName: 1,
+                            showVoteResult: 1,
+                            voted:1,
+                            service:1,
+                            passing_scores:1,
+                            createPage: {
+                                $cond: [
+                                    {
+                                        $ne: ['$createAsPage', null]  // Check if 'showVoterName' is true
+                                    },
+                                    'Yes',
+                                    'No',
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $facet: {
+                            showVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'Yes'
+                                    },
+                                    
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Page',
+                                        let: { 'createAsPage': '$createAsPage' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$createAsPage', '$_id']
+                                                    }
+                                                },
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    name: 1,
+                                                    pageUsername: 1,
+                                                    isOfficial: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1,
+                                                    banned:1
+                                                }
+                                            }
+                                        ],
+                                        as: 'page'
+                                    }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$page'
+                                    }
+                                }
+                            ],
+                            notShowVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'No'
+                                    }
+                                },
+                                {
+                                    $lookup:{
+                                        from:'User',
+                                        let:{userId:'$userId'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$userId','$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    username: 1,
+                                                    firstName: 1,
+                                                    lastName: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1
+                                                }
+                                            }
+                                        ],
+                                        as:'user'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        path:'$user'
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields: {
+                            combinedResults: {
+                                $concatArrays: ['$showVoterName', '$notShowVoterName'],
+                            }
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$combinedResults',
+                        },
+                    },
+                    {
+                        $replaceRoot: {
+                            newRoot: '$combinedResults',
+                        },
+                    },
+                    {
+                        $project:{
+                            _id:1,
+                            createdDate:1,
+                            title:1,
+                            detail:1,
+                            coverPageURL:1,
+                            s3CoverPageURL:1,
+                            userId:1,
+                            approved:1,
+                            closed:1,
+                            minSupport:1,
+                            countSupport:1,
+                            startVoteDatetime:1,
+                            endVoteDatetime:1,
+                            closeDate:1,
+                            status:1,
+                            type:1,
+                            hashTag:1,
+                            pin:1,
+                            showVoterName:1,
+                            showVoteResult:1,
+                            voted:1,
+                            page:1,
+                            user:1,
+                            service:1,
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'VoteItem',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                }
+                            ],
+                            as:'voteItem'
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
+                        $match:{
+                            endVoteDatetime:{$gte:dateNow}
+                        }
+                    },
+                    {
+                        $sort: {
+                            createdDate: -1
+                        }
+                    },
+                    {
+                        $limit: take
+                    },
+                    {
+                        $skip: skips
+                    },
+                ]
+            );
+        }
+
+        if(votingContentsRequest.hashTagVote === true) {
+            const mfpHashTag = await this.configService.getConfig(MFPHASHTAG);
+            const splitHashTag = mfpHashTag.value.split(',');
+            hashTagVote = await this.votingEventService.aggregate(
+                [
+                    {
+                        $project: {
+                            _id: 1,
+                            createdDate: 1,
+                            title: 1,
+                            detail: 1,
+                            assertId: 1,
+                            coverPageURL: 1,
+                            s3CoverPageURL: 1,
+                            userId: 1,
+                            approved: 1,
+                            closed: 1,
+                            minSupport: 1,
+                            countSupport: 1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime: 1,
+                            approveDatetime: 1,
+                            approveUsername: 1,
+                            updateDatetime: 1,
+                            closeDate:1,
+                            status: 1,
+                            createAsPage: 1,
+                            type: 1,
+                            public: 1,
+                            hashTag:1,
+                            pin: 1,
+                            showVoterName: 1,
+                            showVoteResult: 1,
+                            service:1,
+                            checkListName: {
+                                $cond: [
+                                    {
+                                        $eq: ['$showVoterName', true]  // Check if 'showVoterName' is true
+                                    },
+                                    'Yes',
+                                    'No'
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $project:{
+                            _id: 1,
+                            createdDate: 1,
+                            title: 1,
+                            detail: 1,
+                            assertId: 1,
+                            coverPageURL: 1,
+                            s3CoverPageURL: 1,
+                            userId: 1,
+                            approved: 1,
+                            closed: 1,
+                            minSupport: 1,
+                            countSupport: 1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime: 1,
+                            approveDatetime: 1,
+                            approveUsername: 1,
+                            updateDatetime: 1,
+                            closeDate:1,
+                            status: 1,
+                            createAsPage: 1,
+                            type: 1,
+                            public: 1,
+                            hashTag:1,
+                            pin: 1,
+                            showVoterName: 1,
+                            showVoteResult: 1,
+                            voted:1,
+                            service:1,
+                            passing_scores:1,
+                            createPage: {
+                                $cond: [
+                                    {
+                                        $ne: ['$createAsPage', null]  // Check if 'showVoterName' is true
+                                    },
+                                    'Yes',
+                                    'No',
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $facet: {
+                            showVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'Yes'
+                                    },
+                                    
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Page',
+                                        let: { 'createAsPage': '$createAsPage' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$createAsPage', '$_id']
+                                                    }
+                                                },
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    name: 1,
+                                                    pageUsername: 1,
+                                                    isOfficial: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1,
+                                                    banned:1
+                                                }
+                                            }
+                                        ],
+                                        as: 'page'
+                                    }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$page'
+                                    }
+                                }
+                            ],
+                            notShowVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'No'
+                                    }
+                                },
+                                {
+                                    $lookup:{
+                                        from:'User',
+                                        let:{userId:'$userId'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$userId','$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    username: 1,
+                                                    firstName: 1,
+                                                    lastName: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1
+                                                }
+                                            }
+                                        ],
+                                        as:'user'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        path:'$user'
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields: {
+                            combinedResults: {
+                                $concatArrays: ['$showVoterName', '$notShowVoterName'],
+                            }
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$combinedResults',
+                        },
+                    },
+                    {
+                        $replaceRoot: {
+                            newRoot: '$combinedResults',
+                        },
+                    },
+                    {
+                        $project:{
+                            _id:1,
+                            createdDate:1,
+                            title:1,
+                            detail:1,
+                            coverPageURL:1,
+                            s3CoverPageURL:1,
+                            userId:1,
+                            approved:1,
+                            closed:1,
+                            minSupport:1,
+                            countSupport:1,
+                            startVoteDatetime:1,
+                            endVoteDatetime:1,
+                            closeDate:1,
+                            status:1,
+                            type:1,
+                            hashTag:1,
+                            pin:1,
+                            showVoterName:1,
+                            showVoteResult:1,
+                            voted:1,
+                            page:1,
+                            user:1,
+                            service:1,
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'VoteItem',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                }
+                            ],
+                            as:'voteItem'
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
+                        $match:{
+                            hashTag:{$in:splitHashTag}
+                        }
+                    },
+                    {
+                        $sort: {
+                            createdDate: -1
+                        }
+                    },
+                    {
+                        $limit: take
+                    },
+                    {
+                        $skip: skips
+                    },
+                ]
+            );
+        }
+
+        const countRows = await this.votingEventService.aggregate(
+            [
+                {
+                    $count: 'passing_scores'
+                },
+            ]
+        );
+
+        const result: any = {};
+        result.pin = pinned;
+        result.myVote = myVote;
+        result.supporter = supporter;
+        result.closeDate = closeVote;
+        result.hashTagVote = hashTagVote;
+
+        const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', result,countRows);
+        return res.status(200).send(successResponse);
     }
 
     // voteChoice -> who votes
