@@ -37,7 +37,7 @@
     <ng-container *ngIf="!model.closed; else elseClosed">
         <span class="vote-time">
             <ng-container *ngIf="model.endVoteDay > 0">
-                <span>ปิดโหวตใน </span>
+                <span>{{model.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
                 <span>{{model.endVoteDay}}</span>
                 <span> วัน </span>
             </ng-container>

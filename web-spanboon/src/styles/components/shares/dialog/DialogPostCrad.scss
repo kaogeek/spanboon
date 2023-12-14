@@ -305,6 +305,18 @@
             width: 60% !important;
             margin-bottom: 20px;
             @include font-size-8($font-head-100);
+
+            @media (max-width: $large) {
+              width: 70% !important;
+            }
+
+            @media (max-width: $medium) {
+              width: 75% !important;
+            }
+
+            @media (max-width: $small) {
+              width: 85% !important;
+            }
           }
         }
 
@@ -577,6 +589,11 @@
               border-radius: 8px;
               padding: 13px 50px;
               cursor: pointer;
+
+              &.voted {
+                opacity: 0.5;
+                pointer-events: none;
+              }
             }
           }
 

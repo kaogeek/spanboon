@@ -92,6 +92,18 @@ export class VoteEventFacade extends AbstractFacade {
     });
   }
 
+  public getVotedOwn(id: string): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/voting/voted/own/' + id;
+      let httpOptions = this.authMgr.getDefaultOptions();
+      this.http.get(url, httpOptions).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public getSupport(id: string): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/voting/get/support/' + id;
