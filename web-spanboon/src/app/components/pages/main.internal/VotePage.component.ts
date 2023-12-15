@@ -57,7 +57,7 @@ export class VotePage extends AbstractPage implements OnInit {
       status: '',
       icon: '../../../../assets/img/icons/votepage/block.svg',
       icon2: '../../../../assets/img/icons/votepage/block-active.svg',
-      isLogin: true,
+      isLogin: false,
     },
     {
       name: 'โหวตที่ฉันสร้าง',
@@ -71,14 +71,14 @@ export class VotePage extends AbstractPage implements OnInit {
       status: 'open',
       icon: '../../../../assets/img/icons/votepage/openvote.svg',
       icon2: '../../../../assets/img/icons/votepage/openvote-active.svg',
-      isLogin: true,
+      isLogin: false,
     },
     {
       name: 'ล่ารายชื่อ',
       status: 'support',
       icon: '../../../../assets/img/icons/votepage/like.svg',
       icon2: '../../../../assets/img/icons/votepage/like-active.svg',
-      isLogin: true,
+      isLogin: false,
     },
     {
       name: 'ดูผลโหวต',
@@ -118,6 +118,9 @@ export class VotePage extends AbstractPage implements OnInit {
 
   public ngOnInit() {
     if (this.isLogin()) {
+      this.menuList[0].isLogin = true;
+      this.menuList[2].isLogin = true;
+      this.menuList[3].isLogin = true;
       this.menuList[4].isLogin = true;
       this._getPermissible();
     }
@@ -166,7 +169,7 @@ export class VotePage extends AbstractPage implements OnInit {
 
   public _searchContent() {
     this.isLoading = true;
-    this.voteFacade.searchAll().then((res) => {
+    this.voteFacade.searchAll(this.isLogin()).then((res) => {
       if (res) {
         this.model = res;
         this._getEndVoteTime(res, 'model');

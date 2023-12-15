@@ -495,6 +495,7 @@ export class DialogCreateVote extends AbstractPage {
         service: voteData.service,
         hashTag: voteData.hashTag,
         voteItem: voteData.voteItem,
+        oldPictures: [],
       }
 
       if (data.voteItem.length > 0) {

@@ -18,14 +18,14 @@ export class VoteEventFacade extends AbstractFacade {
     super(http, authMgr);
   }
 
-  public searchAll(): Promise<any> {
+  public searchAll(isLogin: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/voting/contents/';
       let body: any = {
         limit: 10,
         offset: 0,
         pin: true,
-        myVote: true,
+        myVote: isLogin ? true : false,
         supporter: true,
         closeVote: true,
         hashTagVote: true

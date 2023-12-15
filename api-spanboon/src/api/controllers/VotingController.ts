@@ -432,7 +432,7 @@ export class VotingController {
 
     @Post('/contents')
     public async votingContents(@Body({ validate: true }) votingContentsRequest: VotingContentsRequest,@QueryParam('limit') limit: number, @QueryParam('offset') offset: number,@Res() res: any, @Req() req: any): Promise<any>{
-        const userObjId = new ObjectID(req.headers.userid);
+        const userObjId = req.headers.userid ? new ObjectID(req.headers.userid) : undefined;
         const take = limit ? limit : 10;
         const skips = offset ? offset : 0;
         let pinned:any = undefined;
