@@ -1,7 +1,7 @@
 <div class="dialog-create-vote">
     <div class="vote-header">
-        <span [innerHTML]="!isAddQuestion ? 'สร้างโหวต' : 'เลือกแบบคำถาม'"></span>
-        <button mat-mini-fab (click)="onClose(false)">
+        <span>{{data.edit && !isAddQuestion ? 'แก้ไขโหวต' : (!isAddQuestion ? 'สร้างโหวต' : 'เลือกแบบคำถาม')}}</span>
+        <button mat-mini-fab (click)="closeDialog('close')">
             <mat-icon>close</mat-icon>
         </button>
     </div>
@@ -17,7 +17,7 @@
             </button>
             <ng-container *ngFor="let item of listQuestion;let index = index">
                 <button mat-button [ngClass]="{'question-type': index !== indexPage}"
-                    (click)="changeQuestion(index,item.typeChoice,false)">
+                    (click)="changeQuestion(index,item.typeChoice ? item.typeChoice : item.type,false)">
                     <div class="wrapper-butt-menu">
                         <div class="butt-menu">
                             <i [ngClass]="indexPage === index ? 'material-icons' : 'material-icons-outlined'"
@@ -27,7 +27,7 @@
                                     'multi' ? '#'+(index+1)+'
                                     Multiple' : '#'+(index+1)+' Textbox')}}</span> -->
                         </div>
-                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="icon-button">
+                        <button mat-icon-button [matMenuTriggerFor]="menu">
                             <mat-icon>more_horiz</mat-icon>
                         </button>
                         <mat-menu #menu="matMenu">
@@ -74,10 +74,7 @@
                         <img class="data-image" [src]="apiBaseURL + image.coverPageURL">
                     </ng-template>
                     <div class="image-upload">
-                        <label for="file-input-cover">
-                        </label>
-                        <input #fileInput id="file-input-cover" type="file" (change)="onFileSelect($event,'main')"
-                            accept="image/*" />
+                        <input #fileInput type="file" (change)="onFileSelect($event,'main')" accept="image/*" />
                     </div>
                 </div>
                 <div class="vote-box">
@@ -92,7 +89,7 @@
                 </div>
                 <div class="vote-box choose-user">
                     <span>สร้างโหวตโดย</span>
-                    <div class="vote-dropdown-user">
+                    <div class="vote-dropdown-user" [ngClass]="{'disable': data.edit}">
                         <mat-form-field appearance="none">
                             <ng-container *ngIf="selectUser === user.displayName; else elseDefaultImage">
                                 <ng-container *ngIf="!!user.imageURL; else elseImageNullDefault">
@@ -204,8 +201,7 @@
                         </mat-form-field> -->
                         <mat-form-field>
                             <span>#</span>
-                            <input type="text" aria-label="Number" matInput [formControl]="hashTag"
-                                [matAutocomplete]="auto">
+                            <input type="text" matInput [formControl]="hashTag" [matAutocomplete]="auto">
                             <mat-autocomplete #auto="matAutocomplete">
                                 <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
                                     {{option}}
@@ -215,30 +211,33 @@
                     </div>
                 </div>
             </ng-container>
-            <ng-container *ngIf="typeQuestion !== 'settings'">
-                <ng-container *ngIf="typeQuestion === 'single'">
-                    <span class="title">คำถามที่ {{indexPage+1}} (Checkbox)</span>
-                    <div class="image" [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURLItem === null}"
-                        (click)="fileInput.click()">
-                        <ng-container *ngIf="listQuestion[indexPage]?.coverPageURLItem === null else elseImageSingle">
-                            <img src="../../../../assets/img/icons/votepage/add-photo.svg">
-                            <span>อัพโหลดรูปหน้าปก</span>
-                        </ng-container>
-                        <ng-template #elseImageSingle>
+            <ng-container *ngIf="typeQuestion !== 'settings' && typeQuestion !== 'thanks'">
+                <span class="title">คำถามที่ {{indexPage+1}} ({{typeQuestion === 'single' ? 'Checkbox' : (typeQuestion
+                    === 'multi' ? 'Multiple' : 'Textbox')}})</span>
+                <div class="image" [ngClass]="{'none-image': !listQuestion[indexPage]?.coverPageURLItem}"
+                    (click)="fileInput.click()">
+                    <ng-container *ngIf="!listQuestion[indexPage]?.coverPageURLItem else elseImageText">
+                        <img src="../../../../assets/img/icons/votepage/add-photo.svg">
+                        <span>อัพโหลดรูปหน้าปก</span>
+                    </ng-container>
+                    <ng-template #elseImageText>
+                        <ng-container *ngIf="listQuestion[indexPage].coverPageURLItem; else elseTextCoverPage">
                             <img class="data-image" [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURLItem">
+                        </ng-container>
+                        <ng-template #elseTextCoverPage>
+                            <img class="data-image" [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURL">
                         </ng-template>
-                        <div class="image-upload">
-                            <label for="file-input-cover">
-                            </label>
-                            <input #fileInput id="file-input-cover" type="file"
-                                (change)="onFileSelect($event,'question')" accept="image/*" />
-                        </div>
+                    </ng-template>
+                    <div class="image-upload">
+                        <input #fileInput type="file" (change)="onFileSelect($event,'question')" accept="image/*" />
                     </div>
-                    <div class="vote-box">
-                        <span>คำถาม</span>
-                        <input id="inputSingleQuestion" type="text" placeholder="ตั้งคำถาม" [(ngModel)]="titleQuestion"
-                            (keyup)="setFieldData(indexPage,true,true)">
-                    </div>
+                </div>
+                <div class="vote-box">
+                    <span>คำถาม</span>
+                    <input type="text" placeholder="ตั้งคำถาม" [(ngModel)]="titleQuestion"
+                        (keyup)="setFieldData(indexPage,true,true)">
+                </div>
+                <ng-container *ngIf="typeQuestion !== 'text'">
                     <div class="vote-box">
                         <span>ตัวเลือก</span>
                     </div>
@@ -259,100 +258,21 @@
                                             [src]="apiBaseURL + listQuestion[indexPage]?.voteChoice[index]?.coverPageURL">
                                     </ng-template>
                                     <div class="image-upload">
-                                        <label for="file-input-cover">
-                                        </label>
-                                        <input #fileInput id="file-input-cover" type="file"
-                                            (change)="onFileSelect($event,'choice',index)" accept="image/*" />
+                                        <input #fileInput type="file" (change)="onFileSelect($event,'choice',index)"
+                                            accept="image/*" />
                                     </div>
                                 </div>
                             </div>
                         </ng-container>
                     </div>
                 </ng-container>
-                <ng-container *ngIf="typeQuestion === 'multi'">
-                    <span class="title">คำถามที่ {{indexPage+1}} (Multiple Choice)</span>
-                    <div class="image" [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURLItem === null}"
-                        (click)="fileInput.click()">
-                        <ng-container *ngIf="listQuestion[indexPage]?.coverPageURLItem === null else elseImageMultiple">
-                            <img src="../../../../assets/img/icons/votepage/add-photo.svg">
-                            <span>อัพโหลดรูปหน้าปก</span>
-                        </ng-container>
-                        <ng-template #elseImageMultiple>
-                            <img class="data-image" [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURLItem">
-                        </ng-template>
-                        <div class="image-upload">
-                            <label for="file-input-cover">
-                            </label>
-                            <input #fileInput id="file-input-cover" type="file"
-                                (change)="onFileSelect($event,'question')" accept="image/*" />
-                        </div>
-                    </div>
-                    <div class="vote-box">
-                        <span>คำถาม</span>
-                        <input id="inputMultiQuestion" type="text" placeholder="ตั้งคำถาม" [(ngModel)]="titleQuestion"
-                            (keyup)="setFieldData(indexPage,true,true)">
-                    </div>
-                    <div class="vote-box">
-                        <span>ตัวเลือก</span>
-                    </div>
-                    <div class="wrapper-vote-box in-question">
-                        <ng-container *ngFor="let ans of listInputAns;let index = index">
-                            <div class="vote-option">
-                                <input id="answerMulti" name="answer" type="text" placeholder="{{index+1}}. ใส่ตัวเลือก"
-                                    value="" (input)="onType()">
-                                <div class="image"
-                                    [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURLItem === null}"
-                                    (click)="fileInput.click()">
-                                    <ng-container
-                                        *ngIf="listQuestion[indexPage]?.voteChoice[index]?.coverPageURL === null else elseImageChoiceSingle">
-                                        <img src="../../../../assets/img/icons/votepage/add-photo.svg">
-                                    </ng-container>
-                                    <ng-template #elseImageChoiceSingle>
-                                        <img class="data-image"
-                                            [src]="apiBaseURL + listQuestion[indexPage]?.voteChoice[index]?.coverPageURL">
-                                    </ng-template>
-                                    <div class="image-upload">
-                                        <label for="file-input-cover">
-                                        </label>
-                                        <input #fileInput id="file-input-cover" type="file"
-                                            (change)="onFileSelect($event,'choice',index)" accept="image/*" />
-                                    </div>
-                                </div>
-                            </div>
-                        </ng-container>
-                    </div>
-                </ng-container>
-                <ng-container *ngIf="typeQuestion === 'text'">
-                    <span class="title">คำถามที่ {{indexPage+1}} (Textbox)</span>
-                    <div class="image" [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURLItem === null}"
-                        (click)="fileInput.click()">
-                        <ng-container *ngIf="listQuestion[indexPage]?.coverPageURLItem === null else elseImageText">
-                            <img src="../../../../assets/img/icons/votepage/add-photo.svg">
-                            <span>อัพโหลดรูปหน้าปก</span>
-                        </ng-container>
-                        <ng-template #elseImageText>
-                            <img class="data-image" [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURLItem">
-                        </ng-template>
-                        <div class="image-upload">
-                            <label for="file-input-cover">
-                            </label>
-                            <input #fileInput id="file-input-cover" type="file"
-                                (change)="onFileSelect($event,'question')" accept="image/*" />
-                        </div>
-                    </div>
-                    <div class="vote-box">
-                        <span>คำถาม</span>
-                        <input type="text" placeholder="ตั้งคำถาม" [(ngModel)]="titleQuestion"
-                            (keyup)="setFieldData(indexPage,true,true)">
-                    </div>
-                </ng-container>
-                <ng-container *ngIf="typeQuestion === 'thanks'">
-                    <span class="title">หน้าขอบคุณ</span>
-                    <div class="vote-box">
-                        <span>ข้อความขอบคุณ</span>
-                        <input type="text" placeholder="ข้อความขอบคุณ" [(ngModel)]="thanksMessage">
-                    </div>
-                </ng-container>
+            </ng-container>
+            <ng-container *ngIf="typeQuestion === 'thanks'">
+                <span class="title">หน้าขอบคุณ</span>
+                <div class="vote-box">
+                    <span>ข้อความขอบคุณ</span>
+                    <input type="text" placeholder="ข้อความขอบคุณ" [(ngModel)]="thanksMessage">
+                </div>
             </ng-container>
         </div>
         <ng-container *ngIf="isAddQuestion">
@@ -391,7 +311,7 @@
         </button>
         <ng-container *ngFor="let item of listQuestion;let index = index">
             <button mat-button [ngClass]="{'question-type': index !== indexPage}" style="padding: 8px 0 8px 16px;"
-                (click)="changeQuestion(index,item.typeChoice,false)">
+                (click)="changeQuestion(index,item.typeChoice ? item.typeChoice : item.type,false)">
                 <div class="wrapper-butt-menu">
                     <div class="butt-menu">
                         <i [ngClass]="indexPage === index ? 'material-icons' : 'material-icons-outlined'"
@@ -401,7 +321,7 @@
                                     'multi' ? '#'+(index+1)+'
                                     Multiple' : '#'+(index+1)+' Textbox')}}</span> -->
                     </div>
-                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="icon-button">
+                    <button mat-icon-button [matMenuTriggerFor]="menu">
                         <mat-icon>more_horiz</mat-icon>
                     </button>
                     <mat-menu #menu="matMenu">
@@ -442,12 +362,12 @@
             </div>
         </button>
         <div class="wrapper-button-footer">
-            <button mat-button class="button-vote close" (click)="!isAddQuestion ? onClose() : back()">
+            <button mat-button class="button-vote close" (click)="!isAddQuestion ? closeDialog('reset') : back()">
                 <span>{{!isAddQuestion ? 'ยกเลิก' : 'ย้อนกลับ'}}</span>
             </button>
             <button mat-button class="button-vote submit"
-                (click)="!isAddQuestion ? createVote() : next(voteQuestionType)">
-                <span>{{!isAddQuestion ? 'สร้างโหวต' : 'ถัดไป'}}</span>
+                (click)="!isAddQuestion ? clickConfirm() : next(voteQuestionType)">
+                <span>{{data.edit ? 'แก้ไข' : (!isAddQuestion ? 'สร้างโหวต' : 'ถัดไป')}}</span>
             </button>
         </div>
     </div>

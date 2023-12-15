@@ -278,9 +278,9 @@ export class VotePage extends AbstractPage implements OnInit {
     }
   }
 
-  public changeMenu(menu) {
+  public changeMenu(menu, isCreate?) {
     this.isLoading = true;
-    if (menu === 'support' && this.activeUrl !== 'support') {
+    if ((menu === 'support' && this.activeUrl !== 'support') || isCreate) {
       this.voteData = [];
       this.searchVoteContent({
         "status": 'support',
@@ -330,7 +330,7 @@ export class VotePage extends AbstractPage implements OnInit {
     });
     dialog.afterClosed().subscribe((res) => {
       if (res === 'create') {
-        this.changeMenu('support');
+        this.changeMenu('support', true);
         this.activeMenu = 'support';
       }
     });
@@ -480,6 +480,27 @@ export class VotePage extends AbstractPage implements OnInit {
           }
         });
       }
+    });
+  }
+
+  public editVote($event) {
+    this.voteFacade.getVoteChoice($event._id).then((res) => {
+      let dialog = this.dialog.open(DialogCreateVote, {
+        panelClass: 'panel-backgroud-list',
+        disableClose: true,
+        autoFocus: false,
+        data: {
+          post: $event,
+          edit: true,
+          support: res,
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res === 'create' && res === 'edit') {
+          this.changeMenu('support');
+          this.activeMenu = 'support';
+        }
+      });
     });
   }
 
