@@ -18,6 +18,27 @@ export class VoteEventFacade extends AbstractFacade {
     super(http, authMgr);
   }
 
+  public searchAll(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/voting/contents/';
+      let body: any = {
+        limit: 10,
+        offset: 0,
+        pin: true,
+        myVote: true,
+        supporter: true,
+        closeVote: true,
+        hashTagVote: true
+      };
+      let options = this.authMgr.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public search(filter: any, condition: any, keyword?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/voting/vote/search/';

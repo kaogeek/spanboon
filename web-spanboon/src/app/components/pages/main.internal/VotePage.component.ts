@@ -50,6 +50,7 @@ export class VotePage extends AbstractPage implements OnInit {
   public windowWidth: any;
   public isRes: boolean = false;
   public isAllowCreate: boolean = false;
+  public model: any;
   public menuList: any[] = [
     {
       name: 'โหวตทั้งหมด',
@@ -121,7 +122,11 @@ export class VotePage extends AbstractPage implements OnInit {
       this._getPermissible();
     }
     this.userId = this.authenManager.getCurrentUser() ? this.authenManager.getCurrentUser().id : '';
-    this.searchValue();
+    if (this.activeMenu === undefined || this.activeMenu === '') {
+      this._searchContent();
+    } else {
+      this.searchValue();
+    }
     this.getScreenSize();
   }
 
@@ -153,25 +158,24 @@ export class VotePage extends AbstractPage implements OnInit {
     return;
   }
 
-  // private _searchVoteContent(url: string,key?: any) {
-  //   if (!!url) {
-  //     this._searchValue(url);
-  //   } else {
-  //     if (key === 'support') {
-  //       this._searchValue(key);
-  //     } else if (key === 'open') {
-  //       this._searchValue(key);
-  //     } else if (key === 'result') {
-  //       this._searchValue(key);
-  //     } else if (key === 'my-vote') {
-  //       this._searchValue(key);
-  //     }
-  //   }
-  // }
-
   private _getPermissible() {
     this.voteFacade.getPermissible().then((res) => {
       this.isAllowCreate = true;
+    });
+  }
+
+  public _searchContent() {
+    this.isLoading = true;
+    this.voteFacade.searchAll().then((res) => {
+      if (res) {
+        this.model = res;
+        this._getEndVoteTime(res, 'model');
+        this.isLoading = false;
+      }
+    }).catch((err) => {
+      if (err) {
+        this.isLoading = false;
+      }
     });
   }
 
@@ -198,7 +202,7 @@ export class VotePage extends AbstractPage implements OnInit {
             this.voteData = [...this.voteData, ...res];
           }
           setTimeout(() => {
-            this._getEndVoteTime(res);
+            this._getEndVoteTime(res, 'voteData');
             let data = this._removeDuplicateIds(this.voteData);
             this.voteData = data;
             this.isLoading = false;
@@ -221,7 +225,7 @@ export class VotePage extends AbstractPage implements OnInit {
             this.voteData = [...this.voteData, ...res];
           }
           setTimeout(() => {
-            this._getEndVoteTime(res);
+            this._getEndVoteTime(res, 'voteData');
             let data = this._removeDuplicateIds(this.voteData);
             this.voteData = data;
             this.isLoading = false;
@@ -278,39 +282,31 @@ export class VotePage extends AbstractPage implements OnInit {
     }
   }
 
-  public changeMenu(menu, isCreate?) {
+  public changeMenu(menu, isLoad?) {
     this.isLoading = true;
-    if ((menu === 'support' && this.activeUrl !== 'support') || isCreate) {
+    if ((menu === 'support' && this.activeUrl !== 'support') || isLoad) {
       this.voteData = [];
       this.searchVoteContent({
         "status": 'support',
         "approved": false,
         "pin": false,
       });
-    } else if (menu === 'open' && this.activeUrl !== 'open') {
+    } else if (menu === 'open' && this.activeUrl !== 'open' || isLoad) {
       this.voteData = [];
       this.searchVoteContent({
         "status": 'vote',
       });
-    } else if (menu === 'my-vote' && this.activeUrl !== 'my-vote') {
+    } else if (menu === 'my-vote' && this.activeUrl !== 'my-vote' || isLoad) {
       this.voteData = [];
       this.searchVoteContent({
       }, true);
-    } else if (menu === 'result' && this.activeUrl !== 'result') {
+    } else if (menu === 'result' && this.activeUrl !== 'result' || isLoad) {
       this.voteData = [];
       this.searchVoteContent({
         "approved": true,
       });
-    } else if (menu === '' && this.activeUrl !== undefined) {
-      this.voteData = [];
-      this.searchVoteContent({
-        "approved": true,
-        "pin": true,
-      }, false);
-      this.searchVoteContent({
-        "status": 'vote',
-      }, false);
-      // this.searchVoteContent({}, true);
+    } else if (menu === '' && this.activeUrl !== undefined || isLoad) {
+      this._searchContent();
     } else {
       this.isLoading = false;
     }
@@ -439,10 +435,31 @@ export class VotePage extends AbstractPage implements OnInit {
     return element === undefined ? false : true;
   }
 
-  private _getEndVoteTime(data: any) {
-    for (let index = 0; index < data.length; index++) {
-      this.voteData[index].endVoteDay = this._formatEndVote(data[index].endVoteDatetime, true);
-      this.voteData[index].endVoteHour = this._formatEndVote(data[index].endVoteDatetime, false);
+  private _getEndVoteTime(data: any, type: string) {
+    if (type === 'voteData') {
+      for (let index = 0; index < data.length; index++) {
+        this.voteData[index].endVoteDay = this._formatEndVote(data[index].endVoteDatetime, true);
+        this.voteData[index].endVoteHour = this._formatEndVote(data[index].endVoteDatetime, false);
+      }
+    } else {
+      for (let index = 0; index < data.pin.length; index++) {
+        this.model.pin[index].endVoteDay = this._formatEndVote(data.pin[index].endVoteDatetime, true);
+        this.model.pin[index].endVoteHour = this._formatEndVote(data.pin[index].endVoteDatetime, false);
+      }
+      for (let index = 0; index < data.supporter.length; index++) {
+        this.model.supporter[index].endVoteDay = this._formatEndVote(data.supporter[index].endVoteDatetime, true);
+        this.model.supporter[index].endVoteHour = this._formatEndVote(data.supporter[index].endVoteDatetime, false);
+      }
+      for (let index = 0; index < data.myVote.length; index++) {
+        this.model.myVote[index].endVoteDay = this._formatEndVote(data.myVote[index].endVoteDatetime, true);
+        this.model.myVote[index].endVoteHour = this._formatEndVote(data.myVote[index].endVoteDatetime, false);
+      }
+      for (let index = 0; index < data.closeDate.length; index++) {
+        this.model.closeDate[index].endVoteDay = this._formatEndVote(data.closeDate[index].endVoteDatetime, true);
+        this.model.closeDate[index].endVoteHour = this._formatEndVote(data.closeDate[index].endVoteDatetime, false);
+      }
+
+
     }
   }
 
@@ -470,9 +487,13 @@ export class VotePage extends AbstractPage implements OnInit {
         this.voteFacade.deleteVote($event._id).then((res) => {
           if (res) {
             if (res.message === "delete vote event is success.") {
-              const index = this.voteData.findIndex(item => item._id === $event._id);
-              this.voteData.splice(index, 1);
-              this.showAlertDialog("ลบโหวตเสร็จสิ้น");
+              if (this.activeMenu === undefined || this.activeMenu === '') {
+                this._searchContent();
+              } else {
+                const index = this.voteData.findIndex(item => item._id === $event._id);
+                this.voteData.splice(index, 1);
+              }
+              // this.showAlertDialog("ลบโหวตเสร็จสิ้น");
             }
           }
         }).catch((err) => {
@@ -496,9 +517,8 @@ export class VotePage extends AbstractPage implements OnInit {
         }
       });
       dialog.afterClosed().subscribe((res) => {
-        if (res === 'create' && res === 'edit') {
-          this.changeMenu('support');
-          this.activeMenu = 'support';
+        if (res === 'edit') {
+          this.changeMenu(this.activeMenu, true);
         }
       });
     });
