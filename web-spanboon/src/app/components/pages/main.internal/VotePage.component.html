@@ -38,7 +38,73 @@
                     <span>สร้างโหวต</span>
                 </div>
             </div>
+
             <ng-container *ngIf="activeUrl === undefined">
+                <ng-container *ngIf="!!model && !!model.pin">
+                    <div class="header-content">
+                        <p>ปักหมุด</p>
+                        <span>ดูทั้งหมด</span>
+                    </div>
+                    <hr>
+                    <div class="wrapper-content">
+                        <ng-container *ngFor="let data of model.pin">
+                            <card-content-vote #pinContent class="pin-content-data" [model]="data" [title]="data.title"
+                                (openDialog)="openDialogPost(data)" (deleteVote)="deleteDataVote($event)"
+                                (editVote)="editVote($event)" [image]="data.coverPageURL"></card-content-vote>
+                        </ng-container>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="!!model && !!model.myVote">
+                    <div class="header-content">
+                        <p>โหวตของฉัน</p>
+                        <span>ดูทั้งหมด</span>
+                    </div>
+                    <hr>
+                    <div class="wrapper-content">
+                        <ng-container *ngFor="let data of model.myVote">
+                            <card-content-vote #pinContent class="myvote-content-data" [model]="data"
+                                [title]="data.title" (openDialog)="openDialogPost(data)"
+                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                [image]="data.coverPageURL"></card-content-vote>
+                        </ng-container>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="!!model && !!model.supporter">
+                    <div class="header-content">
+                        <p>ล่ารายชื่อ</p>
+                        <span>ดูทั้งหมด</span>
+                    </div>
+                    <hr>
+                    <div class="wrapper-content">
+                        <ng-container *ngFor="let data of model.supporter">
+                            <card-content-vote #pinContent class="support-content-data" [model]="data"
+                                [title]="data.title" (openDialog)="openDialogPost(data)"
+                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                [image]="data.coverPageURL"></card-content-vote>
+                        </ng-container>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="!!model && !!model.closeDate">
+                    <div class="header-content">
+                        <p>ใกล้ปิดโหวต</p>
+                        <span>ดูทั้งหมด</span>
+                    </div>
+                    <hr>
+                    <div class="wrapper-content">
+                        <ng-container *ngFor="let data of model.closeDate">
+                            <card-content-vote #pinContent class="support-content-data" [model]="data"
+                                [title]="data.title" (openDialog)="openDialogPost(data)"
+                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                [image]="data.coverPageURL"></card-content-vote>
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </ng-container>
+
+            <!-- <ng-container *ngIf="activeUrl === undefined">
                 <div class="header-content">
                     <p>ปักหมุด</p>
                     <span>ดูทั้งหมด</span>
@@ -53,10 +119,9 @@
                         </ng-container>
                     </ng-container>
                 </div>
-            </ng-container>
+            </ng-container> -->
 
-            <!-- <ng-container *ngIf="checkLengthMyVote('my-vote')"> -->
-            <ng-container *ngIf="activeUrl === 'my-vote' || activeUrl === undefined">
+            <ng-container *ngIf="activeUrl === 'my-vote'">
                 <div class="header-content">
                     <p>โหวตของฉัน</p>
                     <span>ดูทั้งหมด</span>

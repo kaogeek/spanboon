@@ -214,7 +214,8 @@
                     </ng-container>
                     <ng-template #elseApproved>
                         <div class="wrapper-button">
-                            <ng-container *ngIf="data.post.userSupport.length > 0; else elseSupport">
+                            <ng-container
+                                *ngIf="data.post.userSupport ? data.post.userSupport.length >= 1 : data.support.userSupport.length >= 1; else elseSupport">
                                 <span class="button-vote close"
                                     (click)="unVoteSupport(data.post._id)">ยกเลิกสนับสนุน</span>
                             </ng-container>
@@ -267,3 +268,5 @@
         </mat-dialog-content>
     </div>
 </ng-template>
+
+<loading *ngIf="isLoading"></loading>
