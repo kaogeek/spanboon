@@ -666,6 +666,26 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $limit: take
                     },
                     {
@@ -904,6 +924,26 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $limit: take
                     },
                     {
@@ -1134,6 +1174,26 @@ export class VotingController {
                     {
                         $sort: {
                             createdDate: -1
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
                         }
                     },
                     {
@@ -1380,6 +1440,26 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $limit: take
                     },
                     {
@@ -1610,6 +1690,26 @@ export class VotingController {
                                     }
                                 },
                                 {
+                                    $lookup:{
+                                        from:'UserSupport',
+                                        let:{'id':'$_id'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$id','$votingId']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $match: { userId: userObjId }
+                                            }
+                                        ],
+                                        as:'userSupport'
+                                    }
+                                },
+                                {
                                     $project:{
                                         _id:1,
                                         createdDate:1,
@@ -1641,7 +1741,6 @@ export class VotingController {
                             as:'votingEvent'
                         }
                     },
-
                     {
                         $limit: take
                     },
@@ -1664,7 +1763,7 @@ export class VotingController {
         result.myVote = myVote;
         result.supporter = supporter;
         result.closeDate = closeVote;
-        result.hashTagVote = hashTagVote;
+        result.hashTagVote = hashTagVote.shift();
 
         const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', result,countRows);
         return res.status(200).send(successResponse);
@@ -3229,6 +3328,12 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
+        if(votingEventRequest.oldPictures.length > 0 ) {
+            for(const assetId of votingEventRequest.oldPictures) {
+                await this.assetService.update({_id: new ObjectID(assetId)}, {$set:{expirationDate : today}});
+            }
+        }
+
         let query:any;
         let newValues:any;
 
@@ -3287,7 +3392,7 @@ export class VotingController {
 
     @Delete('/own/:votingId')
     @Authorized('user')
-    public async deleteVoteingEventOwner(@Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async deleteVoteingEvent(@Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const voteObjId = new ObjectID(votingId);
 
@@ -3297,21 +3402,23 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+        const today = moment().toDate();
 
         const voteItemObj = await this.voteItemService.findOne({ votingId: voteObj.id });
         const voteItems = await this.voteItemService.find({ votingId: voteObj.id });
         if (voteItems.length > 0) {
+            await this.assetService.update({_id: new ObjectID(voteObj.assetId)}, {$set:{expirationDate : today}});
             for (const voteItem of voteItems) {
                 if (voteItem !== undefined && voteItem.assetId !== undefined){
-                    await this.assetService.delete({ _id: voteItem.assetId });
+                    await this.assetService.update({ _id: voteItem.assetId },{$set : {expirationDate : today}});
                 }
                 const voteChoiceList = await this.voteChoiceService.findOne({ voteItemId: voteItem.id });
                 if(voteChoiceList !== undefined && voteChoiceList.assetId) {
-                    await this.assetService.delete({ _id: voteChoiceList.assetId });
+                    await this.assetService.update({ _id: voteChoiceList.assetId },{$set : {expirationDate : today}});
                 }
             }
         }
-
+        
         const deleteVoteEvent = await this.votingEventService.delete({ _id: voteObjId, userId: userObjId });
         const deleteVoteItem = await this.voteItemService.deleteMany({ votingId: voteObj.id });
         if (voteItemObj !== undefined && voteItemObj !== null) {
@@ -3334,7 +3441,7 @@ export class VotingController {
 
     @Delete('/own/item/:votingId/:voteItem')
     @Authorized('user')
-    public async deleteVoteItemtOwner(@Param('votingId') votingId: string, @Param('voteItem') voteItem: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async deleteVoteItem(@Param('votingId') votingId: string, @Param('voteItem') voteItem: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const voteObjId = new ObjectID(votingId);
         const voteItemObjId = new ObjectID(voteItem);
@@ -3355,17 +3462,18 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot Delete Item, the status is closed.', undefined);
             return res.status(400).send(errorResponse);
         }
+        const today = moment().toDate();
 
         const voteItemObj = await this.voteItemService.findOne({ _id: voteItemObjId, votingId: voteObj.id });
         const voteChoices = await this.voteChoiceService.find({ voteItemId: voteItemObj.id });
         if (voteChoices.length > 0) {
             for (const voteChoice of voteChoices) {
-                await this.assetService.delete({ _id: voteChoice.assetId });
+                await this.assetService.update({ _id: voteChoice.assetId },{$set:{ expirationDate : today }});
                 await this.votedService.delete({ votingId: voteObj.id, voteItemId: voteItemObj.id, voteChoiceId: voteChoice.id });
             }
         }
 
-        const deleteAsset = await this.assetService.delete({ _id: voteItemObj.assetId });
+        const deleteAsset = await this.assetService.update({ _id: voteItemObj.assetId },{$set:{ expirationDate : today }});
         const deleteVoteItem = await this.voteItemService.delete({ _id: voteItemObjId });
         const deleteVoteChoice = await this.voteChoiceService.deleteMany({ voteItemId: voteItemObjId });
         if (
@@ -3382,7 +3490,7 @@ export class VotingController {
     }
     @Delete('/own/choice/:voteItem/:voteChoice')
     @Authorized('user')
-    public async deleteVoteChoiceOwner(@Param('voteItem') voteItem: string, @Param('voteChoice') voteChoice: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async deleteVoteChoice(@Param('voteItem') voteItem: string, @Param('voteChoice') voteChoice: string, @Res() res: any, @Req() req: any): Promise<any> {
         const voteChoiceObjId = new ObjectID(voteChoice);
         const voteItemObjId = new ObjectID(voteItem);
         // check exist?
@@ -3404,15 +3512,14 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot Delete Item, the status is closed.', undefined);
             return res.status(400).send(errorResponse);
         }
+        const today = moment().toDate();
 
         const voteChoiceObj = await this.voteChoiceService.findOne({ _id: voteChoiceObjId, voteItemId: voteItemObjId });
-        await this.assetService.delete({ _id: voteChoiceObj.assetId });
-        await this.votedService.delete({ votingId: voteItemObj.votingId, voteItemId: voteItemObj.id, voteChoiceId: voteChoiceObjId });
+        await this.assetService.update({ _id: voteChoiceObj.assetId },{$set:{ expirationDate : today }});
+        await this.votedService.deleteMany({ votingId: voteItemObj.votingId, voteItemId: voteItemObj.id, voteChoiceId: voteChoiceObjId });
 
-        const deleteAsset = await this.assetService.delete({ _id: voteItemObj.assetId });
         const deleteVoteChoice = await this.voteChoiceService.delete({ voteItemId: voteItemObj.id });
         if (
-            deleteAsset &&
             deleteVoteChoice
         ) {
             const successResponse = ResponseUtil.getSuccessResponse('delete vote choice is success.', undefined);

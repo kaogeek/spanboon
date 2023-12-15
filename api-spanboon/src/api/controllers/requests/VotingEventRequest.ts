@@ -35,4 +35,5 @@ export class VotingEventRequest {
     public voteItem: any[];
     public voteChoice: any[];
     public service: string;
+    public oldPictures: any[];
 }
