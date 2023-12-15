@@ -666,6 +666,26 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $limit: take
                     },
                     {
@@ -904,6 +924,26 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $limit: take
                     },
                     {
@@ -1134,6 +1174,26 @@ export class VotingController {
                     {
                         $sort: {
                             createdDate: -1
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
                         }
                     },
                     {
@@ -1380,6 +1440,26 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $limit: take
                     },
                     {
@@ -1607,6 +1687,26 @@ export class VotingController {
                                 {
                                     $sort: {
                                         createdDate: -1
+                                    }
+                                },
+                                {
+                                    $lookup:{
+                                        from:'UserSupport',
+                                        let:{'id':'$_id'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$id','$votingId']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $match: { userId: userObjId }
+                                            }
+                                        ],
+                                        as:'userSupport'
                                     }
                                 },
                                 {
