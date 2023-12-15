@@ -1216,7 +1216,6 @@ export class VotingController {
             const today = moment().toDate();
             const closetValue = (24 * closetVoteValue) * 60 * 60 * 1000; // one day in milliseconds
             const dateNow = new Date(today.getTime() + closetValue);
-
             closeVote = await this.votingEventService.aggregate(
                 [
                     {
@@ -1431,7 +1430,7 @@ export class VotingController {
                     },
                     {
                         $match:{
-                            endVoteDatetime:{$gte:dateNow}
+                            endVoteDatetime:{$gte:today,$lte:dateNow}
                         }
                     },
                     {
@@ -1763,7 +1762,7 @@ export class VotingController {
         result.myVote = myVote;
         result.supporter = supporter;
         result.closeDate = closeVote;
-        result.hashTagVote = hashTagVote.shift();
+        result.hashTagVote = hashTagVote ? hashTagVote.shift() : hashTagVote;
 
         const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', result,countRows);
         return res.status(200).send(successResponse);
