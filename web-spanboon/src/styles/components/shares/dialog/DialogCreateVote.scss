@@ -207,6 +207,11 @@
             margin: 5px 0 25px 0;
             height: 31px;
 
+            &.disable {
+              opacity: 0.4;
+              pointer-events: none;
+            }
+
             > mat-form-field {
               width: 100%;
 

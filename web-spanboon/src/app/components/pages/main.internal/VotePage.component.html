@@ -49,7 +49,7 @@
                         <ng-container *ngIf="data?.approved && data?.pin">
                             <card-content-vote #pinContent class="pin-content-data" [model]="data" [title]="data.title"
                                 (openDialog)="openDialogPost(data)" (deleteVote)="deleteDataVote($event)"
-                                [image]="data.coverPageURL"></card-content-vote>
+                                (editVote)="editVote($event)" [image]="data.coverPageURL"></card-content-vote>
                         </ng-container>
                     </ng-container>
                 </div>
@@ -67,7 +67,8 @@
                         <ng-container *ngIf="data?.user?._id === userId">
                             <card-content-vote #myVoteContent class="myvote-content-data" [model]="data"
                                 [title]="data.title" (openDialog)="openDialogPost(data)"
-                                (deleteVote)="deleteDataVote($event)" [image]="data.coverPageURL"></card-content-vote>
+                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                [image]="data.coverPageURL"></card-content-vote>
                         </ng-container>
                     </ng-container>
                 </div>
@@ -84,7 +85,8 @@
                         <ng-container *ngIf="data?.status === 'support'">
                             <card-content-vote #supportContent class="support-content-data" [model]="data"
                                 [title]="data.title" (openDialog)="openDialogPost(data)"
-                                (deleteVote)="deleteDataVote($event)" [image]="data.coverPageURL"></card-content-vote>
+                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                [image]="data.coverPageURL"></card-content-vote>
                         </ng-container>
                     </ng-container>
                 </div>
@@ -100,7 +102,8 @@
                     <ng-container *ngFor="let data of voteData">
                         <ng-container *ngIf="data?.status === 'vote' && !data.closed">
                             <card-content-vote [model]="data" [title]="data.title" (openDialog)="openDialogPost(data)"
-                                (deleteVote)="deleteDataVote($event)" [image]="data.coverPageURL"></card-content-vote>
+                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                [image]="data.coverPageURL"></card-content-vote>
                         </ng-container>
                     </ng-container>
                 </div>
@@ -117,7 +120,8 @@
                         <ng-container *ngIf="data.closed">
                             <card-content-vote #myVoteContent class="myvote-content-data" [model]="data"
                                 [title]="data.title" (openDialog)="openDialogPost(data)"
-                                (deleteVote)="deleteDataVote($event)" [image]="data.coverPageURL"></card-content-vote>
+                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                [image]="data.coverPageURL"></card-content-vote>
                         </ng-container>
                     </ng-container>
                 </div>

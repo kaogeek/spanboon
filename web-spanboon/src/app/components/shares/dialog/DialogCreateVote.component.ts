@@ -83,6 +83,7 @@ export class DialogCreateVote extends AbstractPage {
     coverPageURL: null,
     s3CoverPageURL: null
   };
+  public dataVote: any = {};
 
   public hashTag = new FormControl();
   public filteredOptions: Observable<string[]>;
@@ -108,6 +109,9 @@ export class DialogCreateVote extends AbstractPage {
   }
 
   public ngOnInit() {
+    if (this.data.edit) {
+      this._setValues(this.data.post);
+    }
     this._setDate();
     this._getAccessUser();
     this._getVoteHashtag();
@@ -144,6 +148,23 @@ export class DialogCreateVote extends AbstractPage {
   }
 
   public ngAfterViewInit(): void {
+  }
+
+  private _setValues(value: any) {
+    this.title = value.title;
+    this.detail = value.detail;
+    this.image.assetId = value.assetId;
+    this.image.coverPageURL = value.coverPageURL;
+    this.image.s3CoverPageURL = value.s3CoverPageURL;
+    this.dateStart = new FormControl(new Date(value.startVoteDatetime));
+    this.dateEnd = new FormControl(new Date(value.endVoteDatetime));
+    this.type = value.type;
+    this.hashTag.setValue(value.hashTag);
+    this.isShowVoterName = value.showVoterName;
+    this.isShowVoteResult = value.showVoteResult;
+    this.thanksMessage = value.service;
+    this.listQuestion = this.data.support.voteItem;
+    this.indexQuestion = value.voteItem.length + 1;
   }
 
   private _setDate() {
@@ -186,6 +207,71 @@ export class DialogCreateVote extends AbstractPage {
     }
   }
 
+  public closeDialog(mode: 'close' | 'reset') {
+    let isSubmit: boolean = false;
+
+    if (this.data.edit) {
+      let data = this.data.post.voteItem;
+      let new_data = this.listQuestion;
+      if (data.length !== new_data.length) {
+        isSubmit = true;
+      }
+      if (this.data.post !== this.title ||
+        this.data.post !== this.detail) {
+        isSubmit = true;
+      }
+      for (let index = 0; index < data.length; index++) {
+        if (
+          data[index].coverPageURL !== (!new_data[index].coverPageURLItem ? new_data[index].coverPageURL : new_data[index].coverPageURLItem) ||
+          data[index].title !== new_data[index].title ||
+          data[index].ordering !== new_data[index].ordering) {
+          isSubmit = true;
+          break;
+        }
+        if (!!this.data.support.voteItem[index].voteChoice) {
+          for (let i = 0; i < this.data.support.voteItem[index].voteChoice.length; i++) {
+            if (
+              this.data.support.voteItem[index].voteChoice[i].title !== new_data[index].voteChoice[i].title ||
+              this.data.support.voteItem[index].voteChoice[i].coverPageURL !== new_data[index].voteChoice[i].coverPageURL) {
+              isSubmit = true;
+              break;
+            }
+          }
+        }
+      }
+    } else {
+      if (
+        !!this.title ||
+        !!this.detail ||
+        this.listQuestion.length > 0
+      ) {
+        isSubmit = true;
+      }
+    }
+
+    if (isSubmit) {
+      let dialog = this.dialog.open(DialogAlert, {
+        disableClose: true,
+        data: {
+          text: mode === 'close' ? 'คุณต้องการปิดใช่หรือไม่' : 'คุณต้องการรีเซ็ตใช่หรือไม่',
+          bottomText1: 'ไม่',
+          bottomText2: 'ใช่',
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          if (mode === 'close') {
+            this.dialogRef.close(false);
+          } else {
+            this._setValues(this.data.post);
+          }
+        }
+      });
+    } else {
+      this.dialogRef.close(false);
+    }
+  }
+
   isPageDirty(): boolean {
     throw new Error('Method not implemented.');
   }
@@ -209,10 +295,12 @@ export class DialogCreateVote extends AbstractPage {
   }
 
   public selectUserCreate($event) {
-    if (this.selectUser.id === this.user.id) {
-      this.createAsPage = null;
-    } else {
-      this.createAsPage = this.selectUser.id;
+    if (!this.data.edit) {
+      if (this.selectUser.id === this.user.id) {
+        this.createAsPage = null;
+      } else {
+        this.createAsPage = this.selectUser.id;
+      }
     }
   }
 
@@ -292,36 +380,8 @@ export class DialogCreateVote extends AbstractPage {
     }
   }
 
-  public setFieldData(index, isTitle?, isText?) {
-    if (isText) {
-      this.listQuestion[index].titleItem = this.titleQuestion;
-      return;
-    }
-    if (!!this.listQuestion[index]!.titleItem) {
-      this.titleQuestion = this.listQuestion[index].titleItem;
-    }
-    let data = this.listQuestion[index];
-    if (data.voteChoice.length > 4) {
-      this.listInputAns = [];
-      for (let i = 0; i < data.voteChoice.length; i++) {
-        this.listInputAns.push(i);
-      }
-    }
-    if (this.typeQuestion !== 'text') {
-      if (data.voteChoice.length === this.listInputAns.length && data.voteChoice[data.voteChoice.length - 1].title !== '') {
-        this.listInputAns.push(this.listInputAns.length);
-      }
-    }
-    this.changeDetectorRef.detectChanges();
-    let input: HTMLInputElement[] = Array.from(document.getElementsByName('answer')) as HTMLInputElement[];
-    for (var i = 0; i < data.voteChoice.length; i++) {
-      input[i].value = data.voteChoice[i].title;
-    }
-  }
-
-  public createVote() {
-    this.isLoading = true;
-    let data = {
+  private _setDataVote() {
+    this.dataVote = {
       title: this.title,
       detail: this.detail,
       assetId: !!this.image ? this.image.assetId : null,
@@ -336,31 +396,213 @@ export class DialogCreateVote extends AbstractPage {
       status: this.status,
       createAsPage: this.createAsPage,
       type: this.type,
-      hashTag: this.hashTag.value !== '' ? this.hashTag.value : "",
+      hashTag: this.hashTag.value !== '' ? this.hashTag.value : null,
       pin: false,
       showVoterName: this.isShowVoterName,
       showVoteResult: this.isShowVoteResult,
       service: this.thanksMessage,
       voteItem: this.listQuestion
     }
-    if (data.title === undefined || data.title === '') {
+
+    return this.dataVote;
+  }
+
+  public setFieldData(index, isTitle?, isText?) {
+    if (isText) {
+      this.listQuestion[index].titleItem = this.titleQuestion;
+      return;
+    }
+    if (!!this.listQuestion[index]!.titleItem || !!this.listQuestion[index]!.title) {
+      this.titleQuestion = (!!this.listQuestion[index].titleItem ? this.listQuestion[index].titleItem : this.listQuestion[index].title);
+    }
+    let data = this.listQuestion[index];
+    if (data.voteChoice && data.voteChoice.length > 4) {
+      this.listInputAns = [];
+      for (let i = 0; i < data.voteChoice.length; i++) {
+        this.listInputAns.push(i);
+      }
+    }
+    if (data.voteChoice === undefined) {
+      data.voteChoice = [];
+    }
+    if (this.typeQuestion !== 'text') {
+      if (data.voteChoice !== undefined &&
+        data.voteChoice.length === this.listInputAns.length &&
+        data.voteChoice[data.voteChoice.length - 1].title !== '') {
+        this.listInputAns.push(this.listInputAns.length);
+      }
+    }
+    this.changeDetectorRef.detectChanges();
+    let input: HTMLInputElement[] = Array.from(document.getElementsByName('answer')) as HTMLInputElement[];
+    for (var i = 0; i < data.voteChoice.length; i++) {
+      input[i].value = data.voteChoice[i].title;
+    }
+  }
+
+  public clickConfirm() {
+    if (this.data.edit) {
+      this._clickEditVote();
+    } else {
+      this._clickCreateVote();
+    }
+  }
+
+  private _clickEditVote() {
+    let isSubmit: boolean = false;
+    let data = this.data.post.voteItem;
+    let new_data = this.listQuestion;
+    if (data.length !== new_data.length) {
+      isSubmit = true;
+    }
+
+    if (this.data.post !== this.title ||
+      this.data.post !== this.detail) {
+      isSubmit = true;
+    }
+
+    for (let index = 0; index < data.length; index++) {
+      if (
+        data[index].coverPageURL !== (!new_data[index].coverPageURLItem ? new_data[index].coverPageURL : new_data[index].coverPageURLItem) ||
+        data[index].title !== new_data[index].title ||
+        data[index].ordering !== new_data[index].ordering) {
+        isSubmit = true;
+        break;
+      }
+      if (!!this.data.support.voteItem[index].voteChoice) {
+        for (let i = 0; i < this.data.support.voteItem[index].voteChoice.length; i++) {
+          if (
+            this.data.support.voteItem[index].voteChoice[i].title !== new_data[index].voteChoice[i].title ||
+            this.data.support.voteItem[index].voteChoice[i].coverPageURL !== new_data[index].voteChoice[i].coverPageURL) {
+            isSubmit = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (isSubmit) {
+      const voteData = this._setDataVote();
+      let data: any = {
+        title: voteData.title,
+        detail: voteData.detail,
+        assetId: voteData.assetId,
+        coverPageURL: voteData.coverPageURL,
+        s3CoverPageURL: voteData.s3CoverPageURL,
+        type: voteData.type,
+        showVoteResult: voteData.showVoteResult,
+        showVoterName: voteData.showVoterName,
+        hashTag: voteData.hashTag,
+        voteItem: voteData.voteItem,
+      }
+
+      if (data.voteItem.length > 0) {
+        for (let index = 0; index < data.voteItem.length; index++) {
+          if (data.voteItem[index].type === 'text') {
+            data.voteItem[index].voteChoice = [];
+          }
+          if (!!data.voteItem[index].titleItem) {
+            data.voteItem[index].title = data.voteItem[index].titleItem;
+            delete data.voteItem[index].titleItem;
+          }
+        }
+      }
+
+      if (data.title === undefined || data.title === '') {
+        this.showAlertDialog("กรุณากรอกชื่อโหวต");
+        this.isLoading = false;
+        return;
+      }
+      if (data.detail === undefined || data.detail === '') {
+        this.showAlertDialog("กรุณากรอกรายละเอียดโหวต");
+        this.isLoading = false;
+        return;
+      }
+      if (data.voteItem.length === 0) {
+        this.showAlertDialog("กรุณาเพิ่มคำถามของโหวต");
+        this.isLoading = false;
+        return;
+      }
+
+      for (let index = 0; index < this.listQuestion.length; index++) {
+        if ((this.listQuestion[index].titleItem === '' || this.listQuestion[index].title === '')) {
+          let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "กรุณาตั้งคำถามโหวตข้อ " + (index + 1) + "",
+              bottomText2: "ตกลง",
+              bottomColorText2: "black",
+              btDisplay1: "none"
+            }
+          });
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
+              if (index !== this.indexPage) {
+                this.changeQuestion(index, (this.listQuestion[index].typeChoice || this.listQuestion[index].type));
+              }
+            }
+          })
+          this.isLoading = false;
+          return;
+        }
+        for (let i = 0; i < this.listQuestion[index].voteChoice.length; i++) {
+          if (this.listQuestion[index].voteChoice[i].title === '' && i <= 1) {
+            let dialog = this.dialog.open(DialogAlert, {
+              disableClose: true,
+              data: {
+                text: "กรุณาตั้งตัวเลือกโหวตข้อ " + (index + 1) + " ตัวเลือกที่ " + (i + 1) + "",
+                bottomText2: "ตกลง",
+                bottomColorText2: "black",
+                btDisplay1: "none"
+              }
+            });
+            dialog.afterClosed().subscribe((res) => {
+              if (res) {
+                if (index !== this.indexPage) {
+                  this.changeQuestion(index, (this.listQuestion[index].typeChoice || this.listQuestion[index].type));
+                }
+              }
+            });
+            this.isLoading = false;
+            return;
+          }
+          if (this.listQuestion[index].voteChoice[i].title === '' || this.listQuestion[index].voteChoice[i].title === undefined) {
+            this.listQuestion[index].voteChoice.splice(i, 1);
+            this.listQuestion[index].voteChoice.splice(i, 1);
+          }
+        }
+      }
+
+      this.voteFacade.updateVoteEvent(this.data.post._id, data).then((res) => {
+        if (res) {
+          this.showAlertDialog("คุณแก้ไขโหวตสำเร็จ");
+          this.onClose(true, 'edit');
+        }
+      }).catch((err) => {
+        if (err) { }
+      });
+    }
+  }
+
+  private _clickCreateVote() {
+    this.isLoading = true;
+    if (this._setDataVote().title === undefined || this._setDataVote().title === '') {
       this.showAlertDialog("กรุณากรอกชื่อโหวต");
       this.isLoading = false;
       return;
     }
-    if (data.detail === undefined || data.detail === '') {
+    if (this._setDataVote().detail === undefined || this._setDataVote().detail === '') {
       this.showAlertDialog("กรุณากรอกรายละเอียดโหวต");
       this.isLoading = false;
       return;
     }
-    if (data.voteItem.length === 0) {
+    if (this._setDataVote().voteItem.length === 0) {
       this.showAlertDialog("กรุณาเพิ่มคำถามของโหวต");
       this.isLoading = false;
       return;
     }
-    if (data.voteItem.length > 0) {
-      for (let index = 0; index < data.voteItem.length; index++) {
-        if (data.voteItem[index].voteChoice.length === 0 && data.voteItem[index].typeChoice !== 'text') {
+    if (this._setDataVote().voteItem.length > 0) {
+      for (let index = 0; index < this._setDataVote().voteItem.length; index++) {
+        if (this._setDataVote().voteItem[index].voteChoice.length === 0 && this._setDataVote().voteItem[index].typeChoice !== 'text') {
           this.showAlertDialog("กรุณาเพิ่มคำตอบของคำถาม");
           this.isLoading = false;
           return;
@@ -417,8 +659,8 @@ export class DialogCreateVote extends AbstractPage {
       }
     }
 
-    if (data.createAsPage === null) {
-      this.voteFacade.createVote(data).then((res) => {
+    if (this._setDataVote().createAsPage === null) {
+      this.voteFacade.createVote(this._setDataVote()).then((res) => {
         if (res) {
           this.isLoading = false;
           let dialog = this.dialog.open(DialogAlert, {
@@ -452,7 +694,7 @@ export class DialogCreateVote extends AbstractPage {
         }
       });
     } else {
-      this.voteFacade.createVoteAsPage(data, data.createAsPage).then((res) => {
+      this.voteFacade.createVoteAsPage(this._setDataVote(), this._setDataVote().createAsPage).then((res) => {
         if (res) {
           this.isLoading = false;
           let dialog = this.dialog.open(DialogAlert, {

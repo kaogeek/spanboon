@@ -117,9 +117,6 @@
                     </div>
                     <hr>
                     <ng-container *ngIf="data.post.approved; else elseApproved">
-                        <!-- <div class="start" *ngIf="!data.post.closed">
-                            <span>เริ่มเลย</span>
-                        </div> -->
                         <ng-container *ngFor="let item of posts;let index = index">
                             <div class="question">
                                 <span>คำถามที่ {{item.ordering}}</span>
@@ -129,7 +126,7 @@
                                     <ng-container *ngIf="item.type === 'single'; else elseMultiple">
                                         <div class="wrapper-choice"
                                             [ngClass]="{'active': (singleAns === choice.title) || choice.isVote,'closed': data.post.closed || isVoteAlready}"
-                                            (click)="singleAns === undefined ? chooseChoice(item,choice,index,i,item.type) : addOrRemoveActive(choice,'single','remove',index);singleAns = choice.title">
+                                            (click)="chooseChoice(item,choice,index,i,item.type)">
                                             <div class="choice">
                                                 <div class="image" *ngIf="!!choice.coverPageURL">
                                                     <img [src]="apiBaseURL + choice.coverPageURL" alt="">
@@ -139,6 +136,7 @@
                                                     <!-- (click)="addOrRemoveActive(choice,'single','remove',index); $event.stopPropagation()" -->
                                                     <div class="border-white" *ngIf="!data.post.closed">
                                                         <button mat-icon-button
+                                                            (click)="addOrRemoveActive(choice,'single','remove',index); $event.stopPropagation()"
                                                             *ngIf="(singleAns === choice.title) || choice.isVote">
                                                             <mat-icon>done</mat-icon>
                                                         </button>
@@ -230,7 +228,7 @@
         </div>
     </div>
 
-    <div *ngIf="voteSuccess" class="dialog-vote-card">
+    <div *ngIf="voteSuccess" class="dialog-vote-card vote-success">
         <div class="wrapper-card vote-success">
             <img class="close-icon" src="../../../../assets/img/icons/votepage/close.svg" (click)="onClose()">
             <div class="card">

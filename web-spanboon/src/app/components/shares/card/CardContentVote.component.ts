@@ -25,6 +25,8 @@ export class CardContentVote implements OnInit {
     public openDialog: EventEmitter<any> = new EventEmitter();
     @Output()
     public deleteVote: EventEmitter<any> = new EventEmitter();
+    @Output()
+    public editVote: EventEmitter<any> = new EventEmitter();
 
     public userId: any;
     public apiBaseURL = environment.apiBaseURL;
@@ -44,5 +46,9 @@ export class CardContentVote implements OnInit {
 
     public clickDeleteVote() {
         this.deleteVote.emit(this.model);
+    }
+
+    public clickEditVote() {
+        this.editVote.emit(this.model);
     }
 }
