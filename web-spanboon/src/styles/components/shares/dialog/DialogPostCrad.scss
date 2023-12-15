@@ -111,10 +111,16 @@
 }
 
 .dialog-vote-card {
-  min-height: 100vh;
+  min-height: calc(100vh - 45pt);
   background-color: #f0f5f6;
   display: flex;
   justify-content: center;
+
+  &.vote-success {
+    @media (max-width: $small) {
+      min-height: unset;
+    }
+  }
 
   > .wrapper-card {
     background-color: #fff;
@@ -130,6 +136,24 @@
     &.vote-success {
       width: 60vw;
       height: 500px;
+
+      @media (max-width: $xlarge) {
+        width: 70vw;
+      }
+
+      @media (max-width: $large) {
+        width: 80vw;
+      }
+
+      @media (max-width: $medium) {
+        width: 90vw;
+      }
+
+      @media (max-width: $small) {
+        width: 100vw;
+        border-radius: unset;
+        min-height: calc(100vh - 45pt);
+      }
     }
 
     > .card {
@@ -360,24 +384,6 @@
             margin-left: 25px;
             color: $brandcolor2;
             @include font-size-11($font-head-500);
-          }
-        }
-
-        > .start {
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          margin-top: 30pt;
-
-          > span {
-            @include font-size-8($font-head-500);
-            display: flex;
-            gap: 5px;
-            color: #fff;
-            background-color: $brandcolor2;
-            border-radius: 8px;
-            padding: 13px 50px;
-            cursor: pointer;
           }
         }
 

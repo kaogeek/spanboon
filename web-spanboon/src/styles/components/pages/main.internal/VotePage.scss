@@ -1,5 +1,5 @@
 .wrapper-vote-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 45pt);
   display: flex;
 
   > .wrapper-left {

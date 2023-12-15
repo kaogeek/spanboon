@@ -294,26 +294,49 @@ export class DialogPostCrad extends AbstractPage {
 
   onConfirm() { }
 
+  public addOrRemoveActive(item, type, mode, index?, choiceIndex?) {
+    if (type === 'single') {
+      if (mode === 'remove') {
+        this.singleAns = undefined;
+        this.questions[index] = [];
+      }
+    }
+    if (type === 'multi') {
+      if (mode === 'remove') {
+        item.active = false;
+        this.questions[index].voteChoice.splice(choiceIndex, 1);
+      } else {
+        item.active = true;
+      }
+    }
+  }
+
   public chooseChoice(question: any, choice: any, index: number, choiceIndex: number, type: any) {
     if (type === 'single') {
-      if (this.questions[index].voteChoice === undefined) {
-        this.questions[index] = {
-          type: question.type,
-          voteItemId: question._id,
-          voteChoice: [
+      if (this.singleAns !== undefined && choice.title === this.questions[index].voteChoice[0].answer) {
+        this.singleAns = undefined;
+        this.questions[index] = [];
+      } else {
+        this.singleAns = choice.title;
+        if (this.questions[index].voteChoice === undefined) {
+          this.questions[index] = {
+            type: question.type,
+            voteItemId: question._id,
+            voteChoice: [
+              {
+                answer: choice.title,
+                voteChoiceId: choice._id
+              }
+            ]
+          };
+        } else {
+          this.questions[index].voteChoice = [
             {
               answer: choice.title,
               voteChoiceId: choice._id
             }
-          ]
-        };
-      } else {
-        this.questions[index].voteChoice = [
-          {
-            answer: choice.title,
-            voteChoiceId: choice._id
-          }
-        ];
+          ];
+        }
       }
     } else if (type === 'multi') {
       if (this.questions[index].voteChoice === undefined) {
@@ -410,6 +433,19 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   public voteSupport(id) {
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    if (this.data.post.type === 'member') {
+      if (user.membership) {
+        this._voteSupport(id);
+      } else {
+        this.showDialogEngagementMember('สนับสนุนได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+      }
+    } else {
+      this._voteSupport(id);
+    }
+  }
+
+  private _voteSupport(id) {
     this.voteFacade.voteSupport(id).then((res) => {
       if (res) {
         if (this.data.support !== undefined) {
@@ -469,23 +505,6 @@ export class DialogPostCrad extends AbstractPage {
 
   private _findUserSupportIndex(userId) {
     return this.posts.findIndex(post => post.user._id === userId);
-  }
-
-  public addOrRemoveActive(item, type, mode, index?, choiceIndex?) {
-    if (type === 'single') {
-      if (mode === 'remove') {
-        this.singleAns = undefined;
-        this.questions[index] = [];
-      }
-    }
-    if (type === 'multi') {
-      if (mode === 'remove') {
-        item.active = false;
-        this.questions[index].voteChoice.splice(choiceIndex, 1);
-      } else {
-        item.active = true;
-      }
-    }
   }
 
   public setAnswer(question, index) {
