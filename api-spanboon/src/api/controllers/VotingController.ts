@@ -3234,10 +3234,12 @@ export class VotingController {
 
         if(votingEventRequest.voteItem.length > 0){
             for(const voteItem of votingEventRequest.voteItem){
-                const voteChoice = await this.UpdateVoteChoice(voteItem);
-                if(voteChoice === undefined) {
-                    const errorResponse = ResponseUtil.getErrorResponse('VoteChoice id is undefined.', undefined);
-                    return res.status(400).send(errorResponse);
+                if(voteItem.voteChoice.length > 0){
+                    const voteChoice = await this.UpdateVoteChoice(voteItem);
+                    if(voteChoice === undefined) {
+                        const errorResponse = ResponseUtil.getErrorResponse('VoteChoice id is undefined.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
                 }
                 // check id 
                 if(voteItem._id === undefined) {
