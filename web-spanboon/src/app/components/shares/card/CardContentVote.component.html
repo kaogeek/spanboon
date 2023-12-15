@@ -39,21 +39,29 @@
     <div class="owner-post" (click)="clickDialog()">
         <p class="owner-name" [innerHTML]="title"></p>
     </div>
-    <ng-container *ngIf="!model.closed; else elseClosed">
-        <span class="vote-time">
-            <ng-container *ngIf="model.endVoteDay > 0">
-                <span>{{model.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
-                <span>{{model.endVoteDay}}</span>
-                <span> วัน </span>
-            </ng-container>
-            <ng-container *ngIf="model.endVoteHour > 0">
-                <span>{{model.endVoteHour}}</span>
-                <span>ชม.</span>
-            </ng-container>
-        </span>
-    </ng-container>
-    <!-- {{model.endVoteHour <= 0 ? '' : model.endVoteHour + 'ชม.' }} -->
-    <ng-template #elseClosed>
-        <span class="vote-time">ปิดโหวตแล้ว</span>
-    </ng-template>
+    <div class="bottom-vote">
+        <!-- <div class="type-vote">
+            <div
+                [ngClass]="{'status-g': model.type === 'public' || model.type === 'private','status-n': model.type === 'member'}">
+            </div>
+            <span>{{model.type === 'public' ? 'ทั่วไป' : (model.type === 'member' ? 'สมาชิกพรรค' : 'ส่วนตัว')}}</span>
+        </div> -->
+        <ng-container *ngIf="!model.closed; else elseClosed">
+            <span class="vote-time">
+                <ng-container *ngIf="model.endVoteDay > 0">
+                    <span>{{model.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
+                    <span>{{model.endVoteDay}}</span>
+                    <span> วัน </span>
+                </ng-container>
+                <ng-container *ngIf="model.endVoteHour > 0">
+                    <span>{{model.endVoteHour}}</span>
+                    <span>ชม.</span>
+                </ng-container>
+            </span>
+        </ng-container>
+        <!-- {{model.endVoteHour <= 0 ? '' : model.endVoteHour + 'ชม.' }} -->
+        <ng-template #elseClosed>
+            <span class="vote-time">ปิดโหวตแล้ว</span>
+        </ng-template>
+    </div>
 </div>

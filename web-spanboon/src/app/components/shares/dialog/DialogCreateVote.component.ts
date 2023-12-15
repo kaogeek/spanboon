@@ -164,7 +164,7 @@ export class DialogCreateVote extends AbstractPage {
     this.isShowVoteResult = value.showVoteResult;
     this.thanksMessage = value.service;
     this.listQuestion = this.data.support.voteItem;
-    this.indexQuestion = value.voteItem.length + 1;
+    this.indexQuestion = !!value.voteItem ? value.voteItem.length + 1 : this.data.support.voteItem.length + 1;
   }
 
   private _setDate() {
@@ -211,7 +211,7 @@ export class DialogCreateVote extends AbstractPage {
     let isSubmit: boolean = false;
 
     if (this.data.edit) {
-      let data = this.data.post.voteItem;
+      let data = this.data.post.voteItem ? this.data.post.voteItem : this.data.support.voteItem;
       let new_data = this.listQuestion;
       if (data.length !== new_data.length) {
         isSubmit = true;
@@ -448,8 +448,9 @@ export class DialogCreateVote extends AbstractPage {
   }
 
   private _clickEditVote() {
+    this.isLoading = true;
     let isSubmit: boolean = false;
-    let data = this.data.post.voteItem;
+    let data = this.data.post.voteItem ? this.data.post.voteItem : this.data.support.voteItem;
     let new_data = this.listQuestion;
     if (data.length !== new_data.length) {
       isSubmit = true;
@@ -491,6 +492,7 @@ export class DialogCreateVote extends AbstractPage {
         type: voteData.type,
         showVoteResult: voteData.showVoteResult,
         showVoterName: voteData.showVoterName,
+        service: voteData.service,
         hashTag: voteData.hashTag,
         voteItem: voteData.voteItem,
       }
@@ -574,11 +576,14 @@ export class DialogCreateVote extends AbstractPage {
 
       this.voteFacade.updateVoteEvent(this.data.post._id, data).then((res) => {
         if (res) {
+          this.isLoading = false;
           this.showAlertDialog("คุณแก้ไขโหวตสำเร็จ");
           this.onClose(true, 'edit');
         }
       }).catch((err) => {
-        if (err) { }
+        if (err) {
+          this.isLoading = false;
+        }
       });
     }
   }

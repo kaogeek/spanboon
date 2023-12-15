@@ -113,12 +113,41 @@
     }
   }
 
-  > .vote-time {
+  > .bottom-vote {
     bottom: 0;
     position: absolute;
-    padding: 10px;
-    opacity: 0.8;
-    color: grey;
-    @include font-size-11($font-head-500);
+    display: flex;
+
+    > .type-vote {
+      display: flex;
+      align-items: center;
+      margin-left: 13px;
+
+      > .status-g {
+        width: 10px;
+        height: 10px;
+        border-radius: 50px;
+        background-color: $status-post-general;
+      }
+
+      > .status-n {
+        width: 10px;
+        height: 10px;
+        border-radius: 50px;
+        background-color: $status-post-need;
+      }
+
+      > span {
+        @include font-size-11($font-head-500);
+        margin-left: 6px;
+      }
+    }
+
+    > .vote-time {
+      padding: 10px;
+      opacity: 0.8;
+      color: grey;
+      @include font-size-11($font-head-500);
+    }
   }
 }
