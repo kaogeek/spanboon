@@ -14,54 +14,61 @@
             (click)="$event.stopPropagation()">
             <mat-icon>more_vert</mat-icon>
         </button>
-        <img class="image-content-vote" [src]="apiBaseURL + image">
-        <div class="logo-img">
-            <ng-container *ngIf="model.user !== undefined; else elsePageImage">
-                <ng-container *ngIf="!!model!.user!.imageURL; else elseUserImageNull">
-                    <img class="image-owner" [src]="apiBaseURL + model.user.imageURL + '/image'" alt="">
-                </ng-container>
-                <ng-template #elseUserImageNull>
-                    <span class="image-null">{{model.user.firstName | slice:0:1}}</span>
-                </ng-template>
-            </ng-container>
-            <ng-template #elsePageImage>
-                <ng-container *ngIf="!!model!.page!.imageURL; else elsePageImageNull">
-                    <img class="image-owner" [src]="apiBaseURL + model.page.imageURL + '/image'" alt="">
-                </ng-container>
-                <ng-template #elsePageImageNull>
-                    <span class="image-null">{{model.page.pageUsername | slice:0:1}}</span>
-                </ng-template>
-            </ng-template>
-            <span>{{model.user !== undefined ? model.user.firstName : model.page.pageUsername}}</span>
-        </div>
+        <ng-container *ngIf="!!model.coverPageURL; else elseVoteImageNull">
+            <img class="image-content-vote" [src]="apiBaseURL + image">
+        </ng-container>
+        <ng-template #elseVoteImageNull>
+            <img class="image-content-vote" src="../../../../assets/img/logo/vote-01.jpg">
+        </ng-template>
         <div class="background"></div>
+    </div>
+    <div class="logo-img">
+        <ng-container *ngIf="model.user !== undefined; else elsePageImage">
+            <ng-container *ngIf="!!model!.user!.imageURL; else elseUserImageNull">
+                <img class="image-owner" [src]="apiBaseURL + model.user.imageURL + '/image'" alt="">
+            </ng-container>
+            <ng-template #elseUserImageNull>
+                <span class="image-null">{{model.user.firstName | slice:0:1}}</span>
+            </ng-template>
+        </ng-container>
+        <ng-template #elsePageImage>
+            <ng-container *ngIf="!!model!.page!.imageURL; else elsePageImageNull">
+                <img class="image-owner" [src]="apiBaseURL + model.page.imageURL + '/image'" alt="">
+            </ng-container>
+            <ng-template #elsePageImageNull>
+                <span class="image-null">{{model.page.pageUsername | slice:0:1}}</span>
+            </ng-template>
+        </ng-template>
+        <div class="wrapper-owner-vote">
+            <span>{{model.user !== undefined ? model.user.firstName : model.page.pageUsername}}</span>
+            <ng-container *ngIf="!model.closed; else elseClosed">
+                <span class="vote-time">
+                    <ng-container *ngIf="model.endVoteDay > 0">
+                        <span>{{model.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
+                        <span>{{model.endVoteDay}}</span>
+                        <span> วัน </span>
+                    </ng-container>
+                    <ng-container *ngIf="model.endVoteHour > 0">
+                        <span>{{model.endVoteHour}}</span>
+                        <span>ชม.</span>
+                    </ng-container>
+                </span>
+            </ng-container>
+            <!-- {{model.endVoteHour <= 0 ? '' : model.endVoteHour + 'ชม.' }} -->
+            <ng-template #elseClosed>
+                <span class="vote-time">ปิดโหวตแล้ว</span>
+            </ng-template>
+        </div>
     </div>
     <div class="owner-post" (click)="clickDialog()">
         <p class="owner-name" [innerHTML]="title"></p>
     </div>
     <div class="bottom-vote">
-        <!-- <div class="type-vote">
+        <div class="type-vote">
             <div
                 [ngClass]="{'status-g': model.type === 'public' || model.type === 'private','status-n': model.type === 'member'}">
             </div>
             <span>{{model.type === 'public' ? 'ทั่วไป' : (model.type === 'member' ? 'สมาชิกพรรค' : 'ส่วนตัว')}}</span>
-        </div> -->
-        <ng-container *ngIf="!model.closed; else elseClosed">
-            <span class="vote-time">
-                <ng-container *ngIf="model.endVoteDay > 0">
-                    <span>{{model.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
-                    <span>{{model.endVoteDay}}</span>
-                    <span> วัน </span>
-                </ng-container>
-                <ng-container *ngIf="model.endVoteHour > 0">
-                    <span>{{model.endVoteHour}}</span>
-                    <span>ชม.</span>
-                </ng-container>
-            </span>
-        </ng-container>
-        <!-- {{model.endVoteHour <= 0 ? '' : model.endVoteHour + 'ชม.' }} -->
-        <ng-template #elseClosed>
-            <span class="vote-time">ปิดโหวตแล้ว</span>
-        </ng-template>
+        </div>
     </div>
 </div>

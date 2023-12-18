@@ -362,6 +362,31 @@
 
         > .vote-time {
           padding: 12px 18px;
+
+          > .open-vote {
+            gap: 10px;
+            display: flex;
+
+            > input {
+              border: 0.7px solid $white;
+              background-color: #fff3eb;
+              border-radius: 4px;
+              padding: 10px 0 10px 10px;
+              width: 80px;
+              text-align: center;
+              color: $brandcolor2;
+              @include font-size-10($font-head-500);
+            }
+
+            > span {
+              display: flex;
+              align-items: center;
+              padding-left: 5px;
+              color: $brandcolor2;
+              pointer-events: none;
+              @include font-size-9($font-head-500);
+            }
+          }
         }
 
         > .vote-time,

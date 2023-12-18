@@ -312,6 +312,11 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   public chooseChoice(question: any, choice: any, index: number, choiceIndex: number, type: any) {
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    if (!user.membership) {
+      this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+      return;
+    }
     if (type === 'single') {
       if (this.singleAns !== undefined && choice.title === this.questions[index].voteChoice[0].answer) {
         this.singleAns = undefined;
@@ -372,6 +377,11 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   public next() {
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    if (!user.membership) {
+      this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+      return;
+    }
     for (let index = 0; index < this.questions.length; index++) {
       if (this.questions[index].voteChoice === undefined) {
         this.showAlertDialog("กรุณาตอบคำถามให้ครบทุกข้อ");
