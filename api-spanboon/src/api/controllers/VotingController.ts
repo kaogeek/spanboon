@@ -3375,7 +3375,8 @@ export class VotingController {
                 type: votingEventRequest.type,
                 hashTag: votingEventRequest.hashTag,
                 showVoteResult: votingEventRequest.showVoteResult,
-                showVoterName: votingEventRequest.showVoterName
+                showVoterName: votingEventRequest.showVoterName,
+                service: votingEventRequest.service
             }
         };
         const update = await this.votingEventService.update(query, newValues);
