@@ -3338,11 +3338,17 @@ export class VotingController {
             for(const voteItem of votingEventRequest.voteItem){
 
                 if(voteItem._id === undefined) {
+                    // check ordering exists?
+                    const checkVoteItem = await this.voteItemService.findOne({votingId:voteObjId,ordering:voteItem.ordering });
+                    if(checkVoteItem !== undefined ) {
+                        const errorResponse = ResponseUtil.getErrorResponse('Ordering is duplicated.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
                     const voteItemEdit:any = new VoteItemModel();
                     voteItemEdit.votingId = voteObjId;
                     voteItemEdit.ordering = voteItem.ordering;
                     voteItemEdit.type = voteItem.typeChoice;
-                    voteItemEdit.title = voteItem.titleItem;
+                    voteItemEdit.title = voteItem.title;
                     voteItemEdit.assetId = voteItem.assetIdItem;
                     voteItemEdit.coverPageURL = voteItem.coverPageURLItem;
                     voteItemEdit.s3CoverPageURL = voteItem.s3CoverPageURLItem;
