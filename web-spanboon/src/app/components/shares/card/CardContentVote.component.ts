@@ -37,7 +37,8 @@ export class CardContentVote implements OnInit {
     }
 
     ngOnInit(): void {
-        this.userId = this.authenManager.getCurrentUser().id;
+        let user = JSON.parse(localStorage.getItem('pageUser'));
+        this.userId = !!user ? user.id : undefined;
     }
 
     public clickDialog(itempost?) {
