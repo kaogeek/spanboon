@@ -123,3 +123,6 @@ export const DEFAULT_TRIGGER_VOTE = true;
 export const TRIGGER_VOTE = 'trigger_vote';
 
 export const ELIGIBLE_VOTES = 'eligible_voters';
+
+export const DEFAULT_SUPPORT_DAYS_RANGE = 30;
+export const SUPPORT_DAYS_RANGE = 'support_days_ranges';

@@ -378,38 +378,21 @@ export class DialogPostCrad extends AbstractPage {
         return
       }
     }
-    let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    if (this.data.post.type === 'member') {
-      if (user.membership) {
-        this.voteFacade.voting(this.data.post._id, this.questions).then((res) => {
-          if (res) {
-            this.voteSuccess = true;
-          }
-        }).catch((err) => {
-          console.log("err", err)
-          if (err) {
-            if (err.error.message === "You have been already voted.") {
-              this.showAlertDialog("คุณได้โหวตไปแล้ว");
-            }
-          }
-        });
-      } else {
-        this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+    this.voteFacade.voting(this.data.post._id, this.questions).then((res) => {
+      if (res) {
+        this.voteSuccess = true;
       }
-    } else {
-      this.voteFacade.voting(this.data.post._id, this.questions).then((res) => {
-        if (res) {
-          this.voteSuccess = true;
+    }).catch((err) => {
+      console.log("err", err)
+      if (err) {
+        if (err.error.message === "You have been already voted.") {
+          this.showAlertDialog("คุณได้โหวตไปแล้ว");
         }
-      }).catch((err) => {
-        console.log("err", err)
-        if (err) {
-          if (err.error.message === "You have been already voted.") {
-            this.showAlertDialog("คุณได้โหวตไปแล้ว");
-          }
+        if (err.error.message === "This vote only for membershipMFP, You are not membership.") {
+          this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
         }
-      });
-    }
+      }
+    });
   }
 
   public checkLogin() {
@@ -434,20 +417,6 @@ export class DialogPostCrad extends AbstractPage {
 
   public voteSupport(id) {
     this.isLoading = true;
-    let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    if (this.data.post.type === 'member') {
-      if (user.membership) {
-        this._voteSupport(id);
-      } else {
-        this.isLoading = false;
-        this.showDialogEngagementMember('สนับสนุนได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
-      }
-    } else {
-      this._voteSupport(id);
-    }
-  }
-
-  private _voteSupport(id) {
     this.voteFacade.voteSupport(id).then((res) => {
       if (res) {
         if (this.data.support !== undefined) {
@@ -473,6 +442,9 @@ export class DialogPostCrad extends AbstractPage {
         this.isLoading = false;
         if (err.error.message === "You have been supported.") {
           this.showAlertDialog("คุณได้ทำการโหวตไปแล้ว");
+        }
+        if (err.error.message === "This vote only for membershipMFP, You are not membership.") {
+          this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
         }
       }
     });

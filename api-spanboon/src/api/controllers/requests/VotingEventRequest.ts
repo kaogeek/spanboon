@@ -18,8 +18,8 @@ export class VotingEventRequest {
     public closed: boolean;
     public minSupport: number;
     public countSupport: number;
-    public startVoteDatetime: Date;
-    public endVoteDatetime: Date;
+    public supportDaysRange: number;
+    public endVoteDatetime: number;
     public approveDatetime: Date;
     public approveUsername: string;
     public updateDatetime: Date;
@@ -36,4 +36,5 @@ export class VotingEventRequest {
     public voteChoice: any[];
     public service: string;
     public oldPictures: any[];
+    public delete: any[];
 }
