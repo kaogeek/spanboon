@@ -4338,6 +4338,19 @@ export class VotingController {
         const userObjId = new ObjectID(req.user.id);
 
         const votingObj = await this.votingEventService.findOne({ _id: votingObjId });
+
+        if(votingObj.type === 'member'){
+            const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
+            if( 
+                votingObj.type === 'member' && 
+                authUser === undefined
+            )
+            {
+                const errorResponse = ResponseUtil.getErrorResponse('This vote only for membershipMFP, You are not membership.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
         if (votingObj === undefined && votingObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Not Found the Voting Object.', undefined);
             return res.status(400).send(errorResponse);
