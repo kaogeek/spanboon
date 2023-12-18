@@ -253,7 +253,7 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
 
-        if(votingEventRequest.endVoteDatetime > today){
+        if(votingEventRequest.endVoteDatetime === undefined){
             const errorResponse = ResponseUtil.getErrorResponse('Close Data should be null or today.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -299,7 +299,7 @@ export class AdminVotedController {
     @Authorized('')
     public async CancelVote(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
         const voteObjId = new ObjectID(id);
-        const today = moment().toDate();
+        // const today = moment().toDate();
         // check exist?
 
         const voteObj = await this.votingEventService.findOne({_id:voteObjId});
@@ -327,7 +327,7 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
 
-        if(votingEventRequest.endVoteDatetime > today){
+        if(votingEventRequest.endVoteDatetime === undefined){
             const errorResponse = ResponseUtil.getErrorResponse('Close Data should be null or today.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -390,6 +390,8 @@ export class AdminVotedController {
             for(const vote of voteAggs){
                 if(vote.approved !== true && vote.countSupport >= vote.minSupport){
                     // auto approve
+                    const closetValue = (24 * vote.endVoteDatetime) * 60 * 60 * 1000; // one day in milliseconds
+                    const dateNow = new Date(today.getTime() + closetValue);
                     const query = {_id: new ObjectID(vote._id)};
                     const newValues = {
                         $set:{
@@ -398,6 +400,7 @@ export class AdminVotedController {
                             approved:true,
                             approveUsername:user.displayName,
                             approveDatetime:today,
+                            endVoteDatetime: dateNow,
                             pin:true,
                             showVoteResult:true,
                             status: 'vote'
@@ -423,7 +426,9 @@ export class AdminVotedController {
         const voteAggs = await this.votingEventService.aggregate([]);
         if(voteAggs.length > 0){
             for(const vote of voteAggs){
-                if(vote.closed !== true && today.getTime() > vote.endVoteDatetime.getTime()) {
+                const closetValue = (24 * vote.endVoteDatetime) * 60 * 60 * 1000; // one day in milliseconds
+                const dateNow = new Date(today.getTime() + closetValue);
+                if(vote.closed !== true && today.getTime() > dateNow.getTime()) {
                     const query = {_id: new ObjectID(vote._id)};
                     const newValues = {
                         $set:{
