@@ -151,28 +151,12 @@
                     </div>
                 </div>
                 <div class="wrapper-vote-time">
-                    <div class="vote-time first">
-                        <span>เริ่มโหวต</span>
-                        <mat-form-field>
-                            <input matInput [readonly]="true" [ngxMatDatetimePicker]="pickerStart"
-                                [formControl]="dateStart">
-                            <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
-                            <ngx-mat-datetime-picker #pickerStart [stepHour]="stepHour" [stepMinute]="stepMinute"
-                                [color]="color" [enableMeridian]="false">
-                            </ngx-mat-datetime-picker>
-                        </mat-form-field>
-                    </div>
-                    <hr>
-                    <div class="vote-time second">
-                        <span>สิ้นสุดการโหวต</span>
-                        <mat-form-field>
-                            <input matInput [readonly]="true" [ngxMatDatetimePicker]="pickerEnd"
-                                [formControl]="dateEnd">
-                            <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
-                            <ngx-mat-datetime-picker #pickerEnd [stepHour]="stepHour" [stepMinute]="stepMinute"
-                                [color]="color" [enableMeridian]="false">
-                            </ngx-mat-datetime-picker>
-                        </mat-form-field>
+                    <div class="vote-time">
+                        <span>เปิดโหวต</span>
+                        <div class="open-vote">
+                            <input type="number" placeholder="จำนวน" [attr.disabled]="data.edit" [(ngModel)]="dateEnd">
+                            <span>วัน</span>
+                        </div>
                     </div>
                 </div>
                 <div class="wrapper-vote-option option">

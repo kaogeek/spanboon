@@ -65,7 +65,7 @@ export class DialogCreateVote extends AbstractPage {
   public hashtag: any;
   public selectUser: any = undefined;
   public createAsPage: any = null;
-  public type: string = 'public';
+  public type: string = 'member';
   public status: string = 'support';
   public isShowVoterName: boolean = false;
   public isShowVoteResult: boolean = false;
@@ -92,8 +92,7 @@ export class DialogCreateVote extends AbstractPage {
   public titleQuestion: any;
   public indexQuestion = 1;
 
-  public dateStart = new FormControl(new Date());
-  public dateEnd = new FormControl(new Date());
+  public dateEnd: number = 7;
 
   constructor(public dialogRef: MatDialogRef<DialogCreateVote>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -112,7 +111,6 @@ export class DialogCreateVote extends AbstractPage {
     if (this.data.edit) {
       this._setValues(this.data.post);
     }
-    this._setDate();
     this._getAccessUser();
     this._getVoteHashtag();
 
@@ -156,8 +154,7 @@ export class DialogCreateVote extends AbstractPage {
     this.image.assetId = value.assetId;
     this.image.coverPageURL = value.coverPageURL;
     this.image.s3CoverPageURL = value.s3CoverPageURL;
-    this.dateStart = new FormControl(new Date(value.startVoteDatetime));
-    this.dateEnd = new FormControl(new Date(value.endVoteDatetime));
+    this.dateEnd = this.dateEnd;
     this.type = value.type;
     this.hashTag.setValue(value.hashTag);
     this.isShowVoterName = value.showVoterName;
@@ -167,15 +164,14 @@ export class DialogCreateVote extends AbstractPage {
     this.indexQuestion = !!value.voteItem ? value.voteItem.length + 1 : this.data.support.voteItem.length + 1;
   }
 
-  private _setDate() {
-    let date_start = new Date();
-    let date_end = new Date();
-    date_start.setHours(0, 0, 0, 0);
-    date_end.setHours(23, 59, 59, 0);
-    date_end.setDate(date_end.getDate() + 15);
-    this.dateStart = new FormControl(date_start);
-    this.dateEnd = new FormControl(date_end);
-  }
+  // private _setDate() {
+  //   let date_start = new Date();
+  //   let date_end = new Date();
+  //   date_start.setHours(0, 0, 0, 0);
+  //   date_end.setHours(23, 59, 59, 0);
+  //   date_end.setDate(date_end.getDate() + 15);
+  //   this.dateEnd = new FormControl(date_end);
+  // }
 
   public onClose(isSkip?: boolean, type?: string): void {
     if (isSkip) {
@@ -186,7 +182,6 @@ export class DialogCreateVote extends AbstractPage {
       }
     } else {
       if (!!this.title ||
-        !!this.detail ||
         this.listQuestion.length > 0) {
         let dialog = this.dialog.open(DialogAlert, {
           disableClose: true,
@@ -216,8 +211,7 @@ export class DialogCreateVote extends AbstractPage {
       if (data.length !== new_data.length) {
         isSubmit = true;
       }
-      if (this.data.post !== this.title ||
-        this.data.post !== this.detail) {
+      if (this.data.post !== this.title) {
         isSubmit = true;
       }
       for (let index = 0; index < data.length; index++) {
@@ -242,7 +236,6 @@ export class DialogCreateVote extends AbstractPage {
     } else {
       if (
         !!this.title ||
-        !!this.detail ||
         this.listQuestion.length > 0
       ) {
         isSubmit = true;
@@ -391,8 +384,7 @@ export class DialogCreateVote extends AbstractPage {
       closed: false,
       minSupport: this.minSupport,
       count_support: this.countSupport,
-      startVoteDatetime: new Date(this.dateStart.value.getTime()).toISOString(),
-      endVoteDatetime: new Date(this.dateEnd.value.getTime()).toISOString(),
+      endVoteDatetime: this.dateEnd,
       status: this.status,
       createAsPage: this.createAsPage,
       type: this.type,
@@ -455,9 +447,11 @@ export class DialogCreateVote extends AbstractPage {
     if (data.length !== new_data.length) {
       isSubmit = true;
     }
+    if (this.data.post !== this.title) {
+      isSubmit = true;
+    }
 
-    if (this.data.post !== this.title ||
-      this.data.post !== this.detail) {
+    if (this.data.post !== this.title) {
       isSubmit = true;
     }
 
@@ -492,6 +486,7 @@ export class DialogCreateVote extends AbstractPage {
         type: voteData.type,
         showVoteResult: voteData.showVoteResult,
         showVoterName: voteData.showVoterName,
+        endVoteDatetime: voteData.endVoteDatetime,
         service: voteData.service,
         hashTag: voteData.hashTag,
         voteItem: voteData.voteItem,
@@ -512,11 +507,6 @@ export class DialogCreateVote extends AbstractPage {
 
       if (data.title === undefined || data.title === '') {
         this.showAlertDialog("กรุณากรอกชื่อโหวต");
-        this.isLoading = false;
-        return;
-      }
-      if (data.detail === undefined || data.detail === '') {
-        this.showAlertDialog("กรุณากรอกรายละเอียดโหวต");
         this.isLoading = false;
         return;
       }
@@ -593,11 +583,6 @@ export class DialogCreateVote extends AbstractPage {
     this.isLoading = true;
     if (this._setDataVote().title === undefined || this._setDataVote().title === '') {
       this.showAlertDialog("กรุณากรอกชื่อโหวต");
-      this.isLoading = false;
-      return;
-    }
-    if (this._setDataVote().detail === undefined || this._setDataVote().detail === '') {
-      this.showAlertDialog("กรุณากรอกรายละเอียดโหวต");
       this.isLoading = false;
       return;
     }
@@ -687,7 +672,7 @@ export class DialogCreateVote extends AbstractPage {
         if (err) {
           if (err.error.message === 'End vote date is less than today.') {
             this.isLoading = false;
-            this.showAlertDialog("วันสิ้นสุดโหวตไม่สามารถต่ำกว่าหนึ่งวัน");
+            this.showAlertDialog("ไม่สามารถกำหนดวันที่สิ้นสุดต่ำกว่าวันที่ปัจจุบันได้");
           }
           if (err.error.message === 'Cannot create a voting Item, Vote Choice is empty.') {
             this.isLoading = false;
@@ -721,7 +706,7 @@ export class DialogCreateVote extends AbstractPage {
         if (err) {
           if (err.error.message === 'End vote date is less than today.') {
             this.isLoading = false;
-            this.showAlertDialog("วันสิ้นสุดโหวตไม่สามารถต่ำกว่าหนึ่งวัน");
+            this.showAlertDialog("ไม่สามารถกำหนดวันที่สิ้นสุดต่ำกว่าวันที่ปัจจุบันได้");
           }
           if (err.error.message === 'Cannot create a voting Item, Vote Choice is empty.') {
             this.isLoading = false;

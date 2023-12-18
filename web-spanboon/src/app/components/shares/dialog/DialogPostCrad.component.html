@@ -217,10 +217,11 @@
                             <ng-container
                                 *ngIf="data.post.userSupport ? data.post.userSupport.length >= 1 : data.support.userSupport.length >= 1; else elseSupport">
                                 <span class="button-vote close"
-                                    (click)="unVoteSupport(data.post._id)">ยกเลิกสนับสนุน</span>
+                                    (click)="isLogin() ? unVoteSupport(data.post._id) : checkLogin()">ยกเลิกสนับสนุน</span>
                             </ng-container>
                             <ng-template #elseSupport>
-                                <span class="button-vote submit" (click)="voteSupport(data.post._id)">สนับสนุน</span>
+                                <span class="button-vote submit"
+                                    (click)="isLogin() ? voteSupport(data.post._id) : checkLogin()">สนับสนุน</span>
                             </ng-template>
                         </div>
                     </ng-template>
