@@ -218,8 +218,10 @@
                 </div>
                 <div class="vote-box">
                     <span>คำถาม</span>
-                    <input type="text" placeholder="ตั้งคำถาม" [(ngModel)]="titleQuestion"
-                        (keyup)="setFieldData(indexPage,true,true)">
+                    <!-- <input type="text" placeholder="ตั้งคำถาม" [(ngModel)]="titleQuestion"
+                        (keyup)="setFieldData(indexPage,true,true)"> -->
+                    <textarea style="resize: none;" name="detail" cols="30" rows="3" placeholder="ตั้งคำถาม"
+                        [(ngModel)]="titleQuestion" (keyup)="setFieldData(indexPage,true,true)"></textarea>
                 </div>
                 <ng-container *ngIf="typeQuestion !== 'text'">
                     <div class="vote-box">
