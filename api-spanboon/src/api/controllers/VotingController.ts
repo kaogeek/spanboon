@@ -3339,11 +3339,6 @@ export class VotingController {
 
                 if(voteItem._id === undefined) {
                     // check ordering exists?
-                    const checkVoteItem = await this.voteItemService.findOne({votingId:voteObjId,ordering:voteItem.ordering });
-                    if(checkVoteItem !== undefined ) {
-                        const errorResponse = ResponseUtil.getErrorResponse('Ordering is duplicated.', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
                     const voteItemEdit:any = new VoteItemModel();
                     voteItemEdit.votingId = voteObjId;
                     voteItemEdit.ordering = voteItem.ordering;
