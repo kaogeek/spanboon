@@ -36,5 +36,5 @@ export class VotingEventRequest {
     public voteChoice: any[];
     public service: string;
     public oldPictures: any[];
-    public flag: boolean;
+    public delete: any[];
 }

@@ -3331,16 +3331,17 @@ export class VotingController {
             }
         }
 
+        if(votingEventRequest.delete.length > 0 ){
+            for(const voteItem of votingEventRequest.delete) {
+                await this.voteItemService.delete({_id:new ObjectID(voteItem), votingId: voteObjId});
+            }
+        }
+
         let query:any;
         let newValues:any;
 
         if(votingEventRequest.voteItem.length > 0){
             for(const voteItem of votingEventRequest.voteItem){
-
-                if(voteItem.flag === true) {
-                    // delete
-                    await this.voteItemService.delete({_id: new ObjectID(voteItem._id),votingId: voteObjId});
-                }
 
                 if(voteItem._id === undefined) {
                     // check ordering exists?
