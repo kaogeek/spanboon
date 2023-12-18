@@ -151,6 +151,10 @@ export class AdminVotedController {
             const errorResponse = ResponseUtil.getErrorResponse('Approve vote should be true', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        const closetValue = (24 * voteObj.endVoteDatetime) * 60 * 60 * 1000; // one day in milliseconds
+        const dateNow = new Date(today.getTime() + closetValue);
+
         const query = {_id:voteObjId};
         const newValues = {
             $set:{
@@ -159,6 +163,7 @@ export class AdminVotedController {
                 approved:voteApproved,
                 approveUsername:user.displayName,
                 approveDatetime:today,
+                endVoteDatetime:dateNow,
                 pin:votePin,
                 showVoteResult:votingEventRequest.showVoteResult,
                 status: votingEventRequest.status
@@ -426,9 +431,7 @@ export class AdminVotedController {
         const voteAggs = await this.votingEventService.aggregate([]);
         if(voteAggs.length > 0){
             for(const vote of voteAggs){
-                const closetValue = (24 * vote.endVoteDatetime) * 60 * 60 * 1000; // one day in milliseconds
-                const dateNow = new Date(today.getTime() + closetValue);
-                if(vote.closed !== true && today.getTime() > dateNow.getTime()) {
+                if(vote.closed !== true && today.getTime() > vote.endVoteDatetime.getTime()) {
                     const query = {_id: new ObjectID(vote._id)};
                     const newValues = {
                         $set:{
