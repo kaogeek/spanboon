@@ -318,13 +318,12 @@ export class DialogPostCrad extends AbstractPage {
       return;
     }
     if (type === 'single') {
-      if (this.singleAns !== undefined && choice.title === this.questions[index].voteChoice[0].answer) {
-        this.singleAns = undefined;
+      if (choice.title === this.questions[index].active) {
         this.questions[index] = [];
       } else {
-        this.singleAns = choice.title;
         if (this.questions[index].voteChoice === undefined) {
           this.questions[index] = {
+            active: choice.title,
             type: question.type,
             voteItemId: question._id,
             voteChoice: [
@@ -335,6 +334,7 @@ export class DialogPostCrad extends AbstractPage {
             ]
           };
         } else {
+          this.questions[index].active = choice.title;
           this.questions[index].voteChoice = [
             {
               answer: choice.title,
