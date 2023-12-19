@@ -250,6 +250,19 @@ export class VoteEventFacade extends AbstractFacade {
     });
   }
 
+  public deleteVoteItem(id: string, itemId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/voting/own/item/' + id + '/' + itemId;
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.delete(url, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public voteSupport(id: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/voting/support/' + id;

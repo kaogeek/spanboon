@@ -76,6 +76,7 @@ export class DialogCreateVote extends AbstractPage {
   public thanksMessage: any;
   public listInputAns = [0, 1, 2, 3];
   public listHashtag: any[] = [];
+  public deleteItem: any[] = [];
   public userPage: any;
   public user: any;
   public image = {
@@ -393,7 +394,8 @@ export class DialogCreateVote extends AbstractPage {
       showVoterName: this.isShowVoterName,
       showVoteResult: this.isShowVoteResult,
       service: this.thanksMessage,
-      voteItem: this.listQuestion
+      voteItem: this.listQuestion,
+      delete: this.deleteItem,
     }
 
     return this.dataVote;
@@ -455,25 +457,25 @@ export class DialogCreateVote extends AbstractPage {
       isSubmit = true;
     }
 
-    for (let index = 0; index < data.length; index++) {
-      if (
-        data[index].coverPageURL !== (!new_data[index].coverPageURLItem ? new_data[index].coverPageURL : new_data[index].coverPageURLItem) ||
-        data[index].title !== new_data[index].title ||
-        data[index].ordering !== new_data[index].ordering) {
-        isSubmit = true;
-        break;
-      }
-      if (!!this.data.support.voteItem[index].voteChoice) {
-        for (let i = 0; i < this.data.support.voteItem[index].voteChoice.length; i++) {
-          if (
-            this.data.support.voteItem[index].voteChoice[i].title !== new_data[index].voteChoice[i].title ||
-            this.data.support.voteItem[index].voteChoice[i].coverPageURL !== new_data[index].voteChoice[i].coverPageURL) {
-            isSubmit = true;
-            break;
-          }
-        }
-      }
-    }
+    // for (let index = 0; index < data.length; index++) {
+    //   if (
+    //     data[index]?.coverPageURL !== (!new_data[index].coverPageURLItem ? new_data[index]?.coverPageURL : new_data[index]?.coverPageURLItem) ||
+    //     data[index].title !== new_data[index].title ||
+    //     data[index].ordering !== new_data[index].ordering) {
+    //     isSubmit = true;
+    //     break;
+    //   }
+    //   if (!!this.data.support.voteItem[index].voteChoice) {
+    //     for (let i = 0; i < this.data.support.voteItem[index].voteChoice.length; i++) {
+    //       if (
+    //         this.data.support.voteItem[index].voteChoice[i].title !== new_data[index].voteChoice[i].title ||
+    //         this.data.support.voteItem[index].voteChoice[i].coverPageURL !== new_data[index].voteChoice[i].coverPageURL) {
+    //         isSubmit = true;
+    //         break;
+    //       }
+    //     }
+    //   }
+    // }
 
     if (isSubmit) {
       const voteData = this._setDataVote();
@@ -490,6 +492,7 @@ export class DialogCreateVote extends AbstractPage {
         service: voteData.service,
         hashTag: voteData.hashTag,
         voteItem: voteData.voteItem,
+        delete: voteData.delete,
         oldPictures: [],
       }
 
@@ -963,13 +966,28 @@ export class DialogCreateVote extends AbstractPage {
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.listQuestion.splice(index, 1);
-        if (index !== 0) {
-          this.indexPage--;
-          this.indexQuestion--;
+        if (this.data.edit) {
+          this.deleteItem.push(this.listQuestion[index]._id);
+          this.listQuestion.splice(index, 1);
+          if (index !== 0) {
+            this.indexPage--;
+            this.indexQuestion--;
+            this.changeQuestion(this.indexPage, this.listQuestion[index === 0 ? index : index - 1].type);
+          } else {
+            this.indexPage = null;
+            this.indexQuestion = 1;
+            this.changeQuestion(this.indexPage, this.listQuestion[index === 0 ? index : index - 1].type);
+          }
         } else {
-          this.indexPage = null;
-          this.indexQuestion = 1;
+          this.listQuestion.splice(index, 1);
+          if (index !== 0) {
+            this.indexPage--;
+            this.indexQuestion--;
+
+          } else {
+            this.indexPage = null;
+            this.indexQuestion = 1;
+          }
         }
       }
     });
