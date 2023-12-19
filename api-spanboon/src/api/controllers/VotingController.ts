@@ -3208,6 +3208,7 @@ export class VotingController {
                 $skip: offset
             }
         ]);
+
         const voteEvent = await this.votedService.aggregate([
             {
                 $match:{
@@ -3226,6 +3227,7 @@ export class VotingController {
                                 }
                             }
                         },
+                        { $sample: { size: 5 } },     
                         {
                             $project: {
                                 _id: 1,
@@ -3244,13 +3246,50 @@ export class VotingController {
                     path:'$user'
                 }
             },
-            { $sample: { size: 5 } },     
+            {
+                $group: {
+                  _id: '$user._id',
+                  count: { $sum: 1 },
+                  uniqueIds: { $addToSet: '$user._id' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'User',
+                    let: { 'id': '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: ['$$id', '$_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                displayName: 1,
+                                uniqueId: 1,
+                                imageURL: 1,
+                                s3ImageURL: 1
+                            }
+                        },
+                    ],
+                    as: 'user'
+                }
+            },
+            {
+                $unwind:{
+                    path:'$user'
+                }
+            },  
             {
                 $project:{
                     user:1
                 }
             }
         ]);
+        
         const voteCount = await this.votedService.aggregate(
             [
                 {
