@@ -42,7 +42,7 @@ import { VoteChoice as VoteChoiceModel } from '../models/VoteChoiceModel';
 import { InviteVote as InviteVoteModel } from '../models/InviteVoteModel';
 import { VotedService } from '../services/VotedService';
 import { InviteVoteService } from '../services/InviteVoteService';
-import { AuthenticationIdService } from '../services/AuthenticationIdService';
+// import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { Voted as VotedModel } from '../models/VotedModel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
@@ -62,7 +62,7 @@ export class VotingController {
         private pageService: PageService,
         private pageAccessLevelService: PageAccessLevelService,
         private assetService: AssetService,
-        private authenticationIdService:AuthenticationIdService,
+        // private authenticationIdService:AuthenticationIdService,
         private inviteVoteService:InviteVoteService,
         private hashTagService:HashTagService,
         // private retrieveVoteService: RetrieveVoteService
@@ -2313,18 +2313,18 @@ export class VotingController {
         const countRows = await this.votingEventService.aggregate(
             [
                 {
+                    $match:{
+                        userId:userObjId
+                    }
+                },
+                {
                     $count: 'passing_scores'
                 },
             ]
         );
 
-        if (voteEventAggr.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr,countRows);
-            return res.status(200).send(successResponse);
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
-            return res.status(400).send(errorResponse);
-        }
+        const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr,countRows);
+        return res.status(200).send(successResponse);
     }
 
     // supported ???
@@ -3617,6 +3617,10 @@ export class VotingController {
                 createHashTag = hashTagObjId.name;
             }
         }
+
+        const closetValue = (24 * sdr) * 60 * 60 * 1000; // one day in milliseconds
+        const dateNow = new Date(today.getTime() + closetValue);
+
         // const adminIn = new ObjectID(votingEventRequest.adminId);
         // const needed = votingEventRequest.needed;
         const pin = votingEventRequest.pin ? votingEventRequest.pin : false;
@@ -3720,7 +3724,8 @@ export class VotingController {
         votingEvent.minSupport = minSupport;
         votingEvent.countSupport = 0;
         votingEvent.supportDaysRange = sdr;
-        votingEvent.endVoteDatetime = endVoteDateTime;
+        votingEvent.startVoteDatetime = dateNow;
+        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * votingEventRequest.endVoteDatetime) * 60 * 60 * 1000)); // endVoteDateTime;
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
@@ -3769,6 +3774,7 @@ export class VotingController {
                 response.minSupport = result.minSupport;
                 response.countSupport = result.countSupport;
                 response.supportDaysRange = result.supportDaysRange;
+                response.startVoteDatetime = result.startVoteDatetime;
                 response.endVoteDatetime = result.endVoteDatetime;
                 response.approveDatetime = result.approveDatetime;
                 response.approveUsername = result.approveUsername;
@@ -3834,7 +3840,8 @@ export class VotingController {
         if(votingEventRequest.supportDaysRange !== undefined) {
             sdr = votingEventRequest.supportDaysRange;
         }
-
+        const closetValue = (24 * sdr) * 60 * 60 * 1000; // one day in milliseconds
+        const dateNow = new Date(today.getTime() + closetValue);
         if (configMinSupport) {
             minSupportValue = parseInt(configMinSupport.value, 10);
         }
@@ -3978,8 +3985,8 @@ export class VotingController {
         votingEvent.closed = close;
         votingEvent.minSupport = minSupport;
         votingEvent.countSupport = 0;
-        votingEvent.supportDaysRange = sdr;
-        votingEvent.endVoteDatetime = endVoteDateTime;
+        votingEvent.startVoteDatetime = dateNow;
+        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * votingEventRequest.endVoteDatetime) * 60 * 60 * 1000)); // endVoteDateTime;
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;

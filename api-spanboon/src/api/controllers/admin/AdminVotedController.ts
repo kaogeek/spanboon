@@ -431,7 +431,14 @@ export class AdminVotedController {
         const voteAggs = await this.votingEventService.aggregate([]);
         if(voteAggs.length > 0){
             for(const vote of voteAggs){
-                if(vote.closed !== true && today.getTime() > vote.endVoteDatetime.getTime()) {
+                const closetValue = (24 * vote.supportDaysRange) * 60 * 60 * 1000; // one day in milliseconds
+                const dateNow = new Date(today.getTime() + closetValue);
+
+                if(
+                    vote.closed !== true && 
+                    today.getTime() > vote.endVoteDatetime.getTime() ||
+                    today.getTime() >= dateNow.getTime()
+                ) {
                     const query = {_id: new ObjectID(vote._id)};
                     const newValues = {
                         $set:{
