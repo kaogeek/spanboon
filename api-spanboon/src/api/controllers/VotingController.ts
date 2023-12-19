@@ -434,6 +434,8 @@ export class VotingController {
     @Post('/contents')
     public async votingContents(@Body({ validate: true }) votingContentsRequest: VotingContentsRequest,@QueryParam('limit') limit: number, @QueryParam('offset') offset: number,@Res() res: any, @Req() req: any): Promise<any>{
         const userObjId = req.headers.userid ? new ObjectID(req.headers.userid) : undefined;
+        const keywords = votingContentsRequest.keyword;
+        const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
         const take = limit ? limit : 10;
         const skips = offset ? offset : 0;
         let pinned:any = undefined;
@@ -661,7 +663,8 @@ export class VotingController {
                     {
                         $match:{
                             pin: true,
-                            approved: true
+                            approved: true,
+                            title:exp
                         }
                     },
                     {
@@ -922,7 +925,8 @@ export class VotingController {
                     },
                     {
                         $match:{
-                            userId: userObjId
+                            userId: userObjId,
+                            title:exp
                         }
                     },
                     {
@@ -1178,7 +1182,8 @@ export class VotingController {
                     },
                     {
                         $match:{
-                            status: 'support'
+                            status: 'support',
+                            title:exp
                         }
                     },
                     {
@@ -1443,7 +1448,8 @@ export class VotingController {
                     },
                     {
                         $match:{
-                            endVoteDatetime:{$gte:today,$lte:dateNow}
+                            endVoteDatetime:{$gte:today,$lte:dateNow},
+                            title:exp
                         }
                     },
                     {
@@ -1488,7 +1494,8 @@ export class VotingController {
                 [
                     {
                         $match:{
-                            hashTag:{$in:splitHashTag}
+                            hashTag:{$in:splitHashTag},
+                            title:exp
                         }
                     },
                     {
@@ -1778,7 +1785,7 @@ export class VotingController {
         result.myVote = myVote;
         result.supporter = supporter;
         result.closeDate = closeVote;
-        result.hashTagVote = hashTagVote ? hashTagVote.shift() : hashTagVote;
+        result.hashTagVote = hashTagVote;
 
         const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', result,countRows);
         return res.status(200).send(successResponse);
@@ -3208,6 +3215,7 @@ export class VotingController {
                 $skip: offset
             }
         ]);
+
         const voteEvent = await this.votedService.aggregate([
             {
                 $match:{
@@ -3226,6 +3234,7 @@ export class VotingController {
                                 }
                             }
                         },
+                        { $sample: { size: 5 } },     
                         {
                             $project: {
                                 _id: 1,
@@ -3244,13 +3253,50 @@ export class VotingController {
                     path:'$user'
                 }
             },
-            { $sample: { size: 5 } },     
+            {
+                $group: {
+                  _id: '$user._id',
+                  count: { $sum: 1 },
+                  uniqueIds: { $addToSet: '$user._id' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'User',
+                    let: { 'id': '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: ['$$id', '$_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                displayName: 1,
+                                uniqueId: 1,
+                                imageURL: 1,
+                                s3ImageURL: 1
+                            }
+                        },
+                    ],
+                    as: 'user'
+                }
+            },
+            {
+                $unwind:{
+                    path:'$user'
+                }
+            },  
             {
                 $project:{
                     user:1
                 }
             }
         ]);
+        
         const voteCount = await this.votedService.aggregate(
             [
                 {

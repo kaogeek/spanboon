@@ -8,6 +8,7 @@
 import 'reflect-metadata';
 
 export class VotingContentsRequest {
+    public keyword: any;
     public pin: boolean;
     public myVote: boolean;
     public supporter: boolean;
