@@ -447,44 +447,38 @@ export class VotePage extends AbstractPage implements OnInit {
     if (type === 'voteData') {
       for (let index = 0; index < data.length; index++) {
         let date = data[index];
-        let isDayRange = date.supportDaysRange ? true : false;
-        this.voteData[index].endVoteDay = this._formatEndVote(date.supportDaysRange ? date.supportDaysRange : date.endVoteDatetime, true, isDayRange);
-        this.voteData[index].endVoteHour = this._formatEndVote(date.supportDaysRange ? date.supportDaysRange : date.endVoteDatetime, false, isDayRange);
+        this.voteData[index].endVoteDay = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, true);
+        this.voteData[index].endVoteHour = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, false);
       }
     } else {
       for (let index = 0; index < data.pin.length; index++) {
         let date = data.pin[index];
-        let isDayRange = date.supportDaysRange ? true : false;
-        this.model.pin[index].endVoteDay = this._formatEndVote(date.supportDaysRange ? date.supportDaysRange : date.endVoteDatetime, true, isDayRange);
-        this.model.pin[index].endVoteHour = this._formatEndVote(date.supportDaysRange ? date.supportDaysRange : date.endVoteDatetime, false, isDayRange);
+        this.model.pin[index].endVoteDay = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, true);
+        this.model.pin[index].endVoteHour = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, false);
       }
       for (let index = 0; index < data.supporter.length; index++) {
         let date = data.supporter[index];
-        let isDayRange = date.supportDaysRange ? true : false;
-        this.model.supporter[index].endVoteDay = this._formatEndVote(date.supportDaysRange ? date.supportDaysRange : date.endVoteDatetime, true, isDayRange);
-        this.model.supporter[index].endVoteHour = this._formatEndVote(date.supportDaysRange ? date.supportDaysRange : date.endVoteDatetime, false, isDayRange);
+        this.model.supporter[index].endVoteDay = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, true);
+        this.model.supporter[index].endVoteHour = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, false);
       }
       for (let index = 0; index < data.myVote.length; index++) {
         let date = data.myVote[index];
-        let isDayRange = date.supportDaysRange ? true : false;
-        this.model.myVote[index].endVoteDay = this._formatEndVote(date.supportDaysRange ? date.supportDaysRange : date.endVoteDatetime, true, isDayRange);
-        this.model.myVote[index].endVoteHour = this._formatEndVote(date.supportDaysRange ? date.supportDaysRange : date.endVoteDatetime, false, isDayRange);
+        this.model.myVote[index].endVoteDay = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, true);
+        this.model.myVote[index].endVoteHour = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, false);
       }
       for (let index = 0; index < data.closeDate.length; index++) {
         let date = data.closeDate[index];
-        let isDayRange = date.supportDaysRange ? true : false;
-        this.model.closeDate[index].endVoteDay = this._formatEndVote(date.supportDaysRange ? date.supportDaysRange : date.endVoteDatetime, true, isDayRange);
-        this.model.closeDate[index].endVoteHour = this._formatEndVote(date.supportDaysRange ? date.supportDaysRange : date.endVoteDatetime, false, isDayRange);
+        this.model.closeDate[index].endVoteDay = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, true);
+        this.model.closeDate[index].endVoteHour = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, false);
       }
 
     }
   }
 
-  private _formatEndVote(date, isDay, isDayRange) {
+  private _formatEndVote(date, isDay) {
     var countDownDate = new Date(date).getTime();
     var now = new Date().getTime();
-    var now30days = new Date().setDate(new Date().getDate() + 30);
-    var distance = countDownDate - (isDayRange ? now30days : now);
+    var distance = countDownDate - now;
     var days = Math.floor(distance / (1000 * 60 * 60 * 24));
     var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 

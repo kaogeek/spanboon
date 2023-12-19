@@ -252,6 +252,11 @@
             margin: 0 auto;
             position: relative;
             z-index: 1;
+
+            @media (max-width: $small) {
+              width: 100%;
+              object-fit: cover;
+            }
           }
         }
 
