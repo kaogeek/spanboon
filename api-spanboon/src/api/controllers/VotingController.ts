@@ -4062,6 +4062,7 @@ export class VotingController {
         const pageObjId = new ObjectID(votedRequest.pageId);
         const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
         // status public, private, member
+        /*
         if(voteEventObj.type === 'member'){
             const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
             if( 
@@ -4073,7 +4074,7 @@ export class VotingController {
                 return res.status(400).send(errorResponse);
             }
         }
-
+        */
         // if private vote check you are in vote
         if(voteEventObj.type === 'private'){
             // user 
@@ -4346,7 +4347,7 @@ export class VotingController {
         const userObjId = new ObjectID(req.user.id);
 
         const votingObj = await this.votingEventService.findOne({ _id: votingObjId });
-
+        /*
         if(votingObj.type === 'member'){
             const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
             if( 
@@ -4358,7 +4359,7 @@ export class VotingController {
                 return res.status(400).send(errorResponse);
             }
         }
-
+        */
         if (votingObj === undefined && votingObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Not Found the Voting Object.', undefined);
             return res.status(400).send(errorResponse);
