@@ -131,7 +131,7 @@
                                 <ng-container *ngFor="let choice of item.voteChoice;let i = index">
                                     <ng-container *ngIf="item.type === 'single'; else elseMultiple">
                                         <div class="wrapper-choice"
-                                            [ngClass]="{'active': (singleAns === choice.title) || choice.isVote,'closed': data.post.closed || isVoteAlready}"
+                                            [ngClass]="{'active': (questions[index].active === choice.title) || choice.isVote,'closed': data.post.closed || isVoteAlready}"
                                             (click)="chooseChoice(item,choice,index,i,item.type)">
                                             <div class="choice">
                                                 <div class="image" *ngIf="!!choice.coverPageURL">
@@ -143,7 +143,7 @@
                                                     <div class="border-white" *ngIf="!data.post.closed">
                                                         <button mat-icon-button
                                                             (click)="addOrRemoveActive(choice,'single','remove',index); $event.stopPropagation()"
-                                                            *ngIf="(singleAns === choice.title) || choice.isVote">
+                                                            *ngIf="(questions[index].active === choice.title) || choice.isVote">
                                                             <mat-icon>done</mat-icon>
                                                         </button>
                                                     </div>
@@ -173,8 +173,7 @@
                                                 <div class="answer">
                                                     <span>{{choice.title}}</span>
                                                     <mat-icon *ngIf="choice.active || choice.isVote"
-                                                        class="material-icons-round"
-                                                        (click)="addOrRemoveActive(choice,'multi','remove',index,i); $event.stopPropagation()">done</mat-icon>
+                                                        class="material-icons-round">done</mat-icon>
                                                 </div>
                                                 <ng-container
                                                     *ngIf="(data.post.closed && data.post.showVoteResult) || (!data.post.showVoteResult) && data.menu === 'result'">

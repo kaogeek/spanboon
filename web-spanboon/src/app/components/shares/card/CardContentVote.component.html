@@ -8,8 +8,8 @@
         <span class="vote-remove">ลบโหวต</span>
     </button>
 </mat-menu>
-<div class="card-content-vote">
-    <div class="container-content" (click)="clickDialog()">
+<div class="card-content-vote" (click)="clickDialog()">
+    <div class="container-content">
         <button *ngIf="userId === model.userId" mat-icon-button [matMenuTriggerFor]="menu" aria-label="icon-button"
             (click)="$event.stopPropagation()">
             <mat-icon>more_vert</mat-icon>
@@ -60,7 +60,7 @@
             </ng-template>
         </div>
     </div>
-    <div class="owner-post" (click)="clickDialog()">
+    <div class="owner-post">
         <p class="owner-name" [innerHTML]="title"></p>
     </div>
     <div class="bottom-vote">

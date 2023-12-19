@@ -313,18 +313,17 @@ export class DialogPostCrad extends AbstractPage {
 
   public chooseChoice(question: any, choice: any, index: number, choiceIndex: number, type: any) {
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    if (!user.membership) {
+    if (!this.data.isAllow) {
       this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
       return;
     }
     if (type === 'single') {
-      if (this.singleAns !== undefined && choice.title === this.questions[index].voteChoice[0].answer) {
-        this.singleAns = undefined;
+      if (choice.title === this.questions[index].active) {
         this.questions[index] = [];
       } else {
-        this.singleAns = choice.title;
         if (this.questions[index].voteChoice === undefined) {
           this.questions[index] = {
+            active: choice.title,
             type: question.type,
             voteItemId: question._id,
             voteChoice: [
@@ -335,6 +334,7 @@ export class DialogPostCrad extends AbstractPage {
             ]
           };
         } else {
+          this.questions[index].active = choice.title;
           this.questions[index].voteChoice = [
             {
               answer: choice.title,
@@ -378,7 +378,7 @@ export class DialogPostCrad extends AbstractPage {
 
   public next() {
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    if (!user.membership) {
+    if (!this.data.isAllow) {
       this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
       return;
     }
