@@ -237,13 +237,13 @@
           overflow: hidden;
           position: relative;
           height: 335px;
+          @include pointer;
         }
 
         > .card-post {
           display: flex;
           flex-direction: column;
           box-shadow: 0px 0px 5px 0px rgba($black, 0.2);
-          @include pointer;
           height: 330px;
           border-radius: 16px;
 

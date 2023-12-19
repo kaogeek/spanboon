@@ -1,10 +1,18 @@
 .card-content-vote {
   display: flex;
   flex-direction: column;
+  height: 100%;
+
+  &:hover {
+    .owner-post {
+      > .owner-name {
+        color: rgba($brandcolor2, 0.95);
+      }
+    }
+  }
 
   .container-content {
     position: relative;
-    flex: 1 1 0%;
     @include pointer();
 
     > button {
@@ -118,10 +126,6 @@
       overflow: hidden;
       word-break: break-word;
       display: -webkit-box;
-
-      &:hover {
-        color: rgba($brandcolor2, 0.95);
-      }
     }
   }
 

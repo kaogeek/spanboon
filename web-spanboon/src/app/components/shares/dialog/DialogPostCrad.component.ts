@@ -313,7 +313,7 @@ export class DialogPostCrad extends AbstractPage {
 
   public chooseChoice(question: any, choice: any, index: number, choiceIndex: number, type: any) {
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    if (!user.membership) {
+    if (!this.data.isAllow) {
       this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
       return;
     }
@@ -378,7 +378,7 @@ export class DialogPostCrad extends AbstractPage {
 
   public next() {
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    if (!user.membership) {
+    if (!this.data.isAllow) {
       this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
       return;
     }

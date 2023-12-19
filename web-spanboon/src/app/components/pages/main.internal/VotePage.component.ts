@@ -344,13 +344,14 @@ export class VotePage extends AbstractPage implements OnInit {
             backdropClass: 'backdrop-overlay',
             panelClass: 'panel-backgroud',
             hasBackdrop: false,
-            disableClose: false,
+            disableClose: true,
             autoFocus: false,
             data: {
               post: $event,
               choice: [],
               support: res,
               vote: true,
+              isAllow: this.isAllowCreate,
               menu: this.activeMenu
             }
           });
@@ -374,6 +375,7 @@ export class VotePage extends AbstractPage implements OnInit {
                   post: $event,
                   choice: res,
                   vote: true,
+                  isAllow: this.isAllowCreate,
                   menu: this.activeMenu
                 }
               });
@@ -392,6 +394,7 @@ export class VotePage extends AbstractPage implements OnInit {
                   post: $event,
                   choice: [],
                   vote: true,
+                  isAllow: this.isAllowCreate,
                   menu: this.activeMenu
                 }
               });
@@ -411,6 +414,7 @@ export class VotePage extends AbstractPage implements OnInit {
                 post: $event,
                 choice: res,
                 vote: true,
+                isAllow: this.isAllowCreate,
                 menu: this.activeMenu
               }
             });
