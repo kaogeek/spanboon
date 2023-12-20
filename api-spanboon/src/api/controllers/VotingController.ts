@@ -2340,20 +2340,11 @@ export class VotingController {
                 }
             ]
         );
-        const countRows = await this.votingEventService.aggregate(
-            [
-                {
-                    $match:{
-                        userId:userObjId
-                    }
-                },
-                {
-                    $count: 'count'
-                },
-            ]
-        );
+        const countRows:any = [
+            {'count':voteEventAggr.length}
+        ];
 
-        const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr,countRows);
+        const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr,countRows[0].count);
         return res.status(200).send(successResponse);
     }
 
@@ -2427,10 +2418,6 @@ export class VotingController {
                     $match:{
                         votingId:objIds,
                     }
-                },
-                
-                {
-                    $count:'count'
                 }
             ]
         );
@@ -2439,7 +2426,7 @@ export class VotingController {
             'count':null,
         };
         response['userSupport'] = getSupports;
-        response['count'] = countUser[0] ? countUser[0].count: 0;
+        response['count'] = countUser[0] ? countUser.length: 0;
         const successResponse = ResponseUtil.getSuccessResponse('Search lists any user support is succesful.', response);
         return res.status(200).send(successResponse);
     }
