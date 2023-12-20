@@ -1796,7 +1796,7 @@ export class VotingController {
         result.closeDate = closeVote;
         result.hashTagVote = hashTagVote;
 
-        const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', result,countRows);
+        const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', result,countRows[0].count);
         return res.status(200).send(successResponse);
     }
 
