@@ -401,7 +401,10 @@ export class VotingController {
         const countRows = await this.votingEventService.aggregate(
             [
                 {
-                    $count: 'passing_scores'
+                    $limit: take
+                },
+                {
+                    $count: 'count'
                 },
             ]
         );
@@ -436,8 +439,8 @@ export class VotingController {
         const userObjId = req.headers.userid ? new ObjectID(req.headers.userid) : undefined;
         const keywords = votingContentsRequest.keyword;
         const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
-        const take = limit ? limit : 10;
-        const skips = offset ? offset : 0;
+        const take = votingContentsRequest.limit ? votingContentsRequest.limit : 10;
+        const skips = votingContentsRequest.offset ? votingContentsRequest.offset : 0;
         let pinned:any = undefined;
         let myVote:any = undefined;
         let supporter:any = undefined;
@@ -1772,14 +1775,20 @@ export class VotingController {
                 ]
             );
         }
+        let hashTagCount = 0;
+        if(hashTagVote !== undefined && hashTagVote.length > 0){
+            for(const count of hashTagVote){
+                hashTagCount += count.count;
+            }
+        }
 
-        const countRows = await this.votingEventService.aggregate(
-            [
-                {
-                    $count: 'passing_scores'
-                },
-            ]
-        );
+        const countRows:any = [{'count':0}];
+        countRows[0].count += pinned ? pinned.length : 0; 
+        countRows[0].count += myVote ? myVote.length : 0;
+        countRows[0].count += supporter ? supporter.length : 0;
+        countRows[0].count += closeVote ? closeVote.length : 0;
+        countRows[0].count += hashTagCount;
+
         const result: any = {};
         result.pin = pinned;
         result.myVote = myVote;
@@ -2346,7 +2355,7 @@ export class VotingController {
                     }
                 },
                 {
-                    $count: 'passing_scores'
+                    $count: 'count'
                 },
             ]
         );
@@ -2426,6 +2435,7 @@ export class VotingController {
                         votingId:objIds,
                     }
                 },
+                
                 {
                     $count:'count'
                 }
@@ -3303,6 +3313,9 @@ export class VotingController {
                     $match:{
                         votingId:voteObjId
                     }
+                },
+                {
+                    $limit: take
                 },
                 {
                     $count:'count'
