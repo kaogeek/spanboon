@@ -398,18 +398,11 @@ export class VotingController {
                 },
             ]
         );
-        const countRows = await this.votingEventService.aggregate(
-            [
-                {
-                    $limit: take
-                },
-                {
-                    $count: 'count'
-                },
-            ]
-        );
+        const countRows:any = [
+            {'count':voteEventAggr.length}
+        ];
 
-        const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr,countRows);
+        const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr,countRows[0].count);
         return res.status(200).send(successResponse);
     }
 
