@@ -35,6 +35,8 @@ import {
     MFPHASHTAG,
     DEFAULT_SUPPORT_DAYS_RANGE,
     SUPPORT_DAYS_RANGE,
+    DEFAULT_VOTE_DAYS_RANGE,
+    VOTE_DAYS_RANGE
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -4342,6 +4344,8 @@ export class VotingController {
         // ELIGIBLE_VOTES
         let triggerValue = DEFAULT_TRIGGER_VOTE;
         let sdr = DEFAULT_SUPPORT_DAYS_RANGE;
+        let vdr = DEFAULT_VOTE_DAYS_RANGE;
+        const voteDaysRangeConfig = await this.configService.getConfig(VOTE_DAYS_RANGE);
         const sdrConfig = await this.configService.getConfig(SUPPORT_DAYS_RANGE);
         const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
         const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
@@ -4359,6 +4363,11 @@ export class VotingController {
         if (eligibleConfig) {
             eligibleValue = eligibleConfig.value;
         }
+
+        if (voteDaysRangeConfig) {
+            vdr = voteDaysRangeConfig.value;
+        }
+
         if(String(triggerValue) === 'true'){
             const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
             const userObj = await this.userService.findOne({_id: userObjId});
@@ -4368,8 +4377,8 @@ export class VotingController {
             }
         }
 
-        if(votingEventRequest.supportDaysRange !== undefined) {
-            sdr = votingEventRequest.supportDaysRange;
+        if(votingEventRequest.voteDaysRange !== undefined) {
+            vdr = votingEventRequest.voteDaysRange;
         }
 
         if (configMinSupport) {
@@ -4506,9 +4515,9 @@ export class VotingController {
         votingEvent.startSupportDatetime = today;
         votingEvent.endSupportDatetime = dateNow;
 
-        votingEvent.voteDaysRange = votingEventRequest.voteDaysRange;
+        votingEvent.voteDaysRange = vdr;
         votingEvent.startVoteDatetime = dateNow;
-        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * votingEventRequest.voteDaysRange) * 60 * 60 * 1000)); // voteDaysRange;
+        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * vdr) * 60 * 60 * 1000)); // voteDaysRange;
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
@@ -4595,6 +4604,8 @@ export class VotingController {
         const today = moment().toDate();
         let sdr = DEFAULT_SUPPORT_DAYS_RANGE;
         const sdrConfig = await this.configService.getConfig(SUPPORT_DAYS_RANGE);
+        let vdr = DEFAULT_VOTE_DAYS_RANGE;
+        const voteDaysRangeConfig = await this.configService.getConfig(VOTE_DAYS_RANGE);
         let minSupportValue = DEFAULT_MIN_SUPPORT;
         // ELIGIBLE_VOTES
         let triggerValue = DEFAULT_TRIGGER_VOTE;
@@ -4614,6 +4625,11 @@ export class VotingController {
         if (eligibleConfig) {
             eligibleValue = eligibleConfig.value;
         }
+
+        if (voteDaysRangeConfig) {
+            vdr = voteDaysRangeConfig.value;
+        }
+
         if(String(triggerValue) === 'true'){
             const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
             const userObj = await this.userService.findOne({_id: userObjId});
@@ -4621,6 +4637,10 @@ export class VotingController {
                 const errorResponse = ResponseUtil.getErrorResponse('You have no permission to create the vote event.', undefined);
                 return res.status(400).send(errorResponse);
             }
+        }
+
+        if(votingEventRequest.voteDaysRange !== undefined) {
+            vdr = votingEventRequest.voteDaysRange;
         }
 
         const closetValue = (24 * sdr) * 60 * 60 * 1000; // one day in milliseconds
@@ -4772,9 +4792,9 @@ export class VotingController {
         votingEvent.startSupportDatetime = today;
         votingEvent.endSupportDatetime = dateNow;
 
-        votingEvent.voteDaysRange = votingEventRequest.voteDaysRange;
+        votingEvent.voteDaysRange = vdr;
         votingEvent.startVoteDatetime = dateNow;
-        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * votingEventRequest.voteDaysRange) * 60 * 60 * 1000)); // voteDaysRange;
+        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * vdr) * 60 * 60 * 1000)); // voteDaysRange;
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
@@ -4861,8 +4881,7 @@ export class VotingController {
         const pageObjId = new ObjectID(votedRequest.pageId);
         const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
         const today = moment().toDate();
-        console.log('voteEventObj.endVoteDatetime',voteEventObj.endVoteDatetime);
-        console.log('today',today);
+
         // status public, private, member
         /*
         if(voteEventObj.type === 'member'){

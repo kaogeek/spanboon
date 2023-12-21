@@ -127,3 +127,6 @@ export const ELIGIBLE_VOTES = 'eligible.voters';
 
 export const DEFAULT_SUPPORT_DAYS_RANGE = 30;
 export const SUPPORT_DAYS_RANGE = 'support.days.range';
+
+export const DEFAULT_VOTE_DAYS_RANGE = 30;
+export const VOTE_DAYS_RANGE ='vote.days.range';
