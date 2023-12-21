@@ -15,7 +15,7 @@
             <mat-icon>more_vert</mat-icon>
         </button>
         <ng-container *ngIf="!!model.coverPageURL; else elseVoteImageNull">
-            <img class="image-content-vote" [src]="apiBaseURL + image">
+            <img class="image-content-vote" [src]="apiBaseURL + image + '/image'">
         </ng-container>
         <ng-template #elseVoteImageNull>
             <img class="image-content-vote" src="../../../../assets/img/logo/vote-01.jpg">
@@ -43,14 +43,18 @@
             <span>{{model.user !== undefined ? model.user.firstName : model.page.pageUsername}}</span>
             <ng-container *ngIf="!model.closed; else elseClosed">
                 <span class="vote-time">
+                    <span>{{model.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
                     <ng-container *ngIf="model.endVoteDay > 0">
-                        <span>{{model.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
                         <span>{{model.endVoteDay}}</span>
                         <span> วัน </span>
                     </ng-container>
                     <ng-container *ngIf="model.endVoteHour > 0">
                         <span>{{model.endVoteHour}}</span>
                         <span>ชม.</span>
+                    </ng-container>
+                    <ng-container *ngIf="model.endVoteDay <= 0 && model.endVoteHour <= 0">
+                        <span>{{model.endVoteMinute}}</span>
+                        <span>นาที</span>
                     </ng-container>
                 </span>
             </ng-container>

@@ -18,17 +18,18 @@ export class VoteEventFacade extends AbstractFacade {
     super(http, authMgr);
   }
 
-  public searchAll(isLogin: boolean): Promise<any> {
+  public searchAll(isLogin: boolean, keyword?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/voting/contents/';
       let body: any = {
         limit: 10,
         offset: 0,
         pin: true,
-        myVote: isLogin ? true : false,
+        myVote: false,
         supporter: true,
         closeVote: true,
-        hashTagVote: true
+        hashTagVote: true,
+        keyword: !!keyword ? keyword : "",
       };
       let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
@@ -62,20 +63,18 @@ export class VoteEventFacade extends AbstractFacade {
     });
   }
 
-  public searchOwn(filter: any, condition: any, keyword?: string): Promise<any> {
+  public searchOwn(filter: any, keyword?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/voting/own/search/';
       let body: any = {
-        filter: {},
-        whereConditions: {},
+        limit: filter.limit,
+        offset: filter.offset,
+        myVote: true,
+        myVoterSupport: true,
+        myVoted: true,
+        mySupported: true,
         keyword: keyword ? keyword : "",
       };
-      if (filter !== null && filter !== undefined) {
-        Object.assign(body.filter, filter);
-      }
-      if (condition !== null && condition !== undefined) {
-        Object.assign(body.whereConditions, condition);
-      }
       let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -104,6 +103,18 @@ export class VoteEventFacade extends AbstractFacade {
   public getVoteChoice(id: string): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/voting/item/vote/' + id;
+      let httpOptions = this.authMgr.getDefaultOptions();
+      this.http.get(url, httpOptions).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getVote(id: string): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/voting/' + id;
       let httpOptions = this.authMgr.getDefaultOptions();
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
         resolve(response.data);

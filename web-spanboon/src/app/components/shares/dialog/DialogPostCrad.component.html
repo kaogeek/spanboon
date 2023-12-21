@@ -7,15 +7,15 @@
 <ng-container *ngIf="data.vote; else elseTemplate">
     <div *ngIf="!voteSuccess" class="dialog-vote-card">
         <div class="wrapper-card">
-            <img class="close-icon" src="../../../../assets/img/icons/votepage/close.svg" (click)="onClose()">
+            <img class="close-icon" src="../../../../assets/img/icons/votepage/close.svg" (click)="onClose(data.menu)">
             <div class="card-wrapper">
                 <div class="image">
                     <div class="wrapper-image">
                         <div class="image-cover-blur"
-                            [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(' +  apiBaseURL + data.post.coverPageURL + ')'}">
+                            [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(' +  apiBaseURL + data.post.coverPageURL + '/image' + ')'}">
                         </div>
                         <ng-container *ngIf="!!data.post.coverPageURL; else elseVoteImageNull">
-                            <img class="image-vote" [src]="apiBaseURL + data.post.coverPageURL" alt="">
+                            <img class="image-vote" [src]="apiBaseURL + data.post.coverPageURL + '/image'" alt="">
                         </ng-container>
                         <ng-template #elseVoteImageNull>
                             <img class="image-vote" src="../../../../assets/img/logo/vote-01.jpg" alt="">
@@ -23,41 +23,46 @@
 
                     </div>
                     <div class="bottom-image">
-                        <div class="user-profile">
-                            <ng-container *ngIf="!!user.imageURL; else elseImageNull">
-                                <img [src]="apiBaseURL + user.imageURL + '/image'" alt="">
+                        <div class="wrapper-detail-vote">
+                            <div class="user-profile">
+                                <ng-container *ngIf="!!user.imageURL; else elseImageNull">
+                                    <img [src]="apiBaseURL + user.imageURL + '/image'" alt="">
+                                </ng-container>
+                                <ng-template #elseImageNull>
+                                    <span>{{user.firstName | slice:0:1}}</span>
+                                </ng-template>
+                            </div>
+                            <ng-container *ngIf="!data.post.approved; else elseTemplate">
+                                <div class="owner-name">
+                                    <span>{{user.firstName !== undefined ? user.firstName : user.pageUsername}}</span>
+                                    <mat-progress-bar mode="buffer" [bufferValue]="0" [value]="supportValue">
+                                    </mat-progress-bar>
+                                    <ng-container
+                                        *ngIf="(data.post.minSupport - data.post.countSupport) <= 0; else elseMinSupport">
+                                        <span>กระทู้ของคุณได้รับฉันทมติให้เปิดโหวต</span>
+                                    </ng-container>
+                                    <ng-template #elseMinSupport>
+                                        <span>ยังต้องการอีก {{data.post.minSupport - data.post.countSupport}} เสียง
+                                            เพื่อเปิดโหวต</span>
+                                    </ng-template>
+                                </div>
                             </ng-container>
-                            <ng-template #elseImageNull>
-                                <span>{{user.firstName | slice:0:1}}</span>
+                            <ng-template #elseTemplate>
+                                <div class="owner-name">
+                                    <span>{{user.firstName !== undefined ? user.firstName : user.pageUsername}}</span>
+                                    <ng-container *ngIf="!data.post.closed; else elseClosedVote">
+                                        <span>ปิดโหวตใน {{data.post.endVoteDay}}วัน {{data.post.endVoteHour <= 0 ? '' :
+                                                data.post.endVoteHour + 'ชม.' }}</span>
+                                    </ng-container>
+                                    <ng-template #elseClosedVote>
+                                        <span>ปิดโหวตแล้ว</span>
+                                    </ng-template>
+                                </div>
                             </ng-template>
                         </div>
-                        <ng-container *ngIf="!data.post.approved; else elseTemplate">
-                            <div class="owner-name">
-                                <span>{{user.firstName !== undefined ? user.firstName : user.pageUsername}}</span>
-                                <mat-progress-bar mode="buffer" [bufferValue]="0" [value]="supportValue">
-                                </mat-progress-bar>
-                                <ng-container
-                                    *ngIf="(data.post.minSupport - data.post.countSupport) <= 0; else elseMinSupport">
-                                    <span>กระทู้ของคุณได้รับฉันทมติให้เปิดโหวต</span>
-                                </ng-container>
-                                <ng-template #elseMinSupport>
-                                    <span>ยังต้องการอีก {{data.post.minSupport - data.post.countSupport}} เสียง
-                                        เพื่อเปิดโหวต</span>
-                                </ng-template>
-                            </div>
-                        </ng-container>
-                        <ng-template #elseTemplate>
-                            <div class="owner-name">
-                                <span>{{user.firstName !== undefined ? user.firstName : user.pageUsername}}</span>
-                                <ng-container *ngIf="!data.post.closed; else elseClosedVote">
-                                    <span>ปิดโหวตใน {{data.post.endVoteDay}}วัน {{data.post.endVoteHour <= 0 ? '' :
-                                            data.post.endVoteHour + 'ชม.' }}</span>
-                                </ng-container>
-                                <ng-template #elseClosedVote>
-                                    <span>ปิดโหวตแล้ว</span>
-                                </ng-template>
-                            </div>
-                        </ng-template>
+                        <div class="share-button-vote" (click)="shareVote()">
+                            <img src="../../../../assets/img/icons/votepage/share.svg" alt="">
+                        </div>
                     </div>
                 </div>
                 <div class="box-content">
@@ -126,7 +131,8 @@
                         <ng-container *ngFor="let item of posts;let index = index">
                             <div class="question">
                                 <span>คำถามที่ {{item.ordering}}</span>
-                                <img *ngIf="!!item!.coverPageURL" [src]="apiBaseURL + item?.coverPageURL" alt="">
+                                <img *ngIf="!!item!.coverPageURL" [src]="apiBaseURL + item?.coverPageURL + '/image'"
+                                    alt="">
                                 <span class="title">{{item.title}}</span>
                                 <ng-container *ngFor="let choice of item.voteChoice;let i = index">
                                     <ng-container *ngIf="item.type === 'single'; else elseMultiple">
@@ -135,7 +141,7 @@
                                             (click)="chooseChoice(item,choice,index,i,item.type)">
                                             <div class="choice">
                                                 <div class="image" *ngIf="!!choice.coverPageURL">
-                                                    <img [src]="apiBaseURL + choice.coverPageURL" alt="">
+                                                    <img [src]="apiBaseURL + choice.coverPageURL + '/image'" alt="">
                                                 </div>
                                                 <div class="answer">
                                                     <span>{{choice.title}}</span>
@@ -168,7 +174,7 @@
                                             choice.active ? addOrRemoveActive(choice,'multi','remove',index,i) : addOrRemoveActive(choice,'multi','add',index,i)">
                                             <div class="choice">
                                                 <div class="image" *ngIf="!!choice.coverPageURL">
-                                                    <img [src]="apiBaseURL + choice.coverPageURL" alt="">
+                                                    <img [src]="apiBaseURL + choice.coverPageURL + '/image'" alt="">
                                                 </div>
                                                 <div class="answer">
                                                     <span>{{choice.title}}</span>
@@ -219,8 +225,7 @@
                     </ng-container>
                     <ng-template #elseApproved>
                         <div class="wrapper-button">
-                            <ng-container
-                                *ngIf="data.post.userSupport ? data.post.userSupport.length >= 1 : data.support.userSupport.length >= 1; else elseSupport">
+                            <ng-container *ngIf="data.post.userSupport; else elseSupport">
                                 <span class="button-vote close"
                                     (click)="isLogin() ? unVoteSupport(data.post._id) : checkLogin()">ยกเลิกสนับสนุน</span>
                             </ng-container>

@@ -74,6 +74,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
 
     public ngOnInit(): void {
         this.reloadUserImage();
+        this.getScreenSize();
     }
 
     public ngOnDestroy(): void {

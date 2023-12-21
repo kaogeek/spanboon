@@ -287,7 +287,11 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   public onClose(data?) {
-    this.dialogRef.close(false);
+    if (!!data) {
+      this.dialogRef.close(data);
+    } else {
+      this.dialogRef.close(false);
+    }
   }
 
   onFileSelect() { }
@@ -312,6 +316,10 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   public chooseChoice(question: any, choice: any, index: number, choiceIndex: number, type: any) {
+    if (!this.isLogin()) {
+      this.checkLogin();
+      return;
+    }
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
     if (!this.data.isAllow) {
       this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
@@ -418,7 +426,7 @@ export class DialogPostCrad extends AbstractPage {
       });
       dialog.afterClosed().subscribe((res) => {
         if (res) {
-          this.onClose();
+          this.onClose(true);
           this.router.navigate(["/login", { redirection: this.router.url }]);
         }
       });
@@ -443,7 +451,7 @@ export class DialogPostCrad extends AbstractPage {
         }
         this.isLoading = false;
         this.data.post.countSupport++;
-        this.data.post.userSupport.push(res.data);
+        this.data.post.userSupport = true;;
         this.showAlertDialog("คุณได้สนับสนุนโหวตนี้");
       }
     }).catch((err) => {
@@ -476,7 +484,7 @@ export class DialogPostCrad extends AbstractPage {
         this.isLoading = true;
         this.voteFacade.unVoteSupport(id).then((res) => {
           this.data.post.countSupport--;
-          this.data.post.userSupport.splice(0, 1);
+          this.data.post.userSupport = false;
           this.data.support.userSupport.splice(index, 1);
           this.isLoading = false;
         }).catch((err) => {
@@ -583,6 +591,17 @@ export class DialogPostCrad extends AbstractPage {
       }
 
       return question;
+    });
+  }
+
+  public shareVote() {
+    const dialog = this.dialog.open(DialogShare, {
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        title: "แชร์",
+        text: window.location.origin + this.router.url
+      }
     });
   }
 }

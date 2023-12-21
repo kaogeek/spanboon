@@ -39,14 +39,17 @@ export class VotePage extends AbstractPage implements OnInit {
   private destroy = new Subject<void>()
   private voteFacade: VoteEventFacade;
 
-  public activeUrl: string;
+  public activeUrl: any;
   public apiBaseURL = environment.apiBaseURL;
   public mode: string;
-  public voteData: any[] = [];
+  public voteData: any;
   public voteModel: any = {};
   public activeMenu: string = '';
   public userId: string;
   public isLoading: boolean = false;
+  public isSearch: boolean = false;
+  public isEmpty: boolean = false;
+  public searchInputValue: string;
   public windowWidth: any;
   public isRes: boolean = false;
   public isAllowCreate: boolean = false;
@@ -60,7 +63,7 @@ export class VotePage extends AbstractPage implements OnInit {
       isLogin: false,
     },
     {
-      name: 'โหวตที่ฉันสร้าง',
+      name: 'ที่ฉันมีส่วนร่วม',
       status: 'my-vote',
       icon: '../../../../assets/img/icons/votepage/user.svg',
       icon2: '../../../../assets/img/icons/votepage/user-active.svg',
@@ -105,9 +108,13 @@ export class VotePage extends AbstractPage implements OnInit {
       .subscribe((event: NavigationEnd) => {
         this.activeRoute.children.forEach(child => {
           child.params.subscribe(params => {
-            this.activeUrl = params['id'];
+            this.activeUrl = params;
             if (this._checkRouting(this.activeUrl)) {
-              this.activeMenu = this.activeUrl;
+              if (!this.isLogin() && this.activeUrl['name'] === 'my-vote') {
+                this.router.navigate(['', 'vote']);
+              } else {
+                this.activeMenu = this.activeUrl['name'];
+              }
             } else {
               this.router.navigate(['', 'vote']);
             }
@@ -116,18 +123,27 @@ export class VotePage extends AbstractPage implements OnInit {
       });
   }
 
-  public ngOnInit() {
+  public async ngOnInit() {
     if (this.isLogin()) {
-      this.menuList[0].isLogin = true;
-      this.menuList[2].isLogin = true;
-      this.menuList[3].isLogin = true;
-      this.menuList[4].isLogin = true;
+      const updateMenu = [0, 2, 3, 4];
+      updateMenu.forEach(index => {
+        this.menuList[index].isLogin = true;
+      });
       this._getPermissible();
+    }
+    let isOpenDialog: boolean = false;
+    if (!!this.activeUrl['id']) {
+      const data = await this.voteFacade.getVote(this.activeUrl['id']);
+      if (!!data) {
+        this.openDialogPost(data);
+        isOpenDialog = true;
+      }
     }
     this.userId = this.authenManager.getCurrentUser() ? this.authenManager.getCurrentUser().id : '';
     if (this.activeMenu === undefined || this.activeMenu === '') {
       this._searchContent();
     } else {
+      // if (!isOpenDialog) 
       this.searchValue();
     }
     this.getScreenSize();
@@ -139,7 +155,11 @@ export class VotePage extends AbstractPage implements OnInit {
       filter((e: KeyboardEvent) => e.keyCode === 13),
       distinctUntilChanged()
     ).subscribe((text: any) => {
-      this.searchValue(text.target.value);
+      if (this.activeUrl['name'] === undefined || this.activeUrl['name'] === '') {
+        this._searchContent(text.target.value);
+      } else {
+        this.searchValue(text.target.value);
+      }
     });
   }
 
@@ -167,12 +187,11 @@ export class VotePage extends AbstractPage implements OnInit {
     });
   }
 
-  public _searchContent() {
+  public _searchContent(keyword?) {
     this.isLoading = true;
-    this.voteFacade.searchAll(this.isLogin()).then((res) => {
+    this.voteFacade.searchAll(this.isLogin(), keyword).then((res) => {
       if (res) {
         this.model = res;
-        this._getEndVoteTime(res, 'model');
         this.isLoading = false;
       }
     }).catch((err) => {
@@ -183,6 +202,7 @@ export class VotePage extends AbstractPage implements OnInit {
   }
 
   public searchVoteContent(condition?, isOwn?, keyword?) {
+    this.isLoading = true;
     let search: SearchFilter = new SearchFilter();
     search.limit = 8;
     search.offset = 0;
@@ -194,22 +214,12 @@ export class VotePage extends AbstractPage implements OnInit {
       whereConditions = {}
     }
     if (isOwn) {
-      this.voteFacade.searchOwn(search, whereConditions, keyword ? keyword : null).then((res) => {
+      this.voteFacade.searchOwn(search, keyword ? keyword : null).then((res: any) => {
         if (res) {
-          if (!!keyword) {
-            this.voteData = [];
-          }
-          if (!condition) {
-            this.voteData = res;
-          } else {
-            this.voteData = [...this.voteData, ...res];
-          }
-          setTimeout(() => {
-            this._getEndVoteTime(res, 'voteData');
-            let data = this._removeDuplicateIds(this.voteData);
-            this.voteData = data;
-            this.isLoading = false;
-          }, 100);
+          this.voteData = res;
+          if (!!keyword) this.voteData = [];
+          if (this.voteData.length === 0) this.isEmpty = true;
+          this.isLoading = false;
         }
       }).catch((err) => {
         if (err) {
@@ -219,20 +229,10 @@ export class VotePage extends AbstractPage implements OnInit {
     } else {
       this.voteFacade.search(search, whereConditions, keyword ? keyword : null).then((res) => {
         if (res) {
-          if (!!keyword) {
-            this.voteData = [];
-          }
-          if (!condition) {
-            this.voteData = res;
-          } else {
-            this.voteData = [...this.voteData, ...res];
-          }
-          setTimeout(() => {
-            this._getEndVoteTime(res, 'voteData');
-            let data = this._removeDuplicateIds(this.voteData);
-            this.voteData = data;
-            this.isLoading = false;
-          }, 100);
+          if (!!keyword) this.voteData = [];
+          this.voteData = !condition ? res : [...this.voteData, ...res];
+          if (this.voteData.length === 0) this.isEmpty = true;
+          this.isLoading = false;
         }
       }).catch((err) => {
         if (err) {
@@ -254,26 +254,28 @@ export class VotePage extends AbstractPage implements OnInit {
   }
 
   public searchValue(value?) {
-    this.isLoading = true;
-    if (this.activeUrl === 'support') {
+    // this.isLoading = true;
+    this.isSearch = value !== undefined || value !== '' ? true : false;
+    this.isEmpty = false;
+    this.searchInputValue = value;
+    if (this.activeUrl['name'] === 'support') {
       this.searchVoteContent({
         "status": 'support',
         "approved": false,
         "pin": false,
       }, false, value);
-    } else if (this.activeUrl === 'open') {
+    } else if (this.activeUrl['name'] === 'open') {
       this.searchVoteContent({
         "status": 'vote',
       }, false, value);
-    } else if (this.activeUrl === 'my-vote') {
+    } else if (this.activeUrl['name'] === 'my-vote') {
       this.searchVoteContent({
       }, true, value);
-    } else if (this.activeUrl === 'result') {
+    } else if (this.activeUrl['name'] === 'result') {
       this.searchVoteContent({
         "approved": true,
-        "status": 'vote',
       }, false, value);
-    } else if (this.activeUrl === undefined) {
+    } else if (this.activeUrl['name'] === undefined) {
       this.searchVoteContent({
         "approved": true,
         "pin": true,
@@ -287,37 +289,40 @@ export class VotePage extends AbstractPage implements OnInit {
 
   public changeMenu(menu, isLoad?) {
     this.isLoading = true;
+    this.searchInputValue = '';
+    this.isSearch = false;
+    this.isEmpty = false;
     this.searchInput.nativeElement.value = "";
-    if ((menu === 'support' && this.activeUrl !== 'support') || isLoad) {
+    if ((menu === 'support' && this.activeUrl['name'] !== 'support') || isLoad) {
       this.voteData = [];
       this.searchVoteContent({
         "status": 'support',
         "approved": false,
         "pin": false,
       });
-    } else if (menu === 'open' && this.activeUrl !== 'open' || isLoad) {
+    } else if (menu === 'open' && this.activeUrl['name'] !== 'open' || isLoad) {
       this.voteData = [];
       this.searchVoteContent({
         "status": 'vote',
       });
-    } else if (menu === 'my-vote' && this.activeUrl !== 'my-vote' || isLoad) {
+    } else if (menu === 'my-vote' && this.activeUrl['name'] !== 'my-vote' || isLoad) {
       this.voteData = [];
       this.searchVoteContent({
       }, true);
-    } else if (menu === 'result' && this.activeUrl !== 'result' || isLoad) {
+    } else if (menu === 'result' && this.activeUrl['name'] !== 'result' || isLoad) {
       this.voteData = [];
       this.searchVoteContent({
         "approved": true,
       });
-    } else if (menu === '' && this.activeUrl !== undefined || isLoad) {
+    } else if (menu === '' && this.activeUrl['name'] !== undefined || isLoad) {
       this._searchContent();
     } else {
       this.isLoading = false;
     }
   }
 
-  private _checkRouting(id: string): boolean {
-    const menu = this.menuList.filter((item) => item.status === id);
+  private _checkRouting(id: any): boolean {
+    const menu = this.menuList.filter((item) => item.status === id.name || id.name === 'event');
     return menu.length != 0 ? true : false;
   }
 
@@ -340,6 +345,13 @@ export class VotePage extends AbstractPage implements OnInit {
     if (!$event.approved) {
       this.voteFacade.getSupport($event._id).then((res) => {
         if (res) {
+          if (this.activeUrl['name'] === undefined || this.activeUrl['name'] === '') {
+            this.router.navigate([this.router.url + '/event/' + $event._id]);
+          } else if (this.activeUrl['name'] === 'my-vote') {
+            this.router.navigate([this.router.url.replace('/my-vote', '/event/' + $event._id)]);
+          } else if (this.activeUrl['name'] === 'support') {
+            this.router.navigate([this.router.url.replace('/support', '/event/' + $event._id)]);
+          }
           const dialogRef = this.dialog.open(DialogPostCrad, {
             backdropClass: 'backdrop-overlay',
             panelClass: 'panel-backgroud',
@@ -355,6 +367,30 @@ export class VotePage extends AbstractPage implements OnInit {
               menu: this.activeMenu
             }
           });
+          dialogRef.afterClosed().subscribe((res) => {
+            if (res === 'my-vote') {
+              if (this.router.url.includes($event._id)) {
+                this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/my-vote')]);
+                this.activeMenu = res;
+              }
+            } else if (res === 'support') {
+              if (this.router.url.includes($event._id)) {
+                this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/support')]);
+                this.activeMenu = res;
+              }
+            } else if (res === 'event') {
+              if (this.router.url.includes($event._id)) {
+                this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '')]);
+                this._searchContent();
+                this.activeMenu = '';
+              }
+            } else if (!res) {
+              if (this.router.url.includes($event._id)) {
+                this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '')]);
+                this.activeMenu = '';
+              }
+            }
+          });
         }
       }).catch((err) => {
         if (err) {
@@ -364,6 +400,13 @@ export class VotePage extends AbstractPage implements OnInit {
       if (!$event.closed) {
         this.voteFacade.getVoteChoice($event._id).then((res => {
           if (res) {
+            if (this.activeUrl['name'] === undefined || this.activeUrl['name'] === '') {
+              this.router.navigate([this.router.url + '/event/' + $event._id]);
+            } else if (this.activeUrl['name'] === 'my-vote') {
+              this.router.navigate([this.router.url.replace('/my-vote', '/event/' + $event._id)]);
+            } else if (this.activeUrl['name'] === 'open') {
+              this.router.navigate([this.router.url.replace('/open', '/event/' + $event._id)]);
+            }
             if (!!res) {
               const dialogRef = this.dialog.open(DialogPostCrad, {
                 backdropClass: 'backdrop-overlay',
@@ -377,6 +420,30 @@ export class VotePage extends AbstractPage implements OnInit {
                   vote: true,
                   isAllow: this.isAllowCreate,
                   menu: this.activeMenu
+                }
+              });
+              dialogRef.afterClosed().subscribe((res) => {
+                if (res === 'my-vote') {
+                  if (this.router.url.includes($event._id)) {
+                    this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/my-vote')]);
+                    this.activeMenu = res;
+                  }
+                } else if (res === 'open') {
+                  if (this.router.url.includes($event._id)) {
+                    this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/open')]);
+                    this.activeMenu = res;
+                  }
+                } else if (res === 'event') {
+                  if (this.router.url.includes($event._id)) {
+                    this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '')]);
+                    this._searchContent();
+                    this.activeMenu = '';
+                  }
+                } else if (!res) {
+                  if (this.router.url.includes($event._id)) {
+                    this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '')]);
+                    this.activeMenu = '';
+                  }
                 }
               });
             }
@@ -443,48 +510,6 @@ export class VotePage extends AbstractPage implements OnInit {
     return element === undefined ? false : true;
   }
 
-  private _getEndVoteTime(data: any, type: string) {
-    if (type === 'voteData') {
-      for (let index = 0; index < data.length; index++) {
-        let date = data[index];
-        this.voteData[index].endVoteDay = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, true);
-        this.voteData[index].endVoteHour = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, false);
-      }
-    } else {
-      for (let index = 0; index < data.pin.length; index++) {
-        let date = data.pin[index];
-        this.model.pin[index].endVoteDay = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, true);
-        this.model.pin[index].endVoteHour = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, false);
-      }
-      for (let index = 0; index < data.supporter.length; index++) {
-        let date = data.supporter[index];
-        this.model.supporter[index].endVoteDay = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, true);
-        this.model.supporter[index].endVoteHour = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, false);
-      }
-      for (let index = 0; index < data.myVote.length; index++) {
-        let date = data.myVote[index];
-        this.model.myVote[index].endVoteDay = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, true);
-        this.model.myVote[index].endVoteHour = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, false);
-      }
-      for (let index = 0; index < data.closeDate.length; index++) {
-        let date = data.closeDate[index];
-        this.model.closeDate[index].endVoteDay = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, true);
-        this.model.closeDate[index].endVoteHour = this._formatEndVote(date.status === 'support' ? date.startVoteDatetime : date.endVoteDatetime, false);
-      }
-
-    }
-  }
-
-  private _formatEndVote(date, isDay) {
-    var countDownDate = new Date(date).getTime();
-    var now = new Date().getTime();
-    var distance = countDownDate - now;
-    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-
-    return isDay ? days : hours;
-  }
-
   public deleteDataVote($event) {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
@@ -496,6 +521,7 @@ export class VotePage extends AbstractPage implements OnInit {
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
+        this.isLoading = true;
         this.voteFacade.deleteVote($event._id).then((res) => {
           if (res) {
             if (res.message === "delete vote event is success.") {
@@ -505,11 +531,12 @@ export class VotePage extends AbstractPage implements OnInit {
                 const index = this.voteData.findIndex(item => item._id === $event._id);
                 this.voteData.splice(index, 1);
               }
-              // this.showAlertDialog("ลบโหวตเสร็จสิ้น");
             }
+            this.isLoading = false;
           }
         }).catch((err) => {
           if (err) {
+            this.isLoading = false;
           }
         });
       }

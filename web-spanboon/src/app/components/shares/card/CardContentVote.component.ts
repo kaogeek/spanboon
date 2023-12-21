@@ -39,8 +39,10 @@ export class CardContentVote implements OnInit {
     ngOnInit(): void {
         let user = JSON.parse(localStorage.getItem('pageUser'));
         this.userId = !!user ? user.id : undefined;
+        this.model.endVoteDay = this._formatEndVote(this.model.status === 'support' ? this.model.startVoteDatetime : this.model.endVoteDatetime, true);
+        this.model.endVoteHour = this._formatEndVote(this.model.status === 'support' ? this.model.startVoteDatetime : this.model.endVoteDatetime, false);
+        this.model.endVoteMinute = this._formatEndVote(this.model.status === 'support' ? this.model.startVoteDatetime : this.model.endVoteDatetime, false, true);
     }
-
     public clickDialog(itempost?) {
         this.openDialog.emit(itempost);
     }
@@ -51,5 +53,16 @@ export class CardContentVote implements OnInit {
 
     public clickEditVote() {
         this.editVote.emit(this.model);
+    }
+
+    private _formatEndVote(date, isDay, isMinute?) {
+        var countDownDate = new Date(date).getTime();
+        var now = new Date().getTime();
+        var distance = countDownDate - now;
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+        return isDay ? days : (isMinute ? minutes : hours);
     }
 }
