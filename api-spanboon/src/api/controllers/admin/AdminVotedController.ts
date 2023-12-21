@@ -395,8 +395,6 @@ export class AdminVotedController {
             for(const vote of voteAggs){
                 if(vote.approved !== true && vote.countSupport >= vote.minSupport){
                     // auto approve
-                    const closetValue = (24 * vote.endVoteDatetime) * 60 * 60 * 1000; // one day in milliseconds
-                    const dateNow = new Date(today.getTime() + closetValue);
                     const query = {_id: new ObjectID(vote._id)};
                     const newValues = {
                         $set:{
@@ -405,9 +403,7 @@ export class AdminVotedController {
                             approved:true,
                             approveUsername:user.displayName,
                             approveDatetime:today,
-                            endVoteDatetime: dateNow,
                             pin:true,
-                            showVoteResult:true,
                             status: 'vote'
                         }};  
                     await this.votingEventService.update(query,newValues);              
@@ -431,13 +427,9 @@ export class AdminVotedController {
         const voteAggs = await this.votingEventService.aggregate([]);
         if(voteAggs.length > 0){
             for(const vote of voteAggs){
-                const closetValue = (24 * vote.supportDaysRange) * 60 * 60 * 1000; // one day in milliseconds
-                const dateNow = new Date(today.getTime() + closetValue);
-
                 if(
                     vote.closed !== true && 
-                    today.getTime() > vote.endVoteDatetime.getTime() ||
-                    today.getTime() >= dateNow.getTime()
+                    today.getTime() > vote.endVoteDatetime.getTime()
                 ) {
                     const query = {_id: new ObjectID(vote._id)};
                     const newValues = {
@@ -448,7 +440,6 @@ export class AdminVotedController {
                             approveUsername:user.displayName,
                             approveDatetime:today,
                             pin:false,
-                            showVoteResult:true,
                             status: 'close'
                         }};  
                     await this.votingEventService.update(query,newValues);   
