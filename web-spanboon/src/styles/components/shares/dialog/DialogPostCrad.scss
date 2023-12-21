@@ -269,55 +269,72 @@
           display: flex;
           background-color: rgba(0, 0, 0, 0.3);
           padding: 16px;
+          align-items: center;
+          justify-content: space-between;
 
-          > .user-profile {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 2px solid $white;
-            position: relative;
-
-            > img {
-              object-fit: cover;
-              width: 100%;
-              height: 100%;
-            }
-
-            > span {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              color: $white;
-              background-color: $brandcolor2;
-              @include font-size-7($font-head-500);
-            }
-          }
-
-          > .owner-name {
-            width: 75%;
+          > .wrapper-detail-vote {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-left: 15px;
 
-            > span {
-              @include font-size-9($font-head-500);
-              color: #fff;
-              &:last-child {
-                opacity: 0.6;
-                @include font-size-11($font-head-500);
+            > .user-profile {
+              width: 48px;
+              height: 48px;
+              border-radius: 50%;
+              overflow: hidden;
+              border: 2px solid $white;
+              position: relative;
+
+              > img {
+                object-fit: cover;
+                width: 100%;
+                height: 100%;
+              }
+
+              > span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                color: $white;
+                background-color: $brandcolor2;
+                @include font-size-7($font-head-500);
               }
             }
 
-            > mat-progress-bar {
-              width: 100%;
+            > .owner-name {
+              width: 75%;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              margin-left: 15px;
+
+              > span {
+                @include font-size-9($font-head-500);
+                color: #fff;
+                &:last-child {
+                  opacity: 0.6;
+                  @include font-size-11($font-head-500);
+                }
+              }
+
+              > mat-progress-bar {
+                width: 100%;
+              }
             }
+          }
+
+          > .share-button-vote {
+            width: 40px;
+            height: 40px;
+            background-color: $black;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            @include pointer;
           }
         }
       }
@@ -522,6 +539,7 @@
                   width: 44px;
                   height: 44px;
                   border-radius: 4px;
+                  object-fit: cover;
                   @include pointer;
                 }
               }
@@ -532,6 +550,7 @@
                 width: 100%;
 
                 > span {
+                  width: 90%;
                   display: flex;
                   align-items: center;
                   @include font-size-9($font-head-500);
@@ -546,6 +565,7 @@
                   display: flex;
                   justify-content: center;
                   align-items: center;
+                  flex: 0 0 auto;
 
                   > button {
                     padding: 0;
@@ -571,6 +591,7 @@
                 > mat-icon {
                   margin-right: 16pt;
                   font-size: 26pt;
+                  line-height: 24px;
                   color: $brandcolor2;
                 }
               }

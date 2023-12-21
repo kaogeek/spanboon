@@ -71,7 +71,7 @@
                         <span>อัพโหลดรูปหน้าปก</span>
                     </ng-container>
                     <ng-template #elseImage>
-                        <img class="data-image" [src]="apiBaseURL + image.coverPageURL">
+                        <img class="data-image" [src]="apiBaseURL + image.coverPageURL + '/image'">
                     </ng-template>
                     <div class="image-upload">
                         <input #fileInput type="file" (change)="onFileSelect($event,'main')" accept="image/*" />
@@ -154,7 +154,8 @@
                     <div class="vote-time">
                         <span>เปิดโหวต</span>
                         <div class="open-vote">
-                            <input type="number" placeholder="จำนวน" [attr.disabled]="data.edit" [(ngModel)]="dateEnd">
+                            <input type="number" placeholder="จำนวน" [attr.disabled]="data.edit"
+                                [(ngModel)]="voteDayRange">
                             <span>วัน</span>
                         </div>
                     </div>
@@ -206,10 +207,12 @@
                     </ng-container>
                     <ng-template #elseImageText>
                         <ng-container *ngIf="listQuestion[indexPage].coverPageURLItem; else elseTextCoverPage">
-                            <img class="data-image" [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURLItem">
+                            <img class="data-image"
+                                [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURLItem + '/image'">
                         </ng-container>
                         <ng-template #elseTextCoverPage>
-                            <img class="data-image" [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURL">
+                            <img class="data-image"
+                                [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURL + '/image'">
                         </ng-template>
                     </ng-template>
                     <div class="image-upload">
@@ -241,7 +244,7 @@
                                     </ng-container>
                                     <ng-template #elseImageChoiceSingle>
                                         <img class="data-image"
-                                            [src]="apiBaseURL + listQuestion[indexPage]?.voteChoice[index]?.coverPageURL">
+                                            [src]="apiBaseURL + listQuestion[indexPage]?.voteChoice[index]?.coverPageURL + '/image'">
                                     </ng-template>
                                     <div class="image-upload">
                                         <input #fileInput type="file" (change)="onFileSelect($event,'choice',index)"
