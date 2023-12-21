@@ -387,7 +387,7 @@ export class DialogCreateVote extends AbstractPage {
       status: this.status,
       createAsPage: this.createAsPage,
       type: this.type,
-      hashTag: this.hashTag.value.trim() !== '' ? this.hashTag.value.trim() : null,
+      hashTag: this.hashTag.value !== '' ? this.hashTag.value : null,
       pin: false,
       showVoterName: this.isShowVoterName,
       showVoteResult: this.isShowVoteResult,
