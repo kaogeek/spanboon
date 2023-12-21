@@ -49,14 +49,23 @@ export class VotingEventModel extends BaseModel {
     @Column({ name: 'countSupport'})
     public countSupport: number;
 
+    @Column({ name: 'voteDaysRange'})
+    public voteDaysRange: number;
+
     @Column({ name: 'startVoteDatetime'})
-    public startVoteDatetime: any;
+    public startVoteDatetime: Date;
 
     @Column({ name: 'endVoteDatetime' })
-    public endVoteDatetime: any;
+    public endVoteDatetime: Date;
 
     @Column({ name: 'supportDaysRange' })
     public supportDaysRange: number;
+
+    @Column({ name: 'startSupportDatetime'})
+    public startSupportDatetime: Date;
+
+    @Column({ name: 'endSupportDatetime'})
+    public endSupportDatetime: Date;
 
     @Column({ name: 'approveDatetime' })
     public approveDatetime: Date;

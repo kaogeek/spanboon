@@ -117,12 +117,13 @@ export const MIN_SUPPORT = 'min.support';
 export const DEFAULT_CLOSET_VOTE = 5;
 export const CLOSET_VOTE = 'closet.vote';
 
+export const DEFAULT_MFP_HASHTAG = 'ก้าวไกล';
 export const MFPHASHTAG = 'mfp.hashtag';
 
 export const DEFAULT_TRIGGER_VOTE = true;
-export const TRIGGER_VOTE = 'trigger_vote';
+export const TRIGGER_VOTE = 'trigger.vote';
 
-export const ELIGIBLE_VOTES = 'eligible_voters';
+export const ELIGIBLE_VOTES = 'eligible.voters';
 
 export const DEFAULT_SUPPORT_DAYS_RANGE = 30;
-export const SUPPORT_DAYS_RANGE = 'support_days_ranges';
+export const SUPPORT_DAYS_RANGE = 'support.days.range';

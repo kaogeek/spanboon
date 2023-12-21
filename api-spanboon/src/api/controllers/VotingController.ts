@@ -94,6 +94,9 @@ export class VotingController {
                         minSupport: 1,
                         countSupport: 1,
                         supportDaysRange: 1,
+                        startSupportDatetime: 1,
+                        endSupportDatetime: 1,
+                        voteDaysRange: 1,
                         startVoteDatetime:1,
                         endVoteDatetime: 1,
                         approveDatetime: 1,
@@ -260,9 +263,12 @@ export class VotingController {
                         closed:1,
                         minSupport:1,
                         countSupport:1,
-                        supportDaysRange:1,
+                        supportDaysRange: 1,
+                        startSupportDatetime: 1,
+                        endSupportDatetime: 1,
+                        voteDaysRange: 1,
                         startVoteDatetime:1,
-                        endVoteDatetime:1,
+                        endVoteDatetime: 1,
                         closeDate:1,
                         status:1,
                         type:1,
@@ -381,6 +387,9 @@ export class VotingController {
                         minSupport: 1,
                         countSupport: 1,
                         supportDaysRange: 1,
+                        startSupportDatetime: 1,
+                        endSupportDatetime: 1,
+                        voteDaysRange: 1,
                         startVoteDatetime:1,
                         endVoteDatetime: 1,
                         approveDatetime: 1,
@@ -545,9 +554,12 @@ export class VotingController {
                         closed:1,
                         minSupport:1,
                         countSupport:1,
-                        supportDaysRange:1,
-                        startVoteDatetime: 1,
-                        endVoteDatetime:1,
+                        supportDaysRange: 1,
+                        startSupportDatetime: 1,
+                        endSupportDatetime: 1,
+                        voteDaysRange: 1,
+                        startVoteDatetime:1,
+                        endVoteDatetime: 1,
                         closeDate:1,
                         status:1,
                         type:1,
@@ -650,7 +662,10 @@ export class VotingController {
                             minSupport: 1,
                             countSupport: 1,
                             supportDaysRange: 1,
-                            startVoteDatetime: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
                             endVoteDatetime: 1,
                             approveDatetime: 1,
                             approveUsername: 1,
@@ -824,9 +839,12 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            supportDaysRange:1,
-                            startVoteDatetime: 1,
-                            endVoteDatetime:1,
+                            supportDaysRange: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
+                            endVoteDatetime: 1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -882,7 +900,10 @@ export class VotingController {
                             minSupport: 1,
                             countSupport: 1,
                             supportDaysRange: 1,
-                            startVoteDatetime: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
                             endVoteDatetime: 1,
                             approveDatetime: 1,
                             approveUsername: 1,
@@ -1053,9 +1074,12 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            supportDaysRange:1,
-                            startVoteDatetime: 1,
-                            endVoteDatetime:1,
+                            supportDaysRange: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
+                            endVoteDatetime: 1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -1106,7 +1130,10 @@ export class VotingController {
                             minSupport: 1,
                             countSupport: 1,
                             supportDaysRange: 1,
-                            startVoteDatetime: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
                             endVoteDatetime: 1,
                             approveDatetime: 1,
                             approveUsername: 1,
@@ -1277,9 +1304,12 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            supportDaysRange:1,
-                            startVoteDatetime: 1,
-                            endVoteDatetime:1,
+                            supportDaysRange: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
+                            endVoteDatetime: 1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -1339,7 +1369,10 @@ export class VotingController {
                             minSupport: 1,
                             countSupport: 1,
                             supportDaysRange: 1,
-                            startVoteDatetime: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
                             endVoteDatetime: 1,
                             approveDatetime: 1,
                             approveUsername: 1,
@@ -1512,9 +1545,12 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            supportDaysRange:1,
-                            startVoteDatetime: 1,
-                            endVoteDatetime:1,
+                            supportDaysRange: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
+                            endVoteDatetime: 1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -1596,7 +1632,10 @@ export class VotingController {
                                         minSupport: 1,
                                         countSupport: 1,
                                         supportDaysRange: 1,
-                                        startVoteDatetime: 1,
+                                        startSupportDatetime: 1,
+                                        endSupportDatetime: 1,
+                                        voteDaysRange: 1,
+                                        startVoteDatetime:1,
                                         endVoteDatetime: 1,
                                         approveDatetime: 1,
                                         approveUsername: 1,
@@ -1781,9 +1820,12 @@ export class VotingController {
                                         closed:1,
                                         minSupport:1,
                                         countSupport:1,
-                                        supportDaysRange:1,
-                                        startVoteDatetime: 1,
-                                        endVoteDatetime:1,
+                                        supportDaysRange: 1,
+                                        startSupportDatetime: 1,
+                                        endSupportDatetime: 1,
+                                        voteDaysRange: 1,
+                                        startVoteDatetime:1,
+                                        endVoteDatetime: 1,
                                         closeDate:1,
                                         status:1,
                                         type:1,
@@ -2051,7 +2093,10 @@ export class VotingController {
                             minSupport: 1,
                             countSupport: 1,
                             supportDaysRange: 1,
-                            startVoteDatetime: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
                             endVoteDatetime: 1,
                             approveDatetime: 1,
                             approveUsername: 1,
@@ -2178,6 +2223,26 @@ export class VotingController {
                         },
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $project:{
                             _id:1,
                             createdDate:1,
@@ -2190,9 +2255,12 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            supportDaysRange:1,
-                            startVoteDatetime: 1,
-                            endVoteDatetime:1,
+                            supportDaysRange: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
+                            endVoteDatetime: 1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -2204,6 +2272,15 @@ export class VotingController {
                             page:1,
                             user:1,
                             service:1,
+                            userSupport: {
+                                $cond:[
+                                    {
+                                        $gt:[{ $size :'$userSupport'}, 0]
+                                    },
+                                    true,
+                                    false
+                                ]
+                            }
                         }
                     },
                     {
@@ -2250,7 +2327,10 @@ export class VotingController {
                             minSupport: 1,
                             countSupport: 1,
                             supportDaysRange: 1,
-                            startVoteDatetime: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
                             endVoteDatetime: 1,
                             approveDatetime: 1,
                             approveUsername: 1,
@@ -2377,6 +2457,26 @@ export class VotingController {
                         },
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $project:{
                             _id:1,
                             createdDate:1,
@@ -2389,9 +2489,12 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            supportDaysRange:1,
-                            startVoteDatetime: 1,
-                            endVoteDatetime:1,
+                            supportDaysRange: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
+                            endVoteDatetime: 1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -2403,6 +2506,15 @@ export class VotingController {
                             page:1,
                             user:1,
                             service:1,
+                            userSupport: {
+                                $cond:[
+                                    {
+                                        $gt:[{ $size :'$userSupport'}, 0]
+                                    },
+                                    true,
+                                    false
+                                ]
+                            }
                         }
                     },
                     {
@@ -2467,7 +2579,10 @@ export class VotingController {
                                         minSupport: 1,
                                         countSupport: 1,
                                         supportDaysRange: 1,
-                                        startVoteDatetime: 1,
+                                        startSupportDatetime: 1,
+                                        endSupportDatetime: 1,
+                                        voteDaysRange: 1,
+                                        startVoteDatetime:1,
                                         endVoteDatetime: 1,
                                         approveDatetime: 1,
                                         approveUsername: 1,
@@ -2594,6 +2709,26 @@ export class VotingController {
                                     },
                                 },
                                 {
+                                    $lookup:{
+                                        from:'UserSupport',
+                                        let:{'id':'$_id'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$id','$votingId']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $match: { userId: userObjId }
+                                            }
+                                        ],
+                                        as:'userSupport'
+                                    }
+                                },
+                                {
                                     $project:{
                                         _id:1,
                                         createdDate:1,
@@ -2606,9 +2741,12 @@ export class VotingController {
                                         closed:1,
                                         minSupport:1,
                                         countSupport:1,
-                                        supportDaysRange:1,
-                                        startVoteDatetime: 1,
-                                        endVoteDatetime:1,
+                                        supportDaysRange: 1,
+                                        startSupportDatetime: 1,
+                                        endSupportDatetime: 1,
+                                        voteDaysRange: 1,
+                                        startVoteDatetime:1,
+                                        endVoteDatetime: 1,
                                         closeDate:1,
                                         status:1,
                                         type:1,
@@ -2620,6 +2758,15 @@ export class VotingController {
                                         page:1,
                                         user:1,
                                         service:1,
+                                        userSupport: {
+                                            $cond:[
+                                                {
+                                                    $gt:[{ $size :'$userSupport'}, 0]
+                                                },
+                                                true,
+                                                false
+                                            ]
+                                        }
                                     }
                                 },
                             ],
@@ -2670,7 +2817,10 @@ export class VotingController {
                                         minSupport: 1,
                                         countSupport: 1,
                                         supportDaysRange: 1,
-                                        startVoteDatetime: 1,
+                                        startSupportDatetime: 1,
+                                        endSupportDatetime: 1,
+                                        voteDaysRange: 1,
+                                        startVoteDatetime:1,
                                         endVoteDatetime: 1,
                                         approveDatetime: 1,
                                         approveUsername: 1,
@@ -2797,6 +2947,26 @@ export class VotingController {
                                     },
                                 },
                                 {
+                                    $lookup:{
+                                        from:'UserSupport',
+                                        let:{'id':'$_id'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$id','$votingId']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $match: { userId: userObjId }
+                                            }
+                                        ],
+                                        as:'userSupport'
+                                    }
+                                },
+                                {
                                     $project:{
                                         _id:1,
                                         createdDate:1,
@@ -2809,9 +2979,12 @@ export class VotingController {
                                         closed:1,
                                         minSupport:1,
                                         countSupport:1,
-                                        supportDaysRange:1,
-                                        startVoteDatetime: 1,
-                                        endVoteDatetime:1,
+                                        supportDaysRange: 1,
+                                        startSupportDatetime: 1,
+                                        endSupportDatetime: 1,
+                                        voteDaysRange: 1,
+                                        startVoteDatetime:1,
+                                        endVoteDatetime: 1,
                                         closeDate:1,
                                         status:1,
                                         type:1,
@@ -2823,6 +2996,15 @@ export class VotingController {
                                         page:1,
                                         user:1,
                                         service:1,
+                                        userSupport: {
+                                            $cond:[
+                                                {
+                                                    $gt:[{ $size :'$userSupport'}, 0]
+                                                },
+                                                true,
+                                                false
+                                            ]
+                                        }
                                     }
                                 },
                             ],
@@ -2916,7 +3098,10 @@ export class VotingController {
                         minSupport: 1,
                         countSupport: 1,
                         supportDaysRange: 1,
-                        startVoteDatetime: 1,
+                        startSupportDatetime: 1,
+                        endSupportDatetime: 1,
+                        voteDaysRange: 1,
+                        startVoteDatetime:1,
                         endVoteDatetime: 1,
                         approveDatetime: 1,
                         approveUsername: 1,
@@ -3038,7 +3223,10 @@ export class VotingController {
                         minSupport: 1,
                         countSupport: 1,
                         supportDaysRange: 1,
-                        startVoteDatetime: 1,
+                        startSupportDatetime: 1,
+                        endSupportDatetime: 1,
+                        voteDaysRange: 1,
+                        startVoteDatetime:1,
                         endVoteDatetime: 1,
                         approveDatetime: 1,
                         approveUsername: 1,
@@ -3176,9 +3364,12 @@ export class VotingController {
                         closed:1,
                         minSupport:1,
                         countSupport:1,
-                        supportDaysRange:1,
-                        startVoteDatetime: 1,
-                        endVoteDatetime:1,
+                        supportDaysRange: 1,
+                        startSupportDatetime: 1,
+                        endSupportDatetime: 1,
+                        voteDaysRange: 1,
+                        startVoteDatetime:1,
+                        endVoteDatetime: 1,
                         status:1,
                         type:1,
                         pin:1,
@@ -3291,7 +3482,10 @@ export class VotingController {
                                     minSupport: 1,
                                     countSupport: 1,
                                     supportDaysRange: 1,
-                                    startVoteDatetime: 1,
+                                    startSupportDatetime: 1,
+                                    endSupportDatetime: 1,
+                                    voteDaysRange: 1,
+                                    startVoteDatetime:1,
                                     endVoteDatetime: 1,
                                     approveDatetime: 1,
                                     approveUsername: 1,
@@ -3427,9 +3621,12 @@ export class VotingController {
                                     closed:1,
                                     minSupport:1,
                                     countSupport:1,
-                                    supportDaysRange:1,
-                                    startVoteDatetime: 1,
-                                    endVoteDatetime:1,
+                                    supportDaysRange: 1,
+                                    startSupportDatetime: 1,
+                                    endSupportDatetime: 1,
+                                    voteDaysRange: 1,
+                                    startVoteDatetime:1,
+                                    endVoteDatetime: 1,
                                     status:1,
                                     type:1,
                                     pin:1,
@@ -4214,7 +4411,7 @@ export class VotingController {
         const close = votingEventRequest.closed ? votingEventRequest.closed : false;
         const minSupport = votingEventRequest.minSupport ? votingEventRequest.minSupport : minSupportValue;
         const supportDaysRange = votingEventRequest.supportDaysRange;
-        const endVoteDateTime = votingEventRequest.endVoteDatetime;
+        const voteDaysRange = votingEventRequest.voteDaysRange;
         const showed = votingEventRequest.showVoterName ? votingEventRequest.showVoterName : false;
 
         if (approve === true) {
@@ -4277,7 +4474,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
-        if (endVoteDateTime === undefined && endVoteDateTime === null ) {
+        if (voteDaysRange === undefined && voteDaysRange === null ) {
             const errorResponse = ResponseUtil.getErrorResponse('End Vote Datetime is null or undefined.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -4304,9 +4501,14 @@ export class VotingController {
         votingEvent.closed = close;
         votingEvent.minSupport = minSupport;
         votingEvent.countSupport = 0;
+
         votingEvent.supportDaysRange = sdr;
+        votingEvent.startSupportDatetime = today;
+        votingEvent.endSupportDatetime = dateNow;
+
+        votingEvent.voteDaysRange = votingEventRequest.voteDaysRange;
         votingEvent.startVoteDatetime = dateNow;
-        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * votingEventRequest.endVoteDatetime) * 60 * 60 * 1000)); // endVoteDateTime;
+        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * votingEventRequest.voteDaysRange) * 60 * 60 * 1000)); // voteDaysRange;
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
@@ -4355,6 +4557,9 @@ export class VotingController {
                 response.minSupport = result.minSupport;
                 response.countSupport = result.countSupport;
                 response.supportDaysRange = result.supportDaysRange;
+                response.startSupportDatetime = result.startSupportDatetime;
+                response.endSupportDatetime = result.endSupportDatetime;
+                response.voteDaysRange = result.voteDaysRange;
                 response.startVoteDatetime = result.startVoteDatetime;
                 response.endVoteDatetime = result.endVoteDatetime;
                 response.approveDatetime = result.approveDatetime;
@@ -4418,9 +4623,6 @@ export class VotingController {
             }
         }
 
-        if(votingEventRequest.supportDaysRange !== undefined) {
-            sdr = votingEventRequest.supportDaysRange;
-        }
         const closetValue = (24 * sdr) * 60 * 60 * 1000; // one day in milliseconds
         const dateNow = new Date(today.getTime() + closetValue);
         if (configMinSupport) {
@@ -4455,7 +4657,7 @@ export class VotingController {
         const close = votingEventRequest.closed ? votingEventRequest.closed : false;
         const minSupport = votingEventRequest.minSupport ? votingEventRequest.minSupport : minSupportValue;
         const supportDaysRange = votingEventRequest.supportDaysRange;
-        const endVoteDateTime =votingEventRequest.endVoteDatetime;
+        const voteDaysRange =votingEventRequest.voteDaysRange;
         const showed = votingEventRequest.showVoterName ? votingEventRequest.showVoterName : false;
         if (approve === true) {
             const errorResponse = ResponseUtil.getErrorResponse('You are trying to do something badly cannot manual the API to approve TRUE! By yourself', undefined);
@@ -4539,7 +4741,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
-        if (endVoteDateTime === undefined && endVoteDateTime === null) {
+        if (voteDaysRange === undefined && voteDaysRange === null) {
             const errorResponse = ResponseUtil.getErrorResponse('End Vote Datetime is null or undefined.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -4566,8 +4768,13 @@ export class VotingController {
         votingEvent.closed = close;
         votingEvent.minSupport = minSupport;
         votingEvent.countSupport = 0;
+        votingEvent.supportDaysRange = sdr;
+        votingEvent.startSupportDatetime = today;
+        votingEvent.endSupportDatetime = dateNow;
+
+        votingEvent.voteDaysRange = votingEventRequest.voteDaysRange;
         votingEvent.startVoteDatetime = dateNow;
-        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * votingEventRequest.endVoteDatetime) * 60 * 60 * 1000)); // endVoteDateTime;
+        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * votingEventRequest.voteDaysRange) * 60 * 60 * 1000)); // voteDaysRange;
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
@@ -4614,7 +4821,11 @@ export class VotingController {
                 response.closed = result.closed;
                 response.minSupport = result.minSupport;
                 response.countSupport = result.countSupport;
-                response.supportDaysRange = result.startVoteDatetime;
+                response.supportDaysRange = result.supportDaysRange;
+                response.startSupportDatetime = result.startSupportDatetime;
+                response.endSupportDatetime = result.endSupportDatetime;
+                response.voteDaysRange = result.voteDaysRange;
+                response.startVoteDatetime = result.startVoteDatetime;
                 response.endVoteDatetime = result.endVoteDatetime;
                 response.approveDatetime = result.approveDatetime;
                 response.approveUsername = result.approveUsername;
@@ -4649,6 +4860,8 @@ export class VotingController {
         const userObjId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(votedRequest.pageId);
         const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
+        // const today = moment().toDate();
+
         // status public, private, member
         /*
         if(voteEventObj.type === 'member'){
@@ -4663,6 +4876,7 @@ export class VotingController {
             }
         }
         */
+
         // if private vote check you are in vote
         if(voteEventObj.type === 'private'){
             // user 
