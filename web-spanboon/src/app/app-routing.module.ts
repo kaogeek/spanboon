@@ -274,7 +274,11 @@ export const APP_ROUTES: Routes = [
             component: VotePage,
           },
           {
-            path: ':id',
+            path: ':name',
+            component: VotePage,
+          },
+          {
+            path: ':name/:id',
             component: VotePage,
           }
         ]

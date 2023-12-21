@@ -19,7 +19,8 @@ export class VotingEventRequest {
     public minSupport: number;
     public countSupport: number;
     public supportDaysRange: number;
-    public endVoteDatetime: number;
+    public voteDaysRange: number;
+    public endVoteDatetime: Date;
     public approveDatetime: Date;
     public approveUsername: string;
     public updateDatetime: Date;

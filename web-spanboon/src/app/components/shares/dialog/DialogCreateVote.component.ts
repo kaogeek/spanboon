@@ -58,7 +58,6 @@ export class DialogCreateVote extends AbstractPage {
   public typeQuestion: any = 'settings';
 
   public minSupport: number = 500;
-  public countSupport: number = 0;
   public title: any;
   public detail: any;
   public selectTypeUser: string = 'สมาชิก';
@@ -93,7 +92,7 @@ export class DialogCreateVote extends AbstractPage {
   public titleQuestion: any;
   public indexQuestion = 1;
 
-  public dateEnd: number = 7;
+  public voteDayRange: number = 7;
 
   constructor(public dialogRef: MatDialogRef<DialogCreateVote>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -155,7 +154,7 @@ export class DialogCreateVote extends AbstractPage {
     this.image.assetId = value.assetId;
     this.image.coverPageURL = value.coverPageURL;
     this.image.s3CoverPageURL = value.s3CoverPageURL;
-    this.dateEnd = this.dateEnd;
+    this.voteDayRange = this.voteDayRange;
     this.type = value.type;
     this.hashTag.setValue(value.hashTag);
     this.isShowVoterName = value.showVoterName;
@@ -171,7 +170,7 @@ export class DialogCreateVote extends AbstractPage {
   //   date_start.setHours(0, 0, 0, 0);
   //   date_end.setHours(23, 59, 59, 0);
   //   date_end.setDate(date_end.getDate() + 15);
-  //   this.dateEnd = new FormControl(date_end);
+  //   this.voteDayRange = new FormControl(date_end);
   // }
 
   public onClose(isSkip?: boolean, type?: string): void {
@@ -384,12 +383,11 @@ export class DialogCreateVote extends AbstractPage {
       approved: false,
       closed: false,
       minSupport: this.minSupport,
-      count_support: this.countSupport,
-      endVoteDatetime: this.dateEnd,
+      voteDaysRange: this.voteDayRange,
       status: this.status,
       createAsPage: this.createAsPage,
       type: this.type,
-      hashTag: this.hashTag.value !== '' ? this.hashTag.value : null,
+      hashTag: this.hashTag.value.trim() !== '' ? this.hashTag.value.trim() : null,
       pin: false,
       showVoterName: this.isShowVoterName,
       showVoteResult: this.isShowVoteResult,
@@ -488,7 +486,7 @@ export class DialogCreateVote extends AbstractPage {
         type: voteData.type,
         showVoteResult: voteData.showVoteResult,
         showVoterName: voteData.showVoterName,
-        endVoteDatetime: voteData.endVoteDatetime,
+        voteDaysRange: voteData.voteDaysRange,
         service: voteData.service,
         hashTag: voteData.hashTag,
         voteItem: voteData.voteItem,
@@ -791,7 +789,7 @@ export class DialogCreateVote extends AbstractPage {
           this.voteFacade.upload(temp).then((res: any) => {
             if (res) {
               this.listQuestion[this.indexPage].assetIdItem = res.data.id;
-              this.listQuestion[this.indexPage].coverPageURLItem = '/file/' + res.data.id + '/image';
+              this.listQuestion[this.indexPage].coverPageURLItem = '/file/' + res.data.id;
               this.listQuestion[this.indexPage].s3CoverPageURLItem = res.data.s3FilePath;
               this.isLoading = false;
             }
@@ -802,7 +800,7 @@ export class DialogCreateVote extends AbstractPage {
           this.voteFacade.upload(temp).then((res: any) => {
             if (res) {
               this.listQuestion[this.indexPage].voteChoice[index].assetId = res.data.id;
-              this.listQuestion[this.indexPage].voteChoice[index].coverPageURL = '/file/' + res.data.id + '/image';
+              this.listQuestion[this.indexPage].voteChoice[index].coverPageURL = '/file/' + res.data.id;
               this.listQuestion[this.indexPage].voteChoice[index].s3CoverPageURL = res.data.s3FilePath;
               this.isLoading = false;
             }
@@ -813,7 +811,7 @@ export class DialogCreateVote extends AbstractPage {
           this.voteFacade.upload(temp).then((res: any) => {
             if (res) {
               this.image.assetId = res.data.id;
-              this.image.coverPageURL = '/file/' + res.data.id + '/image';
+              this.image.coverPageURL = '/file/' + res.data.id;
               this.image.s3CoverPageURL = res.data.s3FilePath;
               this.isLoading = false;
             }

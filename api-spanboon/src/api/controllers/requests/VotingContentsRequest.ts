@@ -8,10 +8,16 @@
 import 'reflect-metadata';
 
 export class VotingContentsRequest {
+    public limit: number;
+    public offset: number;
     public keyword: any;
     public pin: boolean;
     public myVote: boolean;
     public supporter: boolean;
     public closeVote: boolean;
     public hashTagVote: boolean;
+
+    public myVoterSupport: boolean;
+    public myVoted: boolean;
+    public mySupported: boolean;
 }
