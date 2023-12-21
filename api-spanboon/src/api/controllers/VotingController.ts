@@ -4064,7 +4064,7 @@ export class VotingController {
         let createHashTag:any = undefined;
         const hashTag = votingEventRequest.hashTag;
         if (hashTag !== undefined && hashTag !== null) {
-            hashTagObjId = await this.hashTagService.findOne({name:hashTag,personal:true});
+            hashTagObjId = await this.hashTagService.findOne({name:hashTag,objectiveId:null});
             if (hashTagObjId === undefined) {
                 const newHashTag: HashTag = new HashTag();
                 newHashTag.name = hashTag;
@@ -4312,7 +4312,7 @@ export class VotingController {
         let createHashTag:any = undefined;
         const hashTag = votingEventRequest.hashTag;
         if (hashTag !== undefined && hashTag !== null) {
-            hashTagObjId = await this.hashTagService.findOne({name:hashTag,personal:true});
+            hashTagObjId = await this.hashTagService.findOne({name:hashTag,objectiveId:null});
             if (hashTagObjId === undefined) {
                 const newHashTag: HashTag = new HashTag();
                 newHashTag.name = hashTag;
