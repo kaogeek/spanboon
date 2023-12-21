@@ -660,9 +660,9 @@ export class VotingController {
                         closed:1,
                         minSupport:1,
                         countSupport:1,
-                        startVoteDatetime:1,
-                        endVoteDatetime:1,
                         supportDaysRange:1,
+                        startVoteDatetime: 1,
+                        endVoteDatetime:1,
                         closeDate:1,
                         status:1,
                         type:1,
@@ -670,8 +670,10 @@ export class VotingController {
                         pin:1,
                         showVoterName:1,
                         showVoteResult:1,
-                        service:1,
+                        voted:1,
+                        page:1,
                         user:1,
+                        service:1,
                         userSupport: {
                             $cond:[
                                 {
@@ -681,34 +683,6 @@ export class VotingController {
                                 false
                             ]
                         }
-                    }
-                },
-                {
-                    $project:{
-                        _id:1,
-                        createdDate:1,
-                        title:1,
-                        detail:1,
-                        coverPageURL:1,
-                        s3CoverPageURL:1,
-                        userId:1,
-                        approved:1,
-                        closed:1,
-                        minSupport:1,
-                        countSupport:1,
-                        startVoteDatetime:1,
-                        endVoteDatetime:1,
-                        supportDaysRange:1,
-                        closeDate:1,
-                        status:1,
-                        type:1,
-                        hashTag:1,
-                        pin:1,
-                        showVoterName:1,
-                        showVoteResult:1,
-                        service:1,
-                        user:1,
-                        userSupport:1
                     }
                 },
                 {
@@ -1035,9 +1009,9 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            startVoteDatetime:1,
-                            endVoteDatetime:1,
                             supportDaysRange:1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime:1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -1045,8 +1019,10 @@ export class VotingController {
                             pin:1,
                             showVoterName:1,
                             showVoteResult:1,
-                            service:1,
+                            voted:1,
+                            page:1,
                             user:1,
+                            service:1,
                             myVote:{
                                 $cond:[
                                     {
@@ -1353,9 +1329,9 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            startVoteDatetime:1,
-                            endVoteDatetime:1,
                             supportDaysRange:1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime:1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -1363,8 +1339,10 @@ export class VotingController {
                             pin:1,
                             showVoterName:1,
                             showVoteResult:1,
-                            service:1,
+                            voted:1,
+                            page:1,
                             user:1,
+                            service:1,
                             myVote:{
                                 $cond:[
                                     {
@@ -1655,9 +1633,9 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            startVoteDatetime:1,
-                            endVoteDatetime:1,
                             supportDaysRange:1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime:1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -1665,8 +1643,10 @@ export class VotingController {
                             pin:1,
                             showVoterName:1,
                             showVoteResult:1,
-                            service:1,
+                            voted:1,
+                            page:1,
                             user:1,
+                            service:1,
                             userSupport: {
                                 $cond:[
                                     {
@@ -1959,9 +1939,9 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            startVoteDatetime:1,
-                            endVoteDatetime:1,
                             supportDaysRange:1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime:1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -1969,8 +1949,10 @@ export class VotingController {
                             pin:1,
                             showVoterName:1,
                             showVoteResult:1,
-                            service:1,
+                            voted:1,
+                            page:1,
                             user:1,
+                            service:1,
                             myVote:{
                                 $cond:[
                                     {
@@ -2268,9 +2250,9 @@ export class VotingController {
                                         closed:1,
                                         minSupport:1,
                                         countSupport:1,
-                                        startVoteDatetime:1,
-                                        endVoteDatetime:1,
                                         supportDaysRange:1,
+                                        startVoteDatetime: 1,
+                                        endVoteDatetime:1,
                                         closeDate:1,
                                         status:1,
                                         type:1,
@@ -2278,8 +2260,10 @@ export class VotingController {
                                         pin:1,
                                         showVoterName:1,
                                         showVoteResult:1,
-                                        service:1,
+                                        voted:1,
+                                        page:1,
                                         user:1,
+                                        service:1,
                                         myVote:{
                                             $cond:[
                                                 {
@@ -2782,9 +2766,9 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            startVoteDatetime:1,
-                            endVoteDatetime:1,
                             supportDaysRange:1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime:1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -2792,8 +2776,10 @@ export class VotingController {
                             pin:1,
                             showVoterName:1,
                             showVoteResult:1,
-                            service:1,
+                            voted:1,
+                            page:1,
                             user:1,
+                            service:1,
                             myVote:{
                                 $cond:[
                                     {
@@ -3100,9 +3086,9 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            startVoteDatetime:1,
-                            endVoteDatetime:1,
                             supportDaysRange:1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime:1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -3110,8 +3096,10 @@ export class VotingController {
                             pin:1,
                             showVoterName:1,
                             showVoteResult:1,
-                            service:1,
+                            voted:1,
+                            page:1,
                             user:1,
+                            service:1,
                             myVote:{
                                 $cond:[
                                     {
@@ -3403,9 +3391,9 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            startVoteDatetime:1,
-                            endVoteDatetime:1,
                             supportDaysRange:1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime:1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -3413,8 +3401,10 @@ export class VotingController {
                             pin:1,
                             showVoterName:1,
                             showVoteResult:1,
-                            service:1,
+                            voted:1,
+                            page:1,
                             user:1,
+                            service:1,
                             userSupport: {
                                 $cond:[
                                     {
@@ -3708,9 +3698,9 @@ export class VotingController {
                             closed:1,
                             minSupport:1,
                             countSupport:1,
-                            startVoteDatetime:1,
-                            endVoteDatetime:1,
                             supportDaysRange:1,
+                            startVoteDatetime: 1,
+                            endVoteDatetime:1,
                             closeDate:1,
                             status:1,
                             type:1,
@@ -3718,8 +3708,10 @@ export class VotingController {
                             pin:1,
                             showVoterName:1,
                             showVoteResult:1,
-                            service:1,
+                            voted:1,
+                            page:1,
                             user:1,
+                            service:1,
                             myVote:{
                                 $cond:[
                                     {
@@ -4018,9 +4010,9 @@ export class VotingController {
                                         closed:1,
                                         minSupport:1,
                                         countSupport:1,
-                                        startVoteDatetime:1,
-                                        endVoteDatetime:1,
                                         supportDaysRange:1,
+                                        startVoteDatetime: 1,
+                                        endVoteDatetime:1,
                                         closeDate:1,
                                         status:1,
                                         type:1,
@@ -4028,8 +4020,10 @@ export class VotingController {
                                         pin:1,
                                         showVoterName:1,
                                         showVoteResult:1,
-                                        service:1,
+                                        voted:1,
+                                        page:1,
                                         user:1,
+                                        service:1,
                                         myVote:{
                                             $cond:[
                                                 {
