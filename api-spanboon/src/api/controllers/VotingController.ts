@@ -4860,8 +4860,9 @@ export class VotingController {
         const userObjId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(votedRequest.pageId);
         const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
-        // const today = moment().toDate();
-
+        const today = moment().toDate();
+        console.log('voteEventObj.endVoteDatetime',voteEventObj.endVoteDatetime);
+        console.log('today',today);
         // status public, private, member
         /*
         if(voteEventObj.type === 'member'){
@@ -4903,6 +4904,21 @@ export class VotingController {
         if (voteEventObj !== undefined && voteEventObj !== null && voteEventObj.approved === false) {
             const errorResponse = ResponseUtil.getErrorResponse('Status approve is false.', undefined);
             return res.status(400).send(errorResponse);
+        }
+
+        if(today.getTime() > voteEventObj.endVoteDatetime.getTime()) {
+            const query = {_id: voteEventObj.id};
+            const newValues = {$set:{
+                closed:true,
+                closeDate: today,
+                pin:false,
+                status: 'close'
+            }};
+            const update = await this.votingEventService.update(query,newValues);
+            if(update) {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot Vote this vote status is close.', undefined);
+                return res.status(400).send(errorResponse);
+            }
         }
 
         if (voteEventObj.status === 'support') {
