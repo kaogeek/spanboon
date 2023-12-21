@@ -2436,14 +2436,19 @@ export class VotingController {
                         }
                     },
                     {
+                        $group:{
+                            _id: '$votingId'
+                        }
+                    },
+                    {
                         $lookup:{
                             from: 'VotingEvent',
-                            let: {'votingId': '$votingId'},
+                            let: {'id': '$_id'},
                             pipeline:[
                                 {
                                     $match:{
                                         $expr:{
-                                            $eq:['$$votingId','$_id']
+                                            $eq:['$$id','$_id']
                                         }
                                     }
                                 },
@@ -2625,7 +2630,7 @@ export class VotingController {
                         $unwind:{
                             path:'$votingEvent'
                         }
-                    }
+                    },
                 ]
             );
         }
