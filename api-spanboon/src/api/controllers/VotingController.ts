@@ -792,6 +792,26 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $project: {
                             _id:1,
                             createdDate:1,
@@ -818,6 +838,15 @@ export class VotingController {
                             page:1,
                             user:1,
                             service:1,
+                            userSupport: {
+                                $cond:[
+                                    {
+                                        $gt:[{ $size :'$userSupport'}, 0]
+                                    },
+                                    true,
+                                    false
+                                ]
+                            }
                         }
                     },
                     {
@@ -869,7 +898,6 @@ export class VotingController {
                             showVoteResult: 1,
                             voted:1,
                             service:1,
-                            passing_scores:1,
                             createPage: {
                                 $cond: [
                                     {
@@ -993,6 +1021,26 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $project: {
                             _id:1,
                             createdDate:1,
@@ -1019,6 +1067,15 @@ export class VotingController {
                             page:1,
                             user:1,
                             service:1,
+                            userSupport: {
+                                $cond:[
+                                    {
+                                        $gt:[{ $size :'$userSupport'}, 0]
+                                    },
+                                    true,
+                                    false
+                                ]
+                            }
                         }
                     },
                     {
@@ -1065,7 +1122,6 @@ export class VotingController {
                             showVoteResult: 1,
                             voted:1,
                             service:1,
-                            passing_scores:1,
                             createPage: {
                                 $cond: [
                                     {
@@ -1189,6 +1245,26 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $project: {
                             _id:1,
                             createdDate:1,
@@ -1215,6 +1291,15 @@ export class VotingController {
                             page:1,
                             user:1,
                             service:1,
+                            userSupport: {
+                                $cond:[
+                                    {
+                                        $gt:[{ $size :'$userSupport'}, 0]
+                                    },
+                                    true,
+                                    false
+                                ]
+                            }
                         }
                     },
                     {
@@ -1395,6 +1480,26 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
                         $project: {
                             _id:1,
                             createdDate:1,
@@ -1421,6 +1526,15 @@ export class VotingController {
                             page:1,
                             user:1,
                             service:1,
+                            userSupport: {
+                                $cond:[
+                                    {
+                                        $gt:[{ $size :'$userSupport'}, 0]
+                                    },
+                                    true,
+                                    false
+                                ]
+                            }
                         }
                     },
                     {
@@ -1498,7 +1612,6 @@ export class VotingController {
                                         showVoteResult: 1,
                                         voted:1,
                                         service:1,
-                                        passing_scores:1,
                                         createPage: {
                                             $cond: [
                                                 {
