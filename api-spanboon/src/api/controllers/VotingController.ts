@@ -5131,6 +5131,99 @@ export class VotingController {
         }
     }
 
+    // supported ???
+    @Get('/get/support/:id')
+    public async getSupport(@Body({ validate: true}) search: FindVoteRequest,@Param ('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const objIds = new ObjectID(id);
+        if(objIds === undefined && objIds === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Vote Id is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    
+        const getSupports = await this.userSupportService.aggregate(
+            [
+                {
+                    $match:{
+                        votingId:objIds,
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'User',
+                        let:{userId:'$userId'},
+                        pipeline:[
+                        {
+                            $match:{
+                                $expr:{
+                                    $eq:['$$userId','$_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                username: 1,
+                                displayName:1,
+                                firstName: 1,
+                                lastName: 1,
+                                imageURL: 1,
+                                s3ImageURL: 1
+                                }
+                            }
+                        ],
+                        as:'user'
+                    }
+                    },
+                    {
+                        $sort:{
+                            createdDate: -1
+                        }
+                    },
+                    {
+                        $project: {
+                            _id:0,
+                            createdDate:1,
+                            user:1
+                        }
+                    },
+                    {
+                        $unwind:{
+                            path:'$user'
+                        }
+                    },
+                    { $sample: { size: 5 } },
+                ]
+            );
+            const countUser = await this.userSupportService.aggregate(
+                [
+                    {
+                        $match:{
+                            votingId:objIds,
+                        }
+                    },
+                    
+                    {
+                        $count:'count'
+                    }
+                ]
+            );
+            const response:any = {
+                'userSupport':{},
+                'count':null,
+            };
+            response['userSupport'] = getSupports;
+            response['count'] = countUser[0] ? countUser[0].count: 0;
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any user support is succesful.', response);
+            return res.status(200).send(successResponse);
+        }
+
     @Delete('/own/:votingId')
     @Authorized('user')
     public async deleteVoteingEvent(@Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
