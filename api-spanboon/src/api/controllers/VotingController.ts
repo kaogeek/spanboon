@@ -3929,10 +3929,12 @@ export class VotingController {
             'voteItem':{},
             'voted':{},
             'voteCount':{},
+            'showVoterName':undefined,
         };
         response['voteItem'] = voteItem;
         response['voted'] = voteEvent ? voteEvent : [];
         response['voteCount'] = voteCount[0] ? voteCount[0].count : 0;
+        response['showVoterName'] = voteObj.showVoterName;
 
         if (response['voteItem'].length>0) {
             const successResponse = ResponseUtil.getSuccessResponse('Get VoteItem is success.', response);
