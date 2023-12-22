@@ -44,7 +44,7 @@ import { VoteChoice as VoteChoiceModel } from '../models/VoteChoiceModel';
 import { InviteVote as InviteVoteModel } from '../models/InviteVoteModel';
 import { VotedService } from '../services/VotedService';
 import { InviteVoteService } from '../services/InviteVoteService';
-// import { AuthenticationIdService } from '../services/AuthenticationIdService';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { Voted as VotedModel } from '../models/VotedModel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
@@ -64,7 +64,7 @@ export class VotingController {
         private pageService: PageService,
         private pageAccessLevelService: PageAccessLevelService,
         private assetService: AssetService,
-        // private authenticationIdService:AuthenticationIdService,
+        private authenticationIdService:AuthenticationIdService,
         private inviteVoteService:InviteVoteService,
         private hashTagService:HashTagService,
         // private retrieveVoteService: RetrieveVoteService
@@ -3827,88 +3827,89 @@ export class VotingController {
                 $skip: offset
             }
         ]);
-
-        const voteEvent = await this.votedService.aggregate([
-            {
-                $match:{
-                    votingId:voteObjId
-                }
-            },
-            {
-                $lookup: {
-                    from: 'User',
-                    let: { 'userId': '$userId' },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $eq: ['$$userId', '$_id']
+        let voteEvent:any = undefined;
+        if(voteObj.showVoterName === true) {
+            voteEvent = await this.votedService.aggregate([
+                {
+                    $match:{
+                        votingId:voteObjId
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'User',
+                        let: { 'userId': '$userId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$userId', '$_id']
+                                    }
                                 }
-                            }
-                        },
-                        { $sample: { size: 5 } },     
-                        {
-                            $project: {
-                                _id: 1,
-                                displayName: 1,
-                                uniqueId: 1,
-                                imageURL: 1,
-                                s3ImageURL: 1
-                            }
-                        },
-                    ],
-                    as: 'user'
-                }
-            },       
-            {
-                $unwind:{
-                    path:'$user'
-                }
-            },
-            {
-                $group: {
-                  _id: '$user._id',
-                  count: { $sum: 1 },
-                  uniqueIds: { $addToSet: '$user._id' }
-                }
-            },
-            {
-                $lookup: {
-                    from: 'User',
-                    let: { 'id': '$_id' },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $eq: ['$$id', '$_id']
+                            },
+                            { $sample: { size: 5 } },     
+                            {
+                                $project: {
+                                    _id: 1,
+                                    displayName: 1,
+                                    uniqueId: 1,
+                                    imageURL: 1,
+                                    s3ImageURL: 1
                                 }
-                            }
-                        },
-                        {
-                            $project: {
-                                _id: 1,
-                                displayName: 1,
-                                uniqueId: 1,
-                                imageURL: 1,
-                                s3ImageURL: 1
-                            }
-                        },
-                    ],
-                    as: 'user'
+                            },
+                        ],
+                        as: 'user'
+                    }
+                },       
+                {
+                    $unwind:{
+                        path:'$user'
+                    }
+                },
+                {
+                    $group: {
+                    _id: '$user._id',
+                    count: { $sum: 1 },
+                    uniqueIds: { $addToSet: '$user._id' }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'User',
+                        let: { 'id': '$_id' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$id', '$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    displayName: 1,
+                                    uniqueId: 1,
+                                    imageURL: 1,
+                                    s3ImageURL: 1
+                                }
+                            },
+                        ],
+                        as: 'user'
+                    }
+                },
+                {
+                    $unwind:{
+                        path:'$user'
+                    }
+                },  
+                {
+                    $project:{
+                        user:1
+                    }
                 }
-            },
-            {
-                $unwind:{
-                    path:'$user'
-                }
-            },  
-            {
-                $project:{
-                    user:1
-                }
-            }
-        ]);
-        
+            ]);
+        }
         const voteCount = await this.votedService.aggregate(
             [
                 {
@@ -3930,7 +3931,7 @@ export class VotingController {
             'voteCount':{},
         };
         response['voteItem'] = voteItem;
-        response['voted'] = voteEvent;
+        response['voted'] = voteEvent ? voteEvent : [];
         response['voteCount'] = voteCount[0] ? voteCount[0].count : 0;
 
         if (response['voteItem'].length>0) {
@@ -4883,7 +4884,7 @@ export class VotingController {
         const today = moment().toDate();
 
         // status public, private, member
-        /*
+
         if(voteEventObj.type === 'member'){
             const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
             if( 
@@ -4895,7 +4896,6 @@ export class VotingController {
                 return res.status(400).send(errorResponse);
             }
         }
-        */
 
         // if private vote check you are in vote
         if(voteEventObj.type === 'private'){

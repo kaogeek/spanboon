@@ -152,9 +152,6 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
 
-        const closetValue = (24 * voteObj.endVoteDatetime) * 60 * 60 * 1000; // one day in milliseconds
-        const dateNow = new Date(today.getTime() + closetValue);
-
         const query = {_id:voteObjId};
         const newValues = {
             $set:{
@@ -163,7 +160,6 @@ export class AdminVotedController {
                 approved:voteApproved,
                 approveUsername:user.displayName,
                 approveDatetime:today,
-                endVoteDatetime:dateNow,
                 pin:votePin,
                 showVoteResult:votingEventRequest.showVoteResult,
                 status: votingEventRequest.status
