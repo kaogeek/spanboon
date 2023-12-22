@@ -163,6 +163,8 @@ export class AdminVotedController {
                 status: votingEventRequest.status,
                 startVoteDatetime:today,
                 endVoteDatetime: new Date(today.getTime() + ( (24 * voteObj.voteDaysRange) * 60 * 60 * 1000)), // voteDaysRange;
+                showVoterName: votingEventRequest.showVoterName,
+                showVoteResult: votingEventRequest.showVoteResult
             }};
         const update = await this.votingEventService.update(query,newValues);
         if(update){
