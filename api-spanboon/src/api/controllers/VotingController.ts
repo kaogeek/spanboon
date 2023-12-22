@@ -4351,9 +4351,9 @@ export class VotingController {
         let vdr = DEFAULT_VOTE_DAYS_RANGE;
         const voteDaysRangeConfig = await this.configService.getConfig(VOTE_DAYS_RANGE);
         const sdrConfig = await this.configService.getConfig(SUPPORT_DAYS_RANGE);
-        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
         const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
         let eligibleValue = undefined;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
         const configMinSupport = await this.configService.getConfig(MIN_SUPPORT);
 
         if(sdrConfig) {
@@ -4885,16 +4885,21 @@ export class VotingController {
         const pageObjId = new ObjectID(votedRequest.pageId);
         const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
         const today = moment().toDate();
+        let eligibleValue = undefined;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        if (eligibleConfig) {
+            eligibleValue = eligibleConfig.value;
+        }
+        const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+        const userObj = await this.userService.findOne({_id: userObjId});
+        // split.includes(userObj.email) === false
 
         // status public, private, member
-
-        if(voteEventObj.type === 'member'){
+        if(voteEventObj.type === 'member' && split.includes(userObj.email) === false){
             const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
-            if( 
-                voteEventObj.type === 'member' && 
-                authUser === undefined
-            )
-            {
+            if( voteEventObj.type === 'member' && 
+                authUser === undefined 
+            ){
                 const errorResponse = ResponseUtil.getErrorResponse('This vote only for membershipMFP, You are not membership.', undefined);
                 return res.status(400).send(errorResponse);
             }

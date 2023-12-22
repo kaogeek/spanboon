@@ -141,10 +141,9 @@ export class AdminVotedController {
             voteShowed = voteObj.showVoteResult;
 
         }
-
+        let closeDate:any = {closeDate:null};
         if(votingEventRequest.closed === true){
-            const errorResponse = ResponseUtil.getErrorResponse('Close vote should be false.', undefined);
-            return res.status(400).send(errorResponse);
+            closeDate = {closeDate:today};
         }
 
         if(voteApproved === false){
@@ -156,7 +155,7 @@ export class AdminVotedController {
         const newValues = {
             $set:{
                 closed:votingEventRequest.closed,
-                closeDate: null,
+                closeDate,
                 approved:voteApproved,
                 approveUsername:user.displayName,
                 approveDatetime:today,
