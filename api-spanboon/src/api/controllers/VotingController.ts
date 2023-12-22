@@ -4388,6 +4388,12 @@ export class VotingController {
         if (configMinSupport) {
             minSupportValue = parseInt(configMinSupport.value, 10);
         }
+
+        if(typeof(vdr) !== 'number') {
+            const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not number.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         let hashTagObjId:any = undefined;
         let createHashTag:any = undefined;
         const hashTag = votingEventRequest.hashTag;
@@ -4645,6 +4651,11 @@ export class VotingController {
 
         if(votingEventRequest.voteDaysRange !== undefined) {
             vdr = votingEventRequest.voteDaysRange;
+        }
+
+        if(typeof(vdr) !== 'number') {
+            const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not number.', undefined);
+            return res.status(400).send(errorResponse);
         }
 
         const closetValue = (24 * sdr) * 60 * 60 * 1000; // one day in milliseconds
