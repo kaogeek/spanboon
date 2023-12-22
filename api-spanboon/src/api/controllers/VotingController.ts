@@ -5190,10 +5190,16 @@ export class VotingController {
     public async UserSupport(@Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const votingObjId = new ObjectID(votingId);
         const userObjId = new ObjectID(req.user.id);
-
         const votingObj = await this.votingEventService.findOne({ _id: votingObjId });
-        /*
-        if(votingObj.type === 'member'){
+        let eligibleValue = undefined;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        if (eligibleConfig) {
+            eligibleValue = eligibleConfig.value;
+        }
+        const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+        const userObj = await this.userService.findOne({_id: userObjId});
+
+        if(votingObj.type === 'member' && split.includes(userObj.email) === false){
             const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
             if( 
                 votingObj.type === 'member' && 
@@ -5204,7 +5210,7 @@ export class VotingController {
                 return res.status(400).send(errorResponse);
             }
         }
-        */
+        
         if (votingObj === undefined && votingObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Not Found the Voting Object.', undefined);
             return res.status(400).send(errorResponse);
