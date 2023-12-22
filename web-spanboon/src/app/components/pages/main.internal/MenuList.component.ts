@@ -29,7 +29,9 @@ export class MenuList extends AbstractPage implements OnInit {
     constructor(router: Router,
         authenManager: AuthenManager,
         private http: HttpClient,
-        dialog: MatDialog) {
+        dialog: MatDialog,
+        private dialogRef: MatDialog
+    ) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
@@ -45,6 +47,10 @@ export class MenuList extends AbstractPage implements OnInit {
     }
 
     public ngOnDestroy(): void {
+    }
+
+    public clickMenu(): void {
+        this.dialogRef.closeAll();
     }
 
     isPageDirty(): boolean {

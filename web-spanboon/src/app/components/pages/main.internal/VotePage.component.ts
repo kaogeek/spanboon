@@ -91,6 +91,7 @@ export class VotePage extends AbstractPage implements OnInit {
       isLogin: false,
     },
   ]
+  public checkOpenDialog: boolean = false;
   constructor(
     authenManager: AuthenManager,
     router: Router,
@@ -106,7 +107,7 @@ export class VotePage extends AbstractPage implements OnInit {
     this.router.events
       .pipe(filter((event: any) => event instanceof NavigationEnd), takeUntil(this.destroy))
       .subscribe((event: NavigationEnd) => {
-        this.activeRoute.children.forEach(child => {
+        this.activeRoute.children.forEach(async child => {
           child.params.subscribe(params => {
             this.activeUrl = params;
             if (this._checkRouting(this.activeUrl)) {
@@ -117,8 +118,18 @@ export class VotePage extends AbstractPage implements OnInit {
               }
             } else {
               this.router.navigate(['', 'vote']);
+              this.activeMenu = '';
+              this._searchContent();
             }
           })
+
+          if (!!this.activeUrl['id'] && !this.checkOpenDialog) {
+            const data = await this.voteFacade.getVote(this.activeUrl['id']);
+            if (!!data) {
+              this.openDialogPost(data);
+            }
+          }
+
         });
       });
   }
@@ -131,19 +142,10 @@ export class VotePage extends AbstractPage implements OnInit {
       });
       this._getPermissible();
     }
-    let isOpenDialog: boolean = false;
-    if (!!this.activeUrl['id']) {
-      const data = await this.voteFacade.getVote(this.activeUrl['id']);
-      if (!!data) {
-        this.openDialogPost(data);
-        isOpenDialog = true;
-      }
-    }
     this.userId = this.authenManager.getCurrentUser() ? this.authenManager.getCurrentUser().id : '';
     if (this.activeMenu === undefined || this.activeMenu === '') {
       this._searchContent();
     } else {
-      // if (!isOpenDialog) 
       this.searchValue();
     }
     this.getScreenSize();
@@ -216,8 +218,8 @@ export class VotePage extends AbstractPage implements OnInit {
     if (isOwn) {
       this.voteFacade.searchOwn(search, keyword ? keyword : null).then((res: any) => {
         if (res) {
-          this.voteData = res;
           if (!!keyword) this.voteData = [];
+          this.voteData = res;
           if (this.voteData.length === 0) this.isEmpty = true;
           this.isLoading = false;
         }
@@ -230,7 +232,7 @@ export class VotePage extends AbstractPage implements OnInit {
       this.voteFacade.search(search, whereConditions, keyword ? keyword : null).then((res) => {
         if (res) {
           if (!!keyword) this.voteData = [];
-          this.voteData = !condition ? res : [...this.voteData, ...res];
+          this.voteData = res;
           if (this.voteData.length === 0) this.isEmpty = true;
           this.isLoading = false;
         }
@@ -242,20 +244,9 @@ export class VotePage extends AbstractPage implements OnInit {
     }
   }
 
-  private _removeDuplicateIds(array) {
-    const uniqueIds = [];
-    return array.filter(item => {
-      if (!uniqueIds.includes(item._id)) {
-        uniqueIds.push(item._id);
-        return true;
-      }
-      return false;
-    });
-  }
-
   public searchValue(value?) {
     // this.isLoading = true;
-    this.isSearch = value !== undefined || value !== '' ? true : false;
+    this.isSearch = (value !== undefined || value !== '') ? true : false;
     this.isEmpty = false;
     this.searchInputValue = value;
     if (this.activeUrl['name'] === 'support') {
@@ -273,7 +264,7 @@ export class VotePage extends AbstractPage implements OnInit {
       }, true, value);
     } else if (this.activeUrl['name'] === 'result') {
       this.searchVoteContent({
-        "approved": true,
+        "closed": true,
       }, false, value);
     } else if (this.activeUrl['name'] === undefined) {
       this.searchVoteContent({
@@ -312,7 +303,7 @@ export class VotePage extends AbstractPage implements OnInit {
     } else if (menu === 'result' && this.activeUrl['name'] !== 'result' || isLoad) {
       this.voteData = [];
       this.searchVoteContent({
-        "approved": true,
+        "closed": true,
       });
     } else if (menu === '' && this.activeUrl['name'] !== undefined || isLoad) {
       this._searchContent();
@@ -336,7 +327,7 @@ export class VotePage extends AbstractPage implements OnInit {
     dialog.afterClosed().subscribe((res) => {
       if (res === 'create') {
         this.changeMenu('support', true);
-        this.activeMenu = 'support';
+        this.router.navigate(['/vote/support']);
       }
     });
   }
@@ -368,6 +359,7 @@ export class VotePage extends AbstractPage implements OnInit {
             }
           });
           dialogRef.afterClosed().subscribe((res) => {
+            this.checkOpenDialog = false;
             if (res === 'my-vote') {
               if (this.router.url.includes($event._id)) {
                 this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/my-vote')]);
@@ -471,6 +463,11 @@ export class VotePage extends AbstractPage implements OnInit {
       } else {
         this.voteFacade.getVoteChoice($event._id).then((res) => {
           if (res) {
+            if (this.activeUrl['name'] === undefined || this.activeUrl['name'] === '') {
+              this.router.navigate([this.router.url + '/event/' + $event._id]);
+            } else if (this.activeUrl['name'] === 'result') {
+              this.router.navigate([this.router.url.replace('/result', '/event/' + $event._id)]);
+            }
             const dialogRef = this.dialog.open(DialogPostCrad, {
               backdropClass: 'backdrop-overlay',
               panelClass: 'panel-backgroud',
@@ -483,6 +480,30 @@ export class VotePage extends AbstractPage implements OnInit {
                 vote: true,
                 isAllow: this.isAllowCreate,
                 menu: this.activeMenu
+              }
+            });
+            dialogRef.afterClosed().subscribe((res) => {
+              if (res === 'my-vote') {
+                if (this.router.url.includes($event._id)) {
+                  this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/my-vote')]);
+                  this.activeMenu = res;
+                }
+              } else if (res === 'result') {
+                if (this.router.url.includes($event._id)) {
+                  this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/result')]);
+                  this.activeMenu = res;
+                }
+              } else if (res === 'event') {
+                if (this.router.url.includes($event._id)) {
+                  this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '')]);
+                  this._searchContent();
+                  this.activeMenu = '';
+                }
+              } else if (!res) {
+                if (this.router.url.includes($event._id)) {
+                  this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '')]);
+                  this.activeMenu = '';
+                }
               }
             });
           }
@@ -527,6 +548,8 @@ export class VotePage extends AbstractPage implements OnInit {
             if (res.message === "delete vote event is success.") {
               if (this.activeMenu === undefined || this.activeMenu === '') {
                 this._searchContent();
+              } else if (this.activeMenu === 'my-vote') {
+                this.searchValue();
               } else {
                 const index = this.voteData.findIndex(item => item._id === $event._id);
                 this.voteData.splice(index, 1);

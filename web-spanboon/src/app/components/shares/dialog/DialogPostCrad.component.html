@@ -75,55 +75,84 @@
                     <hr>
                     <div class="user-vote">
                         <ng-container *ngIf="(data.support === undefined); else elseSupportUser">
-                            <ng-container *ngFor="let item of data.choice.voted">
-                                <div class="user-profile">
-                                    <ng-container *ngIf="!!item.user.imageURL; else elseImageNullVote">
-                                        <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
-                                    </ng-container>
-                                    <ng-template #elseImageNullVote>
-                                        <span>{{item.user.displayName | slice:0:1}}</span>
-                                    </ng-template>
-                                </div>
+                            <ng-container *ngIf="data.post.showVoterName">
+                                <ng-container *ngFor="let item of data.choice.voted">
+                                    <div class="user-profile">
+                                        <ng-container *ngIf="!!item.user.imageURL; else elseImageNullVote">
+                                            <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
+                                        </ng-container>
+                                        <ng-template #elseImageNullVote>
+                                            <span>{{item.user.displayName | slice:0:1}}</span>
+                                        </ng-template>
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="data.choice.voted.length <= 5 && data.choice.voted.length > 0">
+                                    <span>{{data.choice.voted[data.choice.voted.length - 1].user.displayName}}
+                                        ...คนเหล่านี้โหวตแล้ว</span>
+                                </ng-container>
+                                <ng-container *ngIf="data.choice.voted.length > 5 && data.choice.voted.length > 0">
+                                    <span>{{data.choice.voted[data.choice.voted.length - 1].user.displayName}} ...และอีก
+                                        {{data.choice.voteCount - data.choice.voted.length}}
+                                        คนโหวตแล้ว</span>
+                                </ng-container>
                             </ng-container>
-                            <ng-container *ngIf="data.choice.voted.length <= 5 && data.choice.voted.length > 0">
-                                <span>{{data.choice.voted[data.choice.voted.length - 1].user.displayName}}
-                                    ...คนเหล่านี้โหวตแล้ว</span>
+                            <ng-container *ngIf="data.choice.voted.length === 0; else elseVoteLength">
+                                <ng-container *ngIf="data.choice.showVoterName; else elseVoteShowName">
+                                    <span style="margin-left: 0px;padding: 9px;">ขณะนี้ยังไม่มีคนโหวตหัวข้อนี้</span>
+                                </ng-container>
+                                <ng-template #elseVoteShowName>
+                                    <span style="margin-left: 10px;padding: 9px;"
+                                        [innerHTML]="data.choice.voteCount > 0 ? 'โหวตนี้มีผู้โหวตแล้วทั้งหมด ' + data.choice.voteCount + ' คน' : 'ขณะนี้ยังไม่มีคนโหวตหัวข้อนี้'"></span>
+                                </ng-template>
                             </ng-container>
-                            <ng-container *ngIf="data.choice.voted.length > 5 && data.choice.voted.length > 0">
-                                <span>{{data.choice.voted[data.choice.voted.length - 1].user.displayName}} ...และอีก
-                                    {{data.choice.voteCount - data.choice.voted.length}}
-                                    คนโหวตแล้ว</span>
-                            </ng-container>
-                            <ng-container *ngIf="data.choice.voted.length === 0">
-                                <span style="margin-left: 10px;padding: 9px;">ขณะนี้ยังไม่มีคนโหวตหัวข้อนี้</span>
-                            </ng-container>
+                            <ng-template #elseVoteLength>
+                                <span *ngIf="!data.post.showVoterName"
+                                    style="margin-left: 10px;padding: 9px;">โหวตนี้มีผู้โหวตแล้วทั้งหมด
+                                    {{data.choice.voteCount}} คน</span>
+                            </ng-template>
                         </ng-container>
                         <ng-template #elseSupportUser>
-                            <ng-container *ngFor="let item of data.support.userSupport">
-                                <div class="user-profile">
-                                    <ng-container *ngIf="!!item.user.imageURL; else elseImageNullSupport">
-                                        <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
-                                    </ng-container>
-                                    <ng-template #elseImageNullSupport>
-                                        <span>{{item.user.firstName | slice:0:1}}</span>
-                                    </ng-template>
-                                </div>
+                            <ng-container *ngIf="data.post.showVoterName">
+                                <ng-container *ngFor="let item of data.support.userSupport">
+                                    <div class="user-profile">
+                                        <ng-container *ngIf="!!item.user.imageURL; else elseImageNullSupport">
+                                            <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
+                                        </ng-container>
+                                        <ng-template #elseImageNullSupport>
+                                            <span>{{item.user.firstName | slice:0:1}}</span>
+                                        </ng-template>
+                                    </div>
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="data.support.userSupport.length <= 5 && data.support.userSupport.length > 0">
+                                    <span>{{data.support.userSupport[data.support.userSupport.length -
+                                        1].user.displayName}}
+                                        ...คนเหล่านี้สนับสนุนแล้ว</span>
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="data.support.userSupport.length > 5 && data.support.userSupport.length > 0">
+                                    <span>{{data.support.userSupport[data.support.userSupport.length -
+                                        1].user.displayName}}
+                                        ...และอีก
+                                        {{data.choice.voteCount - data.support.userSupport.length}}
+                                        สนับสนุนแล้ว</span>
+                                </ng-container>
                             </ng-container>
-                            <ng-container
-                                *ngIf="data.support.userSupport.length <= 5 && data.support.userSupport.length > 0">
-                                <span>{{data.support.userSupport[data.support.userSupport.length - 1].user.displayName}}
-                                    ...คนเหล่านี้สนับสนุนแล้ว</span>
+
+                            <ng-container *ngIf="data.support.userSupport.length === 0; else elseSupportLength">
+                                <ng-container *ngIf="data.choice.showVoterName; else elseSupportShowName">
+                                    <span style="margin-left: 0px;padding: 9px;">ขณะนี้ยังไม่มีคนสนับสนุนโหวตนี้</span>
+                                </ng-container>
+                                <ng-template #elseSupportShowName>
+                                    <span style="margin-left: 10px;padding: 9px;">โหวตนี้มีผู้สนับสนุนแล้วทั้งหมด
+                                        {{data.choice.voteCount}} คน</span>
+                                </ng-template>
                             </ng-container>
-                            <ng-container
-                                *ngIf="data.support.userSupport.length > 5 && data.support.userSupport.length > 0">
-                                <span>{{data.support.userSupport[data.support.userSupport.length - 1].user.displayName}}
-                                    ...และอีก
-                                    {{data.choice.voteCount - data.support.userSupport.length}}
-                                    สนับสนุนแล้ว</span>
-                            </ng-container>
-                            <ng-container *ngIf="data.support.userSupport.length === 0">
-                                <span style="margin-left: 0px;padding: 9px;">ขณะนี้ยังไม่มีคนสนับสนุนโหวตนี้</span>
-                            </ng-container>
+                            <ng-template #elseSupportLength>
+                                <span *ngIf="!data.post.showVoterName"
+                                    style="margin-left: 10px;padding: 9px;">โหวตนี้มีผู้สนับสนุนแล้วทั้งหมด
+                                    {{data.support.count}} คน</span>
+                            </ng-template>
                         </ng-template>
                     </div>
                     <hr>
@@ -137,7 +166,7 @@
                                 <ng-container *ngFor="let choice of item.voteChoice;let i = index">
                                     <ng-container *ngIf="item.type === 'single'; else elseMultiple">
                                         <div class="wrapper-choice"
-                                            [ngClass]="{'active': (questions[index].active === choice.title) || choice.isVote,'closed': data.post.closed || isVoteAlready}"
+                                            [ngClass]="{'active': (questions[index].voteChoice && questions[index].voteChoice[0].voteChoiceId === choice._id) || choice.isVote,'closed': data.post.closed || isVoteAlready}"
                                             (click)="chooseChoice(item,choice,index,i,item.type)">
                                             <div class="choice">
                                                 <div class="image" *ngIf="!!choice.coverPageURL">
@@ -149,7 +178,7 @@
                                                     <div class="border-white" *ngIf="!data.post.closed">
                                                         <button mat-icon-button
                                                             (click)="addOrRemoveActive(choice,'single','remove',index); $event.stopPropagation()"
-                                                            *ngIf="(questions[index].active === choice.title) || choice.isVote">
+                                                            *ngIf="(questions[index].voteChoice && questions[index].voteChoice[0].voteChoiceId === choice._id) || choice.isVote">
                                                             <mat-icon>done</mat-icon>
                                                         </button>
                                                     </div>
@@ -160,8 +189,7 @@
                                                         item.voteChoice[i].voted[0].votedCount : 0}}</span>
                                                 </ng-container>
                                             </div>
-                                            <ng-container
-                                                *ngIf="(data.post.closed && data.post.showVoteResult) || (!data.post.showVoteResult)">
+                                            <ng-container *ngIf="(data.post.closed && data.post.showVoteResult)">
                                                 <mat-progress-bar mode="'buffer'"
                                                     [value]="voteChoiceValue[index].value[i]"></mat-progress-bar>
                                             </ng-container>
@@ -187,8 +215,7 @@
                                                         item.voteChoice[i].voted[0].votedCount : 0}}</span>
                                                 </ng-container>
                                             </div>
-                                            <ng-container
-                                                *ngIf="(data.post.closed && data.post.showVoteResult) || (!data.post.showVoteResult)">
+                                            <ng-container *ngIf="(data.post.closed && data.post.showVoteResult)">
                                                 <mat-progress-bar mode="'buffer'"
                                                     [value]="voteChoiceValue[index].value[i]"></mat-progress-bar>
                                             </ng-container>
