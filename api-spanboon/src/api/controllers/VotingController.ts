@@ -4002,7 +4002,7 @@ export class VotingController {
         }
 
         if (voteObj.status === 'vote') {
-            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('Status is voted.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -4090,6 +4090,7 @@ export class VotingController {
                 updateDatetime: today,
                 type: votingEventRequest.type,
                 hashTag: votingEventRequest.hashTag,
+                voteDaysRange: votingEventRequest.voteDaysRange,
                 showVoteResult: votingEventRequest.showVoteResult,
                 showVoterName: votingEventRequest.showVoterName,
                 service: votingEventRequest.service
@@ -4519,8 +4520,8 @@ export class VotingController {
         votingEvent.endSupportDatetime = dateNow;
 
         votingEvent.voteDaysRange = vdr;
-        votingEvent.startVoteDatetime = dateNow;
-        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * vdr) * 60 * 60 * 1000)); // voteDaysRange;
+        votingEvent.startVoteDatetime = null;
+        votingEvent.endVoteDatetime = null;
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
@@ -4796,8 +4797,8 @@ export class VotingController {
         votingEvent.endSupportDatetime = dateNow;
 
         votingEvent.voteDaysRange = vdr;
-        votingEvent.startVoteDatetime = dateNow;
-        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * vdr) * 60 * 60 * 1000)); // voteDaysRange;
+        votingEvent.startVoteDatetime = null;
+        votingEvent.endVoteDatetime = null;
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
