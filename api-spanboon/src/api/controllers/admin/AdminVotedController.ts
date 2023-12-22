@@ -141,10 +141,9 @@ export class AdminVotedController {
             voteShowed = voteObj.showVoteResult;
 
         }
-
+        let closeDate:any = {closeDate:null};
         if(votingEventRequest.closed === true){
-            const errorResponse = ResponseUtil.getErrorResponse('Close vote should be false.', undefined);
-            return res.status(400).send(errorResponse);
+            closeDate = {closeDate:today};
         }
 
         if(voteApproved === false){
@@ -152,21 +151,20 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
 
-        const closetValue = (24 * voteObj.endVoteDatetime) * 60 * 60 * 1000; // one day in milliseconds
-        const dateNow = new Date(today.getTime() + closetValue);
-
         const query = {_id:voteObjId};
         const newValues = {
             $set:{
                 closed:votingEventRequest.closed,
-                closeDate: null,
+                closeDate,
                 approved:voteApproved,
                 approveUsername:user.displayName,
                 approveDatetime:today,
-                endVoteDatetime:dateNow,
                 pin:votePin,
-                showVoteResult:votingEventRequest.showVoteResult,
-                status: votingEventRequest.status
+                status: votingEventRequest.status,
+                startVoteDatetime:today,
+                endVoteDatetime: new Date(today.getTime() + ( (24 * voteObj.voteDaysRange) * 60 * 60 * 1000)), // voteDaysRange;
+                showVoterName: votingEventRequest.showVoterName,
+                showVoteResult: votingEventRequest.showVoteResult
             }};
         const update = await this.votingEventService.update(query,newValues);
         if(update){
@@ -391,6 +389,7 @@ export class AdminVotedController {
                 }
             ]
         );
+        
         if(voteAggs.length > 0){
             for(const vote of voteAggs){
                 if(vote.approved !== true && vote.countSupport >= vote.minSupport){
@@ -403,6 +402,8 @@ export class AdminVotedController {
                             approved:true,
                             approveUsername:user.displayName,
                             approveDatetime:today,
+                            startVoteDatetime:today,
+                            endVoteDatetime: new Date(today.getTime() + ( (24 * vote.voteDaysRange) * 60 * 60 * 1000)), // voteDaysRange;
                             pin:true,
                             status: 'vote'
                         }};  
@@ -429,6 +430,7 @@ export class AdminVotedController {
             for(const vote of voteAggs){
                 if(
                     vote.closed !== true && 
+                    vote.endVoteDatetime !== null &&
                     today.getTime() > vote.endVoteDatetime.getTime()
                 ) {
                     const query = {_id: new ObjectID(vote._id)};

@@ -44,7 +44,7 @@ import { VoteChoice as VoteChoiceModel } from '../models/VoteChoiceModel';
 import { InviteVote as InviteVoteModel } from '../models/InviteVoteModel';
 import { VotedService } from '../services/VotedService';
 import { InviteVoteService } from '../services/InviteVoteService';
-// import { AuthenticationIdService } from '../services/AuthenticationIdService';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { Voted as VotedModel } from '../models/VotedModel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
@@ -64,7 +64,7 @@ export class VotingController {
         private pageService: PageService,
         private pageAccessLevelService: PageAccessLevelService,
         private assetService: AssetService,
-        // private authenticationIdService:AuthenticationIdService,
+        private authenticationIdService:AuthenticationIdService,
         private inviteVoteService:InviteVoteService,
         private hashTagService:HashTagService,
         // private retrieveVoteService: RetrieveVoteService
@@ -3827,88 +3827,89 @@ export class VotingController {
                 $skip: offset
             }
         ]);
-
-        const voteEvent = await this.votedService.aggregate([
-            {
-                $match:{
-                    votingId:voteObjId
-                }
-            },
-            {
-                $lookup: {
-                    from: 'User',
-                    let: { 'userId': '$userId' },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $eq: ['$$userId', '$_id']
+        let voteEvent:any = undefined;
+        if(voteObj.showVoterName === true) {
+            voteEvent = await this.votedService.aggregate([
+                {
+                    $match:{
+                        votingId:voteObjId
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'User',
+                        let: { 'userId': '$userId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$userId', '$_id']
+                                    }
                                 }
-                            }
-                        },
-                        { $sample: { size: 5 } },     
-                        {
-                            $project: {
-                                _id: 1,
-                                displayName: 1,
-                                uniqueId: 1,
-                                imageURL: 1,
-                                s3ImageURL: 1
-                            }
-                        },
-                    ],
-                    as: 'user'
-                }
-            },       
-            {
-                $unwind:{
-                    path:'$user'
-                }
-            },
-            {
-                $group: {
-                  _id: '$user._id',
-                  count: { $sum: 1 },
-                  uniqueIds: { $addToSet: '$user._id' }
-                }
-            },
-            {
-                $lookup: {
-                    from: 'User',
-                    let: { 'id': '$_id' },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $eq: ['$$id', '$_id']
+                            },
+                            { $sample: { size: 5 } },     
+                            {
+                                $project: {
+                                    _id: 1,
+                                    displayName: 1,
+                                    uniqueId: 1,
+                                    imageURL: 1,
+                                    s3ImageURL: 1
                                 }
-                            }
-                        },
-                        {
-                            $project: {
-                                _id: 1,
-                                displayName: 1,
-                                uniqueId: 1,
-                                imageURL: 1,
-                                s3ImageURL: 1
-                            }
-                        },
-                    ],
-                    as: 'user'
+                            },
+                        ],
+                        as: 'user'
+                    }
+                },       
+                {
+                    $unwind:{
+                        path:'$user'
+                    }
+                },
+                {
+                    $group: {
+                    _id: '$user._id',
+                    count: { $sum: 1 },
+                    uniqueIds: { $addToSet: '$user._id' }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'User',
+                        let: { 'id': '$_id' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$id', '$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    displayName: 1,
+                                    uniqueId: 1,
+                                    imageURL: 1,
+                                    s3ImageURL: 1
+                                }
+                            },
+                        ],
+                        as: 'user'
+                    }
+                },
+                {
+                    $unwind:{
+                        path:'$user'
+                    }
+                },  
+                {
+                    $project:{
+                        user:1
+                    }
                 }
-            },
-            {
-                $unwind:{
-                    path:'$user'
-                }
-            },  
-            {
-                $project:{
-                    user:1
-                }
-            }
-        ]);
-        
+            ]);
+        }
         const voteCount = await this.votedService.aggregate(
             [
                 {
@@ -3917,10 +3918,10 @@ export class VotingController {
                     }
                 },
                 {
-                    $limit: take
-                },
-                {
-                    $count:'count'
+                    $group:{
+                        _id:'$userId',
+                        count:{$sum:1}
+                    }
                 }
             ]
         );
@@ -3928,10 +3929,13 @@ export class VotingController {
             'voteItem':{},
             'voted':{},
             'voteCount':{},
+            'showVoterName':undefined,
         };
         response['voteItem'] = voteItem;
-        response['voted'] = voteEvent;
-        response['voteCount'] = voteCount[0] ? voteCount[0].count : 0;
+        response['voted'] = voteEvent ? voteEvent : [];
+        response['voteCount'] = voteCount.length;
+        response['showVoterName'] = voteObj.showVoterName;
+        response['showVoteResult'] = voteObj.showVoteResult;
 
         if (response['voteItem'].length>0) {
             const successResponse = ResponseUtil.getSuccessResponse('Get VoteItem is success.', response);
@@ -3998,7 +4002,7 @@ export class VotingController {
         }
 
         if (voteObj.status === 'vote') {
-            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('Status is voted.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -4086,6 +4090,7 @@ export class VotingController {
                 updateDatetime: today,
                 type: votingEventRequest.type,
                 hashTag: votingEventRequest.hashTag,
+                voteDaysRange: votingEventRequest.voteDaysRange,
                 showVoteResult: votingEventRequest.showVoteResult,
                 showVoterName: votingEventRequest.showVoterName,
                 service: votingEventRequest.service
@@ -4179,7 +4184,6 @@ export class VotingController {
                             votingId:objIds,
                         }
                     },
-                    
                     {
                         $count:'count'
                     }
@@ -4347,9 +4351,9 @@ export class VotingController {
         let vdr = DEFAULT_VOTE_DAYS_RANGE;
         const voteDaysRangeConfig = await this.configService.getConfig(VOTE_DAYS_RANGE);
         const sdrConfig = await this.configService.getConfig(SUPPORT_DAYS_RANGE);
-        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
         const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
         let eligibleValue = undefined;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
         const configMinSupport = await this.configService.getConfig(MIN_SUPPORT);
 
         if(sdrConfig) {
@@ -4384,6 +4388,12 @@ export class VotingController {
         if (configMinSupport) {
             minSupportValue = parseInt(configMinSupport.value, 10);
         }
+
+        if(typeof(vdr) !== 'number') {
+            const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not number.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         let hashTagObjId:any = undefined;
         let createHashTag:any = undefined;
         const hashTag = votingEventRequest.hashTag;
@@ -4516,8 +4526,8 @@ export class VotingController {
         votingEvent.endSupportDatetime = dateNow;
 
         votingEvent.voteDaysRange = vdr;
-        votingEvent.startVoteDatetime = dateNow;
-        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * vdr) * 60 * 60 * 1000)); // voteDaysRange;
+        votingEvent.startVoteDatetime = null;
+        votingEvent.endVoteDatetime = null;
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
@@ -4641,6 +4651,11 @@ export class VotingController {
 
         if(votingEventRequest.voteDaysRange !== undefined) {
             vdr = votingEventRequest.voteDaysRange;
+        }
+
+        if(typeof(vdr) !== 'number') {
+            const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not number.', undefined);
+            return res.status(400).send(errorResponse);
         }
 
         const closetValue = (24 * sdr) * 60 * 60 * 1000; // one day in milliseconds
@@ -4793,8 +4808,8 @@ export class VotingController {
         votingEvent.endSupportDatetime = dateNow;
 
         votingEvent.voteDaysRange = vdr;
-        votingEvent.startVoteDatetime = dateNow;
-        votingEvent.endVoteDatetime = new Date(dateNow.getTime() + ( (24 * vdr) * 60 * 60 * 1000)); // voteDaysRange;
+        votingEvent.startVoteDatetime = null;
+        votingEvent.endVoteDatetime = null;
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
@@ -4881,21 +4896,25 @@ export class VotingController {
         const pageObjId = new ObjectID(votedRequest.pageId);
         const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
         const today = moment().toDate();
+        let eligibleValue = undefined;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        if (eligibleConfig) {
+            eligibleValue = eligibleConfig.value;
+        }
+        const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+        const userObj = await this.userService.findOne({_id: userObjId});
+        // split.includes(userObj.email) === false
 
         // status public, private, member
-        /*
-        if(voteEventObj.type === 'member'){
+        if(voteEventObj.type === 'member' && split.includes(userObj.email) === false){
             const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
-            if( 
-                voteEventObj.type === 'member' && 
-                authUser === undefined
-            )
-            {
+            if( voteEventObj.type === 'member' && 
+                authUser === undefined 
+            ){
                 const errorResponse = ResponseUtil.getErrorResponse('This vote only for membershipMFP, You are not membership.', undefined);
                 return res.status(400).send(errorResponse);
             }
         }
-        */
 
         // if private vote check you are in vote
         if(voteEventObj.type === 'private'){
@@ -5182,10 +5201,16 @@ export class VotingController {
     public async UserSupport(@Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const votingObjId = new ObjectID(votingId);
         const userObjId = new ObjectID(req.user.id);
-
         const votingObj = await this.votingEventService.findOne({ _id: votingObjId });
-        /*
-        if(votingObj.type === 'member'){
+        let eligibleValue = undefined;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        if (eligibleConfig) {
+            eligibleValue = eligibleConfig.value;
+        }
+        const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+        const userObj = await this.userService.findOne({_id: userObjId});
+
+        if(votingObj.type === 'member' && split.includes(userObj.email) === false){
             const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
             if( 
                 votingObj.type === 'member' && 
@@ -5196,7 +5221,7 @@ export class VotingController {
                 return res.status(400).send(errorResponse);
             }
         }
-        */
+        
         if (votingObj === undefined && votingObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Not Found the Voting Object.', undefined);
             return res.status(400).send(errorResponse);
