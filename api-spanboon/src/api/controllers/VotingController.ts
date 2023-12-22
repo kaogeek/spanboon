@@ -3918,10 +3918,10 @@ export class VotingController {
                     }
                 },
                 {
-                    $limit: take
-                },
-                {
-                    $count:'count'
+                    $group:{
+                        _id:'$userId',
+                        count:{$sum:1}
+                    }
                 }
             ]
         );
@@ -3933,8 +3933,9 @@ export class VotingController {
         };
         response['voteItem'] = voteItem;
         response['voted'] = voteEvent ? voteEvent : [];
-        response['voteCount'] = voteCount[0] ? voteCount[0].count : 0;
+        response['voteCount'] = voteCount.length;
         response['showVoterName'] = voteObj.showVoterName;
+        response['showVoteResult'] = voteObj.showVoteResult;
 
         if (response['voteItem'].length>0) {
             const successResponse = ResponseUtil.getSuccessResponse('Get VoteItem is success.', response);
@@ -4182,7 +4183,6 @@ export class VotingController {
                             votingId:objIds,
                         }
                     },
-                    
                     {
                         $count:'count'
                     }
