@@ -19,7 +19,6 @@ import { Observable, Subject } from 'rxjs';
 import { VoteEventFacade } from 'src/app/services/facade/VoteEventFacade.service';
 import { AuthenManager } from 'src/app/services/AuthenManager.service';
 import { DialogAlert } from './DialogAlert.component';
-import { P } from '@angular/cdk/keycodes';
 import { UserAccessFacade } from 'src/app/services/facade/UserAccessFacade.service';
 
 const PAGE_NAME: string = 'createvote';
@@ -517,6 +516,14 @@ export class DialogCreateVote extends AbstractPage {
         return;
       }
 
+      if (!this._isNumberOnly(data.voteDaysRange)) {
+        this.showAlertDialog("กรุณาใส่วันเปิดโหวตเป็นตัวเลขเท่านั้น");
+        this.changeQuestion(null, 'settings');
+        this.voteDayRange = 7;
+        this.isLoading = false;
+        return;
+      }
+
       for (let index = 0; index < this.listQuestion.length; index++) {
         if ((this.listQuestion[index].titleItem === '' || this.listQuestion[index].title === '')) {
           let dialog = this.dialog.open(DialogAlert, {
@@ -651,6 +658,14 @@ export class DialogCreateVote extends AbstractPage {
       }
     }
 
+    if (!this._isNumberOnly(this._setDataVote().voteDaysRange)) {
+      this.showAlertDialog("กรุณาใส่วันเปิดโหวตเป็นตัวเลขเท่านั้น");
+      this.changeQuestion(null, 'settings');
+      this.voteDayRange = 7;
+      this.isLoading = false;
+      return;
+    }
+
     if (this._setDataVote().createAsPage === null) {
       this.voteFacade.createVote(this._setDataVote()).then((res) => {
         if (res) {
@@ -664,9 +679,7 @@ export class DialogCreateVote extends AbstractPage {
             }
           });
           dialog.afterClosed().subscribe((res) => {
-            if (res) {
-              this.onClose(true, 'create');
-            }
+            this.onClose(true, 'create');
           });
         }
       }).catch((err) => {
@@ -682,6 +695,12 @@ export class DialogCreateVote extends AbstractPage {
           if (err.error.message === 'You have no permission to create the vote event.') {
             this.isLoading = false;
             this.showAlertDialog("คุณไม่มีสิทธิ์สร้างกิจกรรมโหวต");
+          }
+          if (err.error.message === 'voteDaysRange is not number.') {
+            this.isLoading = false;
+            this.showAlertDialog("กรุณาใส่วันเปิดโหวตเป็นตัวเลขเท่านั้น");
+            this.changeQuestion(null, 'settings');
+            this.voteDayRange = 7;
           }
         }
       });
@@ -717,9 +736,19 @@ export class DialogCreateVote extends AbstractPage {
             this.isLoading = false;
             this.showAlertDialog("คุณไม่มีสิทธิ์สร้างกิจกรรมโหวต");
           }
+          if (err.error.message === 'voteDaysRange is not number.') {
+            this.isLoading = false;
+            this.showAlertDialog("กรุณาใส่วันเปิดโหวตเป็นตัวเลขเท่านั้น");
+            this.changeQuestion(null, 'settings');
+            this.voteDayRange = 7;
+          }
         }
       });
     }
+  }
+
+  private _isNumberOnly(value) {
+    return /^\d+$/.test(value);
   }
 
   public clickSave(index) {

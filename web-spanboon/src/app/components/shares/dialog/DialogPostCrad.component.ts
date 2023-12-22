@@ -7,12 +7,10 @@
 
 import { Component, Inject, EventEmitter, Input } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, ThemePalette } from '@angular/material';
-import { PageFacade, AuthenManager, AssetFacade, PostFacade, PostCommentFacade, PostActionService, VoteEventFacade } from '../../../services/services';
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { AuthenManager, PostFacade, PostCommentFacade, PostActionService, VoteEventFacade } from '../../../services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
-import { Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FileHandle } from '../directive/DragAndDrop.directive';
-import { RePost } from '../../../models/RePost';
 import { CommentPosts } from '../../../models/CommentPosts';
 import { DialogShare } from './DialogShare.component';
 import { DialogAlert } from './DialogAlert.component';
@@ -79,6 +77,7 @@ export class DialogPostCrad extends AbstractPage {
     postActionService: PostActionService,
     postFacade: PostFacade,
     voteFacade: VoteEventFacade,
+    private activeRoute: ActivatedRoute,
     dialog: MatDialog, authenManager: AuthenManager, router: Router) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
@@ -89,7 +88,6 @@ export class DialogPostCrad extends AbstractPage {
     this.voteFacade = voteFacade;
     this.imageCover = {}
     this.prefix = {};
-
 
   }
 
@@ -322,11 +320,15 @@ export class DialogPostCrad extends AbstractPage {
     }
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
     if (!this.data.isAllow) {
-      this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
-      return;
+      if (this.data.post.type === 'member') {
+        if (!user.membership) {
+          this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+          return;
+        }
+      }
     }
     if (type === 'single') {
-      if (choice.title === this.questions[index].active) {
+      if (choice._id === this.questions[index].voteChoice && this.questions[index].voteChoice[0].voteChoiceId) {
         this.questions[index] = [];
       } else {
         if (this.questions[index].voteChoice === undefined) {
@@ -434,6 +436,15 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   public voteSupport(id) {
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    if (!this.data.isAllow) {
+      if (this.data.post.type === 'member') {
+        if (!user.membership) {
+          this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+          return;
+        }
+      }
+    }
     this.isLoading = true;
     this.voteFacade.voteSupport(id).then((res) => {
       if (res) {
@@ -470,6 +481,14 @@ export class DialogPostCrad extends AbstractPage {
 
   public unVoteSupport(id) {
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    if (!this.data.isAllow) {
+      if (this.data.post.type === 'member') {
+        if (!user.membership) {
+          this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+          return;
+        }
+      }
+    }
     let index = this._findUserSupportIndex(user.id);
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: false,

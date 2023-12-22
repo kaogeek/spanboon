@@ -282,6 +282,7 @@
               overflow: hidden;
               border: 2px solid $white;
               position: relative;
+              flex: 0 0 auto;
 
               > img {
                 object-fit: cover;
@@ -413,7 +414,7 @@
           display: flex;
           flex-direction: column;
           width: 60%;
-          margin: 60px auto 10px auto;
+          margin: 60px auto 30px auto;
           min-height: auto;
 
           @media (max-width: $large) {
