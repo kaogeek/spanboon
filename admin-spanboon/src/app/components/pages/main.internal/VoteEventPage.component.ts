@@ -41,7 +41,8 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     public valueClosed: boolean = false;
     public valueApproved: boolean = false;
     public valuePin: boolean = false;
-    public valueShowed: boolean = false;
+    public valueShowName: boolean = false;
+    public valueShowResult: boolean = false;
     public valueStatus: any;
     public _id: any;
     public listStatus: any[] = ['vote', 'support'];
@@ -95,8 +96,8 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         this.actions = {
             isOfficial: false,
             isBan: false,
-            isApprove: false,
-            isUnApprove: false,
+            isApprove: true,
+            isUnApprove: true,
             isSelect: false,
             isCreate: false,
             isEdit: true,
@@ -124,7 +125,8 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         this.valueApproved = data.approved;
         this.valueStatus = data.status;
         this.valuePin = data.pin;
-        this.valueShowed = data.showed;
+        this.valueShowName = data.showVoterName;
+        this.valueShowResult = data.showVoteResult;
         this.drawer.toggle();
     }
 
@@ -133,11 +135,14 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         result.closed = this.valueClosed;
         result.approved = this.valueApproved;
         result.pin = this.valuePin;
-        result.showed = this.valueShowed;
         result.status = this.valueStatus;
+        result.showVoterName = this.valueShowName;
+        result.showVoteResult = this.valueShowResult;
+
         this.voteEventFacade.edit(this._id, result).then((res) => {
             this.table.searchData();
-            this.valueShowed = undefined;
+            this.valueShowName = undefined;
+            this.valueShowResult = undefined;
             this.valuePin = undefined;
             this.valueApproved = undefined;
             this.valueClosed = undefined;
@@ -155,7 +160,6 @@ export class VoteEventPage extends AbstractPage implements OnInit {
                 if (d.id == data.id) {
                     dataTable.splice(index, 1);
                     this.table.setTableConfig(dataTable);
-                    // alert("success");
                     this.dialogWarning("ลบข้อมูลสำเร็จ");
                     break;
                 }
@@ -163,6 +167,46 @@ export class VoteEventPage extends AbstractPage implements OnInit {
             }
         }).catch((err) => {
             this.dialogWarning(err.error.message);
+        });
+    }
+
+    public clickApprove(data) {
+        const voteData: any = {};
+        voteData.closed = false;
+        voteData.approved = true;
+        voteData.pin = true;
+        voteData.status = "vote";
+        let dialogRef = this.dialog.open(DialogWarningComponent, {
+            data: {
+                title: "คุณต้องการอนุมัติโหวตนี้ใช่หรือไม่"
+            }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.voteEventFacade.approve(data._id, voteData).then((res) => {
+                    this.table.searchData();
+                });
+            }
+        });
+    }
+
+    public clickUnApprove(data) {
+        const voteData: any = {};
+        voteData.closed = true;
+        voteData.approved = false;
+        voteData.pin = false;
+        voteData.status = "close";
+        let dialogRef = this.dialog.open(DialogWarningComponent, {
+            data: {
+                title: "คุณต้องการไม่อนุมัติโหวตนี้ใช่หรือไม่"
+            }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.voteEventFacade.reject(data._id, voteData).then((res) => {
+                    this.table.searchData();
+                });
+            }
         });
     }
 }
