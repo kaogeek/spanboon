@@ -118,6 +118,7 @@ export class AdminVotedController {
         const userObjId = new ObjectID(req.user.id);
         const voteObjId = new ObjectID(id);
         const today = moment().toDate();
+        let newValues:any = {};
         // check exist?
         const user = await this.userService.findOne({_id:userObjId});
 
@@ -159,7 +160,8 @@ export class AdminVotedController {
         }
 
         const query = {_id:voteObjId};
-        const newValues = {
+        // approved.
+        newValues = {
             $set:{
                 closed:votingEventRequest.closed ? votingEventRequest.closed : voteObj.closed,
                 closeDate:null,
@@ -169,16 +171,15 @@ export class AdminVotedController {
                 pin:votingEventRequest.pin ? votingEventRequest.pin : voteObj.pin,
                 status: votingEventRequest.status ? votingEventRequest.status : voteObj.status,
 
-                startSupportDatetime:votingEventRequest.supportDaysRange ? votingEventRequest.supportDaysRange : voteObj.startSupportDatetime,
-                endSupportDatetime: votingEventRequest.supportDaysRange ? votingEventRequest.supportDaysRange : voteObj.endSupportDatetime,
-
-                startVoteDatetime:votingEventRequest.startVoteDatetime ? votingEventRequest.startVoteDatetime : voteObj.startVoteDatetime,
-                endVoteDatetime: votingEventRequest.endVoteDatetime ? votingEventRequest.endVoteDatetime : voteObj.endVoteDatetime, 
+                startVoteDatetime: today,
+                endVoteDatetime:  new Date(today.getTime() + ( (24 * voteObj.voteDaysRange) * 60 * 60 * 1000)), 
 
                 showVoterName: votingEventRequest.showVoterName ? votingEventRequest.showVoterName : voteObj.showVoterName,
                 showVoteResult: votingEventRequest.showVoteResult ? votingEventRequest.showVoteResult : voteObj.showVoteResult,
             }
         };
+        console.log('newValues',newValues);
+
         const update = await this.votingEventService.update(query,newValues);
         if(update){
             const successResponse = ResponseUtil.getSuccessResponse('Update vote event is success.', undefined);

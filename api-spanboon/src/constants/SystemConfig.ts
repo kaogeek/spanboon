@@ -117,6 +117,9 @@ export const MIN_SUPPORT = 'min.support';
 export const DEFAULT_CLOSET_VOTE = 5;
 export const CLOSET_VOTE = 'closet.vote';
 
+export const DEFAULT_CLOSET_SUPPORT = 5;
+export const CLOSET_SUPPORT = 'closet.support';
+
 export const DEFAULT_MFP_HASHTAG = 'ก้าวไกล';
 export const MFPHASHTAG = 'mfp.hashtag';
 
