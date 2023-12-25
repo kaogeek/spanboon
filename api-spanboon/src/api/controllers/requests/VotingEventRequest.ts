@@ -20,11 +20,16 @@ export class VotingEventRequest {
     public countSupport: number;
     public supportDaysRange: number;
     public voteDaysRange: number;
-    public endVoteDatetime: Date;
     public approveDatetime: Date;
     public approveUsername: string;
     public updateDatetime: Date;
     public hashTag: string;
+
+    public startSupportDatetime: Date;
+    public endSupportDatetime: Date;
+    
+    public startVoteDatetime: Date;
+    public endVoteDatetime: Date;
     // public create_user: string;
     public status: any;
     public createAsPage: string;

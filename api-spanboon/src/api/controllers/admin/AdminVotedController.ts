@@ -127,11 +127,6 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
 
-        if(voteObj.approveUsername !== null && voteObj.approveDatetime !== null) {
-            const errorResponse = ResponseUtil.getErrorResponse('This vote has been approved.', undefined);
-            return res.status(400).send(errorResponse);
-        } 
-
         let voteApproved = votingEventRequest.approved;
         let votePin = votingEventRequest.pin;
         let voteShowed = votingEventRequest.showVoteResult;
@@ -158,7 +153,7 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
 
-        if(typeof(votingEventRequest.voteDaysRange) !== 'number') {
+        if(votingEventRequest.voteDaysRange !== undefined && typeof(votingEventRequest.voteDaysRange) !== 'number') {
             const errorResponse = ResponseUtil.getErrorResponse('Voting Days range is not a number.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -166,20 +161,24 @@ export class AdminVotedController {
         const query = {_id:voteObjId};
         const newValues = {
             $set:{
-                closed:votingEventRequest.closed,
+                closed:votingEventRequest.closed ? votingEventRequest.closed : voteObj.closed,
                 closeDate:null,
                 approved:voteApproved,
                 approveUsername:user.displayName,
                 approveDatetime:today,
-                pin:votePin,
-                status: votingEventRequest.status,
-                voteDaysRange: votingEventRequest.voteDaysRange,
-                supportDaysRange: votingEventRequest.supportDaysRange,
-                startVoteDatetime:today,
-                endVoteDatetime: new Date(today.getTime() + ( (24 * voteObj.voteDaysRange) * 60 * 60 * 1000)), // voteDaysRange;
-                showVoterName: votingEventRequest.showVoterName,
-                showVoteResult: votingEventRequest.showVoteResult
-            }};
+                pin:votingEventRequest.pin ? votingEventRequest.pin : voteObj.pin,
+                status: votingEventRequest.status ? votingEventRequest.status : voteObj.status,
+
+                startSupportDatetime:votingEventRequest.supportDaysRange ? votingEventRequest.supportDaysRange : voteObj.startSupportDatetime,
+                endSupportDatetime: votingEventRequest.supportDaysRange ? votingEventRequest.supportDaysRange : voteObj.endSupportDatetime,
+
+                startVoteDatetime:votingEventRequest.startVoteDatetime ? votingEventRequest.startVoteDatetime : voteObj.startVoteDatetime,
+                endVoteDatetime: votingEventRequest.endVoteDatetime ? votingEventRequest.endVoteDatetime : voteObj.endVoteDatetime, 
+
+                showVoterName: votingEventRequest.showVoterName ? votingEventRequest.showVoterName : voteObj.showVoterName,
+                showVoteResult: votingEventRequest.showVoteResult ? votingEventRequest.showVoteResult : voteObj.showVoteResult,
+            }
+        };
         const update = await this.votingEventService.update(query,newValues);
         if(update){
             const successResponse = ResponseUtil.getSuccessResponse('Update vote event is success.', undefined);
