@@ -112,9 +112,9 @@ export class AdminVotedController {
         }
     }
 
-    @Put('/:id')
+    @Post('/:id')
     @Authorized('')
-    public async updateVoteEvent(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
+    public async approvedVoteEvent(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const voteObjId = new ObjectID(id);
         const today = moment().toDate();
@@ -125,6 +125,11 @@ export class AdminVotedController {
         const voteObj = await this.votingEventService.findOne({_id:voteObjId});
         if(voteObj === undefined && voteObj === null){
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.approveDatetime !== null && voteObj.approveUsername !== null) {
+            const errorResponse = ResponseUtil.getErrorResponse('This vote has been approved.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -172,13 +177,12 @@ export class AdminVotedController {
                 status: votingEventRequest.status ? votingEventRequest.status : voteObj.status,
 
                 startVoteDatetime: today,
-                endVoteDatetime:  new Date(today.getTime() + ( (24 * voteObj.voteDaysRange) * 60 * 60 * 1000)), 
+                endVoteDatetime:   new Date(today.getTime() + ( (24 * voteObj.voteDaysRange) * 60 * 60 * 1000)), 
 
                 showVoterName: votingEventRequest.showVoterName ? votingEventRequest.showVoterName : voteObj.showVoterName,
                 showVoteResult: votingEventRequest.showVoteResult ? votingEventRequest.showVoteResult : voteObj.showVoteResult,
             }
         };
-        console.log('newValues',newValues);
 
         const update = await this.votingEventService.update(query,newValues);
         if(update){
@@ -189,6 +193,72 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
     }
+
+    @Put('/:id')
+    @Authorized('')
+    public async updateVoteEvent(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        const voteObjId = new ObjectID(id);
+        const today = moment().toDate();
+        let newValues:any = {};
+        // check exist?
+        const user = await this.userService.findOne({_id:userObjId});
+
+        const voteObj = await this.votingEventService.findOne({_id:voteObjId});
+        if(voteObj === undefined && voteObj === null){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        let voteApproved = votingEventRequest.approved;
+        let votePin = votingEventRequest.pin;
+        let voteShowed = votingEventRequest.showVoteResult;
+
+        if (voteApproved === null || voteApproved === undefined) {
+            voteApproved = voteObj.approved;
+        }
+
+        if (votePin === null || votePin === undefined) {
+            votePin = voteObj.pin;
+        }
+        if (voteShowed === null || voteShowed === undefined) {
+            voteShowed = voteObj.showVoteResult;
+
+        }
+
+        const query = {_id:voteObjId};
+        // approved.
+        newValues = {
+            $set:{
+                closed:votingEventRequest.closed ? votingEventRequest.closed : voteObj.closed,
+                closeDate:null,
+                approved:voteApproved,
+                approveUsername:user.displayName,
+                approveDatetime:today,
+                pin:votingEventRequest.pin ? votingEventRequest.pin : voteObj.pin,
+                status: votingEventRequest.status ? votingEventRequest.status : voteObj.status,
+
+                startSupportDatetime: votingEventRequest.startSupportDatetime,
+                endSupportDatetime: votingEventRequest.endSupportDatetime,
+
+                startVoteDatetime: votingEventRequest.startVoteDatetime,
+                endVoteDatetime:   votingEventRequest.endVoteDatetime, 
+
+                showVoterName: votingEventRequest.showVoterName ? votingEventRequest.showVoterName : voteObj.showVoterName,
+                showVoteResult: votingEventRequest.showVoteResult ? votingEventRequest.showVoteResult : voteObj.showVoteResult,
+            }
+        };
+
+        const update = await this.votingEventService.update(query,newValues);
+        if(update){
+            const successResponse = ResponseUtil.getSuccessResponse('Update vote event is success.', undefined);
+            return res.status(200).send(successResponse);
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot update a VoteEvent.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     @Delete('/:id')
     @Authorized('')
     public async deleteVoteEvent(@Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
