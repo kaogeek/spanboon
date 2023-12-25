@@ -126,6 +126,12 @@ export class AdminVotedController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        if(voteObj.approveUsername !== null && voteObj.approveDatetime !== null) {
+            const errorResponse = ResponseUtil.getErrorResponse('This vote has been approved.', undefined);
+            return res.status(400).send(errorResponse);
+        } 
+
         let voteApproved = votingEventRequest.approved;
         let votePin = votingEventRequest.pin;
         let voteShowed = votingEventRequest.showVoteResult;
@@ -141,13 +147,19 @@ export class AdminVotedController {
             voteShowed = voteObj.showVoteResult;
 
         }
-        let closeDate:any = {closeDate:null};
-        if(votingEventRequest.closed === true){
-            closeDate = {closeDate:today};
-        }
 
         if(voteApproved === false){
-            const errorResponse = ResponseUtil.getErrorResponse('Approve vote should be true', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('Approve vote should be true.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(votingEventRequest.closed === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('Close status shoule be false.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(typeof(votingEventRequest.voteDaysRange) !== 'number') {
+            const errorResponse = ResponseUtil.getErrorResponse('Voting Days range is not a number.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -155,12 +167,14 @@ export class AdminVotedController {
         const newValues = {
             $set:{
                 closed:votingEventRequest.closed,
-                closeDate,
+                closeDate:null,
                 approved:voteApproved,
                 approveUsername:user.displayName,
                 approveDatetime:today,
                 pin:votePin,
                 status: votingEventRequest.status,
+                voteDaysRange: votingEventRequest.voteDaysRange,
+                supportDaysRange: votingEventRequest.supportDaysRange,
                 startVoteDatetime:today,
                 endVoteDatetime: new Date(today.getTime() + ( (24 * voteObj.voteDaysRange) * 60 * 60 * 1000)), // voteDaysRange;
                 showVoterName: votingEventRequest.showVoterName,
@@ -256,11 +270,6 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
 
-        if(votingEventRequest.endVoteDatetime === undefined){
-            const errorResponse = ResponseUtil.getErrorResponse('Close Data should be null or today.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
         if(voteApproved === true){
             const errorResponse = ResponseUtil.getErrorResponse('Approve vote should be false', undefined);
             return res.status(400).send(errorResponse);
@@ -281,7 +290,7 @@ export class AdminVotedController {
             $set:{
                 closed:votingEventRequest.closed,
                 closeDate: today,
-                approved:voteApproved,              
+                approved:false,              
                 approveUsername:null,
                 approveDatetime:null,
                 pin:false,
@@ -327,11 +336,6 @@ export class AdminVotedController {
 
         if(votingEventRequest.closed === true){
             const errorResponse = ResponseUtil.getErrorResponse('Close vote should be false.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        if(votingEventRequest.endVoteDatetime === undefined){
-            const errorResponse = ResponseUtil.getErrorResponse('Close Data should be null or today.', undefined);
             return res.status(400).send(errorResponse);
         }
 
