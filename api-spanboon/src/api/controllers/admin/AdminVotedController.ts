@@ -274,9 +274,13 @@ export class AdminVotedController {
         const voteItems = await this.voteItemService.find({votingId:voteObj.id});
         if(voteItems.length>0){
             for(const voteItem of voteItems){
-                await this.assetService.delete({_id:voteItem.assetId});
+                if(voteItem.assetId !== undefined) {
+                    await this.assetService.delete({_id:voteItem.assetId});
+                }
                 const voteChoiceList = await this.voteChoiceService.findOne({voteItemId:voteItem.id});
-                await this.assetService.delete({_id:voteChoiceList.assetId});
+                if(voteChoiceList.assetId !== undefined) {
+                    await this.assetService.delete({_id:voteChoiceList.assetId});
+                }
             }
         }
 
