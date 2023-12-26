@@ -5211,6 +5211,7 @@ export class VotingController {
             for(const item of votedRequest.voteItem){
 
                 const voted = await this.CheckSpamVote(item,votingObjId,votedRequest.pageId,userObjId);
+                console.log('voted',voted);
                 if(voted === undefined){
                     const voteItemObj = await this.voteItemService.findOne({ _id: new ObjectID(item.voteItemId) });
                     if (voteItemObj === undefined && voteItemObj === null) {
@@ -5627,72 +5628,84 @@ export class VotingController {
 
     private async CheckSpamVote(voteObject:any,voteEventId:string,pageId:string,userId:string): Promise<any>{
         let voted:any = undefined;
-        for(const choice of voteObject.voteChoice) {
-            if(pageId !== undefined){
-                if(choice.voteChoiceId !== undefined){
-                    voted = await this.votedService.findOne(
-                        {
-                            votingId: new ObjectID(voteEventId),
-                            pageId: new ObjectID(pageId),
-                            voteItemId: new ObjectID(voteObject.voteItemId),
-                            voteChoiceId: new ObjectID(choice.voteChoiceId)
-                        }
-                    );
+        if(voteObject.voteChoice.length > 0){
+            for(const choice of voteObject.voteChoice) {
+                if(pageId !== undefined){
+                    if(choice.voteChoiceId !== undefined){
+                        voted = await this.votedService.findOne(
+                            {
+                                votingId: new ObjectID(voteEventId),
+                                pageId: new ObjectID(pageId),
+                                voteItemId: new ObjectID(voteObject.voteItemId),
+                                voteChoiceId: new ObjectID(choice.voteChoiceId)
+                            }
+                        );
+                    } if(voted !== undefined) {
+                        return voted;
+                    } else {
+                        return undefined;
+                    }
                 } else {
-                    voted = await this.votedService.findOne(
-                        {
-                            votingId: new ObjectID(voteEventId),
-                            pageId: new ObjectID(pageId),
-                            voteItemId: new ObjectID(voteObject.voteItemId)
+                    // type single, multi
+                    if(choice.voteChoiceId !== undefined){
+                        // check single type ?
+                        const signleType = await this.voteItemService.findOne(
+                            {
+                                _id: new ObjectID(voteObject.voteItemId),
+                                votingId: new ObjectID(voteEventId),
+                                type: 'single'
+                            });
+                        if(signleType !== undefined) {
+                            voted = await this.votedService.findOne(
+                                {
+                                    votingId: signleType.votingId,
+                                    userId: new ObjectID(userId),
+                                    voteItemId: signleType.id                            
+                                }
+                            );
+                            if(voted !== undefined) {
+                                return voted;
+                            }
                         }
-                    );
+
+                        voted = await this.votedService.findOne(
+                            {
+                                votingId: new ObjectID(voteEventId),
+                                userId: new ObjectID(userId),
+                                voteItemId: new ObjectID(voteObject.voteItemId),
+                                voteChoiceId: new ObjectID(choice.voteChoiceId)
+                            }
+                        );
+                    }
+                    if(voted !== undefined) {
+                        return voted;
+                    } else {
+                        return undefined;
+                    }
                 }
+            }
+        } else {
+            if(pageId !== undefined) {
+                voted = await this.votedService.findOne(
+                    {
+                        votingId: new ObjectID(voteEventId),
+                        pageId: new ObjectID(pageId),
+                        voteItemId: new ObjectID(voteObject.voteItemId)
+                    }
+                );
                 if(voted !== undefined) {
                     return voted;
                 } else {
                     return undefined;
                 }
             } else {
-                // type single, multi
-                if(choice.voteChoiceId !== undefined){
-                    // check single type ?
-                    const signleType = await this.voteItemService.findOne(
-                        {
-                            _id: new ObjectID(voteObject.voteItemId),
-                            votingId: new ObjectID(voteEventId),
-                            type: 'single'
-                        });
-                    if(signleType !== undefined) {
-                        voted = await this.votedService.findOne(
-                            {
-                                votingId: signleType.votingId,
-                                userId: new ObjectID(userId),
-                                voteItemId: signleType.id                            
-                            }
-                        );
-                        if(voted !== undefined) {
-                            return voted;
-                        }
+                voted = await this.votedService.findOne(
+                    {
+                        votingId: new ObjectID(voteEventId),
+                        userId: new ObjectID(userId),
+                        voteItemId: new ObjectID(voteObject.voteItemId)
                     }
-
-                    voted = await this.votedService.findOne(
-                        {
-                            votingId: new ObjectID(voteEventId),
-                            userId: new ObjectID(userId),
-                            voteItemId: new ObjectID(voteObject.voteItemId),
-                            voteChoiceId: new ObjectID(choice.voteChoiceId)
-                        }
-                    );
-                } else {
-                    // type text
-                    voted = await this.votedService.findOne(
-                        {
-                            votingId: new ObjectID(voteEventId),
-                            userId: new ObjectID(userId),
-                            voteItemId: new ObjectID(voteObject.voteItemId)
-                        }
-                    );
-                }
+                );
                 if(voted !== undefined) {
                     return voted;
                 } else {
