@@ -68,6 +68,20 @@
             border-radius: 50%;
           }
 
+          > .none-image {
+            width: 40px;
+            height: 40px;
+            border: 2px solid $white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: $brandcolor2;
+            color: $white;
+            flex: 0 0 auto;
+            @include font-size-8($font-head-500);
+          }
+
           > span {
             @include font-size-9($font-head-500);
           }

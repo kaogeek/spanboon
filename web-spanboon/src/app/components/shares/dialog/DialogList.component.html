@@ -10,7 +10,12 @@
             <ng-container *ngFor="let item of data.model">
                 <div class="list">
                     <div class="user">
-                        <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
+                        <ng-container *ngIf="!!item!.user!.imageURL; else elseImageUser">
+                            <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
+                        </ng-container>
+                        <ng-template #elseImageUser>
+                            <span class="none-image">{{item.user.displayName | slice:0:1}}</span>
+                        </ng-template>
                         <span [innerHTML]="item.user.firstName + ' ' + item.user.lastName"></span>
                     </div>
                     <div class="content">

@@ -194,6 +194,10 @@ export class VotePage extends AbstractPage implements OnInit {
     this.voteFacade.searchAll(this.isLogin(), keyword).then((res) => {
       if (res) {
         this.model = res;
+        if (res.closeDate.length === 0 &&
+          res.hashTagVote.length === 0 &&
+          res.pin.length === 0 &&
+          res.supporter.length === 0) this.isEmpty = true;
         this.isLoading = false;
       }
     }).catch((err) => {
@@ -220,7 +224,14 @@ export class VotePage extends AbstractPage implements OnInit {
         if (res) {
           if (!!keyword) this.voteData = [];
           this.voteData = res;
-          if (this.voteData.length === 0) this.isEmpty = true;
+          if (res.mySupported.length === 0 &&
+            res.myVote.length === 0 &&
+            res.myVoted.length === 0 &&
+            res.myVoterSupport.length === 0) {
+            this.isEmpty = true;
+          } else {
+            this.isEmpty = false;
+          }
           this.isLoading = false;
         }
       }).catch((err) => {
@@ -233,7 +244,11 @@ export class VotePage extends AbstractPage implements OnInit {
         if (res) {
           if (!!keyword) this.voteData = [];
           this.voteData = res;
-          if (this.voteData.length === 0) this.isEmpty = true;
+          if (this.voteData.length === 0) {
+            this.isEmpty = true;
+          } else {
+            this.isEmpty = false;
+          }
           this.isLoading = false;
         }
       }).catch((err) => {
@@ -246,8 +261,8 @@ export class VotePage extends AbstractPage implements OnInit {
 
   public searchValue(value?) {
     // this.isLoading = true;
-    this.isSearch = (value !== undefined || value !== '') ? true : false;
-    this.isEmpty = false;
+    this.isSearch = true;
+    if (value === undefined || value === '') this.isSearch = false;
     this.searchInputValue = value;
     if (this.activeUrl['name'] === 'support') {
       this.searchVoteContent({
@@ -280,32 +295,33 @@ export class VotePage extends AbstractPage implements OnInit {
 
   public changeMenu(menu, isLoad?) {
     this.isLoading = true;
+    this.isEmpty = false;
     this.searchInputValue = '';
     this.isSearch = false;
-    this.isEmpty = false;
     this.searchInput.nativeElement.value = "";
-    if ((menu === 'support' && this.activeUrl['name'] !== 'support') || isLoad) {
+    if ((menu === 'support' && this.activeUrl['name'] !== 'support') || (menu === 'support' && isLoad)) {
       this.voteData = [];
       this.searchVoteContent({
         "status": 'support',
         "approved": false,
         "pin": false,
       });
-    } else if (menu === 'open' && this.activeUrl['name'] !== 'open' || isLoad) {
+    } else if (menu === 'open' && this.activeUrl['name'] !== 'open' || (menu === 'open' && isLoad)) {
       this.voteData = [];
       this.searchVoteContent({
         "status": 'vote',
       });
-    } else if (menu === 'my-vote' && this.activeUrl['name'] !== 'my-vote' || isLoad) {
+    } else if (menu === 'my-vote' && this.activeUrl['name'] !== 'my-vote' || (menu === 'my-vote' && isLoad)) {
       this.voteData = [];
       this.searchVoteContent({
       }, true);
-    } else if (menu === 'result' && this.activeUrl['name'] !== 'result' || isLoad) {
+    } else if (menu === 'result' && this.activeUrl['name'] !== 'result' || (menu === 'result' && isLoad)) {
       this.voteData = [];
       this.searchVoteContent({
         "closed": true,
       });
     } else if (menu === '' && this.activeUrl['name'] !== undefined || isLoad) {
+      this.model = [];
       this._searchContent();
     } else {
       this.isLoading = false;
@@ -333,7 +349,7 @@ export class VotePage extends AbstractPage implements OnInit {
   }
 
   public openDialogPost($event) {
-    if (!$event.approved) {
+    if (!$event.approved && $event.status === 'support') {
       this.voteFacade.getSupport($event._id).then((res) => {
         if (res) {
           if (this.activeUrl['name'] === undefined || this.activeUrl['name'] === '') {

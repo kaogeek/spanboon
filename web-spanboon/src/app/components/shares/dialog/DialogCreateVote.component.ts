@@ -30,7 +30,7 @@ const PAGE_NAME: string = 'createvote';
 export class DialogCreateVote extends AbstractPage {
   public static readonly PAGE_NAME: string = PAGE_NAME;
   private input = new Subject<string>();
-  private readonly debounceTimeMs = 500;
+  private readonly debounceTimeMs = 100;
   inputText: string = '';
 
   @ViewChild('pickerStart', { static: false }) pickerStart: any;
@@ -153,7 +153,7 @@ export class DialogCreateVote extends AbstractPage {
     this.image.assetId = value.assetId;
     this.image.coverPageURL = value.coverPageURL;
     this.image.s3CoverPageURL = value.s3CoverPageURL;
-    this.voteDayRange = this.voteDayRange;
+    this.voteDayRange = value.voteDaysRange;
     this.type = value.type;
     this.hashTag.setValue(value.hashTag);
     this.isShowVoterName = value.showVoterName;
@@ -297,7 +297,11 @@ export class DialogCreateVote extends AbstractPage {
   }
 
   public clickAddQuestion() {
-    this.isAddQuestion = true;
+    if (!!this.indexPage) {
+      this.clickSave(this.indexPage, 'add');
+    } else {
+      this.isAddQuestion = true;
+    }
   }
 
   public selectVoteQuestionType(type: string) {
@@ -751,7 +755,12 @@ export class DialogCreateVote extends AbstractPage {
     return /^\d+$/.test(value);
   }
 
-  public clickSave(index) {
+  public clickSave(index, isAddQuestion?) {
+    if (this.typeQuestion === 'text') {
+      this.isAddQuestion = true;
+      return;
+    }
+    if (isAddQuestion) this.isLoading = true;
     let input: HTMLInputElement[] = Array.from(document.getElementsByName('answer')) as HTMLInputElement[];
     for (var i = 0; i < input.length; i++) {
       let value = input[i].value;
@@ -791,6 +800,10 @@ export class DialogCreateVote extends AbstractPage {
     }
     this.listQuestion[index].titleItem = this.titleQuestion;
     this.listAnswers = [];
+    if (isAddQuestion) {
+      this.isLoading = false;
+      this.isAddQuestion = true;
+    }
   }
 
   public onFileSelect(event, type, index?) {

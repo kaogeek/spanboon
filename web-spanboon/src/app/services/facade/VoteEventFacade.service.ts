@@ -29,6 +29,7 @@ export class VoteEventFacade extends AbstractFacade {
         supporter: true,
         closeVote: true,
         hashTagVote: true,
+        closetSupport: true,
         keyword: !!keyword ? keyword : "",
       };
       let options = this.authMgr.getDefaultOptions();
