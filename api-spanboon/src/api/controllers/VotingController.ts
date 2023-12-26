@@ -36,7 +36,9 @@ import {
     DEFAULT_SUPPORT_DAYS_RANGE,
     SUPPORT_DAYS_RANGE,
     DEFAULT_VOTE_DAYS_RANGE,
-    VOTE_DAYS_RANGE
+    VOTE_DAYS_RANGE,
+    DEFAULT_CLOSET_SUPPORT,
+    CLOSET_SUPPORT
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';

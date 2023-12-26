@@ -88,4 +88,28 @@ export class VoteEventFacade extends AbstractFacade {
       });
     });
   }
+
+  public approve(id: any, body: any): Promise<VoteEvent[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/admin/voted/' + id;
+      let options = this.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public reject(id: any, body: any): Promise<VoteEvent[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/admin/voted/reject/' + id;
+      let options = this.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
 }
