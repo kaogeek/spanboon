@@ -296,35 +296,35 @@ export class DialogPostCrad extends AbstractPage {
 
   onConfirm() { }
 
-  public addOrRemoveActive(item, type, mode, index?, choiceIndex?) {
-    let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    let isAllowVote: boolean = false;
+  private _checkAllowVote() {
+    let isMember: any = JSON.parse(localStorage.getItem('membership'));
     if (this.data.isAllow) {
-      isAllowVote = true;
+      return true;
     }
-    if (!isAllowVote) {
-      if (this.data.post.type === 'member') {
-        if (!user.membership) {
-          return;
-        }
+    if (this.data.post.type === 'member') {
+      if (!isMember) {
+        this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+        return false;
+      }
+      return true;
+    } else {
+      return true;
+    }
+  }
+
+  public addOrRemoveActive(item, type, mode, index?, choiceIndex?) {
+    if (type === 'single') {
+      if (mode === 'remove') {
+        this.singleAns = undefined;
+        this.questions[index] = [];
+      }
+    }
+    if (type === 'multi') {
+      if (mode === 'remove') {
+        item.active = false;
+        this.questions[index].voteChoice.splice(choiceIndex, 1);
       } else {
-        isAllowVote = true;
-      }
-    }
-    if (isAllowVote) {
-      if (type === 'single') {
-        if (mode === 'remove') {
-          this.singleAns = undefined;
-          this.questions[index] = [];
-        }
-      }
-      if (type === 'multi') {
-        if (mode === 'remove') {
-          item.active = false;
-          this.questions[index].voteChoice.splice(choiceIndex, 1);
-        } else {
-          item.active = true;
-        }
+        item.active = true;
       }
     }
   }
@@ -334,53 +334,13 @@ export class DialogPostCrad extends AbstractPage {
       this.checkLogin();
       return;
     }
-    let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    let isAllowVote: boolean = false;
-
-    // มี whitelist
-    if (this.data.isAllow) {
-      isAllowVote = true;
-    }
-    if (!isAllowVote) {
-      if (this.data.post.type === 'member') {
-        if (!user.membership) {
-          this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
-          return;
-        }
+    if (type === 'single') {
+      if (choice._id === this.questions[index].voteChoice && this.questions[index].voteChoice[0].voteChoiceId) {
+        this.questions[index] = [];
       } else {
-        isAllowVote = true;
-      }
-    }
-    if (isAllowVote) {
-      if (type === 'single') {
-        if (choice._id === this.questions[index].voteChoice && this.questions[index].voteChoice[0].voteChoiceId) {
-          this.questions[index] = [];
-        } else {
-          if (this.questions[index].voteChoice === undefined) {
-            this.questions[index] = {
-              active: choice.title,
-              type: question.type,
-              voteItemId: question._id,
-              voteChoice: [
-                {
-                  answer: choice.title,
-                  voteChoiceId: choice._id
-                }
-              ]
-            };
-          } else {
-            this.questions[index].active = choice.title;
-            this.questions[index].voteChoice = [
-              {
-                answer: choice.title,
-                voteChoiceId: choice._id
-              }
-            ];
-          }
-        }
-      } else if (type === 'multi') {
         if (this.questions[index].voteChoice === undefined) {
           this.questions[index] = {
+            active: choice.title,
             type: question.type,
             voteItemId: question._id,
             voteChoice: [
@@ -391,47 +351,50 @@ export class DialogPostCrad extends AbstractPage {
             ]
           };
         } else {
-          if (this.questions[index].voteChoice.length > 0) {
-            this.questions[index].voteChoice.push({
+          this.questions[index].active = choice.title;
+          this.questions[index].voteChoice = [
+            {
               answer: choice.title,
               voteChoiceId: choice._id
-            });
-          } else {
-            this.questions[index].voteChoice.push({
-              answer: choice.title,
-              voteChoiceId: choice._id
-            });
-          }
-          let data = this.questions[index].voteChoice.findIndex(x => x.answer === choice.title);
-          let array = this.questions[index].voteChoice.filter((value, i, self) =>
-            self.findIndex(item => item.answer === value.answer && item.voteChoiceId === value.voteChoiceId) === i
-          );
-          this.questions[index].voteChoice = array;
+            }
+          ];
         }
+      }
+    } else if (type === 'multi') {
+      if (this.questions[index].voteChoice === undefined) {
+        this.questions[index] = {
+          type: question.type,
+          voteItemId: question._id,
+          voteChoice: [
+            {
+              answer: choice.title,
+              voteChoiceId: choice._id
+            }
+          ]
+        };
+      } else {
+        if (this.questions[index].voteChoice.length > 0) {
+          this.questions[index].voteChoice.push({
+            answer: choice.title,
+            voteChoiceId: choice._id
+          });
+        } else {
+          this.questions[index].voteChoice.push({
+            answer: choice.title,
+            voteChoiceId: choice._id
+          });
+        }
+        let data = this.questions[index].voteChoice.findIndex(x => x.answer === choice.title);
+        let array = this.questions[index].voteChoice.filter((value, i, self) =>
+          self.findIndex(item => item.answer === value.answer && item.voteChoiceId === value.voteChoiceId) === i
+        );
+        this.questions[index].voteChoice = array;
       }
     }
   }
 
   public next() {
-    let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    let isAllowVote: boolean = false;
-
-    // มี whitelist
-    if (this.data.isAllow) {
-      isAllowVote = true;
-    }
-    if (!isAllowVote) {
-      if (this.data.post.type === 'member') {
-        if (!user.membership) {
-          this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
-          return;
-        }
-      } else {
-        isAllowVote = true;
-      }
-    }
-
-    if (isAllowVote) {
+    if (this._checkAllowVote()) {
       for (let index = 0; index < this.questions.length; index++) {
         if (this.questions[index].voteChoice === undefined) {
           this.showAlertDialog("กรุณาตอบคำถามให้ครบทุกข้อ");
@@ -477,24 +440,7 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   public voteSupport(id) {
-    let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    let isAllowVote: boolean = false;
-
-    // มี whitelist
-    if (this.data.isAllow) {
-      isAllowVote = true;
-    }
-    if (!isAllowVote) {
-      if (this.data.post.type === 'member') {
-        if (!user.membership) {
-          this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
-          return;
-        }
-      } else {
-        isAllowVote = true;
-      }
-    }
-    if (isAllowVote) {
+    if (this._checkAllowVote()) {
       this.isLoading = true;
       this.voteFacade.voteSupport(id).then((res) => {
         if (res) {
@@ -532,23 +478,7 @@ export class DialogPostCrad extends AbstractPage {
 
   public unVoteSupport(id) {
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    let isAllowVote: boolean = false;
-
-    // มี whitelist
-    if (this.data.isAllow) {
-      isAllowVote = true;
-    }
-    if (!isAllowVote) {
-      if (this.data.post.type === 'member') {
-        if (!user.membership) {
-          this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
-          return;
-        }
-      } else {
-        isAllowVote = true;
-      }
-    }
-    if (isAllowVote) {
+    if (this._checkAllowVote()) {
       let index = this._findUserSupportIndex(user.id);
       let dialog = this.dialog.open(DialogAlert, {
         disableClose: false,
