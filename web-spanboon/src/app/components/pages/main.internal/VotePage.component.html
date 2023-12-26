@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <ng-container *ngIf="activeUrl['name'] === undefined">
+            <ng-container *ngIf="activeUrl['name'] === undefined && !isEmpty">
                 <ng-container *ngIf="!!model && !!model.pin">
                     <div class="header-content">
                         <p>ปักหมุด</p>
@@ -89,7 +89,7 @@
                     </div>
                 </ng-container>
 
-                <ng-container *ngIf="!!model && !!model.supporter">
+                <!-- <ng-container *ngIf="!!model && !!model.supporter">
                     <div class="header-content">
                         <p>ล่ารายชื่อ</p>
                         <span>ดูทั้งหมด</span>
@@ -111,7 +111,7 @@
                             </div>
                         </ng-template>
                     </div>
-                </ng-container>
+                </ng-container> -->
 
                 <ng-container *ngIf="!!model && !!model.closeDate">
                     <div class="header-content">
@@ -123,6 +123,30 @@
                         [ngStyle]="{'grid-template-columns': model.closeDate.length === 0 ? '1fr' : null}">
                         <ng-container *ngIf="model.closeDate.length > 0; else elseCloseLength">
                             <ng-container *ngFor="let data of model.closeDate">
+                                <card-content-vote #pinContent class="support-content-data" [model]="data"
+                                    [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                    [image]="data.coverPageURL"></card-content-vote>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #elseCloseLength>
+                            <div class="none-vote">
+                                <span>ไม่มีรายการใกล้ปิดโหวต</span>
+                            </div>
+                        </ng-template>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="!!model && !!model.closetSupport">
+                    <div class="header-content">
+                        <p>ใกล้ปิดล่ารายชื่อ</p>
+                        <span>ดูทั้งหมด</span>
+                    </div>
+                    <hr>
+                    <div class="wrapper-content"
+                        [ngStyle]="{'grid-template-columns': model.closetSupport.length === 0 ? '1fr' : null}">
+                        <ng-container *ngIf="model.closetSupport.length > 0; else elseCloseLength">
+                            <ng-container *ngFor="let data of model.closetSupport">
                                 <card-content-vote #pinContent class="support-content-data" [model]="data"
                                     [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
                                     (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
@@ -154,7 +178,19 @@
                         </div>
                     </ng-container>
                 </ng-container>
+            </ng-container>
 
+            <ng-container *ngIf="activeUrl['name'] === undefined && isEmpty">
+                <div class="header-content">
+                    <p>ไม่พบรายการโหวต</p>
+                </div>
+                <hr>
+                <div class="wrapper-content"
+                    [ngStyle]="{'grid-template-columns': model.pin.length === 0 ? '1fr' : null}">
+                    <div class="none-vote">
+                        <span>ไม่พบรายการโหวต</span>
+                    </div>
+                </div>
             </ng-container>
 
             <!-- <ng-container *ngIf="activeUrl['name'] === undefined">
@@ -175,105 +211,114 @@
             </ng-container> -->
 
             <ng-container *ngIf="activeUrl['name'] === 'my-vote'">
-                <ng-container *ngIf="!!voteData && !!voteData.myVote">
-                    <div class="header-content">
-                        <p>โหวตที่ฉันสร้าง</p>
-                        <span>ดูทั้งหมด</span>
-                    </div>
-                    <hr>
-                    <div class="wrapper-content"
-                        [ngStyle]="{'grid-template-columns': voteData.myVote.length === 0 ? '1fr' : null}">
-                        <ng-container *ngIf="voteData.myVote.length > 0; else elseMyVotesLength">
-                            <ng-container *ngFor="let data of voteData.myVote">
-                                <card-content-vote class="support-content-data" [model]="data" [title]="data.title"
-                                    (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                    [image]="data.coverPageURL"></card-content-vote>
-                            </ng-container>
-                        </ng-container>
-                        <ng-template #elseMyVotesLength>
-                            <div class="none-vote">
-                                <span>ไม่มีรายการโหวตที่ฉันสร้าง</span>
-                            </div>
-                        </ng-template>
+                <ng-container *ngIf="isEmpty; else elseMyVoteEmpty">
+                    <div class="vote-not-found">
+                        <img src="../../../../assets/img/icons/votepage/vote-not-found.svg">
+                        <span>{{isSearch ? 'ไม่พบโหวตที่เกี่ยวข้องกับ "'+ searchInputValue +'"' :
+                            'ไม่พบโหวตในขณะนี้'}}</span>
                     </div>
                 </ng-container>
+                <ng-template #elseMyVoteEmpty>
+                    <ng-container *ngIf="!!voteData && !!voteData.myVote">
+                        <div class="header-content">
+                            <p>โหวตที่ฉันสร้าง</p>
+                            <span>ดูทั้งหมด</span>
+                        </div>
+                        <hr>
+                        <div class="wrapper-content"
+                            [ngStyle]="{'grid-template-columns': voteData.myVote.length === 0 ? '1fr' : null}">
+                            <ng-container *ngIf="voteData.myVote.length > 0; else elseMyVotesLength">
+                                <ng-container *ngFor="let data of voteData.myVote">
+                                    <card-content-vote class="support-content-data" [model]="data" [title]="data.title"
+                                        (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                        [image]="data.coverPageURL"></card-content-vote>
+                                </ng-container>
+                            </ng-container>
+                            <ng-template #elseMyVotesLength>
+                                <div class="none-vote">
+                                    <span>ไม่มีรายการโหวตที่ฉันสร้าง</span>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </ng-container>
 
-                <ng-container *ngIf="!!voteData && !!voteData.myVoterSupport">
-                    <div class="header-content">
-                        <p>โหวตที่ฉันสร้างและเปิดล่ารายชื่ออยู่</p>
-                        <span>ดูทั้งหมด</span>
-                    </div>
-                    <hr>
-                    <div class="wrapper-content"
-                        [ngStyle]="{'grid-template-columns': voteData.myVoterSupport.length === 0 ? '1fr' : null}">
-                        <ng-container *ngIf="voteData.myVoterSupport.length > 0; else elseMyVoteSupportLength">
-                            <ng-container *ngFor="let data of voteData.myVoterSupport">
-                                <card-content-vote class="support-content-data" [model]="data" [title]="data.title"
-                                    (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                    [image]="data.coverPageURL"></card-content-vote>
+                    <ng-container *ngIf="!!voteData && !!voteData.myVoterSupport">
+                        <div class="header-content">
+                            <p>โหวตที่ฉันสร้างและเปิดล่ารายชื่ออยู่</p>
+                            <span>ดูทั้งหมด</span>
+                        </div>
+                        <hr>
+                        <div class="wrapper-content"
+                            [ngStyle]="{'grid-template-columns': voteData.myVoterSupport.length === 0 ? '1fr' : null}">
+                            <ng-container *ngIf="voteData.myVoterSupport.length > 0; else elseMyVoteSupportLength">
+                                <ng-container *ngFor="let data of voteData.myVoterSupport">
+                                    <card-content-vote class="support-content-data" [model]="data" [title]="data.title"
+                                        (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                        [image]="data.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
-                        </ng-container>
-                        <ng-template #elseMyVoteSupportLength>
-                            <div class="none-vote">
-                                <span>ไม่มีรายการโหวตที่ฉันสร้างและเปิดล่ารายชื่ออยู่</span>
-                            </div>
-                        </ng-template>
-                    </div>
-                </ng-container>
+                            <ng-template #elseMyVoteSupportLength>
+                                <div class="none-vote">
+                                    <span>ไม่มีรายการโหวตที่ฉันสร้างและเปิดล่ารายชื่ออยู่</span>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </ng-container>
 
-                <ng-container *ngIf="!!voteData && !!voteData.myVoted">
-                    <div class="header-content">
-                        <p>ที่ฉันเคยโหวต</p>
-                        <span>ดูทั้งหมด</span>
-                    </div>
-                    <hr>
-                    <div class="wrapper-content"
-                        [ngStyle]="{'grid-template-columns': voteData.myVoted.length === 0 ? '1fr' : null}">
-                        <ng-container *ngIf="voteData.myVoted.length > 0; else elseMyVotedLength">
-                            <ng-container *ngFor="let data of voteData.myVoted">
-                                <card-content-vote class="support-content-data" [model]="data.votingEvent"
-                                    [title]="data.votingEvent.title"
-                                    (openDialog)="checkOpenDialog = true; openDialogPost(data.votingEvent)"
-                                    (deleteVote)="deleteDataVote($event.votingEvent)"
-                                    (editVote)="editVote($event.votingEvent)"
-                                    [image]="data.votingEvent.coverPageURL"></card-content-vote>
+                    <ng-container *ngIf="!!voteData && !!voteData.myVoted">
+                        <div class="header-content">
+                            <p>ที่ฉันเคยโหวต</p>
+                            <span>ดูทั้งหมด</span>
+                        </div>
+                        <hr>
+                        <div class="wrapper-content"
+                            [ngStyle]="{'grid-template-columns': voteData.myVoted.length === 0 ? '1fr' : null}">
+                            <ng-container *ngIf="voteData.myVoted.length > 0; else elseMyVotedLength">
+                                <ng-container *ngFor="let data of voteData.myVoted">
+                                    <card-content-vote class="support-content-data" [model]="data.votingEvent"
+                                        [title]="data.votingEvent.title"
+                                        (openDialog)="checkOpenDialog = true; openDialogPost(data.votingEvent)"
+                                        (deleteVote)="deleteDataVote($event.votingEvent)"
+                                        (editVote)="editVote($event.votingEvent)"
+                                        [image]="data.votingEvent.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
-                        </ng-container>
-                        <ng-template #elseMyVotedLength>
-                            <div class="none-vote">
-                                <span>ไม่มีรายการที่ฉันเคยโหวต</span>
-                            </div>
-                        </ng-template>
-                    </div>
-                </ng-container>
+                            <ng-template #elseMyVotedLength>
+                                <div class="none-vote">
+                                    <span>ไม่มีรายการที่ฉันเคยโหวต</span>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </ng-container>
 
-                <ng-container *ngIf="!!voteData && !!voteData.mySupported">
-                    <div class="header-content">
-                        <p>ที่ฉันลงชื่อให้การสนับสนุน</p>
-                        <span>ดูทั้งหมด</span>
-                    </div>
-                    <hr>
-                    <div class="wrapper-content"
-                        [ngStyle]="{'grid-template-columns': voteData.mySupported.length === 0 ? '1fr' : null}">
-                        <ng-container *ngIf="voteData.mySupported.length > 0; else elseMySupportLength">
-                            <ng-container *ngFor="let data of voteData.mySupported">
-                                <card-content-vote class="support-content-data" [model]="data.votingEvent"
-                                    [title]="data.votingEvent.title"
-                                    (openDialog)="checkOpenDialog = true; openDialogPost(data.votingEvent)"
-                                    (deleteVote)="deleteDataVote($event.votingEvent)"
-                                    (editVote)="editVote($event.votingEvent)"
-                                    [image]="data.votingEvent.coverPageURL"></card-content-vote>
+                    <ng-container *ngIf="!!voteData && !!voteData.mySupported">
+                        <div class="header-content">
+                            <p>ที่ฉันลงชื่อให้การสนับสนุน</p>
+                            <span>ดูทั้งหมด</span>
+                        </div>
+                        <hr>
+                        <div class="wrapper-content"
+                            [ngStyle]="{'grid-template-columns': voteData.mySupported.length === 0 ? '1fr' : null}">
+                            <ng-container *ngIf="voteData.mySupported.length > 0; else elseMySupportLength">
+                                <ng-container *ngFor="let data of voteData.mySupported">
+                                    <card-content-vote class="support-content-data" [model]="data.votingEvent"
+                                        [title]="data.votingEvent.title"
+                                        (openDialog)="checkOpenDialog = true; openDialogPost(data.votingEvent)"
+                                        (deleteVote)="deleteDataVote($event.votingEvent)"
+                                        (editVote)="editVote($event.votingEvent)"
+                                        [image]="data.votingEvent.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
-                        </ng-container>
-                        <ng-template #elseMySupportLength>
-                            <div class="none-vote">
-                                <span>ไม่มีรายการที่ฉันลงชื่อให้การสนับสนุน</span>
-                            </div>
-                        </ng-template>
-                    </div>
-                </ng-container>
+                            <ng-template #elseMySupportLength>
+                                <div class="none-vote">
+                                    <span>ไม่มีรายการที่ฉันลงชื่อให้การสนับสนุน</span>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </ng-container>
+                </ng-template>
             </ng-container>
 
             <ng-container *ngIf="activeUrl['name'] === 'support'">
@@ -290,9 +335,9 @@
                             <p>ไม่พบโหวตล่ารายชื่อ</p>
                         </ng-template>
                     </ng-template>
-                    <span>ดูทั้งหมด</span>
+                    <span *ngIf="!isEmpty">ดูทั้งหมด</span>
                 </div>
-                <hr>
+                <hr *ngIf="!isEmpty">
                 <div class="wrapper-content">
                     <ng-container *ngFor="let data of voteData">
                         <ng-container *ngIf="data?.status === 'support'">
@@ -319,9 +364,9 @@
                             <p>ไม่พบโหวตที่เปิดอยู่</p>
                         </ng-template>
                     </ng-template>
-                    <span>ดูทั้งหมด</span>
+                    <span *ngIf="!isEmpty">ดูทั้งหมด</span>
                 </div>
-                <hr>
+                <hr *ngIf="!isEmpty">
                 <div class="wrapper-content">
                     <ng-container *ngFor="let data of voteData">
                         <ng-container *ngIf="data?.status === 'vote' && !data.closed">
@@ -348,9 +393,9 @@
                             <p>ไม่พบโหวตที่ปิดโหวตแล้ว</p>
                         </ng-template>
                     </ng-template>
-                    <span>ดูทั้งหมด</span>
+                    <span *ngIf="!isEmpty">ดูทั้งหมด</span>
                 </div>
-                <hr>
+                <hr *ngIf="!isEmpty">
                 <div class="wrapper-content">
                     <ng-container *ngFor="let data of voteData">
                         <ng-container *ngIf="data.closed">
@@ -362,7 +407,6 @@
                     </ng-container>
                 </div>
             </ng-container>
-
         </div>
     </div>
 </div>
