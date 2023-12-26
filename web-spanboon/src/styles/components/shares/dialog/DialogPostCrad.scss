@@ -229,10 +229,6 @@
         overflow: hidden;
 
         > .wrapper-image {
-          height: 512px;
-          overflow: hidden;
-          // aspect-ratio: 16/9;
-
           > .image-cover-blur {
             position: absolute;
             top: 0;
@@ -244,18 +240,25 @@
             background-size: cover;
             background-position: 50% 50%;
             filter: blur(8px);
+
+            @media (max-width: $small) {
+              display: none;
+            }
           }
 
           > .image-vote {
-            height: 100%;
             display: block;
             margin: 0 auto;
             position: relative;
             z-index: 1;
+            width: 80%;
+            aspect-ratio: 16/9;
+            min-height: 400px;
+            object-fit: cover;
 
             @media (max-width: $small) {
               width: 100%;
-              object-fit: cover;
+              min-height: unset;
             }
           }
         }
@@ -272,8 +275,13 @@
           align-items: center;
           justify-content: space-between;
 
+          @media (max-width: $medium) {
+            padding: 8px;
+          }
+
           > .wrapper-detail-vote {
             display: flex;
+            width: 100%;
 
             > .user-profile {
               width: 48px;
@@ -306,11 +314,23 @@
             }
 
             > .owner-name {
-              width: 75%;
+              width: 85%;
               display: flex;
               flex-direction: column;
               justify-content: center;
               margin-left: 15px;
+
+              @media (max-width: $lmedium) {
+                width: 80%;
+              }
+
+              @media (max-width: $medium) {
+                width: 75%;
+              }
+
+              @media (max-width: $small) {
+                width: 70%;
+              }
 
               > span {
                 @include font-size-9($font-head-500);
@@ -336,6 +356,7 @@
             align-items: center;
             justify-content: center;
             @include pointer;
+            flex: 0 0 auto;
           }
         }
       }
@@ -451,7 +472,7 @@
             }
 
             @media (max-width: $small) {
-              min-height: 300pt;
+              min-height: 200pt;
             }
           }
 

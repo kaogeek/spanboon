@@ -225,4 +225,8 @@ export class MenuProfile extends AbstractPage implements OnInit {
         event.stopPropagation();
         return;
     }
+
+    public clickMenu() {
+        this.dialog.closeAll();
+    }
 }

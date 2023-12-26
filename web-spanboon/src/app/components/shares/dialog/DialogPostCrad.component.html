@@ -32,7 +32,8 @@
                                     <span>{{user.firstName | slice:0:1}}</span>
                                 </ng-template>
                             </div>
-                            <ng-container *ngIf="!data.post.approved; else elseTemplate">
+                            <ng-container
+                                *ngIf="!data.post.approved && data.post.status !== 'close'; else elseTemplate">
                                 <div class="owner-name">
                                     <span>{{user.firstName !== undefined ? user.firstName : user.pageUsername}}</span>
                                     <mat-progress-bar mode="buffer" [bufferValue]="0" [value]="supportValue">

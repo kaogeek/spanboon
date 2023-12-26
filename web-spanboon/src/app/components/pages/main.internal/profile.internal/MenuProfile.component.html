@@ -52,7 +52,7 @@
                 </div>
             </div>
             <div class="list-setting">
-                <div class="setting" [class.active-link]="isActive1" (click)="getLinkProfile()">
+                <div class="setting" [class.active-link]="isActive1" (click)="getLinkProfile();clickMenu()">
                     <svg class="icon" id="social-media" xmlns="http://www.w3.org/2000/svg" width="19.257"
                         height="19.257" viewBox="0 0 19.257 19.257">
                         <g id="Group_403" data-name="Group 403" transform="translate(0 13.855)">
@@ -78,7 +78,7 @@
                         ไทมไลน์
                     </div>
                 </div>
-                <div class="setting" [class.active-link]="isActive2" (click)="settingProfile()">
+                <div class="setting" [class.active-link]="isActive2" (click)="settingProfile();clickMenu()">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16.334" height="16.773"
                         viewBox="0 0 16.334 16.773">
                         <g id="tools-and-utensils" transform="translate(-6.71)" opacity="0.34">
@@ -146,7 +146,7 @@
 <ng-template #elseUser>
     <div class="not-log">
         <ng-container *ngIf="isShowButton; else elseTemplate">
-            <svg class="profile" [routerLink]="'/login'" [routerLinkActive]="['active-link']"
+            <svg class="profile" [routerLink]="'/login'" [routerLinkActive]="['active-link']" (click)="clickMenu()"
                 [class.active-link-user]="isRegister()" id="user_3_" data-name="user (3)"
                 xmlns="http://www.w3.org/2000/svg" width="30.332" height="36.356" viewBox="0 0 30.332 36.356">
                 <path id="Path_136" data-name="Path 136"
@@ -158,7 +158,7 @@
             </svg>
         </ng-container>
         <ng-template #elseTemplate>
-            <button class="btn-login" [routerLink]="'/login'" [routerLinkActive]="['active-link']"
+            <button class="btn-login" [routerLink]="'/login'" [routerLinkActive]="['active-link']" (click)="clickMenu()"
                 [class.active-link-user]="isRegister()" id="user_3_"
                 data-name="user (3)">สมัครมาเป็นส่วนหนึ่งกับเรา</button>
         </ng-template>

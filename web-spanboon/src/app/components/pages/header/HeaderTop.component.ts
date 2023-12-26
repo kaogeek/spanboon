@@ -539,4 +539,8 @@ export class HeaderTop extends AbstractPage implements OnInit {
       this.isAbout = true;
     }
   }
+
+  public clickMenu(): void {
+    this.dialog.closeAll();
+  }
 }
