@@ -297,18 +297,34 @@ export class DialogPostCrad extends AbstractPage {
   onConfirm() { }
 
   public addOrRemoveActive(item, type, mode, index?, choiceIndex?) {
-    if (type === 'single') {
-      if (mode === 'remove') {
-        this.singleAns = undefined;
-        this.questions[index] = [];
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    let isAllowVote: boolean = false;
+    if (this.data.isAllow) {
+      isAllowVote = true;
+    }
+    if (!isAllowVote) {
+      if (this.data.post.type === 'member') {
+        if (!user.membership) {
+          return;
+        }
+      } else {
+        isAllowVote = true;
       }
     }
-    if (type === 'multi') {
-      if (mode === 'remove') {
-        item.active = false;
-        this.questions[index].voteChoice.splice(choiceIndex, 1);
-      } else {
-        item.active = true;
+    if (isAllowVote) {
+      if (type === 'single') {
+        if (mode === 'remove') {
+          this.singleAns = undefined;
+          this.questions[index] = [];
+        }
+      }
+      if (type === 'multi') {
+        if (mode === 'remove') {
+          item.active = false;
+          this.questions[index].voteChoice.splice(choiceIndex, 1);
+        } else {
+          item.active = true;
+        }
       }
     }
   }
@@ -319,21 +335,52 @@ export class DialogPostCrad extends AbstractPage {
       return;
     }
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    if (!this.data.isAllow) {
+    let isAllowVote: boolean = false;
+
+    // มี whitelist
+    if (this.data.isAllow) {
+      isAllowVote = true;
+    }
+    if (!isAllowVote) {
       if (this.data.post.type === 'member') {
         if (!user.membership) {
           this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
           return;
         }
+      } else {
+        isAllowVote = true;
       }
     }
-    if (type === 'single') {
-      if (choice._id === this.questions[index].voteChoice && this.questions[index].voteChoice[0].voteChoiceId) {
-        this.questions[index] = [];
-      } else {
+    if (isAllowVote) {
+      if (type === 'single') {
+        if (choice._id === this.questions[index].voteChoice && this.questions[index].voteChoice[0].voteChoiceId) {
+          this.questions[index] = [];
+        } else {
+          if (this.questions[index].voteChoice === undefined) {
+            this.questions[index] = {
+              active: choice.title,
+              type: question.type,
+              voteItemId: question._id,
+              voteChoice: [
+                {
+                  answer: choice.title,
+                  voteChoiceId: choice._id
+                }
+              ]
+            };
+          } else {
+            this.questions[index].active = choice.title;
+            this.questions[index].voteChoice = [
+              {
+                answer: choice.title,
+                voteChoiceId: choice._id
+              }
+            ];
+          }
+        }
+      } else if (type === 'multi') {
         if (this.questions[index].voteChoice === undefined) {
           this.questions[index] = {
-            active: choice.title,
             type: question.type,
             voteItemId: question._id,
             voteChoice: [
@@ -344,75 +391,69 @@ export class DialogPostCrad extends AbstractPage {
             ]
           };
         } else {
-          this.questions[index].active = choice.title;
-          this.questions[index].voteChoice = [
-            {
+          if (this.questions[index].voteChoice.length > 0) {
+            this.questions[index].voteChoice.push({
               answer: choice.title,
               voteChoiceId: choice._id
-            }
-          ];
-        }
-      }
-    } else if (type === 'multi') {
-      if (this.questions[index].voteChoice === undefined) {
-        this.questions[index] = {
-          type: question.type,
-          voteItemId: question._id,
-          voteChoice: [
-            {
+            });
+          } else {
+            this.questions[index].voteChoice.push({
               answer: choice.title,
               voteChoiceId: choice._id
-            }
-          ]
-        };
-      } else {
-        if (this.questions[index].voteChoice.length > 0) {
-          this.questions[index].voteChoice.push({
-            answer: choice.title,
-            voteChoiceId: choice._id
-          });
-        } else {
-          this.questions[index].voteChoice.push({
-            answer: choice.title,
-            voteChoiceId: choice._id
-          });
+            });
+          }
+          let data = this.questions[index].voteChoice.findIndex(x => x.answer === choice.title);
+          let array = this.questions[index].voteChoice.filter((value, i, self) =>
+            self.findIndex(item => item.answer === value.answer && item.voteChoiceId === value.voteChoiceId) === i
+          );
+          this.questions[index].voteChoice = array;
         }
-        let data = this.questions[index].voteChoice.findIndex(x => x.answer === choice.title);
-        let array = this.questions[index].voteChoice.filter((value, i, self) =>
-          self.findIndex(item => item.answer === value.answer && item.voteChoiceId === value.voteChoiceId) === i
-        );
-        this.questions[index].voteChoice = array;
       }
     }
   }
 
   public next() {
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    if (!this.data.isAllow) {
-      this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
-      return;
+    let isAllowVote: boolean = false;
+
+    // มี whitelist
+    if (this.data.isAllow) {
+      isAllowVote = true;
     }
-    for (let index = 0; index < this.questions.length; index++) {
-      if (this.questions[index].voteChoice === undefined) {
-        this.showAlertDialog("กรุณาตอบคำถามให้ครบทุกข้อ");
-        return
-      }
-    }
-    this.voteFacade.voting(this.data.post._id, this.questions).then((res) => {
-      if (res) {
-        this.voteSuccess = true;
-      }
-    }).catch((err) => {
-      console.log("err", err)
-      if (err) {
-        if (err.error.message === "You have been already voted.") {
-          this.showAlertDialog("คุณได้โหวตไปแล้ว");
-        }
-        if (err.error.message === "This vote only for membershipMFP, You are not membership.") {
+    if (!isAllowVote) {
+      if (this.data.post.type === 'member') {
+        if (!user.membership) {
           this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+          return;
+        }
+      } else {
+        isAllowVote = true;
+      }
+    }
+
+    if (isAllowVote) {
+      for (let index = 0; index < this.questions.length; index++) {
+        if (this.questions[index].voteChoice === undefined) {
+          this.showAlertDialog("กรุณาตอบคำถามให้ครบทุกข้อ");
+          return
         }
       }
-    });
+      this.voteFacade.voting(this.data.post._id, this.questions).then((res) => {
+        if (res) {
+          this.voteSuccess = true;
+        }
+      }).catch((err) => {
+        console.log("err", err)
+        if (err) {
+          if (err.error.message === "You have been already voted.") {
+            this.showAlertDialog("คุณได้โหวตไปแล้ว");
+          }
+          if (err.error.message === "This vote only for membershipMFP, You are not membership.") {
+            this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+          }
+        }
+      });
+    }
   }
 
   public checkLogin() {
@@ -437,86 +478,106 @@ export class DialogPostCrad extends AbstractPage {
 
   public voteSupport(id) {
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    if (!this.data.isAllow) {
+    let isAllowVote: boolean = false;
+
+    // มี whitelist
+    if (this.data.isAllow) {
+      isAllowVote = true;
+    }
+    if (!isAllowVote) {
       if (this.data.post.type === 'member') {
         if (!user.membership) {
           this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
           return;
         }
+      } else {
+        isAllowVote = true;
       }
     }
-    this.isLoading = true;
-    this.voteFacade.voteSupport(id).then((res) => {
-      if (res) {
-        if (this.data.support !== undefined) {
-          this.data.support.userSupport.push({
-            user: {
-              _id: res.userId,
-              imageURL: res.imageURL,
-              firstName: res.firstName,
-              displayName: res.displayName,
-              s3ImageURL: res.s3ImageURL,
-              username: res.username,
-            }
-          });
+    if (isAllowVote) {
+      this.isLoading = true;
+      this.voteFacade.voteSupport(id).then((res) => {
+        if (res) {
+          if (this.data.support !== undefined) {
+            this.data.support.userSupport.push({
+              user: {
+                _id: res.userId,
+                imageURL: res.imageURL,
+                firstName: res.firstName,
+                displayName: res.displayName,
+                s3ImageURL: res.s3ImageURL,
+                username: res.username,
+              }
+            });
+          }
+          this.isLoading = false;
+          this.data.post.countSupport++;
+          this.data.post.userSupport = true;;
+          this.showAlertDialog("คุณได้สนับสนุนโหวตนี้");
         }
-        this.isLoading = false;
-        this.data.post.countSupport++;
-        this.data.post.userSupport = true;;
-        this.showAlertDialog("คุณได้สนับสนุนโหวตนี้");
-      }
-    }).catch((err) => {
-      if (err) {
-        console.log("err", err);
-        this.isLoading = false;
-        if (err.error.message === "You have been supported.") {
-          this.showAlertDialog("คุณได้ทำการโหวตไปแล้ว");
+      }).catch((err) => {
+        if (err) {
+          console.log("err", err);
+          this.isLoading = false;
+          if (err.error.message === "You have been supported.") {
+            this.showAlertDialog("คุณได้ทำการโหวตไปแล้ว");
+          }
+          if (err.error.message === "This vote only for membershipMFP, You are not membership.") {
+            this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+          }
         }
-        if (err.error.message === "This vote only for membershipMFP, You are not membership.") {
-          this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
-        }
-      }
-    });
+      });
+    }
   }
 
   public unVoteSupport(id) {
     let user: any = JSON.parse(localStorage.getItem('pageUser'));
-    if (!this.data.isAllow) {
+    let isAllowVote: boolean = false;
+
+    // มี whitelist
+    if (this.data.isAllow) {
+      isAllowVote = true;
+    }
+    if (!isAllowVote) {
       if (this.data.post.type === 'member') {
         if (!user.membership) {
           this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
           return;
         }
+      } else {
+        isAllowVote = true;
       }
     }
-    let index = this._findUserSupportIndex(user.id);
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: false,
-      data: {
-        text: "คุณต้องการยกเลิกการสนับสนุนโหวตนี้หรือไม่",
-        bottomText2: 'ใช่',
-        bottomText1: 'ไม่',
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-      if (res) {
-        this.isLoading = true;
-        this.voteFacade.unVoteSupport(id).then((res) => {
-          this.data.post.countSupport--;
-          this.data.post.userSupport = false;
-          this.data.support.userSupport.splice(index, 1);
-          this.isLoading = false;
-        }).catch((err) => {
-          if (err) {
-            console.log("err", err);
+    if (isAllowVote) {
+      let index = this._findUserSupportIndex(user.id);
+      let dialog = this.dialog.open(DialogAlert, {
+        disableClose: false,
+        data: {
+          text: "คุณต้องการยกเลิกการสนับสนุนโหวตนี้หรือไม่",
+          bottomText2: 'ใช่',
+          bottomText1: 'ไม่',
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          this.isLoading = true;
+          this.voteFacade.unVoteSupport(id).then((res) => {
+            this.data.post.countSupport--;
+            this.data.post.userSupport = false;
+            this.data.support.userSupport.splice(index, 1);
             this.isLoading = false;
-            if (err.error.message === "Not found user support.") {
-              this.showAlertDialog("คุณยังไม่ได้ทำการสนับสนุนโหวตนี้");
+          }).catch((err) => {
+            if (err) {
+              console.log("err", err);
+              this.isLoading = false;
+              if (err.error.message === "Not found user support.") {
+                this.showAlertDialog("คุณยังไม่ได้ทำการสนับสนุนโหวตนี้");
+              }
             }
-          }
-        });
-      }
-    });
+          });
+        }
+      });
+    }
   }
 
   private _findUserSupportIndex(userId) {
