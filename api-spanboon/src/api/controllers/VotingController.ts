@@ -24,6 +24,7 @@ import moment from 'moment';
 import { Page } from '../models/Page';
 import { ObjectUtil } from '../../utils/ObjectUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
+import { S3Service } from '../services/S3Service';
 import {
     DEFAULT_MIN_SUPPORT,
     MIN_SUPPORT,
@@ -69,6 +70,7 @@ export class VotingController {
         private authenticationIdService:AuthenticationIdService,
         private inviteVoteService:InviteVoteService,
         private hashTagService:HashTagService,
+        private s3Service:S3Service,
         // private retrieveVoteService: RetrieveVoteService
     ) { }
 
@@ -4738,13 +4740,14 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Status should be support.', undefined);
             return res.status(400).send(errorResponse);
         }
+        const signUrl = await this.s3Service.s3signCloudFront(votingEventRequest.s3CoverPageURL);
 
         const votingEvent = new VotingEventModel();
         votingEvent.title = title;
         votingEvent.detail = detail;
         votingEvent.assetId = votingEventRequest.assetId;
         votingEvent.coverPageURL = coverImage;
-        votingEvent.s3CoverPageURL = votingEventRequest.s3CoverPageURL;
+        votingEvent.s3CoverPageURL = signUrl;
         // votingEvent.needed = needed;
         votingEvent.userId = userObjId;
         votingEvent.approved = approve;
@@ -5021,13 +5024,14 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Status should be support.', undefined);
             return res.status(400).send(errorResponse);
         }
+        const signUrl = await this.s3Service.s3signCloudFront(votingEventRequest.s3CoverPageURL);
 
         const votingEvent = new VotingEventModel();
         votingEvent.title = title;
         votingEvent.detail = detail;
         votingEvent.assetId = votingEventRequest.assetId;
         votingEvent.coverPageURL = coverImage;
-        votingEvent.s3CoverPageURL = votingEventRequest.s3CoverPageURL;
+        votingEvent.s3CoverPageURL = signUrl;
         // votingEvent.needed = needed;
         votingEvent.userId = userObjId;
         votingEvent.approved = approve;

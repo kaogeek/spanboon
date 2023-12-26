@@ -54,7 +54,6 @@ export class AssetService {
                 let s3Path = asset.userId + '/' + asset.fileName;
                 s3Path = FileUtil.appendFileType(s3Path, asset.mimeType);
                 const s3Result = await this.s3Service.imageUpload(s3Path, base64Data, asset.mimeType);
-
                 if (s3Result.path !== undefined) {
                     asset.s3FilePath = s3Path;
                 }
