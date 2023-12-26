@@ -519,7 +519,6 @@ export class AdminVotedController {
                             approved:true,
                             approveUsername:user.displayName,
                             approveDatetime:today,
-                            pin:false,
                             status: 'close'
                         }};  
                     await this.votingEventService.update(query,newValues);   

@@ -193,7 +193,6 @@ export class VotingController {
                                         {
                                             $project: {
                                                 _id: 1,
-                                                username: 1,
                                                 firstName: 1,
                                                 lastName: 1,
                                                 imageURL: 1,
@@ -486,7 +485,6 @@ export class VotingController {
                                         {
                                             $project: {
                                                 _id: 1,
-                                                username: 1,
                                                 firstName: 1,
                                                 lastName: 1,
                                                 imageURL: 1,
@@ -761,7 +759,6 @@ export class VotingController {
                                             {
                                                 $project: {
                                                     _id: 1,
-                                                    username: 1,
                                                     firstName: 1,
                                                     lastName: 1,
                                                     imageURL: 1,
@@ -801,7 +798,10 @@ export class VotingController {
                         $match:{
                             pin: true,
                             approved: true,
-                            status: 'vote',
+                            $or:[
+                                {status:{$eq:'vote'}},
+                                {status:{$eq:'close'}}
+                            ],
                             title:exp
                         }
                     },
@@ -998,7 +998,6 @@ export class VotingController {
                                             {
                                                 $project: {
                                                     _id: 1,
-                                                    username: 1,
                                                     firstName: 1,
                                                     lastName: 1,
                                                     imageURL: 1,
@@ -1228,8 +1227,7 @@ export class VotingController {
                                             {
                                                 $project: {
                                                     _id: 1,
-                                                    username: 1,
-                                                    firstName: 1,
+                                                        firstName: 1,
                                                     lastName: 1,
                                                     imageURL: 1,
                                                     s3ImageURL: 1
@@ -1346,6 +1344,7 @@ export class VotingController {
             );
         }
 
+        const today = moment().toDate();
         if(votingContentsRequest.closeVote === true) {
             let closetVoteValue = DEFAULT_CLOSET_VOTE;
             const configClosetVote = await this.configService.getConfig(CLOSET_VOTE);
@@ -1353,7 +1352,6 @@ export class VotingController {
                 closetVoteValue = parseInt(configClosetVote.value, 10);
             }
     
-            const today = moment().toDate();
             const closetValue = (24 * closetVoteValue) * 60 * 60 * 1000; // one day in milliseconds
             const dateNow = new Date(today.getTime() + closetValue);
             closeVote = await this.votingEventService.aggregate(
@@ -1467,8 +1465,7 @@ export class VotingController {
                                             {
                                                 $project: {
                                                     _id: 1,
-                                                    username: 1,
-                                                    firstName: 1,
+                                                        firstName: 1,
                                                     lastName: 1,
                                                     imageURL: 1,
                                                     s3ImageURL: 1
@@ -1730,8 +1727,7 @@ export class VotingController {
                                                         {
                                                             $project: {
                                                                 _id: 1,
-                                                                username: 1,
-                                                                firstName: 1,
+                                                                                firstName: 1,
                                                                 lastName: 1,
                                                                 imageURL: 1,
                                                                 s3ImageURL: 1
@@ -1874,6 +1870,248 @@ export class VotingController {
                 ]
             );
         }
+
+        // DEFAULT_CLOSET_SUPPORT,
+        // CLOSET_SUPPORT
+        let closetSupportAggr:any = [];
+        if(votingContentsRequest.closetSupport === true) {
+            let closetSupport = DEFAULT_CLOSET_SUPPORT;
+            const closetSupportConfig = await this.configService.getConfig(CLOSET_SUPPORT);
+
+            if(closetSupportConfig){
+                closetSupport = parseInt(closetSupportConfig.value, 10);
+            }
+            const closetsup = (24 * closetSupport) * 60 * 60 * 1000; // one day in milliseconds
+            const now = new Date(today.getTime() + closetsup);
+            closetSupportAggr = await this.votingEventService.aggregate(
+                [
+                    {
+                        $project:{
+                            _id: 1,
+                            createdDate: 1,
+                            title: 1,
+                            detail: 1,
+                            assertId: 1,
+                            coverPageURL: 1,
+                            s3CoverPageURL: 1,
+                            userId: 1,
+                            approved: 1,
+                            closed: 1,
+                            minSupport: 1,
+                            countSupport: 1,
+                            supportDaysRange: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
+                            endVoteDatetime: 1,
+                            approveDatetime: 1,
+                            approveUsername: 1,
+                            updateDatetime: 1,
+                            closeDate:1,
+                            status: 1,
+                            createAsPage: 1,
+                            type: 1,
+                            public: 1,
+                            hashTag:1,
+                            pin: 1,
+                            showVoterName: 1,
+                            showVoteResult: 1,
+                            voted:1,
+                            service:1,
+                            createPage: {
+                                $cond: [
+                                    {
+                                        $ne: ['$createAsPage', null]  // Check if 'showVoterName' is true
+                                    },
+                                    'Yes',
+                                    'No',
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $facet: {
+                            showVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'Yes'
+                                    },
+                                    
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Page',
+                                        let: { 'createAsPage': '$createAsPage' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$createAsPage', '$_id']
+                                                    }
+                                                },
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    name: 1,
+                                                    pageUsername: 1,
+                                                    isOfficial: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1,
+                                                    banned:1
+                                                }
+                                            }
+                                        ],
+                                        as: 'page'
+                                    }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$page'
+                                    }
+                                }
+                            ],
+                            notShowVoterName: [
+                                {
+                                    $match: {
+                                        createPage: 'No'
+                                    }
+                                },
+                                {
+                                    $lookup:{
+                                        from:'User',
+                                        let:{userId:'$userId'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$userId','$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                        firstName: 1,
+                                                    lastName: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1
+                                                }
+                                            }
+                                        ],
+                                        as:'user'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        path:'$user'
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields: {
+                            combinedResults: {
+                                $concatArrays: ['$showVoterName', '$notShowVoterName'],
+                            }
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$combinedResults',
+                        },
+                    },
+                    {
+                        $replaceRoot: {
+                            newRoot: '$combinedResults',
+                        },
+                    },
+                    {
+                        $match:{
+                            endSupportDatetime:{$gte:today,$lte:now},
+                            closed:false,
+                            status:'support',
+                            title:exp
+                        }
+                    },
+                    {
+                        $sort: {
+                            createdDate: -1
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:'UserSupport',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { userId: userObjId }
+                                }
+                            ],
+                            as:'userSupport'
+                        }
+                    },
+                    {
+                        $project: {
+                            _id:1,
+                            createdDate:1,
+                            title:1,
+                            detail:1,
+                            coverPageURL:1,
+                            s3CoverPageURL:1,
+                            userId:1,
+                            approved:1,
+                            closed:1,
+                            minSupport:1,
+                            countSupport:1,
+                            supportDaysRange: 1,
+                            startSupportDatetime: 1,
+                            endSupportDatetime: 1,
+                            voteDaysRange: 1,
+                            startVoteDatetime:1,
+                            endVoteDatetime: 1,
+                            closeDate:1,
+                            status:1,
+                            type:1,
+                            hashTag:1,
+                            pin:1,
+                            showVoterName:1,
+                            showVoteResult:1,
+                            voted:1,
+                            page:1,
+                            user:1,
+                            service:1,
+                            userSupport: {
+                                $cond:[
+                                    {
+                                        $gt:[{ $size :'$userSupport'}, 0]
+                                    },
+                                    true,
+                                    false
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $limit: take
+                    },
+                    {
+                        $skip: skips
+                    },
+                ]
+            );
+        }
         let hashTagCount = 0;
         if(hashTagVote !== undefined && hashTagVote.length > 0){
             for(const count of hashTagVote){
@@ -1894,6 +2132,7 @@ export class VotingController {
         result.supporter = supporter;
         result.closeDate = closeVote;
         result.hashTagVote = hashTagVote;
+        result.closetSupport = closetSupportAggr;
 
         const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', result,countRows[0].count);
         return res.status(200).send(successResponse);
@@ -1946,7 +2185,6 @@ export class VotingController {
                             {
                                 $project:{
                                     _id:1,
-                                    username:1,
                                     firstName:1,
                                     lastName:1,
                                     displayName:1,
@@ -2030,7 +2268,6 @@ export class VotingController {
                             {
                                 $project:{
                                     _id:1,
-                                    username:1,
                                     firstName:1,
                                     lastName:1,
                                     displayName:1,
@@ -2190,8 +2427,7 @@ export class VotingController {
                                             {
                                                 $project: {
                                                     _id: 1,
-                                                    username: 1,
-                                                    firstName: 1,
+                                                        firstName: 1,
                                                     lastName: 1,
                                                     imageURL: 1,
                                                     s3ImageURL: 1
@@ -2424,8 +2660,7 @@ export class VotingController {
                                             {
                                                 $project: {
                                                     _id: 1,
-                                                    username: 1,
-                                                    firstName: 1,
+                                                        firstName: 1,
                                                     lastName: 1,
                                                     imageURL: 1,
                                                     s3ImageURL: 1
@@ -2676,8 +2911,7 @@ export class VotingController {
                                                         {
                                                             $project: {
                                                                 _id: 1,
-                                                                username: 1,
-                                                                firstName: 1,
+                                                                                firstName: 1,
                                                                 lastName: 1,
                                                                 imageURL: 1,
                                                                 s3ImageURL: 1
@@ -2914,8 +3148,7 @@ export class VotingController {
                                                         {
                                                             $project: {
                                                                 _id: 1,
-                                                                username: 1,
-                                                                firstName: 1,
+                                                                                firstName: 1,
                                                                 lastName: 1,
                                                                 imageURL: 1,
                                                                 s3ImageURL: 1
@@ -3165,8 +3398,7 @@ export class VotingController {
                                                     {
                                                         $project: {
                                                             _id: 1,
-                                                            username: 1,
-                                                            firstName: 1,
+                                                                        firstName: 1,
                                                             lastName: 1,
                                                             imageURL: 1,
                                                             s3ImageURL: 1
@@ -3319,7 +3551,6 @@ export class VotingController {
                                         {
                                             $project: {
                                                 _id: 1,
-                                                username: 1,
                                                 firstName: 1,
                                                 lastName: 1,
                                                 imageURL: 1,
@@ -3576,7 +3807,6 @@ export class VotingController {
                                                     {
                                                         $project: {
                                                             _id: 1,
-                                                            username: 1,
                                                             firstName: 1,
                                                             lastName: 1,
                                                             imageURL: 1,
@@ -4147,7 +4377,6 @@ export class VotingController {
                         {
                             $project: {
                                 _id: 1,
-                                username: 1,
                                 displayName:1,
                                 firstName: 1,
                                 lastName: 1,

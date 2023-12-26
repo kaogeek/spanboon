@@ -16,8 +16,8 @@ export class VotingContentsRequest {
     public supporter: boolean;
     public closeVote: boolean;
     public hashTagVote: boolean;
-
     public myVoterSupport: boolean;
     public myVoted: boolean;
     public mySupported: boolean;
+    public closetSupport: boolean;
 }
