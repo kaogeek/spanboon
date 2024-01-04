@@ -253,12 +253,11 @@
             z-index: 1;
             width: 80%;
             aspect-ratio: 16/9;
-            min-height: 400px;
             object-fit: cover;
 
             @media (max-width: $small) {
               width: 100%;
-              min-height: unset;
+              aspect-ratio: 3/2;
             }
           }
         }
@@ -386,6 +385,10 @@
               width: 85% !important;
             }
           }
+
+          > p {
+            word-break: break-all;
+          }
         }
 
         > hr {
@@ -458,22 +461,7 @@
           }
 
           > img {
-            min-height: 500pt;
-            object-fit: cover;
-            aspect-ratio: 16/9;
             border-radius: 16px;
-
-            @media (max-width: $large) {
-              min-height: 450pt;
-            }
-
-            @media (max-width: $medium) {
-              min-height: 350pt;
-            }
-
-            @media (max-width: $small) {
-              min-height: 200pt;
-            }
           }
 
           > .title {

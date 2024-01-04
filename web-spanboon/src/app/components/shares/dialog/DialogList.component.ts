@@ -25,6 +25,8 @@ export class DialogList extends AbstractPage {
   public dialog: MatDialog;
   public apiBaseURL = environment.apiBaseURL;
 
+  public isShowVoterName: boolean;
+
   constructor(public dialogRef: MatDialogRef<DialogList>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     dialog: MatDialog, authenManager: AuthenManager, router: Router) {
@@ -34,6 +36,7 @@ export class DialogList extends AbstractPage {
   }
 
   public ngOnInit() {
+    this.isShowVoterName = this.data.showVoterName;
   }
 
   public onClose(): void {

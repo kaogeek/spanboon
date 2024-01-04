@@ -10,7 +10,7 @@
 </mat-menu>
 <div class="card-content-vote" (click)="clickDialog()">
     <div class="container-content">
-        <button *ngIf="userId === model.userId" mat-icon-button [matMenuTriggerFor]="menu" aria-label="icon-button"
+        <button *ngIf="userId === model.userId" mat-icon-button [matMenuTriggerFor]="menu"
             (click)="$event.stopPropagation()">
             <mat-icon>more_vert</mat-icon>
         </button>
@@ -41,7 +41,7 @@
         </ng-template>
         <div class="wrapper-owner-vote">
             <span>{{model.user !== undefined ? model.user.firstName : model.page.pageUsername}}</span>
-            <ng-container *ngIf="!model.closed; else elseClosed">
+            <ng-container *ngIf="!model.closed && model.endVoteDay >= 0; else elseClosed">
                 <span class="vote-time">
                     <span>{{model.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
                     <ng-container *ngIf="model.endVoteDay > 0">

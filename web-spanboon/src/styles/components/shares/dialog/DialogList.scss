@@ -92,6 +92,7 @@
           align-items: center;
 
           > span {
+            word-break: break-all;
             @include font-size-9($font-head-100);
           }
         }
