@@ -129,7 +129,6 @@ export class VotePage extends AbstractPage implements OnInit {
               this.openDialogPost(data);
             }
           }
-
         });
       });
   }

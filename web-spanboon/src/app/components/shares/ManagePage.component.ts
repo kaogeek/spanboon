@@ -24,7 +24,7 @@ import {
   UserAccessFacade,
 } from "../../services/services";
 import { AbstractPage } from "../pages/AbstractPage";
-import { Router, NavigationExtras } from "@angular/router";
+import { Router, NavigationExtras, NavigationEnd, ActivatedRoute } from "@angular/router";
 import { DialogCreatePage } from "./dialog/DialogCreatePage.component";
 import { MESSAGE } from "../../../custom/variable";
 import { DialogAlert } from "./dialog/DialogAlert.component";
@@ -32,6 +32,8 @@ import { environment } from "src/environments/environment";
 import { TwitterService } from "../../services/services";
 import { PageSocialTW, PageSoialFB } from "../../models/models";
 import { DialogListFacebook } from "./dialog/DialogListFacebook.component";
+import { filter, takeUntil } from "rxjs/operators";
+import { Subject } from "rxjs";
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
 declare const window: any;
@@ -87,7 +89,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     observManager: ObservableManager,
     userAccessFacade: UserAccessFacade,
     twitterService: TwitterService,
-    _ngZone: NgZone
+    _ngZone: NgZone,
   ) {
     super(null, authenManager, dialog, router);
     this.pageUserInfo = pageUserInfo;
@@ -98,6 +100,17 @@ export class ManagePage extends AbstractPage implements OnInit {
     this.dialog = dialog;
     this.twitterService = twitterService;
     this._ngZone = _ngZone;
+
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      if (this.drawer.opened) {
+        this.drawer.close();
+        if (this.router.url === "/vote") {
+          this.drawer.open();
+        }
+      }
+    });
 
     this.observManager.subscribe("authen.createPage", (data: any) => {
       this.searchAllPage();
@@ -126,19 +139,6 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
   public isLogin(): boolean {
     let user = this.authenManager.getCurrentUser();
-    /* setTimeout(() =>{
-      if(user.isSyncPage !== false && user.isSyncPage !== true){
-        let dialog = this.dialog.open(DialogIsSyncPage, {
-          disableClose: true,
-          data: {
-            title:"สร้างเพจของคุณโดยการเชื่อมแพลตฟอร์ม",
-            bottomText2: MESSAGE.TEXT_BUTTON_SKIP,
-            bottomColorText2: "black",
-            btDisplay1: "none",
-          },
-        }); 
-      }
-    },5000); */
     return user !== undefined && user !== null;
   }
 
@@ -399,6 +399,7 @@ export class ManagePage extends AbstractPage implements OnInit {
 
   public clickMenu() {
     this.hideScroll();
+    this.dialog.closeAll();
   }
 
   public hideScroll() {

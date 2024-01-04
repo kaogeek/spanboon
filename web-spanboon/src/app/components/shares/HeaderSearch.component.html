@@ -9,8 +9,7 @@
     <div class="search">
         <div class="wrapper-search">
             <label #buttonSearch class="material-icons icon-search-out" matRipple [matRippleCentered]="'centered'"
-                [matTooltip]="configCountdown" for="searchInput" (click)="searchShow()"
-                [ngStyle]="{'opacity': !SearchShow ? '1' : '0'}">
+                for="searchInput" (click)="searchShow()" [ngStyle]="{'opacity': !SearchShow ? '1' : '0'}">
                 search
             </label>
             <div class="home-back-left" *ngIf="SearchShow" matRipple [matRippleCentered]="'centered'"

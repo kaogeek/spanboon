@@ -37,7 +37,7 @@
                 <ng-container *ngIf="resListPage; else elseListTemplate">
                     <div class="box-list-page">
                         <ng-container *ngFor="let item of resListPage">
-                            <div class="wrapper-list-page" *ngIf="item.page" (click)="drawer.toggle()">
+                            <div class="wrapper-list-page" *ngIf="item.page" (click)="drawer.close()">
                                 <ng-container>
                                     <div class="list-page" (click)="nextPage(item)">
                                         <ng-container *ngIf="!!item.page.signURL || !!item.page.imageURL; else elseImg">
