@@ -18,6 +18,7 @@ import { SearchFilter } from 'src/app/models/SearchFilter';
 import { DialogCreateVote } from '../../shares/dialog/DialogCreateVote.component';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
+import { SeoService } from 'src/app/services/SeoService.service';
 
 const PAGE_NAME: string = 'vote';
 @Component({
@@ -98,7 +99,8 @@ export class VotePage extends AbstractPage implements OnInit {
     _ngZone: NgZone,
     dialog: MatDialog,
     voteFacade: VoteEventFacade,
-    private activeRoute: ActivatedRoute
+    private activeRoute: ActivatedRoute,
+    private seoService: SeoService,
   ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
@@ -129,6 +131,8 @@ export class VotePage extends AbstractPage implements OnInit {
               this.openDialogPost(data);
             }
           }
+
+          this.seoService.updateTitle("ก้าวไกลโหวต");
         });
       });
   }
@@ -482,6 +486,8 @@ export class VotePage extends AbstractPage implements OnInit {
               this.router.navigate([this.router.url + '/event/' + $event._id]);
             } else if (this.activeUrl['name'] === 'result') {
               this.router.navigate([this.router.url.replace('/result', '/event/' + $event._id)]);
+            } else if (this.activeUrl['name'] === 'my-vote') {
+              this.router.navigate([this.router.url.replace('/my-vote', '/event/' + $event._id)]);
             }
             const dialogRef = this.dialog.open(DialogPostCrad, {
               backdropClass: 'backdrop-overlay',
