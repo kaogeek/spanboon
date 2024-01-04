@@ -35,8 +35,7 @@
 
     > .image-content-vote {
       width: 100%;
-      height: 130pt;
-      aspect-ratio: 16/9;
+      aspect-ratio: 3/2;
       object-fit: cover;
       @include font-size-9($font-head-500);
 
@@ -116,6 +115,7 @@
 
   .owner-post {
     padding: 5px 10px 0 10px;
+    flex: 1 1 0;
 
     > .owner-name {
       @include font-size-9($font-head-500);
@@ -131,8 +131,6 @@
   }
 
   > .bottom-vote {
-    display: flex;
-
     > .type-vote {
       display: flex;
       align-items: center;

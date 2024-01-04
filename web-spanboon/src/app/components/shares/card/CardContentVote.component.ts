@@ -40,13 +40,13 @@ export class CardContentVote implements OnInit {
         let user = JSON.parse(localStorage.getItem('pageUser'));
         this.userId = !!user ? user.id : undefined;
         if (this.model.status === 'support') {
-            this.model.endVoteDay = this._calculateDate(this.model.startSupportDatetime, this.model.endSupportDatetime, true);
-            this.model.endVoteHour = this._calculateDate(this.model.startSupportDatetime, this.model.endSupportDatetime, false);
-            this.model.endVoteMinute = this._calculateDate(this.model.startSupportDatetime, this.model.endSupportDatetime, false, true);
+            this.model.endVoteDay = this._calculateDate(this.model.endSupportDatetime, true);
+            this.model.endVoteHour = this._calculateDate(this.model.endSupportDatetime, false);
+            this.model.endVoteMinute = this._calculateDate(this.model.endSupportDatetime, false, true);
         } else {
-            this.model.endVoteDay = this._calculateDate(this.model.startVoteDatetime, this.model.endVoteDatetime, true);
-            this.model.endVoteHour = this._calculateDate(this.model.startVoteDatetime, this.model.endVoteDatetime, false);
-            this.model.endVoteMinute = this._calculateDate(this.model.startVoteDatetime, this.model.endVoteDatetime, false, true);
+            this.model.endVoteDay = this._calculateDate(this.model.endVoteDatetime, true);
+            this.model.endVoteHour = this._calculateDate(this.model.endVoteDatetime, false);
+            this.model.endVoteMinute = this._calculateDate(this.model.endVoteDatetime, false, true);
         }
     }
     public clickDialog(itempost?) {
@@ -61,9 +61,9 @@ export class CardContentVote implements OnInit {
         this.editVote.emit(this.model);
     }
 
-    private _calculateDate(start, end, isDay, isMinute?) {
+    private _calculateDate(end, isDay, isMinute?) {
         var countDownDate = new Date(end).getTime();
-        var now = new Date(start).getTime();
+        var now = new Date().getTime();
         var distance = countDownDate - now;
         var days = Math.floor(distance / (1000 * 60 * 60 * 24));
         var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));

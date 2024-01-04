@@ -9,7 +9,7 @@
         <div class="list-content">
             <ng-container *ngFor="let item of data.model">
                 <div class="list">
-                    <div class="user">
+                    <div class="user" *ngIf="isShowVoterName">
                         <ng-container *ngIf="!!item!.user!.imageURL; else elseImageUser">
                             <img [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
                         </ng-container>
@@ -18,7 +18,7 @@
                         </ng-template>
                         <span [innerHTML]="item.user.firstName + ' ' + item.user.lastName"></span>
                     </div>
-                    <div class="content">
+                    <div class="content" [ngStyle]="{'margin-top': isShowVoterName ? '10px' : '0'}">
                         <span>{{item.answer}}</span>
                     </div>
                 </div>

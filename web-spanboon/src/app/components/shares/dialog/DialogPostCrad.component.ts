@@ -550,6 +550,7 @@ export class DialogPostCrad extends AbstractPage {
           disableClose: true,
           data: {
             model: res,
+            showVoterName: this.data.post.showVoterName,
           }
         });
         dialog.afterClosed().subscribe((res) => {
