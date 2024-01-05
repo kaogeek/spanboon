@@ -244,8 +244,8 @@ export class AdminVotedController {
                 startVoteDatetime: votingEventRequest.startVoteDatetime,
                 endVoteDatetime:   votingEventRequest.endVoteDatetime, 
 
-                showVoterName: votingEventRequest.showVoterName ? votingEventRequest.showVoterName : voteObj.showVoterName,
-                showVoteResult: votingEventRequest.showVoteResult ? votingEventRequest.showVoteResult : voteObj.showVoteResult,
+                showVoterName: votingEventRequest.showVoterName,
+                showVoteResult: votingEventRequest.showVoteResult,
             }
         };
 
@@ -278,7 +278,10 @@ export class AdminVotedController {
                     await this.assetService.delete({_id:voteItem.assetId});
                 }
                 const voteChoiceList = await this.voteChoiceService.findOne({voteItemId:voteItem.id});
-                if(voteChoiceList.assetId !== undefined) {
+                if(
+                   voteChoiceList !== undefined && 
+                   voteChoiceList.assetId !== undefined
+                ) {
                     await this.assetService.delete({_id:voteChoiceList.assetId});
                 }
             }
@@ -507,6 +510,7 @@ export class AdminVotedController {
         if(voteAggs.length > 0){
             for(const vote of voteAggs){
                 if(
+                    vote.status !== 'support' &&
                     vote.closed !== true && 
                     vote.endVoteDatetime !== null &&
                     today.getTime() > vote.endVoteDatetime.getTime()
