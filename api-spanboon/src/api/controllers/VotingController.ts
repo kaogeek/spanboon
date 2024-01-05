@@ -3646,8 +3646,9 @@ export class VotingController {
         const closetValue = (24 * closetVoteValue) * 60 * 60 * 1000; // one day in milliseconds
         const dateNow = new Date(today.getTime() + closetValue);
         for(const closetVote of voteEventAggr) {
-            if (dateNow.getTime() > closetVote.endVoteDatetime.getTime() 
-                && closetVote.closed === false
+            if (closetVote.endVoteDatetime !== null && 
+                dateNow.getTime() > closetVote.endVoteDatetime.getTime() &&
+                closetVote.closed === false
             ) {
                 response.push(closetVote);
             } else {

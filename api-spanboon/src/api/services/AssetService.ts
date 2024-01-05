@@ -46,9 +46,8 @@ export class AssetService {
     // create asset
     public async create(asset: Asset): Promise<Asset> {
         // s3 upload by cofig
-        const assetUploadToS3 = this._isUploadToS3();
-
-        if (assetUploadToS3) {
+        const assetUploadToS3 = await this._isUploadToS3();
+        if (assetUploadToS3 === true) {
             try {
                 const base64Data = Buffer.from(asset.data, 'base64');
                 let s3Path = asset.userId + '/' + asset.fileName;
@@ -234,7 +233,6 @@ export class AssetService {
                 assetUploadToS3 = (assetUploadToS3Cfg.value.toUpperCase() === 'TRUE');
             }
         }
-
         return assetUploadToS3;
     }
 }
