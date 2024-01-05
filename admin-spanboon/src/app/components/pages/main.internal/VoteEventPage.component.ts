@@ -19,7 +19,7 @@ import { VoteEventFacade } from '../../../services/facade/VoteEventFacade.servic
 
 const PAGE_NAME: string = "vote";
 
-const SEARCH_LIMIT: number = 10;
+const SEARCH_LIMIT: number = 20;
 const SEARCH_OFFSET: number = 0;
 
 
@@ -44,6 +44,10 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     public valueShowName: boolean = false;
     public valueShowResult: boolean = false;
     public valueStatus: any;
+    public valueStartSupport: any;
+    public valueEndSupport: any;
+    public valueStartVote: any;
+    public valueEndVote: any;
     public _id: any;
     public listStatus: any[] = ['vote', 'support'];
     constructor(voteEventFacade: VoteEventFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
@@ -105,15 +109,24 @@ export class VoteEventPage extends AbstractPage implements OnInit {
             isComment: false,
             isBack: false
         };
-        this.setFields();
+        this._setFields();
 
     }
 
     public ngOnInit() {
     }
 
-    private setFields(): void {
-
+    private _setFields(): void {
+        this.valueShowName = undefined;
+        this.valueShowResult = undefined;
+        this.valuePin = undefined;
+        this.valueApproved = undefined;
+        this.valueClosed = undefined;
+        this.valueStatus = undefined;
+        this.valueStartSupport = undefined;
+        this.valueEndSupport = undefined;
+        this.valueStartVote = undefined;
+        this.valueEndVote = undefined;
     }
     public clickCloseDrawer(): void {
         this.drawer.toggle();
@@ -127,6 +140,10 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         this.valuePin = data.pin;
         this.valueShowName = data.showVoterName;
         this.valueShowResult = data.showVoteResult;
+        this.valueStartSupport = data.startSupportDatetime;
+        this.valueEndSupport = data.endSupportDatetime;
+        this.valueStartVote = data.startVoteDatetime;
+        this.valueEndVote = data.endVoteDatetime;
         this.drawer.toggle();
     }
 
@@ -139,14 +156,19 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         result.showVoterName = this.valueShowName;
         result.showVoteResult = this.valueShowResult;
 
+        if (!!this.valueStartVote && !!this.valueEndVote) {
+            result.startSupportDatetime = this.valueStartSupport;
+            result.endSupportDatetime = this.valueEndSupport;
+            result.startVoteDatetime = this.valueStartVote;
+            result.endVoteDatetime = this.valueEndVote;
+        } else {
+            result.startSupportDatetime = this.valueStartSupport;
+            result.endSupportDatetime = this.valueEndSupport;
+        }
+
         this.voteEventFacade.edit(this._id, result).then((res) => {
             this.table.searchData();
-            this.valueShowName = undefined;
-            this.valueShowResult = undefined;
-            this.valuePin = undefined;
-            this.valueApproved = undefined;
-            this.valueClosed = undefined;
-            this.valueStatus = undefined;
+            this._setFields();
             this.edit = false;
             this.drawer.toggle();
         });
@@ -208,5 +230,23 @@ export class VoteEventPage extends AbstractPage implements OnInit {
                 });
             }
         });
+    }
+
+    public saveDate(event: any, type: any, mode): void {
+        const inputDate = new Date(event.value);
+        const isoDateString = inputDate.toISOString();
+        if (type === 'start') {
+            if (mode === 'support') {
+                this.valueStartSupport = isoDateString;
+            } else {
+                this.valueStartVote = isoDateString;
+            }
+        } else {
+            if (mode === 'support') {
+                this.valueEndSupport = isoDateString;
+            } else {
+                this.valueEndVote = isoDateString;
+            }
+        }
     }
 }
