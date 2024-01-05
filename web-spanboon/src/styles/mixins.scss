@@ -6,93 +6,101 @@
  */
 
 @mixin text-limit() {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 @mixin pointer {
-    cursor: pointer;
-    -webkit-user-select: none;
-    /* Safari 3.1+ */
-    -moz-user-select: none;
-    /* Firefox 2+ */
-    -ms-user-select: none;
-    /* IE 10+ */
-    user-select: none;
-    /* Standard syntax */
+  cursor: pointer;
+  -webkit-user-select: none;
+  /* Safari 3.1+ */
+  -moz-user-select: none;
+  /* Firefox 2+ */
+  -ms-user-select: none;
+  /* IE 10+ */
+  user-select: none;
+  /* Standard syntax */
 }
 
 // 1.font
+@mixin font-size-12($font-family) {
+  font-size: $font-size-7 + $font-size-10;
+  font-family: $font-family;
+}
+
 @mixin font-size-11($font-family) {
-    font-size: $font-size-based;
-    font-family: $font-family;
+  font-size: $font-size-based;
+  font-family: $font-family;
 }
 
 @mixin font-size-10($font-family) {
-    font-size: $font-size-based + $font-size-10;
-    font-family: $font-family;
+  font-size: $font-size-based + $font-size-10;
+  font-family: $font-family;
 }
 
 @mixin font-size-9($font-family) {
-    font-size: $font-size-based + $font-size-9;
-    font-family: $font-family;
+  font-size: $font-size-based + $font-size-9;
+  font-family: $font-family;
 }
 
 @mixin font-size-8($font-family) {
-    font-size: $font-size-based + $font-size-8;
-    font-family: $font-family;
+  font-size: $font-size-based + $font-size-8;
+  font-family: $font-family;
 }
 
 @mixin font-size-7($font-family) {
-    font-size: $font-size-based + $font-size-7;
-    font-family: $font-family;
+  font-size: $font-size-based + $font-size-7;
+  font-family: $font-family;
 }
 
 @mixin font-size-6($font-family) {
-    font-size: $font-size-based + $font-size-6;
-    font-family: $font-family;
+  font-size: $font-size-based + $font-size-6;
+  font-family: $font-family;
 }
 
 @mixin font-size-5($font-family) {
-    font-size: $font-size-based + $font-size-5;
-    font-family: $font-family;
+  font-size: $font-size-based + $font-size-5;
+  font-family: $font-family;
 }
 
 @mixin font-size-4($font-family) {
-    font-size: $font-size-based + $font-size-4;
-    font-family: $font-family;
+  font-size: $font-size-based + $font-size-4;
+  font-family: $font-family;
 }
 
 @mixin font-size-3($font-family) {
-    font-size: $font-size-based + $font-size-3;
-    font-family: $font-family;
+  font-size: $font-size-based + $font-size-3;
+  font-family: $font-family;
 }
 
 @mixin font-size-2($font-family) {
-    font-size: $font-size-based + $font-size-2;
-    font-family: $font-family;
+  font-size: $font-size-based + $font-size-2;
+  font-family: $font-family;
 }
 
 @mixin font-size-1($font-family) {
-    font-size: $font-size-based + $font-size-1;
-    font-family: $font-family;
+  font-size: $font-size-based + $font-size-1;
+  font-family: $font-family;
 }
 
-@mixin newcon-container($newcon-container-height: 500pt, $newcon-container-bg-color: $bg-color1) {
-    background-color: $newcon-container-bg-color;
-    width: calc(100% - #{$newcon-container-padding}* 2);
-    height: $newcon-container-height;
-    padding: $newcon-container-padding;
+@mixin newcon-container(
+  $newcon-container-height: 500pt,
+  $newcon-container-bg-color: $bg-color1
+) {
+  background-color: $newcon-container-bg-color;
+  width: calc(100% - #{$newcon-container-padding}* 2);
+  height: $newcon-container-height;
+  padding: $newcon-container-padding;
 }
 
 @mixin newcon-header {
-    padding-bottom: $newcon-header-padding;
+  padding-bottom: $newcon-header-padding;
 }
 
 @mixin limit-text-length($line) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: $line; /* number of lines to show */
-    -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $line; /* number of lines to show */
+  -webkit-box-orient: vertical;
 }

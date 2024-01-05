@@ -29,6 +29,7 @@ export class CardContentVote implements OnInit {
     public editVote: EventEmitter<any> = new EventEmitter();
 
     public userId: any;
+    public supportValue: number = 0;
     public apiBaseURL = environment.apiBaseURL;
     private authenManager: AuthenManager;
 
@@ -37,6 +38,7 @@ export class CardContentVote implements OnInit {
     }
 
     ngOnInit(): void {
+        this.supportValue = this._calculatePercentage();
         let user = JSON.parse(localStorage.getItem('pageUser'));
         this.userId = !!user ? user.id : undefined;
         if (this.model.status === 'support') {
@@ -70,5 +72,11 @@ export class CardContentVote implements OnInit {
         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
 
         return isDay ? days : (isMinute ? minutes : hours);
+    }
+
+    private _calculatePercentage(): number {
+        let min = this.model.minSupport;
+        let value = this.model.countSupport;
+        return (100 * value) / min;
     }
 }
