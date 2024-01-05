@@ -198,20 +198,22 @@
             <ng-container *ngIf="typeQuestion !== 'settings' && typeQuestion !== 'thanks'">
                 <span class="title">คำถามที่ {{indexPage+1}} ({{typeQuestion === 'single' ? 'Checkbox' : (typeQuestion
                     === 'multi' ? 'Multiple' : 'Textbox')}})</span>
-                <div class="image" [ngClass]="{'none-image': !listQuestion[indexPage]?.coverPageURLItem}"
+                <div class="image"
+                    [ngClass]="{'none-image': !listQuestion[indexPage]?.coverPageURL && !listQuestion[indexPage]?.coverPageURLItem}"
                     (click)="fileInput.click()">
-                    <ng-container *ngIf="!listQuestion[indexPage]?.coverPageURLItem else elseImageText">
+                    <ng-container
+                        *ngIf="!listQuestion[indexPage]?.coverPageURL && !listQuestion[indexPage]?.coverPageURLItem else elseImageText">
                         <img src="../../../../assets/img/icons/votepage/add-photo.svg">
                         <span>อัพโหลดรูปหน้าปก</span>
                     </ng-container>
                     <ng-template #elseImageText>
-                        <ng-container *ngIf="listQuestion[indexPage].coverPageURLItem; else elseTextCoverPage">
+                        <ng-container *ngIf="!!listQuestion[indexPage]!.coverPageURL; else elseTextCoverPage">
                             <img class="data-image"
-                                [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURLItem + '/image'">
+                                [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURL + '/image'">
                         </ng-container>
                         <ng-template #elseTextCoverPage>
                             <img class="data-image"
-                                [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURL + '/image'">
+                                [src]="apiBaseURL + listQuestion[indexPage]?.coverPageURLItem + '/image'">
                         </ng-template>
                     </ng-template>
                     <div class="image-upload">
@@ -235,7 +237,7 @@
                                 <input id="answerSingle" name="answer" type="text"
                                     placeholder="{{index+1}}. ใส่ตัวเลือก" value="" (input)="onType()">
                                 <div class="image"
-                                    [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURLItem === null}"
+                                    [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURL === null}"
                                     (click)="fileInput.click()">
                                     <ng-container
                                         *ngIf="listQuestion[indexPage]?.voteChoice[index]?.coverPageURL === null else elseImageChoiceSingle">

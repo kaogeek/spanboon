@@ -318,9 +318,9 @@ export class DialogCreateVote extends AbstractPage {
         ordering: this.indexQuestion,
         titleItem: '',
         typeChoice: type,
-        assetIdItem: null,
-        coverPageURLItem: null,
-        s3CoverPageURLItem: null,
+        assetId: null,
+        coverPageURL: null,
+        s3CoverPageURL: null,
         voteChoice: type !== 'text' ? [
           {
             title: '',
@@ -830,9 +830,15 @@ export class DialogCreateVote extends AbstractPage {
         if (type === 'question') {
           this.voteFacade.upload(temp).then((res: any) => {
             if (res) {
-              this.listQuestion[this.indexPage].assetIdItem = res.data.id;
-              this.listQuestion[this.indexPage].coverPageURLItem = '/file/' + res.data.id;
-              this.listQuestion[this.indexPage].s3CoverPageURLItem = res.data.s3FilePath;
+              if (this.data.edit) {
+                this.listQuestion[this.indexPage].assetId = res.data.id;
+                this.listQuestion[this.indexPage].coverPageURL = '/file/' + res.data.id;
+                this.listQuestion[this.indexPage].s3CoverPageURL = res.data.s3FilePath;
+              } else {
+                this.listQuestion[this.indexPage].assetIdItem = res.data.id;
+                this.listQuestion[this.indexPage].coverPageURLItem = '/file/' + res.data.id;
+                this.listQuestion[this.indexPage].s3CoverPageURLItem = res.data.s3FilePath;
+              }
               this.isLoading = false;
             }
           }).catch((err: any) => {

@@ -7,7 +7,7 @@
 
 import { Component, Inject, EventEmitter, Input } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, ThemePalette } from '@angular/material';
-import { AuthenManager, PostFacade, PostCommentFacade, PostActionService, VoteEventFacade } from '../../../services/services';
+import { AuthenManager, PostFacade, PostCommentFacade, PostActionService, VoteEventFacade, SeoService } from '../../../services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FileHandle } from '../directive/DragAndDrop.directive';
@@ -78,6 +78,7 @@ export class DialogPostCrad extends AbstractPage {
     postFacade: PostFacade,
     voteFacade: VoteEventFacade,
     private activeRoute: ActivatedRoute,
+    private seoService: SeoService,
     dialog: MatDialog, authenManager: AuthenManager, router: Router) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
@@ -96,6 +97,7 @@ export class DialogPostCrad extends AbstractPage {
       this.showLoading = false
     }, 1500);
     if (this.data.vote) {
+      this.seoService.updateTitle(this.data.post.title);
       this._getVotedOwn(this.data.post._id);
       this.supportValue = this.calculatePercentage();
       if (this.data.support !== undefined) {
@@ -412,7 +414,10 @@ export class DialogPostCrad extends AbstractPage {
             this.showAlertDialog("คุณได้โหวตไปแล้ว");
           }
           if (err.error.message === "This vote only for membershipMFP, You are not membership.") {
-            this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+            this.showDialogEngagementMember("โหวตได้เฉพาะสมาชิกพรรคเท่านั้น", "vote");
+          }
+          if (err.error.message === "Cannot Vote this vote status is close.") {
+            this.showAlertDialog("โหวตนี้ถูกปิดแล้วคุณไม่สามารถโหวตได้", "vote");
           }
         }
       });
@@ -550,6 +555,7 @@ export class DialogPostCrad extends AbstractPage {
           disableClose: true,
           data: {
             model: res,
+            showVoterName: this.data.post.showVoterName,
           }
         });
         dialog.afterClosed().subscribe((res) => {
