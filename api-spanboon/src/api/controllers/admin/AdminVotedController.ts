@@ -42,20 +42,14 @@ export class AdminVotedController {
         if (filter === undefined) {
             filter = new SearchFilter();
         }
-        const take = filter.limit ? filter.limit: 10;
-        const offset = filter.offset ? filter.offset: 0;
+        // const take = filter.limit ? filter.limit: 10;
+        // const offset = filter.offset ? filter.offset: 0;
         const voteEventAggr = await this.votingEventService.aggregate(
             [
                 {
                     $sort:{
                         createdDate:-1
                     }
-                },
-                {
-                    $limit: take
-                },
-                {
-                    $skip: offset
                 }
             ]
         );
