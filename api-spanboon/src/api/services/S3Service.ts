@@ -215,20 +215,36 @@ export class S3Service {
 
     // s3 signCloudFront
     public async s3signCloudFront(keyObject: any): Promise<any> {
-        const cloudfrontDistributionDomain = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX;
-        const filePath = path.join(__dirname, '../../../pk-APKA2ETX3SHA62PN6BX4.pem'); // Construct an absolute file path
-        const readfile = fs.readFileSync(filePath, { encoding: 'utf8' });
-        const url = `${cloudfrontDistributionDomain}/${keyObject}`;
-        const privateKey = readfile;
-        const keyPairId = process.env.CLOUFRONT_KEY_PAIR_ID;
-        const signedUrl = getSignedUrl({
-            url,
-            keyPairId,
-            dateLessThan: '2100-12-31',
-            privateKey
-        });
+        const assetUploadToS3Cfg = await this.configService.getConfig(ASSET_CONFIG_NAME.S3_STORAGE_UPLOAD);
+        let assetUploadToS3 = DEFAULT_ASSET_CONFIG_VALUE.S3_STORAGE_UPLOAD;
 
-        return signedUrl;
+        if (assetUploadToS3Cfg && assetUploadToS3Cfg.value) {
+            if (typeof assetUploadToS3Cfg.value === 'boolean') {
+                assetUploadToS3 = assetUploadToS3Cfg.value;
+            } else if (typeof assetUploadToS3Cfg.value === 'string') {
+                assetUploadToS3 = (assetUploadToS3Cfg.value.toUpperCase() === 'TRUE');
+            }
+        }
+        if(assetUploadToS3 === true){
+            const cloudfrontDistributionDomain = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX;
+            const filePath = path.join(__dirname, '../../../pk-APKA2ETX3SHA62PN6BX4.pem'); // Construct an absolute file path
+            if(fs.existsSync(filePath) === false) {
+                return null;
+            }
+            const readfile = fs.readFileSync(filePath, { encoding: 'utf8' });
+            const url = `${cloudfrontDistributionDomain}/${keyObject}`;
+            const privateKey = readfile;
+            const keyPairId = process.env.CLOUFRONT_KEY_PAIR_ID;
+            const signedUrl = getSignedUrl({
+                url,
+                keyPairId,
+                dateLessThan: '2100-12-31',
+                privateKey
+            });
+
+            return signedUrl;
+        }
+        return null;
     }
 
     // search folder
