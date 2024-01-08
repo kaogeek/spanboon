@@ -36,7 +36,7 @@
                                 *ngIf="!data.post.approved && data.post.status !== 'close'; else elseTemplate">
                                 <div class="owner-name">
                                     <span>{{user.firstName !== undefined ? user.firstName : user.pageUsername}}</span>
-                                    <mat-progress-bar mode="buffer" [bufferValue]="0" [value]="supportValue">
+                                    <mat-progress-bar mode="determinate" [value]="supportValue">
                                     </mat-progress-bar>
                                     <ng-container
                                         *ngIf="(data.post.minSupport - data.post.countSupport) <= 0; else elseMinSupport">
@@ -199,7 +199,7 @@
                                             </div>
                                             <ng-container
                                                 *ngIf="!data.post.showVoteResult || (data.post.closed && data.post.showVoteResult)">
-                                                <mat-progress-bar mode="'buffer'"
+                                                <mat-progress-bar mode="determinate"
                                                     [value]="voteChoiceValue[index].value[i]"></mat-progress-bar>
                                             </ng-container>
                                         </div>
@@ -226,7 +226,7 @@
                                             </div>
                                             <ng-container
                                                 *ngIf="!data.post.showVoteResult || (data.post.closed && data.post.showVoteResult)">
-                                                <mat-progress-bar mode="'buffer'"
+                                                <mat-progress-bar mode="determinate"
                                                     [value]="voteChoiceValue[index].value[i]"></mat-progress-bar>
                                             </ng-container>
                                         </div>

@@ -34,23 +34,15 @@ export class VoteEventFacade extends AbstractFacade {
     });
   }
 
-  public search(searchFilter: SearchFilter, keyword?: string): Promise<VoteEvent[]> {
+  public search(searchFilter: SearchFilter): Promise<VoteEvent[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/admin/voted/all/search';
-      let body = {};
-      if (keyword !== null && keyword !== undefined) {
+      let body: any = {};
+      if (searchFilter !== null && searchFilter !== undefined) {
         body = Object.assign(searchFilter)
       }
       let options = this.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
-        for (let r of response.data) {
-          if (r.coverPageURL != null && r.coverPageURL != undefined) {
-            this.getPathFile(r.coverPageURL).then((res: any) => {
-              r.image = res.data
-            }).catch((err: any) => {
-            });
-          }
-        }
         resolve(response.data as VoteEvent[]);
       }).catch((error: any) => {
         reject(error);

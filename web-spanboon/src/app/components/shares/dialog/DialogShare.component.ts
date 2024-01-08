@@ -56,6 +56,7 @@ export class DialogShare {
     public clickCopy() {
         navigator.clipboard.writeText(this.data.text);
         this.openSnackBar();
+        this.dialogRef.close(true);
     }
 
     public openSnackBar() {

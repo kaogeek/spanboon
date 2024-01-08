@@ -95,11 +95,11 @@ export class DialogPostCrad extends AbstractPage {
   ngOnInit() {
     setTimeout(() => {
       this.showLoading = false
-    }, 1500);
+    }, 2000);
     if (this.data.vote) {
       this.seoService.updateTitle(this.data.post.title);
       this._getVotedOwn(this.data.post._id);
-      this.supportValue = this.calculatePercentage();
+      this.supportValue = this._calculatePercentage();
       if (this.data.support !== undefined) {
         if (this.data.support.userSupport.length > 0) {
           this.posts = this.data.support.userSupport;
@@ -230,16 +230,10 @@ export class DialogPostCrad extends AbstractPage {
     });
   }
 
-  public calculatePercentage(): number {
+  private _calculatePercentage(): number {
     let min = this.data.post.minSupport;
     let value = this.data.post.countSupport;
     return (100 * value) / min;
-  }
-
-  public calculatePercentageChoice(): number {
-    let max = this._getVoteMaxCount();
-    let value = this.data.post.countSupport;
-    return (100 * value) / max;
   }
 
   public createComment(comment: any, index?: number) {
@@ -323,8 +317,11 @@ export class DialogPostCrad extends AbstractPage {
     }
     if (type === 'multi') {
       if (mode === 'remove') {
-        item.active = false;
-        this.questions[index].voteChoice.splice(choiceIndex, 1);
+        let indexRemove = this.questions[index].voteChoice.findIndex(value => value.answer === item.title);
+        if (indexRemove !== -1) {
+          item.active = false;
+          this.questions[index].voteChoice.splice(indexRemove, 1);
+        }
       } else {
         item.active = true;
       }
@@ -418,6 +415,7 @@ export class DialogPostCrad extends AbstractPage {
           }
           if (err.error.message === "Cannot Vote this vote status is close.") {
             this.showAlertDialog("โหวตนี้ถูกปิดแล้วคุณไม่สามารถโหวตได้", "vote");
+            this.isVoteAlready = true;
           }
         }
       });
