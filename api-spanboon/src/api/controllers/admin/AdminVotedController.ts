@@ -224,13 +224,13 @@ export class AdminVotedController {
         // approved.
         newValues = {
             $set:{
-                closed:votingEventRequest.closed ? votingEventRequest.closed : voteObj.closed,
+                closed: votingEventRequest.closed,
                 closeDate:null,
                 approved:voteApproved,
                 approveUsername:user.displayName,
                 approveDatetime:today,
-                pin:votingEventRequest.pin ? votingEventRequest.pin : voteObj.pin,
-                status: votingEventRequest.status ? votingEventRequest.status : voteObj.status,
+                pin:votingEventRequest.pin,
+                status:votingEventRequest.status,
 
                 startSupportDatetime: votingEventRequest.startSupportDatetime,
                 endSupportDatetime: votingEventRequest.endSupportDatetime,
