@@ -529,6 +529,275 @@ export class AdminVotedController {
         return res.status(200).send(successResponse);
     }
 
+    @Get('/item/:id')
+    @Authorized('')
+    public async getItemVote(@Body({ validate: true}) search: FindVoteRequest, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const voteObjId = new ObjectID(id);
+
+        const voteObj = await this.votingEventService.findOne({ _id: voteObjId });
+        if (voteObj === undefined && voteObj === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const take = filter.limit ? filter.limit : 10;
+        const offset = filter.offset ? filter.offset : 0;
+        
+        const voteItem = await this.voteItemService.aggregate([
+            {
+                $match: {
+                votingId: voteObjId,
+                },
+            },
+            {
+                $sort:{
+                    ordering: 1
+                }
+            },
+            {
+                $project:{
+                    _id: 1,
+                    createdDate: 1,
+                    createdTime: 1,
+                    votingId: 1,
+                    assetId: 1,
+                    ordering: 1,
+                    type: 1,
+                    title: 1,
+                    coverPageURL: 1,
+                    s3CoverPageURL: 1,
+                    checkType: {
+                        $cond:[
+                            {
+                                $or:[
+                                {$eq:['$type','single']},
+                                {$eq:['$type','multi']}
+                            ]
+                            },
+                            'Yes',
+                            'No'
+                        ]
+                    }
+                }
+            },
+            {
+                $facet: {
+                    type: [
+                        {
+                            $match: {
+                                checkType: 'Yes'
+                            }, 
+                        },
+                        {
+                            $lookup: {
+                            from: 'VoteChoice',
+                            let: { id: '$_id' },
+                            pipeline: [
+                                {
+                                $match: {
+                                    $expr: {
+                                    $eq: ['$$id', '$voteItemId'],
+                                    },
+                                },
+                                },
+                                {
+                                    $lookup:{
+                                        from:'Voted',
+                                        let:{'id':'$_id'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$id','$voteChoiceId']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $count:'votedCount'
+                                            }
+                                        ],
+                                        as:'voted'
+                                    }
+                                },
+                            ],
+                            as: 'voteChoice',
+                            },
+                        },
+                    ],
+                    noType: [
+                        {
+                            $match: {
+                                checkType: 'No'
+                            }
+                        },
+                        {
+                            $lookup:{
+                                from:'Voted',
+                                let:{ id:'$_id'},
+                                pipeline:[
+                                    {
+                                        $match:{
+                                            $expr:{
+                                                $eq:['$$id','$voteItemId']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $count:'votedCount'
+                                    }
+                                ],
+                                as:'voted'
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                $addFields: {
+                    combinedResults: {
+                        $concatArrays: ['$type', '$noType'],
+                    }
+                }
+            },
+            {
+                $unwind: {
+                    path: '$combinedResults',
+                },
+            },
+            {
+                $replaceRoot: {
+                    newRoot: '$combinedResults',
+                },
+            },
+            {
+                $limit: take
+            },
+            {
+                $skip: offset
+            }
+        ]);
+        let voteEvent:any = undefined;
+        if(voteObj.showVoterName === true) {
+            voteEvent = await this.votedService.aggregate([
+                {
+                    $match:{
+                        votingId:voteObjId
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'User',
+                        let: { 'userId': '$userId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$userId', '$_id']
+                                    }
+                                }
+                            },
+                            { $sample: { size: 5 } },     
+                            {
+                                $project: {
+                                    _id: 1,
+                                    displayName: 1,
+                                    uniqueId: 1,
+                                    imageURL: 1,
+                                    s3ImageURL: 1
+                                }
+                            },
+                        ],
+                        as: 'user'
+                    }
+                },       
+                {
+                    $unwind:{
+                        path:'$user'
+                    }
+                },
+                {
+                    $group: {
+                    _id: '$user._id',
+                    count: { $sum: 1 },
+                    uniqueIds: { $addToSet: '$user._id' }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'User',
+                        let: { 'id': '$_id' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$id', '$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    displayName: 1,
+                                    uniqueId: 1,
+                                    imageURL: 1,
+                                    s3ImageURL: 1
+                                }
+                            },
+                        ],
+                        as: 'user'
+                    }
+                },
+                {
+                    $unwind:{
+                        path:'$user'
+                    }
+                },  
+                {
+                    $project:{
+                        user:1
+                    }
+                }
+            ]);
+        }
+        const voteCount = await this.votedService.aggregate(
+            [
+                {
+                    $match:{
+                        votingId:voteObjId
+                    }
+                },
+                {
+                    $group:{
+                        _id:'$userId',
+                        count:{$sum:1}
+                    }
+                }
+            ]
+        );
+        const response:any = {
+            'voteItem':{},
+            'voted':{},
+            'voteCount':{},
+            'showVoterName':undefined,
+        };
+        response['voteItem'] = voteItem;
+        response['voted'] = voteEvent ? voteEvent : [];
+        response['voteCount'] = voteCount.length;
+        response['showVoterName'] = voteObj.showVoterName;
+        response['showVoteResult'] = voteObj.showVoteResult;
+
+        if (response['voteItem'].length>0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Get VoteItem is success.', response);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Not found Vote Item.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     // HashTag 
     @Get('/hashtag')
     public async HashTag(@Res() res: any, @Req() req: any): Promise<any> {
