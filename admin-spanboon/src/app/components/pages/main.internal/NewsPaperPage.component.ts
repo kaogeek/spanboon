@@ -78,7 +78,8 @@ export class NewsPaperPage extends AbstractPage implements OnInit {
             isEdit: false,
             isDelete: true,
             isComment: false,
-            isBack: false
+            isBack: false,
+            isPreview: false,
         };
         this.setFields();
 

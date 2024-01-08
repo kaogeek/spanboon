@@ -47,7 +47,8 @@
             </ng-container>
             <div class="wrapper-vote-time">
                 <ng-container *ngIf="!model.closed && model.endVoteDay >= 0; else elseClosed">
-                    <span class="vote-time">
+                    <span class="vote-time"
+                        [ngClass]="{'one-day-left': model.endVoteDay <= 1,'three-days-left': model.endVoteDay > 1 && model.endVoteDay <= 2}">
                         <span>{{model.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
                         <ng-container *ngIf="model.endVoteDay > 0">
                             <span>{{model.endVoteDay}}</span>

@@ -68,7 +68,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     public showComp: any = [];
     public reset: FormArray;
     public isPin: boolean;
-    public postPics:boolean;
+    public postPics: boolean;
     public isSelect: boolean = false;
     public deleteIndex: any = [];
     public bucketDefault: any = [];
@@ -194,7 +194,8 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
             isEdit: true,
             isDelete: true,
             isComment: false,
-            isBack: false
+            isBack: false,
+            isPreview: false,
         };
         this.setFields();
 

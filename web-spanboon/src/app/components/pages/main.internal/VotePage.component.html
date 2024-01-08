@@ -41,7 +41,7 @@
             </div>
 
             <ng-container *ngIf="activeUrl['name'] === undefined && !isEmpty">
-                <ng-container *ngIf="!!model && !!model.pin">
+                <ng-container *ngIf="!!model && !!model.pin && model.pin.length > 0">
                     <div class="header-content">
                         <p>ปักหมุด</p>
                         <!-- <span>ดูทั้งหมด</span> -->
@@ -49,7 +49,7 @@
                     <hr>
                     <div class="wrapper-content"
                         [ngStyle]="{'grid-template-columns': model.pin.length === 0 ? '1fr' : null}">
-                        <ng-container *ngIf="model.pin.length > 0; else elsePinLength">
+                        <ng-container *ngIf="model.pin.length > 0">
                             <ng-container *ngFor="let data of model.pin">
                                 <card-content-vote #pinContent class="pin-content-data" [model]="data"
                                     [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
@@ -57,15 +57,10 @@
                                     [image]="data.coverPageURL"></card-content-vote>
                             </ng-container>
                         </ng-container>
-                        <ng-template #elsePinLength>
-                            <div class="none-vote">
-                                <span>ไม่มีรายการปักหมุด</span>
-                            </div>
-                        </ng-template>
                     </div>
                 </ng-container>
 
-                <ng-container *ngIf="!!model && !!model.myVote">
+                <ng-container *ngIf="!!model && !!model.myVote && model.myVote.length > 0">
                     <div class="header-content">
                         <p>โหวตของฉัน</p>
                         <!-- <span>ดูทั้งหมด</span> -->
@@ -73,7 +68,7 @@
                     <hr>
                     <div class="wrapper-content"
                         [ngStyle]="{'grid-template-columns': model.myVote.length === 0 ? '1fr' : null}">
-                        <ng-container *ngIf="model.myVote.length > 0; else elseMyVoteLength">
+                        <ng-container *ngIf="model.myVote.length > 0">
                             <ng-container *ngFor="let data of model.myVote">
                                 <card-content-vote #pinContent class="myvote-content-data" [model]="data"
                                     [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
@@ -81,15 +76,10 @@
                                     [image]="data.coverPageURL"></card-content-vote>
                             </ng-container>
                         </ng-container>
-                        <ng-template #elseMyVoteLength>
-                            <div class="none-vote">
-                                <span>ไม่มีรายการโหวต</span>
-                            </div>
-                        </ng-template>
                     </div>
                 </ng-container>
 
-                <ng-container *ngIf="!!model && !!model.closeDate">
+                <ng-container *ngIf="!!model && !!model.closeDate && model.closeDate.length > 0">
                     <div class="header-content">
                         <p>ใกล้ปิดโหวต</p>
                         <!-- <span>ดูทั้งหมด</span> -->
@@ -97,7 +87,7 @@
                     <hr>
                     <div class="wrapper-content"
                         [ngStyle]="{'grid-template-columns': model.closeDate.length === 0 ? '1fr' : null}">
-                        <ng-container *ngIf="model.closeDate.length > 0; else elseCloseLength">
+                        <ng-container *ngIf="model.closeDate.length > 0">
                             <ng-container *ngFor="let data of model.closeDate">
                                 <card-content-vote #pinContent class="support-content-data" [model]="data"
                                     [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
@@ -105,15 +95,10 @@
                                     [image]="data.coverPageURL"></card-content-vote>
                             </ng-container>
                         </ng-container>
-                        <ng-template #elseCloseLength>
-                            <div class="none-vote">
-                                <span>ไม่มีรายการใกล้ปิดโหวต</span>
-                            </div>
-                        </ng-template>
                     </div>
                 </ng-container>
 
-                <ng-container *ngIf="!!model && !!model.closetSupport">
+                <ng-container *ngIf="!!model && !!model.closetSupport && model.closetSupport.length > 0">
                     <div class="header-content">
                         <p>ใกล้ปิดล่ารายชื่อ</p>
                         <!-- <span>ดูทั้งหมด</span> -->
@@ -121,7 +106,7 @@
                     <hr>
                     <div class="wrapper-content"
                         [ngStyle]="{'grid-template-columns': model.closetSupport.length === 0 ? '1fr' : null}">
-                        <ng-container *ngIf="model.closetSupport.length > 0; else elseCloseLength">
+                        <ng-container *ngIf="model.closetSupport.length > 0">
                             <ng-container *ngFor="let data of model.closetSupport">
                                 <card-content-vote #pinContent class="support-content-data" [model]="data"
                                     [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
@@ -129,11 +114,6 @@
                                     [image]="data.coverPageURL"></card-content-vote>
                             </ng-container>
                         </ng-container>
-                        <ng-template #elseCloseLength>
-                            <div class="none-vote">
-                                <span>ไม่มีรายการใกล้ปิดโหวต</span>
-                            </div>
-                        </ng-template>
                     </div>
                 </ng-container>
 

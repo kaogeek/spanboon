@@ -7,12 +7,14 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 import { FieldTable } from './TableComponent.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'admin-col-table',
   templateUrl: './ColumnTable.component.html'
 })
 export class ColumnTable implements OnInit {
+  protected baseURL: string;
 
   @Input()
   public fieldTable: FieldTable;
@@ -21,6 +23,7 @@ export class ColumnTable implements OnInit {
   public isSeeMore: boolean = false;
 
   constructor() {
+    this.baseURL = environment.apiBaseURL;
   }
 
   public ngOnInit() {

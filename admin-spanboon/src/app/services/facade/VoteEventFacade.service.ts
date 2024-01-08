@@ -43,6 +43,14 @@ export class VoteEventFacade extends AbstractFacade {
       }
       let options = this.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
+        for (let r of response.data) {
+          if (r.coverPageURL != null && r.coverPageURL != undefined) {
+            this.getPathFile(r.coverPageURL).then((res: any) => {
+              r.image = res.data
+            }).catch((err: any) => {
+            });
+          }
+        }
         resolve(response.data as VoteEvent[]);
       }).catch((error: any) => {
         reject(error);
@@ -98,6 +106,18 @@ export class VoteEventFacade extends AbstractFacade {
       let url: string = this.baseURL + '/admin/voted/reject/' + id;
       let options = this.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getVoteChoice(id: string): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/admin/voted/item/' + id;
+      let httpOptions = this.getDefaultOptions();
+      this.http.get(url, httpOptions).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

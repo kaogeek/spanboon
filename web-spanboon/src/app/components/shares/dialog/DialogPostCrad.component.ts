@@ -567,20 +567,22 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   private _getVotedOwn(id: string) {
-    this.voteFacade.getVotedOwn(id).then((res) => {
-      if (res) {
-        this.ownVote = res;
-        for (let data of this.ownVote) {
-          if (data.voteChoiceId === null) {
-            this.ownVoteText.push(data);
+    if (this.isLogin()) {
+      this.voteFacade.getVotedOwn(id).then((res) => {
+        if (res) {
+          this.ownVote = res;
+          for (let data of this.ownVote) {
+            if (data.voteChoiceId === null) {
+              this.ownVoteText.push(data);
+            }
           }
+          this.isVoteAlready = true;
+          this._mapVoteChoice();
         }
-        this.isVoteAlready = true;
-        this._mapVoteChoice();
-      }
-    }).catch((err) => {
-      if (err) { }
-    });
+      }).catch((err) => {
+        if (err) { }
+      });
+    }
   }
 
   private _mapVoteChoice() {

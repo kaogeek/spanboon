@@ -192,6 +192,9 @@
                             <button mat-raised-button *ngIf="actions.isDelete" (click)="clickDelete(element)">
                                 <img src="../../../assets/img/delete.png" alt="">
                             </button>
+                            <button mat-raised-button *ngIf="actions.isPreview" (click)="clickPreview(element)">
+                                <img src="../../../assets/img/icon-preview.svg" alt="">
+                            </button>
                         </td>
                     </ng-container>
                 </ng-container>

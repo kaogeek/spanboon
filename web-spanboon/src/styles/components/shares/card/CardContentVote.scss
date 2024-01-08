@@ -101,6 +101,7 @@
       flex-direction: column;
       margin-left: 10px;
       width: 100%;
+      gap: 2px;
 
       > span {
         @include font-size-10($font-head-500);
@@ -120,6 +121,22 @@
           opacity: 0.7;
           color: grey;
           @include font-size-12($font-head-500);
+
+          &.three-days-left {
+            background-color: $brandcolor2;
+            padding: 2px 4px;
+            border-radius: 2px;
+            opacity: 1;
+            color: $white;
+          }
+
+          &.one-day-left {
+            background-color: #f94343;
+            padding: 2px 4px;
+            border-radius: 2px;
+            opacity: 1;
+            color: $white;
+          }
         }
 
         > .vote-count {

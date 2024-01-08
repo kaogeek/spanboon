@@ -79,7 +79,8 @@ export class PageObjectiveCategoryPage extends AbstractPage implements OnInit {
             isEdit: true,
             isDelete: true,
             isComment: false,
-            isBack: false
+            isBack: false,
+            isPreview: false,
         };
         this.setFields();
     }

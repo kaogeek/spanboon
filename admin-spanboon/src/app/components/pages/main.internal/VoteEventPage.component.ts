@@ -15,6 +15,7 @@ import { DialogWarningComponent } from '../../shares/DialogWarningComponent.comp
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
 import { VoteEventFacade } from '../../../services/facade/VoteEventFacade.service';
+import { DialogImagePreview } from '../../components';
 
 
 const PAGE_NAME: string = "vote";
@@ -38,6 +39,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     private router: Router;
 
     public edit: boolean = false;
+    public preview: boolean = false;
     public valueClosed: boolean = false;
     public valueApproved: boolean = false;
     public valuePin: boolean = false;
@@ -48,8 +50,12 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     public valueEndSupport: any;
     public valueStartVote: any;
     public valueEndVote: any;
+    public valueTitle: any;
+    public valueDetail: any;
+    public previewData: any;
+    public imageCover: any;
     public _id: any;
-    public listStatus: any[] = ['vote', 'support'];
+    public listStatus: any[] = ['vote', 'support', 'close'];
     constructor(voteEventFacade: VoteEventFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
         this.voteEventFacade = voteEventFacade;
@@ -107,7 +113,8 @@ export class VoteEventPage extends AbstractPage implements OnInit {
             isEdit: true,
             isDelete: true,
             isComment: false,
-            isBack: false
+            isBack: false,
+            isPreview: true,
         };
         this._setFields();
 
@@ -129,6 +136,8 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         this.valueEndVote = undefined;
     }
     public clickCloseDrawer(): void {
+        this.edit = false;
+        this.preview = false;
         this.drawer.toggle();
     }
 
@@ -144,7 +153,20 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         this.valueEndSupport = data.endSupportDatetime;
         this.valueStartVote = data.startVoteDatetime;
         this.valueEndVote = data.endVoteDatetime;
+        this.valueTitle = data.title;
+        this.valueDetail = data.detail;
         this.drawer.toggle();
+    }
+
+    public clickPreview(data: any): void {
+        this.imageCover = data.coverPageURL;
+        this.voteEventFacade.getVoteChoice(data._id).then((res: any) => {
+            if (res) {
+                this.previewData = res.voteItem;
+                this.preview = true;
+                this.clickEditForm(data);
+            }
+        });
     }
 
     public clickSave(): void {
@@ -248,5 +270,16 @@ export class VoteEventPage extends AbstractPage implements OnInit {
                 this.valueEndVote = isoDateString;
             }
         }
+    }
+
+    public imagePreview(image) {
+        let img = image.replace('/image', '');
+        let dialogRef = this.dialog.open(DialogImagePreview, {
+            data: img
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+            }
+        });
     }
 }

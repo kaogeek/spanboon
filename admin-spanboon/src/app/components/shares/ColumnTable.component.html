@@ -13,9 +13,16 @@
             </div>
         </ng-container>
         <ng-container *ngIf="fieldTable.formatImage">
-            <a href="{{data[fieldTable.name]}}" target="_blank">
-                <img src="{{data[fieldTable.name]}}" class="col-image" alt="">
-            </a>
+            <ng-container *ngIf="!!data.assetId; else elseImage">
+                <a href="{{data.image}}" target="_blank">
+                    <img src="{{data.image}}" class="col-image" alt="">
+                </a>
+            </ng-container>
+            <ng-template #elseImage>
+                <a href="{{data[fieldTable.name]}}" target="_blank">
+                    <img src="{{data[fieldTable.name]}}" class="col-image" alt="">
+                </a>
+            </ng-template>
         </ng-container>
     </ng-container>
     <ng-template #elseColorImageNone>
