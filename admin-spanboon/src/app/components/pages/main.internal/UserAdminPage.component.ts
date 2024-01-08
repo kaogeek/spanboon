@@ -99,7 +99,8 @@ export class UserAdminPage extends AbstractPage implements OnInit {
             isEdit: false,
             isDelete: false,
             isComment: false,
-            isBack: false
+            isBack: false,
+            isPreview: false,
         };
         this.setFields();
     }

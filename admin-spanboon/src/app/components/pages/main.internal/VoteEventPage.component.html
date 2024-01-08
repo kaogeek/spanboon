@@ -11,7 +11,7 @@
             <div class="form-admin">
                 <div class="wrapper">
                     <div class="form-header">
-                        <h5 class="title">แก้ไข</h5>
+                        <h5 class="title">{{preview ? 'ตัวอย่างโหวต' : 'แก้ไข'}}</h5>
                     </div>
                     <div class="form-body">
                         <form>
@@ -102,7 +102,7 @@
                                     <div class="date-picker">
                                         <span>เริ่ม</span>
                                         <mat-form-field>
-                                            <input matInput [matDatepicker]="pickerStartVote"
+                                            <input matInput [matDatepicker]="pickerStartVote" [disabled]="preview"
                                                 [(ngModel)]="valueStartVote"
                                                 (dateChange)="saveDate($event,'start','vote')"
                                                 [ngModelOptions]="{standalone: true}">
@@ -115,7 +115,7 @@
                                         <span>ปิด</span>
                                         <mat-form-field>
                                             <input matInput [matDatepicker]="pickerEndVote" [(ngModel)]="valueEndVote"
-                                                (dateChange)="saveDate($event,'end','vote')"
+                                                [disabled]="preview" (dateChange)="saveDate($event,'end','vote')"
                                                 [ngModelOptions]="{standalone: true}">
                                             <mat-datepicker-toggle matSuffix
                                                 [for]="pickerEndVote"></mat-datepicker-toggle>
@@ -124,11 +124,44 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="form-group" *ngIf="preview">
+                                <div class="wrapper-title-vote">
+                                    <div class="title-vote">
+                                        <span>หัวข้อโหวต :</span>
+                                        <span>{{valueTitle}}</span>
+                                    </div>
+                                    <div class="detail-vote" *ngIf="!!valueDetail">
+                                        <span>รายละเอียดโหวต :</span>
+                                        <span>{{valueDetail}}</span>
+                                    </div>
+                                    <img *ngIf="!!imageCover" class="image-preview"
+                                        src="../../../../assets/img/icon-preview.svg" alt=""
+                                        (click)="imagePreview(imageCover)">
+                                </div>
+                                <div class="question-vote-wrapper" *ngFor="let data of previewData;let index = index">
+                                    <div class="title-question-vote">
+                                        <span>คำถามที่ {{index+1}}</span>
+                                        <span>หัวข้อ : {{data.title}}</span>
+                                        <span>ประเภท : {{data.type === 'single' ? 'คำตอบเดียว' :( data.type === 'multi'
+                                            ? 'หลายคำตอบ' : 'กล่องข้อความ')}}</span>
+                                        <img *ngIf="!!data.coverPageURL" class="image-preview"
+                                            src="../../../../assets/img/icon-preview.svg" alt=""
+                                            (click)="imagePreview(data.coverPageURL)">
+                                    </div>
+                                    <div class="choice-vote" *ngFor="let item of data.voteChoice;let i = index">
+                                        <span>ตัวเลือกที่ {{i+1}}</span>
+                                        <span>หัวข้อ : {{item.title}}</span>
+                                        <img *ngIf="!!item.coverPageURL" class="image-preview"
+                                            src="../../../../assets/img/icon-preview.svg" alt=""
+                                            (click)="imagePreview(item.coverPageURL)">
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </div>
                     <div class="wrapper-action">
                         <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
-                        <button mat-raised-button class="btn-save" (click)="clickSave()">แก้ไข</button>
+                        <button mat-raised-button *ngIf="!preview" class="btn-save" (click)="clickSave()">แก้ไข</button>
                     </div>
                 </div>
             </div>
@@ -137,8 +170,8 @@
             <div class="main-content">
                 <admin-table-component #table [isPin]="true" [facade]="voteEventFacade" [title]="'โหวต'"
                     [fieldTable]="fieldTable" [actions]="actions" (edit)="clickEditForm($event)"
-                    (delete)="clickDelete($event)" (approve)="clickApprove($event)"
-                    (unapprove)="clickUnApprove($event)"></admin-table-component>
+                    (delete)="clickDelete($event)" (approve)="clickApprove($event)" (unapprove)="clickUnApprove($event)"
+                    (preview)="clickPreview($event)"></admin-table-component>
             </div>
         </mat-drawer-content>
     </mat-drawer-container>

@@ -118,7 +118,8 @@ export class AdminPage extends AbstractPage implements OnInit {
             isEdit: false,
             isDelete: true,
             isComment: false,
-            isBack: false
+            isBack: false,
+            isPreview: false,
         };
         this.setFields();
     }

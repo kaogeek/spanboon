@@ -314,6 +314,88 @@
       gap: 10px;
     }
   }
+
+  > .wrapper-title-vote {
+    border: 1px solid;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: relative;
+
+    > .title-vote,
+    .detail-vote {
+      display: flex;
+      flex-direction: column;
+
+      > span {
+        font-size: 16px;
+
+        &:last-child {
+          border: 1px solid;
+          border-radius: 10px;
+          padding: 8px;
+        }
+      }
+    }
+
+    > .detail-vote {
+      display: flex;
+      flex-direction: column;
+    }
+
+    > .image-preview {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+    }
+  }
+
+  > .question-vote-wrapper {
+    padding: 15px;
+    border: 1px solid;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    position: relative;
+
+    > .title-question-vote {
+      display: flex;
+      flex-direction: column;
+
+      > .image-preview {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+      }
+    }
+
+    > .choice-vote {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid;
+      border-radius: 10px;
+      margin: 5px 0px;
+      padding: 7px;
+      position: relative;
+
+      > .image-preview {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+      }
+    }
+  }
 }
 
 .input-group[disabled] {

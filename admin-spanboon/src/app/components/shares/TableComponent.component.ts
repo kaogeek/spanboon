@@ -67,6 +67,7 @@ export interface ActionTable {
     isDelete: boolean;
     isComment: boolean;
     isBack: boolean;
+    isPreview: boolean;
 }
 
 @Component({
@@ -117,6 +118,7 @@ export class TableComponent implements OnInit {
     @Output() ban: EventEmitter<any> = new EventEmitter();
     @Output() approve: EventEmitter<any> = new EventEmitter();
     @Output() unapprove: EventEmitter<any> = new EventEmitter();
+    @Output() preview: EventEmitter<any> = new EventEmitter();
     @Output() create: EventEmitter<any> = new EventEmitter();
     @Output() edit: EventEmitter<any> = new EventEmitter();
     @Output() delete: EventEmitter<any> = new EventEmitter();
@@ -514,8 +516,13 @@ export class TableComponent implements OnInit {
     public clickApprove(data: any): void {
         this.approve.emit(data);
     }
+
     public clickUnApprove(data: any): void {
         this.unapprove.emit(data);
+    }
+
+    public clickPreview(data: any): void {
+        this.preview.emit(data);
     }
 
     public clickOfficial(data: any): void {

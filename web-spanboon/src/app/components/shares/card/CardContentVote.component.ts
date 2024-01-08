@@ -38,6 +38,9 @@ export class CardContentVote implements OnInit {
     }
 
     ngOnInit(): void {
+        setTimeout(() => {
+            this.image = this._checkImage(this.image);
+        }, 500);
         this.supportValue = this._calculatePercentage();
         let user = JSON.parse(localStorage.getItem('pageUser'));
         this.userId = !!user ? user.id : undefined;
@@ -78,5 +81,12 @@ export class CardContentVote implements OnInit {
         let min = this.model.minSupport;
         let value = this.model.countSupport;
         return (100 * value) / min;
+    }
+
+    private _checkImage(image: any): any {
+        if (!!image) {
+            let img = image.replace('/image', '')
+            return img;
+        }
     }
 }

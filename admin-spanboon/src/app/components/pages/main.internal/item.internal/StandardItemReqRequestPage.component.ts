@@ -95,7 +95,8 @@ export class StandardItemReqRequestPage extends AbstractPage implements OnInit {
             isEdit: false,
             isDelete: true,
             isComment: false,
-            isBack: false
+            isBack: false,
+            isPreview: false,
         };
     }
 
