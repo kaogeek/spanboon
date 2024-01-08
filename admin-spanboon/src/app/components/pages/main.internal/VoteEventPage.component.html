@@ -15,35 +15,35 @@
                     </div>
                     <div class="form-body">
                         <form>
-                            <div class="form-group">
+                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
                                 <ng-container>
                                     <mat-slide-toggle [(ngModel)]="valueClosed"
                                         [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
                                 </ng-container>
                                 <label style="margin-left: 10px;">เปิด/ปิด โหวต</label>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
                                 <ng-container>
                                     <mat-slide-toggle [(ngModel)]="valueApproved"
                                         [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
                                 </ng-container>
                                 <label style="margin-left: 10px;">ผ่านการอนุมัติ</label>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
                                 <ng-container>
                                     <mat-slide-toggle [(ngModel)]="valuePin"
                                         [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
                                 </ng-container>
                                 <label style="margin-left: 10px;">ปักหมุด</label>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
                                 <ng-container>
                                     <mat-slide-toggle [(ngModel)]="valueShowName"
                                         [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
                                 </ng-container>
                                 <label style="margin-left: 10px;">แสดงชื่อผู้โหวต</label>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
                                 <ng-container>
                                     <mat-slide-toggle [(ngModel)]="valueShowResult"
                                         [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
@@ -52,7 +52,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="form-group">
+                                    <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
                                         <mat-form-field>
                                             <mat-label>สถานะ</mat-label>
                                             <mat-select [(ngModel)]="valueStatus" name="status"
@@ -133,6 +133,10 @@
                                     <div class="detail-vote" *ngIf="!!valueDetail">
                                         <span>รายละเอียดโหวต :</span>
                                         <span>{{valueDetail}}</span>
+                                    </div>
+                                    <div class="detail-vote" *ngIf="!!valueHashtag">
+                                        <span>แฮชแท็ค :</span>
+                                        <span>{{valueHashtag}}</span>
                                     </div>
                                     <img *ngIf="!!imageCover" class="image-preview"
                                         src="../../../../assets/img/icon-preview.svg" alt=""
