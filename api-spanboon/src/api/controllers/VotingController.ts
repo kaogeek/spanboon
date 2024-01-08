@@ -2527,6 +2527,7 @@ export class VotingController {
                     },
                     {
                         $match:{
+                            status:'vote',
                             userId: userObjId,
                             title:exp
                         }
