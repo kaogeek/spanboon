@@ -52,6 +52,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     public valueEndVote: any;
     public valueTitle: any;
     public valueDetail: any;
+    public valueHashtag: any;
     public previewData: any;
     public imageCover: any;
     public _id: any;
@@ -160,6 +161,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
 
     public clickPreview(data: any): void {
         this.imageCover = data.coverPageURL;
+        this.valueHashtag = data.hashTag;
         this.voteEventFacade.getVoteChoice(data._id).then((res: any) => {
             if (res) {
                 this.previewData = res.voteItem;
