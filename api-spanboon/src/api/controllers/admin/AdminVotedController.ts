@@ -603,26 +603,6 @@ export class AdminVotedController {
                                     },
                                 },
                                 },
-                                {
-                                    $lookup:{
-                                        from:'Voted',
-                                        let:{'id':'$_id'},
-                                        pipeline:[
-                                            {
-                                                $match:{
-                                                    $expr:
-                                                    {
-                                                        $eq:['$$id','$voteChoiceId']
-                                                    }
-                                                }
-                                            },
-                                            {
-                                                $count:'votedCount'
-                                            }
-                                        ],
-                                        as:'voted'
-                                    }
-                                },
                             ],
                             as: 'voteChoice',
                             },
@@ -633,26 +613,7 @@ export class AdminVotedController {
                             $match: {
                                 checkType: 'No'
                             }
-                        },
-                        {
-                            $lookup:{
-                                from:'Voted',
-                                let:{ id:'$_id'},
-                                pipeline:[
-                                    {
-                                        $match:{
-                                            $expr:{
-                                                $eq:['$$id','$voteItemId']
-                                            }
-                                        }
-                                    },
-                                    {
-                                        $count:'votedCount'
-                                    }
-                                ],
-                                as:'voted'
-                            }
-                        },
+                        }
                     ]
                 }
             },
