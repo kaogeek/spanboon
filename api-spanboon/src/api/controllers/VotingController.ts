@@ -798,7 +798,7 @@ export class VotingController {
                     {
                         $match: {
                             pin: true,
-                            approved: true,
+                            // approved: true,
                             $or: [
                                 { status: { $eq: 'vote' } },
                                 { status: { $eq: 'close' } }
