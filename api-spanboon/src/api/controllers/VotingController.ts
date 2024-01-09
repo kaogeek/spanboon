@@ -591,11 +591,11 @@ export class VotingController {
                     }
                 },
                 {
-                    $limit: take
-                },
-                {
                     $skip: offset
                 },
+                {
+                    $limit: take
+                }
             ]
         );
         const countRows: any = [
@@ -873,11 +873,11 @@ export class VotingController {
                         }
                     },
                     {
-                        $limit: take
-                    },
-                    {
                         $skip: skips
                     },
+                    {
+                        $limit: take
+                    }
                 ]
             );
         }
@@ -1107,11 +1107,11 @@ export class VotingController {
                         }
                     },
                     {
-                        $limit: take
-                    },
-                    {
                         $skip: skips
                     },
+                    {
+                        $limit: take
+                    }
                 ]
             );
         }
@@ -1336,11 +1336,11 @@ export class VotingController {
                         }
                     },
                     {
-                        $limit: take
-                    },
-                    {
                         $skip: skips
                     },
+                    {
+                        $limit: take
+                    }
                 ]
             );
         }
@@ -1576,11 +1576,11 @@ export class VotingController {
                         }
                     },
                     {
-                        $limit: take
-                    },
-                    {
                         $skip: skips
                     },
+                    {
+                        $limit: take
+                    }
                 ]
             );
         }
@@ -1863,11 +1863,11 @@ export class VotingController {
                         }
                     },
                     {
-                        $limit: take
-                    },
-                    {
                         $skip: skips
                     },
+                    {
+                        $limit: take
+                    }
                 ]
             );
         }
@@ -2311,7 +2311,7 @@ export class VotingController {
         const keywords = votingContentsRequest.keyword;
         const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
         const take = votingContentsRequest.limit ? votingContentsRequest.limit : 10;
-        const skips = votingContentsRequest.offset ? votingContentsRequest.offset : 0;
+        const offset = votingContentsRequest.offset ? votingContentsRequest.offset : 0;
         let myVote: any = undefined;
         let myVoterSupport: any = undefined;
         let myVoted: any = undefined;
@@ -2537,11 +2537,11 @@ export class VotingController {
                         }
                     },
                     {
-                        $limit: take
+                        $skip: offset
                     },
                     {
-                        $skip: skips
-                    },
+                        $limit: take
+                    }
                 ]
             );
         }
@@ -2771,11 +2771,11 @@ export class VotingController {
                         }
                     },
                     {
-                        $limit: take
+                        $skip: offset
                     },
                     {
-                        $skip: skips
-                    },
+                        $limit: take
+                    }
                 ]
             );
         }
@@ -4056,10 +4056,10 @@ export class VotingController {
                 },
             },
             {
-                $limit: take
+                $skip: offset
             },
             {
-                $skip: offset
+                $limit: take
             }
         ]);
         let voteEvent: any = undefined;
