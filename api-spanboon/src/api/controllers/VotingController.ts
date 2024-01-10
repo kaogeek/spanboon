@@ -646,6 +646,8 @@ export class VotingController {
         let supporter: any = undefined;
         let closeVote: any = undefined;
         let hashTagVote: any = undefined;
+        let closetSupportAggr: any = undefined;
+
 
         if (votingContentsRequest.pin === true) {
             pinned = await this.votingEventService.aggregate(
@@ -1874,7 +1876,6 @@ export class VotingController {
 
         // DEFAULT_CLOSET_SUPPORT,
         // CLOSET_SUPPORT
-        let closetSupportAggr: any = [];
         if (votingContentsRequest.closetSupport === true) {
             let closetSupport = DEFAULT_CLOSET_SUPPORT;
             const closetSupportConfig = await this.configService.getConfig(CLOSET_SUPPORT);
