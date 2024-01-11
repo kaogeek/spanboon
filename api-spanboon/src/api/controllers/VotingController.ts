@@ -648,7 +648,6 @@ export class VotingController {
         let hashTagVote: any = undefined;
         let closetSupportAggr: any = undefined;
 
-
         if (votingContentsRequest.pin === true) {
             pinned = await this.votingEventService.aggregate(
                 [
@@ -4786,19 +4785,23 @@ export class VotingController {
             // const stackVoteItems:any = {};
             if (votingEventRequest.voteItem.length > 0) {
                 for (const voteItems of votingEventRequest.voteItem) {
-                    const voteItem = new VoteItemModel();
-                    voteItem.votingId = result.id;
-                    voteItem.ordering = voteItems.ordering;
-                    voteItem.type = voteItems.typeChoice;
-                    voteItem.title = voteItems.titleItem;
-                    voteItem.assetId = voteItems.assetIdItem;
-                    voteItem.coverPageURL = voteItems.coverPageURLItem;
-                    voteItem.s3CoverPageURL = voteItems.s3CoverPageURLItem;
-                    const createVoteItem = await this.voteItemService.create(voteItem);
-                    if (createVoteItem) {
-                        stackVoteItem['VoteItem'].push(createVoteItem);
-                        const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems);
-                        stackVoteItem['VoteChoice'].push(createdVoteChoice);
+                    if(voteItems.titleItem !== '') {
+                        const voteItem = new VoteItemModel();
+                        voteItem.votingId = result.id;
+                        voteItem.ordering = voteItems.ordering;
+                        voteItem.type = voteItems.typeChoice;
+                        voteItem.title = voteItems.titleItem;
+                        voteItem.assetId = voteItems.assetIdItem;
+                        voteItem.coverPageURL = voteItems.coverPageURLItem;
+                        voteItem.s3CoverPageURL = voteItems.s3CoverPageURLItem;
+                        const createVoteItem = await this.voteItemService.create(voteItem);
+                        if (createVoteItem) {
+                            stackVoteItem['VoteItem'].push(createVoteItem);
+                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems);
+                            stackVoteItem['VoteChoice'].push(createdVoteChoice);
+                        }
+                    } else {
+                        continue;
                     }
                 }
                 const query = { _id: new ObjectID(result.assetId) };
@@ -5088,19 +5091,23 @@ export class VotingController {
             // const stackVoteItems:any = {};
             if (votingEventRequest.voteItem.length > 0) {
                 for (const voteItems of votingEventRequest.voteItem) {
-                    const voteItem = new VoteItemModel();
-                    voteItem.votingId = result.id;
-                    voteItem.ordering = voteItems.ordering;
-                    voteItem.type = voteItems.typeChoice;
-                    voteItem.title = voteItems.titleItem;
-                    voteItem.assetId = voteItems.assetIdItem;
-                    voteItem.coverPageURL = voteItems.coverPageURLItem;
-                    voteItem.s3CoverPageURL = voteItems.s3CoverPageURLItem;
-                    const createVoteItem = await this.voteItemService.create(voteItem);
-                    if (createVoteItem) {
-                        stackVoteItem['VoteItem'].push(createVoteItem);
-                        const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems);
-                        stackVoteItem['VoteChoice'].push(createdVoteChoice);
+                    if(voteItems.titleItem !== '') {
+                        const voteItem = new VoteItemModel();
+                        voteItem.votingId = result.id;
+                        voteItem.ordering = voteItems.ordering;
+                        voteItem.type = voteItems.typeChoice;
+                        voteItem.title = voteItems.titleItem;
+                        voteItem.assetId = voteItems.assetIdItem;
+                        voteItem.coverPageURL = voteItems.coverPageURLItem;
+                        voteItem.s3CoverPageURL = voteItems.s3CoverPageURLItem;
+                        const createVoteItem = await this.voteItemService.create(voteItem);
+                        if (createVoteItem) {
+                            stackVoteItem['VoteItem'].push(createVoteItem);
+                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems);
+                            stackVoteItem['VoteChoice'].push(createdVoteChoice);
+                        }
+                    } else {
+                        continue;
                     }
                 }
                 const query = { _id: new ObjectID(result.assetId) };
