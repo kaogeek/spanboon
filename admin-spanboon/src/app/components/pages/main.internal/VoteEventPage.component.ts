@@ -174,9 +174,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     public clickSave(): void {
         const result: any = {};
         result.closed = this.valueClosed;
-        result.approved = this.valueApproved;
         result.pin = this.valuePin;
-        result.status = this.valueStatus;
         result.showVoterName = this.valueShowName;
         result.showVoteResult = this.valueShowResult;
 

@@ -22,7 +22,8 @@
                                 </ng-container>
                                 <label style="margin-left: 10px;">เปิด/ปิด โหวต</label>
                             </div>
-                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
+                            <div class="form-group" *ngIf="preview"
+                                [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
                                 <ng-container>
                                     <mat-slide-toggle [(ngModel)]="valueApproved"
                                         [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
@@ -50,7 +51,7 @@
                                 </ng-container>
                                 <label style="margin-left: 10px;">แสดงผลโหวตเมื่อปิดโหวต</label>
                             </div>
-                            <div class="row">
+                            <div class="row" *ngIf="preview">
                                 <div class="col-md-12">
                                     <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
                                         <mat-form-field>
