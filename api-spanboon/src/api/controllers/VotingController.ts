@@ -1594,7 +1594,11 @@ export class VotingController {
                     {
                         $match: {
                             hashTag: { $in: splitHashTag },
-                            title: exp
+                        }
+                    },
+                    {
+                        $match:{
+                            hashTag: exp
                         }
                     },
                     {
