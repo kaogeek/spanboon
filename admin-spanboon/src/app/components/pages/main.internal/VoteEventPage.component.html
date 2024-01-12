@@ -72,7 +72,7 @@
                                         <span>เริ่ม</span>
                                         <mat-form-field>
                                             <input matInput [matDatepicker]="pickerStartSupport"
-                                                [disabled]="!!valueStartVote && !!valueEndVote"
+                                                [disabled]="!!valueStartVote && !!valueEndVote && valueStatus !== 'support'"
                                                 [(ngModel)]="valueStartSupport"
                                                 (dateChange)="saveDate($event,'start','support')"
                                                 [ngModelOptions]="{standalone: true}">
@@ -85,7 +85,7 @@
                                         <span>ปิด</span>
                                         <mat-form-field>
                                             <input matInput [matDatepicker]="pickerEndSupport"
-                                                [disabled]="!!valueStartVote && !!valueEndVote"
+                                                [disabled]="!!valueStartVote && !!valueEndVote && valueStatus !== 'support'"
                                                 [(ngModel)]="valueEndSupport"
                                                 (dateChange)="saveDate($event,'end','support')"
                                                 [ngModelOptions]="{standalone: true}">
@@ -96,7 +96,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group" *ngIf="!!valueStartVote && !!valueEndVote">
+                            <div class="form-group"
+                                *ngIf="!!valueStartVote && !!valueEndVote && valueStatus !== 'support'">
                                 <div class="date-vote-wrapper">
                                     <span>วันเริ่มและปิดโหวต</span>
                                     <div class="date-picker">

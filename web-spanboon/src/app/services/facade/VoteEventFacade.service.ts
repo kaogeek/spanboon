@@ -18,20 +18,19 @@ export class VoteEventFacade extends AbstractFacade {
     super(http, authMgr);
   }
 
-  public searchAll(isLogin: boolean, keyword?: string): Promise<any> {
+  public searchAll(isLogin: boolean, key: any, keyword?: string, limit?: any, offset?: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/voting/contents/';
       let body: any = {
-        limit: 10,
-        offset: 0,
-        pin: true,
+        limit: limit,
+        offset: offset,
         myVote: false,
-        supporter: true,
-        closeVote: true,
-        hashTagVote: true,
-        closetSupport: true,
+        supporter: key.pin && key.closeVote && key.closetSupport ? true : false,
         keyword: !!keyword ? keyword : "",
       };
+      if (!!key) {
+        Object.assign(body, key);
+      }
       let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
