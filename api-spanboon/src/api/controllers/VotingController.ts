@@ -1593,12 +1593,8 @@ export class VotingController {
                 [
                     {
                         $match: {
-                            hashTag: { $in: splitHashTag }
-                        }
-                    },
-                    {
-                        $match: {
-                            hashTag: exp
+                            hashTag: { $in: splitHashTag },
+                            title: exp
                         }
                     },
                     {
@@ -4627,8 +4623,14 @@ export class VotingController {
             minSupportValue = parseInt(configMinSupport.value, 10);
         }
 
-        if (typeof (vdr) !== 'number') {
+        if (typeof(vdr) !== 'number') {
             const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not number.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const postiveNumber = vdr > 0;
+        if(postiveNumber === false) {
+            const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not positive number.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -4781,9 +4783,9 @@ export class VotingController {
         votingEvent.service = votingEventRequest.service;
 
         const result = await this.votingEventService.create(votingEvent);
-        const stackVoteItem: any = {
-            'VoteItem': [],
-            'VoteChoice': []
+        const stackVoteItem:any = {
+            'VoteItem':[],
+            'VoteChoice':[]
         };
         if (result) {
             // const stackVoteItems:any = {};
@@ -4811,16 +4813,16 @@ export class VotingController {
                 const query = { _id: new ObjectID(result.assetId) };
                 const newValue = { $set: { expirationDate: null } };
                 await this.assetService.update(query, newValue);
-                const formatVoteItem: any = {};
-                if (stackVoteItem['VoteItem'].length > 0) {
-                    for (const data of stackVoteItem['VoteItem']) {
+                const formatVoteItem:any = {};
+                if(stackVoteItem['VoteItem'].length >0) {
+                    for(const data of stackVoteItem['VoteItem']){
                         formatVoteItem.ordering = data.ordering;
                         formatVoteItem.titleItem = data.title;
                         formatVoteItem.typeChoice = data.type;
                         formatVoteItem.assetIdItem = data.assetId;
                         formatVoteItem.coverPageURLItem = data.coverPageURL;
                         formatVoteItem.voteChoice = stackVoteItem['VoteChoice'].shift();
-
+                        
                     }
                 }
 
@@ -4914,8 +4916,14 @@ export class VotingController {
             vdr = votingEventRequest.voteDaysRange;
         }
 
-        if (typeof (vdr) !== 'number') {
+        if (typeof(vdr) !== 'number') {
             const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not number.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const postiveNumber = vdr > 0;
+        if(postiveNumber === false) {
+            const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not positive number.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -5086,10 +5094,10 @@ export class VotingController {
         votingEvent.service = votingEventRequest.service;
 
         const result = await this.votingEventService.create(votingEvent);
-
-        const stackVoteItem: any = {
-            'VoteItem': [],
-            'VoteChoice': []
+        
+        const stackVoteItem:any = {
+            'VoteItem':[],
+            'VoteChoice':[]
         };
         if (result) {
             // const stackVoteItems:any = {};
@@ -5117,15 +5125,15 @@ export class VotingController {
                 const query = { _id: new ObjectID(result.assetId) };
                 const newValue = { $set: { expirationDate: null } };
                 await this.assetService.update(query, newValue);
-                const formatVoteItem: any = {};
-                if (stackVoteItem['VoteItem'].length > 0) {
-                    for (const data of stackVoteItem['VoteItem']) {
+                const formatVoteItem:any = {};
+                if(stackVoteItem['VoteItem'].length >0) {
+                    for(const data of stackVoteItem['VoteItem']){
                         formatVoteItem.ordering = data.ordering;
                         formatVoteItem.titleItem = data.title;
                         formatVoteItem.typeChoice = data.type;
                         formatVoteItem.assetIdItem = data.assetId;
                         formatVoteItem.coverPageURLItem = data.coverPageURL;
-                        formatVoteItem.voteChoice = stackVoteItem['VoteChoice'].shift();
+                        formatVoteItem.voteChoice = stackVoteItem['VoteChoice'].shift(); 
                     }
                 }
 
@@ -5647,10 +5655,10 @@ export class VotingController {
     private async CreateVoteChoice(createVoteItem: any, voteItems: any): Promise<any> {
         if (voteItems) {
             const voteChoiceObj = voteItems.voteChoice;
-            const stack: any = [];
+            const stack:any = [];
             if (voteChoiceObj.length > 0) {
                 for (const voteChoicePiece of voteChoiceObj) {
-                    if (voteChoicePiece.title === '') {
+                    if(voteChoicePiece.title === ''){
                         continue;
                     }
                     const voteChoice = new VoteChoiceModel();
