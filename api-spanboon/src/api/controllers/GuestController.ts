@@ -48,6 +48,7 @@ import { DeviceToken } from '../models/DeviceToken';
 import axios from 'axios';
 import qs from 'qs';
 import * as bcrypt from 'bcrypt';
+import { S3Service } from '../services/S3Service';
 @JsonController()
 export class GuestController {
     constructor(
@@ -62,7 +63,8 @@ export class GuestController {
         private twitterService: TwitterService,
         private configService: ConfigService,
         private deviceToken: DeviceTokenService,
-        private otpService: OtpService
+        private otpService: OtpService,
+        private s3Service: S3Service,
     ) { }
 
     @Get('/register/date')
@@ -1156,8 +1158,7 @@ export class GuestController {
                     loginToken = jwt.sign({ token: loginToken, userId: checkIdToken.userId }, env.SECRET_KEY);
                 }
             }
-        }
-        else if (mode === PROVIDER.TWITTER) {
+        } else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = loginParam.twitterOauthToken;
             const twitterOauthTokenSecret = loginParam.twitterOauthTokenSecret;
             const tokenFcmGG = req.body.tokenFCM;
@@ -3058,6 +3059,9 @@ export class GuestController {
         delete user.modifiedBy;
         delete user.modifiedByUsername;
 
+        const cloudfront = await this.s3Service.s3signCloudFront(user.s3ImageURL);
+
+        user.signURL = cloudfront;
         const successResponse: any = { status: 1, message: 'Account was valid.', data: { user, token: tokenParam, mode: isMode } };
 
         return response.status(200).send(successResponse);

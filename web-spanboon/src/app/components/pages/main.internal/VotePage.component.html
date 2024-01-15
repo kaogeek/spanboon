@@ -1,5 +1,5 @@
 <div class="wrapper-vote-page">
-    <div class="wrapper-left">
+    <div class="wrapper-left" *ngIf="!paramsKey">
         <div class="menu-wrapper">
             <p>Vote</p>
             <ng-container *ngFor="let item of menuList">
@@ -15,8 +15,9 @@
             </ng-container>
         </div>
     </div>
-    <div class="wrapper-right">
-        <div class="menu-wrapper" [ngStyle]="{'top': !isRes ? '59px' : '0'}">
+    <div class="wrapper-right" #scrollDiv infinite-scroll [infiniteScrollDistance]="scrollDistance"
+        [alwaysCallback]="true" (scrolled)="onScrollDown($event)">
+        <div class="menu-wrapper" *ngIf="!paramsKey" [ngStyle]="{'top': !isRes ? '59px' : '0'}">
             <ng-container *ngFor="let item of menuList">
                 <div *ngIf="item.isLogin === isLogin()" class="menu-box" [class.active]="activeMenu === item.status"
                     [routerLink]="!!item.status ? ['', 'vote', item.status] : ['','vote']"
@@ -27,6 +28,10 @@
         </div>
         <div class="content-wrapper">
             <div class="search-header">
+                <button mat-icon-button class="button-back" *ngIf="!!paramsKey" [routerLink]="'/vote'"
+                    (click)="setValueChangeMenu()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
                 <div class="search">
                     <label class="material-icons icon-search" for="searchInput">
                         search
@@ -44,7 +49,7 @@
                 <ng-container *ngIf="!!model && !!model.pin && model.pin.length > 0">
                     <div class="header-content">
                         <p>ปักหมุด</p>
-                        <!-- <span>ดูทั้งหมด</span> -->
+                        <span (click)="changeMenu('all',false,'ปักหมุด')">ดูทั้งหมด</span>
                     </div>
                     <hr>
                     <div class="wrapper-content"
@@ -82,7 +87,7 @@
                 <ng-container *ngIf="!!model && !!model.closeDate && model.closeDate.length > 0">
                     <div class="header-content">
                         <p>ใกล้ปิดโหวต</p>
-                        <!-- <span>ดูทั้งหมด</span> -->
+                        <span (click)="changeMenu('all',false,'ใกล้ปิดโหวต')">ดูทั้งหมด</span>
                     </div>
                     <hr>
                     <div class="wrapper-content"
@@ -101,7 +106,7 @@
                 <ng-container *ngIf="!!model && !!model.closetSupport && model.closetSupport.length > 0">
                     <div class="header-content">
                         <p>ใกล้ปิดล่ารายชื่อ</p>
-                        <!-- <span>ดูทั้งหมด</span> -->
+                        <span (click)="changeMenu('all',false,'ใกล้ปิดล่ารายชื่อ')">ดูทั้งหมด</span>
                     </div>
                     <hr>
                     <div class="wrapper-content"
@@ -121,7 +126,7 @@
                     <ng-container *ngFor="let item of model.hashTagVote">
                         <div class="header-content">
                             <p>{{item._id}}</p>
-                            <!-- <span>ดูทั้งหมด</span> -->
+                            <span (click)="changeMenu('all',false,item._id)">ดูทั้งหมด</span>
                         </div>
                         <hr>
                         <div class="wrapper-content">
@@ -274,7 +279,6 @@
                             <p>ไม่พบโหวตล่ารายชื่อ</p>
                         </ng-template>
                     </ng-template>
-                    <span *ngIf="!isEmpty">ดูทั้งหมด</span>
                 </div>
                 <hr *ngIf="!isEmpty">
                 <div class="wrapper-content">
@@ -303,7 +307,6 @@
                             <p>ไม่พบโหวตที่เปิดอยู่</p>
                         </ng-template>
                     </ng-template>
-                    <span *ngIf="!isEmpty">ดูทั้งหมด</span>
                 </div>
                 <hr *ngIf="!isEmpty">
                 <div class="wrapper-content">
@@ -332,7 +335,6 @@
                             <p>ไม่พบโหวตที่ปิดโหวตแล้ว</p>
                         </ng-template>
                     </ng-template>
-                    <span *ngIf="!isEmpty">ดูทั้งหมด</span>
                 </div>
                 <hr *ngIf="!isEmpty">
                 <div class="wrapper-content">
@@ -345,6 +347,43 @@
                         </ng-container>
                     </ng-container>
                 </div>
+            </ng-container>
+
+            <ng-container *ngIf="activeUrl['name'] === 'all' && !isHashTagAll">
+                <div class="header-content">
+                    <p>{{paramsKey}}</p>
+                </div>
+                <hr>
+                <div class="wrapper-content">
+                    <ng-container *ngIf="!!model && model[typeAll]?.length > 0">
+                        <ng-container *ngFor="let data of model[typeAll]">
+                            <card-content-vote class="pin-content-data" [model]="data" [title]="data.title"
+                                (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                [image]="data.coverPageURL"></card-content-vote>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="activeUrl['name'] === 'all' && isHashTagAll">
+                <ng-container *ngIf="!!model && !!model.hashTagVote">
+                    <ng-container *ngFor="let item of model.hashTagVote">
+                        <div class="header-content">
+                            <p>{{item._id}}</p>
+                            <span (click)="changeMenu('all',false,item._id)">ดูทั้งหมด</span>
+                        </div>
+                        <hr>
+                        <div class="wrapper-content">
+                            <ng-container *ngFor="let data of item.votingEvent">
+                                <card-content-vote class="support-content-data" [model]="data" [title]="data.title"
+                                    (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                    [image]="data.coverPageURL"></card-content-vote>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </ng-container>
             </ng-container>
         </div>
     </div>

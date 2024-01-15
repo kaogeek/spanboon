@@ -219,7 +219,6 @@ export class AdminVotedController {
             voteShowed = voteObj.showVoteResult;
 
         }
-
         const query = {_id:voteObjId};
         // approved.
         newValues = {
@@ -232,11 +231,11 @@ export class AdminVotedController {
                 pin:votingEventRequest.pin,
                 status:votingEventRequest.status,
 
-                startSupportDatetime: votingEventRequest.startSupportDatetime,
-                endSupportDatetime: votingEventRequest.endSupportDatetime,
+                startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
+                endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
 
-                startVoteDatetime: votingEventRequest.startVoteDatetime,
-                endVoteDatetime:   votingEventRequest.endVoteDatetime, 
+                startVoteDatetime: new Date(votingEventRequest.startVoteDatetime),
+                endVoteDatetime:   new Date(votingEventRequest.endVoteDatetime), 
 
                 showVoterName: votingEventRequest.showVoterName,
                 showVoteResult: votingEventRequest.showVoteResult,

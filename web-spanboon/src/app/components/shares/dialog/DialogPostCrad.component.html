@@ -74,6 +74,9 @@
                     <div class="title detail">
                         <p>{{data.post.detail}}</p>
                     </div>
+                    <div class="title hashtag" *ngIf="!!data.post.hashTag">
+                        <span>#{{data.post.hashTag}}</span>
+                    </div>
                     <hr>
                     <ng-container *ngIf="data.post.status !== 'close'">
                         <div class="user-vote">
@@ -163,7 +166,8 @@
                         </div>
                         <hr>
                     </ng-container>
-
+                    <span class="show-voter-name">{{data.post.showVoterName ? 'โหวตนี้มีการแสดงชื่อผู้โหวต' :
+                        'โหวตนี้ไม่แสดงชื่อผู้โหวต'}}</span>
                     <ng-container *ngIf="data.post.approved; else elseApproved">
                         <ng-container *ngFor="let item of posts;let index = index">
                             <div class="question">

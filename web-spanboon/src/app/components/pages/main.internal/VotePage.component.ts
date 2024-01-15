@@ -19,8 +19,10 @@ import { DialogCreateVote } from '../../shares/dialog/DialogCreateVote.component
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { SeoService } from 'src/app/services/SeoService.service';
+import { debounce } from '../../shares/directive/DebounceScroll.directive';
 
 const PAGE_NAME: string = 'vote';
+const PAGE_TITLE: string = 'ก้าวไกลโหวต';
 @Component({
   selector: 'vote-page',
   templateUrl: './VotePage.component.html',
@@ -36,6 +38,8 @@ export class VotePage extends AbstractPage implements OnInit {
   myVoteContent: ElementRef;
   @ViewChild('supportContent', { static: false })
   supportContent: ElementRef;
+  @ViewChild('scrollDiv', { static: false })
+  scrollDiv: ElementRef;
 
   private destroy = new Subject<void>()
   private voteFacade: VoteEventFacade;
@@ -48,13 +52,23 @@ export class VotePage extends AbstractPage implements OnInit {
   public activeMenu: string = '';
   public userId: string;
   public isLoading: boolean = false;
+  public isScrollLoading: boolean = false;
+  public isCantLoad: boolean = false;
   public isSearch: boolean = false;
   public isEmpty: boolean = false;
+  public isHashTagAll: boolean = false;
   public searchInputValue: string;
+  public typeAll: string;
+  public scrollAll: any;
   public windowWidth: any;
+  public paramsKey: any;
   public isRes: boolean = false;
   public isAllowCreate: boolean = false;
   public model: any;
+  public limit: number = 8;
+  public offset: number = 0;
+  public limitLoad: number = 1;
+  public scrollDistance = 2;
   public menuList: any[] = [
     {
       name: 'โหวตทั้งหมด',
@@ -121,7 +135,10 @@ export class VotePage extends AbstractPage implements OnInit {
             } else {
               this.router.navigate(['', 'vote']);
               this.activeMenu = '';
-              this._searchContent();
+              if (!this.paramsKey) {
+                this.setValueChangeMenu();
+                this._searchContent();
+              }
             }
           })
 
@@ -132,8 +149,25 @@ export class VotePage extends AbstractPage implements OnInit {
             }
           }
 
-          this.seoService.updateTitle("ก้าวไกลโหวต");
+          this.seoService.updateTitle(PAGE_TITLE);
         });
+      });
+
+    this.activeRoute.queryParams
+      .pipe(takeUntil(this.destroy))
+      .subscribe(queryParams => {
+        if (!!queryParams['key']) {
+          this.paramsKey = queryParams['key'];
+          if (this.paramsKey === 'ปักหมุด' ||
+            this.paramsKey === 'ใกล้ปิดโหวต' ||
+            this.paramsKey === 'ใกล้ปิดล่ารายชื่อ') {
+            this._searchContent(null, this.paramsKey);
+          } else {
+            this._searchContent(this.paramsKey, this.paramsKey);
+          }
+        } else {
+          this.paramsKey = null;
+        }
       });
   }
 
@@ -166,6 +200,8 @@ export class VotePage extends AbstractPage implements OnInit {
         this.searchValue(text.target.value);
       }
     });
+
+    this._triggerScroll();
   }
 
   public ngOnDestroy(): void {
@@ -192,15 +228,52 @@ export class VotePage extends AbstractPage implements OnInit {
     });
   }
 
-  public _searchContent(keyword?) {
+  public _searchContent(keyword?, type?, isScroll?) {
     this.isLoading = true;
-    this.voteFacade.searchAll(this.isLogin(), keyword).then((res) => {
+    if (type === 'ปักหมุด') {
+      this.typeAll = 'pin';
+    } else if (type === 'ใกล้ปิดโหวต') {
+      this.typeAll = 'closeDate';
+    } else if (type === 'ใกล้ปิดล่ารายชื่อ') {
+      this.typeAll = 'closeSupport';
+    } else if (!!keyword && this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closeSupport') {
+      this.typeAll = 'hashTagVote';
+      this.isHashTagAll = true;
+    } else {
+      this.typeAll = type;
+    }
+    let key = {};
+    if (!!type) {
+      key = {
+        pin: type === 'pin' || type === 'ปักหมุด' ? true : false,
+        closeVote: type === 'closeDate' || type === 'ใกล้ปิดโหวต' ? true : false,
+        closetSupport: type === 'closeSupport' || type === 'ใกล้ปิดล่ารายชื่อ' ? true : false,
+        hashTagVote: this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closeSupport' ? true : false
+      };
+    } else {
+      key = {
+        pin: true,
+        closeVote: true,
+        closetSupport: true,
+        hashTagVote: true,
+      };
+    }
+    if (!!isScroll) this.offset += this.limit;
+    this.voteFacade.searchAll(this.isLogin(), key, keyword, this.limit, this.offset).then((res: any) => {
       if (res) {
-        this.model = res;
+        if (!!type && isScroll) {
+          this.model[type] = this.model[type].concat(res[type]);
+        } else {
+          this.model = res;
+        }
+        if (res[type].length === 0) {
+          this.limitLoad++;
+        }
+        if (this.limitLoad === 2) this.isCantLoad = true;
         if (res.closeDate.length === 0 &&
           res.hashTagVote.length === 0 &&
           res.pin.length === 0 &&
-          res.supporter.length === 0) this.isEmpty = true;
+          res.supporter.length === 0 && !type) this.isEmpty = true;
         this.isLoading = false;
       }
     }).catch((err) => {
@@ -253,6 +326,7 @@ export class VotePage extends AbstractPage implements OnInit {
             this.isEmpty = false;
           }
           this.isLoading = false;
+          this._scrollSearchContent(condition);
         }
       }).catch((err) => {
         if (err) {
@@ -269,9 +343,7 @@ export class VotePage extends AbstractPage implements OnInit {
     this.searchInputValue = value;
     if (this.activeUrl['name'] === 'support') {
       this.searchVoteContent({
-        "status": 'support',
-        "approved": false,
-        "pin": false,
+        "status": 'support'
       }, false, value);
     } else if (this.activeUrl['name'] === 'open') {
       this.searchVoteContent({
@@ -296,18 +368,25 @@ export class VotePage extends AbstractPage implements OnInit {
     }
   }
 
-  public changeMenu(menu, isLoad?) {
-    this.isLoading = true;
+  public setValueChangeMenu() {
     this.isEmpty = false;
     this.searchInputValue = '';
     this.isSearch = false;
+    this.isHashTagAll = false;
+    this.offset = 0;
+    this.limitLoad = 1;
+    this.isCantLoad = false;
+    this.scrollAll = undefined;
+  }
+
+  public changeMenu(menu, isLoad?, text?) {
+    this.isLoading = true;
+    this.setValueChangeMenu();
     this.searchInput.nativeElement.value = "";
     if ((menu === 'support' && this.activeUrl['name'] !== 'support') || (menu === 'support' && isLoad)) {
       this.voteData = [];
       this.searchVoteContent({
-        "status": 'support',
-        "approved": false,
-        "pin": false,
+        "status": 'support'
       });
     } else if (menu === 'open' && this.activeUrl['name'] !== 'open' || (menu === 'open' && isLoad)) {
       this.voteData = [];
@@ -326,13 +405,18 @@ export class VotePage extends AbstractPage implements OnInit {
     } else if (menu === '' && this.activeUrl['name'] !== undefined || isLoad) {
       this.model = [];
       this._searchContent();
+    } else if (menu === 'all') {
+      this.voteData = [];
+      this.model = [];
+      this.setValueChangeMenu();
+      this.router.navigate(['', 'vote', 'all'], { queryParams: { key: text } });
     } else {
       this.isLoading = false;
     }
   }
 
   private _checkRouting(id: any): boolean {
-    const menu = this.menuList.filter((item) => item.status === id.name || id.name === 'event');
+    const menu = this.menuList.filter((item) => item.status === id.name || id.name === 'event' || id.name === 'all');
     return menu.length != 0 ? true : false;
   }
 
@@ -361,6 +445,8 @@ export class VotePage extends AbstractPage implements OnInit {
             this.router.navigate([this.router.url.replace('/my-vote', '/event/' + $event._id)]);
           } else if (this.activeUrl['name'] === 'support') {
             this.router.navigate([this.router.url.replace('/support', '/event/' + $event._id)]);
+          } else if (this.activeUrl['name'] === 'all') {
+            this.router.navigate([this.router.url.replace(/\/all.*$/, '/event/' + $event._id)]);
           }
           const dialogRef = this.dialog.open(DialogPostCrad, {
             backdropClass: 'backdrop-overlay',
@@ -374,7 +460,7 @@ export class VotePage extends AbstractPage implements OnInit {
               support: res,
               vote: true,
               isAllow: this.isAllowCreate,
-              menu: this.activeMenu
+              menu: !!this.paramsKey ? this.activeMenu + '?key=' + this.paramsKey : this.activeMenu
             }
           });
           dialogRef.afterClosed().subscribe((res) => {
@@ -408,87 +494,20 @@ export class VotePage extends AbstractPage implements OnInit {
         }
       });
     } else {
-      if (!$event.closed) {
-        this.voteFacade.getVoteChoice($event._id).then((res => {
-          if (res) {
-            if (this.activeUrl['name'] === undefined || this.activeUrl['name'] === '') {
-              this.router.navigate([this.router.url + '/event/' + $event._id]);
-            } else if (this.activeUrl['name'] === 'my-vote') {
-              this.router.navigate([this.router.url.replace('/my-vote', '/event/' + $event._id)]);
-            } else if (this.activeUrl['name'] === 'open') {
-              this.router.navigate([this.router.url.replace('/open', '/event/' + $event._id)]);
-            }
-            if (!!res) {
-              const dialogRef = this.dialog.open(DialogPostCrad, {
-                backdropClass: 'backdrop-overlay',
-                panelClass: 'panel-backgroud',
-                hasBackdrop: false,
-                disableClose: false,
-                autoFocus: false,
-                data: {
-                  post: $event,
-                  choice: res,
-                  vote: true,
-                  isAllow: this.isAllowCreate,
-                  menu: this.activeMenu
-                }
-              });
-              dialogRef.afterClosed().subscribe((res) => {
-                if (res === 'my-vote') {
-                  if (this.router.url.includes($event._id)) {
-                    this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/my-vote')]);
-                    this.activeMenu = res;
-                  }
-                } else if (res === 'open') {
-                  if (this.router.url.includes($event._id)) {
-                    this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/open')]);
-                    this.activeMenu = res;
-                  }
-                } else if (res === 'event') {
-                  if (this.router.url.includes($event._id)) {
-                    this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '')]);
-                    this._searchContent();
-                    this.activeMenu = '';
-                  }
-                } else if (!res) {
-                  if (this.router.url.includes($event._id)) {
-                    this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '')]);
-                    this.activeMenu = '';
-                  }
-                }
-              });
-            }
+      this.voteFacade.getVoteChoice($event._id).then((res => {
+        if (res) {
+          if (this.activeUrl['name'] === undefined || this.activeUrl['name'] === '') {
+            this.router.navigate([this.router.url + '/event/' + $event._id]);
+          } else if (this.activeUrl['name'] === 'my-vote') {
+            this.router.navigate([this.router.url.replace('/my-vote', '/event/' + $event._id)]);
+          } else if (this.activeUrl['name'] === 'open') {
+            this.router.navigate([this.router.url.replace('/open', '/event/' + $event._id)]);
+          } else if (this.activeUrl['name'] === 'result') {
+            this.router.navigate([this.router.url.replace('/result', '/event/' + $event._id)]);
+          } else if (this.activeUrl['name'] === 'all') {
+            this.router.navigate([this.router.url.replace(/\/all.*$/, '/event/' + $event._id)]);
           }
-        })).catch((err) => {
-          if (err) {
-            if (err.error.message === "Not found Vote Item.") {
-              const dialogRef = this.dialog.open(DialogPostCrad, {
-                backdropClass: 'backdrop-overlay',
-                panelClass: 'panel-backgroud',
-                hasBackdrop: false,
-                disableClose: false,
-                autoFocus: false,
-                data: {
-                  post: $event,
-                  choice: [],
-                  vote: true,
-                  isAllow: this.isAllowCreate,
-                  menu: this.activeMenu
-                }
-              });
-            }
-          }
-        });
-      } else {
-        this.voteFacade.getVoteChoice($event._id).then((res) => {
-          if (res) {
-            if (this.activeUrl['name'] === undefined || this.activeUrl['name'] === '') {
-              this.router.navigate([this.router.url + '/event/' + $event._id]);
-            } else if (this.activeUrl['name'] === 'result') {
-              this.router.navigate([this.router.url.replace('/result', '/event/' + $event._id)]);
-            } else if (this.activeUrl['name'] === 'my-vote') {
-              this.router.navigate([this.router.url.replace('/my-vote', '/event/' + $event._id)]);
-            }
+          if (!!res) {
             const dialogRef = this.dialog.open(DialogPostCrad, {
               backdropClass: 'backdrop-overlay',
               panelClass: 'panel-backgroud',
@@ -500,18 +519,31 @@ export class VotePage extends AbstractPage implements OnInit {
                 choice: res,
                 vote: true,
                 isAllow: this.isAllowCreate,
-                menu: this.activeMenu
+                menu: !!this.paramsKey ? this.activeMenu + '?key=' + this.paramsKey : this.activeMenu
               }
             });
             dialogRef.afterClosed().subscribe((res) => {
+              if (res) {
+                let pattern = /key=(.+)/;
+                let match = res.match(pattern);
+                if (match && match[1]) {
+                  if (this.router.url.includes($event._id)) {
+                    this.offset = 0;
+                    this.limitLoad = 1;
+                    this.isCantLoad = false;
+                    this.router.navigate(['', 'vote', 'all'], { queryParams: { key: match[1] } });
+                    this.paramsKey = match[1];
+                  }
+                }
+              }
               if (res === 'my-vote') {
                 if (this.router.url.includes($event._id)) {
                   this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/my-vote')]);
                   this.activeMenu = res;
                 }
-              } else if (res === 'result') {
+              } else if (res === 'open') {
                 if (this.router.url.includes($event._id)) {
-                  this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/result')]);
+                  this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/open')]);
                   this.activeMenu = res;
                 }
               } else if (res === 'event') {
@@ -519,6 +551,16 @@ export class VotePage extends AbstractPage implements OnInit {
                   this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '')]);
                   this._searchContent();
                   this.activeMenu = '';
+                }
+              } else if (res === 'result') {
+                if (this.router.url.includes($event._id)) {
+                  this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/result')]);
+                  this.activeMenu = res;
+                }
+              } else if (res === 'all') {
+                if (this.router.url.includes($event._id)) {
+                  this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/all')]);
+                  this.activeMenu = res;
                 }
               } else if (!res) {
                 if (this.router.url.includes($event._id)) {
@@ -528,11 +570,27 @@ export class VotePage extends AbstractPage implements OnInit {
               }
             });
           }
-        }).catch((err) => {
-          if (err) {
+        }
+      })).catch((err) => {
+        if (err) {
+          if (err.error.message === "Not found Vote Item.") {
+            const dialogRef = this.dialog.open(DialogPostCrad, {
+              backdropClass: 'backdrop-overlay',
+              panelClass: 'panel-backgroud',
+              hasBackdrop: false,
+              disableClose: false,
+              autoFocus: false,
+              data: {
+                post: $event,
+                choice: [],
+                vote: true,
+                isAllow: this.isAllowCreate,
+                menu: !!this.paramsKey ? this.activeMenu + '?key=' + this.paramsKey : this.activeMenu
+              }
+            });
           }
-        });
-      }
+        }
+      });
     }
   }
 
@@ -605,6 +663,52 @@ export class VotePage extends AbstractPage implements OnInit {
         }
       });
     });
+  }
+
+  public async onScrollDown(ev) {
+    if (!this.isCantLoad) {
+      if (this.activeUrl['name'] === 'open') {
+        this._scrollSearchContent({ "status": 'vote' });
+      } else if (this.activeUrl['name'] === 'result') {
+        this._scrollSearchContent({ "closed": true });
+      } else if (this.activeUrl['name'] === 'support') {
+        this._scrollSearchContent({ "status": 'support' });
+      } else if (this.activeUrl['name'] === 'result') {
+        this._scrollSearchContent({ "closed": true });
+      } else if (this.activeUrl['name'] === 'all') {
+        this._searchContent(null, this.typeAll, true);
+      }
+    }
+  }
+
+  private _scrollSearchContent(condition?) {
+    // this.activeMenu
+    this.isScrollLoading = true;
+    let search: SearchFilter = new SearchFilter();
+    search.limit = this.limit;
+    search.offset = this.offset += this.limit;
+    let whereConditions = condition;
+    this.voteFacade.search(search, whereConditions, null).then((res: any) => {
+      if (res) {
+        if (res.length === 0) this.limitLoad++;
+        if (this.limitLoad === 2) this.isCantLoad = true;
+        this.voteData = this.voteData.concat(res);
+        this.isScrollLoading = false;
+        this.isLoading = false;
+      }
+    }).catch((err) => {
+      if (err) {
+        this.isScrollLoading = false;
+        this.isLoading = false;
+      }
+    });
+  }
+
+  private _triggerScroll(): void {
+    const scrollContainerElement = this.scrollDiv.nativeElement;
+
+    const event = new Event('scroll', { bubbles: true });
+    scrollContainerElement.dispatchEvent(event);
   }
 
   @HostListener('window:resize', ['$event'])
