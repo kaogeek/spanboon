@@ -1359,13 +1359,11 @@ export class MainPageController {
 
         const now = new Date();
         const year = now.getFullYear(); // Get the current year
-        let startDate = new Date(year, 0, 1);
-        let endDate = new Date(year, 11, 31);
-        if (req.body.currectDate !== undefined && req.body.endDate !== undefined) {
-            startDate = req.body.startDate;
-            endDate = req.body.endDate;
-        }
+        let startDate = req.body.startDate ? req.body.startDate : new Date(year, 0, 1);
+        let endDate = req.body.endDate ? req.body.endDate : new Date(year, 11, 31);
 
+        console.log('startDate',startDate);
+        console.log('endDate',endDate);
         const dateTime = await this.kaokaiTodaySnapShotService.aggregate
             ([
                 {
