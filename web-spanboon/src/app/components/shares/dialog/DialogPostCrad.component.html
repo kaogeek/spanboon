@@ -53,8 +53,8 @@
                                     <span>{{user.firstName !== undefined ? user.firstName : user.pageUsername}}</span>
                                     <ng-container
                                         *ngIf="!data.post.closed && data.post.endVoteDay >= 0; else elseClosedVote">
-                                        <span>ปิดโหวตใน {{data.post.endVoteDay}}วัน {{data.post.endVoteHour <= 0 ? '' :
-                                                data.post.endVoteHour + 'ชม.' }}</span>
+                                        <span>ปิดโหวตใน {{data.post.endVoteDay}} วัน {{data.post.endVoteHour <= 0 ? '' :
+                                                data.post.endVoteHour + ' ชั่วโมง' }}</span>
                                     </ng-container>
                                     <ng-template #elseClosedVote>
                                         <span>ปิดโหวตแล้ว</span>
@@ -252,7 +252,7 @@
                                     <ng-template #elseCloseText>
                                         <input [ngStyle]="{'pointer-events': data.post.closed ? 'none' : 'unset'}"
                                             type="text" placeholder="ตอบคำถาม"
-                                            [(ngModel)]="isVoteAlready ? item.answerData.answer : answerTextbox"
+                                            [(ngModel)]="isVoteAlready ? item.answerData.answer : answerTextbox[index]"
                                             [attr.disabled]="isVoteAlready ? true : null"
                                             (keyup)="setAnswer(item,index)">
                                     </ng-template>
@@ -271,7 +271,7 @@
                                     (click)="isLogin() ? unVoteSupport(data.post._id) : checkLogin()">ยกเลิกสนับสนุน</span>
                             </ng-container>
                             <ng-template #elseSupport>
-                                <span class="button-vote submit"
+                                <span class="button-vote submit" [ngClass]="{'disabled': isCantVote}"
                                     (click)="isLogin() ? voteSupport(data.post._id) : checkLogin()">สนับสนุน</span>
                             </ng-template>
                         </div>
