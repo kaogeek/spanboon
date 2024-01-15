@@ -685,6 +685,13 @@
           justify-content: center;
           margin-top: 20pt;
           gap: 10px;
+
+          > .button-vote {
+            &.disabled {
+              opacity: 0.5;
+              pointer-events: none;
+            }
+          }
         }
       }
     }

@@ -56,11 +56,11 @@
                         </ng-container>
                         <ng-container *ngIf="model.endVoteHour > 0 && model.endVoteDay <= 0">
                             <span>{{model.endVoteHour}}</span>
-                            <span>ชม.</span>
+                            <span> ชั่วโมง</span>
                         </ng-container>
                         <ng-container *ngIf="model.endVoteDay <= 0 && model.endVoteHour <= 0">
                             <span>{{model.endVoteMinute}}</span>
-                            <span>นาที</span>
+                            <span> นาที</span>
                         </ng-container>
                     </span>
                 </ng-container>
