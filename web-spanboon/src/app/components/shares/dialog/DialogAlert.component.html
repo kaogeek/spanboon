@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="edit-input">
-            <span>{{data.text}}</span>
+            <span [ngStyle]="{'color': data.isDelete ? 'red' : 'unset'}">{{data.text}}</span>
             <p>{{data.text2}}</p>
             <ng-container *ngIf="data.page && data.page.iconURL">
                 <div class="images">
