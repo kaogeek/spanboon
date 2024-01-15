@@ -553,7 +553,6 @@ export class PageController {
             const newValues = { $set: { storedCredentials: refreshToken.access_token } };
             const update = await this.pageSocialAccountService.update(queryToken, newValues);
             const webHooks = await this.facebookService.subScribeWebhook(shiftOut.facebookPageId, refreshToken.access_token);
-            console.log('webHooks', webHooks);
             if (update && webHooks.success === true) {
                 continue;
             } else {

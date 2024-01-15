@@ -199,7 +199,7 @@ export class AdminVotedController {
         const user = await this.userService.findOne({_id:userObjId});
 
         const voteObj = await this.votingEventService.findOne({_id:voteObjId});
-        if(voteObj === undefined && voteObj === null){
+        if(voteObj === undefined){
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -217,8 +217,18 @@ export class AdminVotedController {
         }
         if (voteShowed === null || voteShowed === undefined) {
             voteShowed = voteObj.showVoteResult;
-
         }
+
+        if(voteObj.status === 'vote') {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot update: status is approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }  
+        
+        if(voteObj.status === 'close') {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot update: status is closed.', undefined);
+            return res.status(400).send(errorResponse);
+        }   
+
         const query = {_id:voteObjId};
         // approved.
         newValues = {
