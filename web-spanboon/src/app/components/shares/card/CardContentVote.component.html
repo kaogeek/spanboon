@@ -48,25 +48,25 @@
             <div class="wrapper-vote-time">
                 <ng-container *ngIf="!model.closed && model.endVoteDay >= 0; else elseClosed">
                     <span class="vote-time"
-                        [ngClass]="{'one-day-left': model.endVoteDay <= 1,'three-days-left': model.endVoteDay > 1 && model.endVoteDay <= 2}">
+                        [ngClass]="{'one-day-left': model.endVoteDay === 0,'three-days-left': model.endVoteDay > 1 && model.endVoteDay <= 2}">
                         <span>{{model.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
                         <ng-container *ngIf="model.endVoteDay > 0">
                             <span>{{model.endVoteDay}}</span>
                             <span> วัน </span>
                         </ng-container>
-                        <ng-container *ngIf="model.endVoteHour > 0">
+                        <ng-container *ngIf="model.endVoteHour > 0 && model.endVoteDay <= 0">
                             <span>{{model.endVoteHour}}</span>
-                            <span>ชม.</span>
+                            <span> ชั่วโมง</span>
                         </ng-container>
                         <ng-container *ngIf="model.endVoteDay <= 0 && model.endVoteHour <= 0">
                             <span>{{model.endVoteMinute}}</span>
-                            <span>นาที</span>
+                            <span> นาที</span>
                         </ng-container>
                     </span>
                 </ng-container>
                 <!-- {{model.endVoteHour <= 0 ? '' : model.endVoteHour + 'ชม.' }} -->
                 <ng-template #elseClosed>
-                    <span class="vote-time">ปิดโหวตแล้ว</span>
+                    <span class="vote-time end-vote">ปิดโหวตแล้ว</span>
                 </ng-template>
                 <div class="vote-count" *ngIf="model.status === 'support'">
                     <span>{{model.countSupport}}</span>

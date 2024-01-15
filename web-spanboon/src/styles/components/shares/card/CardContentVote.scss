@@ -123,15 +123,23 @@
           @include font-size-12($font-head-500);
 
           &.three-days-left {
-            background-color: $brandcolor2;
+            background-color: #fff2cc;
             padding: 2px 4px;
             border-radius: 2px;
             opacity: 1;
-            color: $white;
+            color: #e7ad00;
           }
 
           &.one-day-left {
-            background-color: #f94343;
+            background-color: #ffefef;
+            padding: 2px 4px;
+            border-radius: 2px;
+            opacity: 1;
+            color: #f94343;
+          }
+
+          &.end-vote {
+            background-color: #0085ff;
             padding: 2px 4px;
             border-radius: 2px;
             opacity: 1;

@@ -58,6 +58,7 @@ export class DialogPostCrad extends AbstractPage {
   public ownVoteText: any[] = [];
   public isVoteAlready: boolean = false;
   public voteSuccess: boolean = false;
+  public isCantVote: boolean = false;
 
   public questions: any[] = [];
   public singleAns: any = undefined;
@@ -65,7 +66,7 @@ export class DialogPostCrad extends AbstractPage {
   public isClosed: boolean;
   public isShowVoteResult: boolean;
   public menuType: any;
-  public answerTextbox: any;
+  public answerTextbox: any[] = [];
 
   public supportValue: number = 0;
   public voteChoiceValue: any[] = [];
@@ -124,6 +125,7 @@ export class DialogPostCrad extends AbstractPage {
               }
             }
           }
+          this.answerTextbox.push("");
         }
         const arraySum = arr => arr.reduce((acc, val) => acc + val, 0);
         let percentagesPerVoteChoiceValue = this.voteChoiceValue.map(voteChoiceValue => {
@@ -400,6 +402,12 @@ export class DialogPostCrad extends AbstractPage {
           return
         }
       }
+      if (this.questions.length > 0) {
+        this.questions.forEach(item => {
+          delete item.active;
+          delete item.type;
+        });
+      }
       this.voteFacade.voting(this.data.post._id, this.questions).then((res) => {
         if (res) {
           this.voteSuccess = true;
@@ -469,10 +477,14 @@ export class DialogPostCrad extends AbstractPage {
           console.log("err", err);
           this.isLoading = false;
           if (err.error.message === "You have been supported.") {
-            this.showAlertDialog("คุณได้ทำการโหวตไปแล้ว");
+            this.showAlertDialog("คุณได้ทำการสนับสนุนไปแล้ว");
+          }
+          if (err.error.message === "You cannot support this vote, The vote status isn`t support anymore.") {
+            this.showAlertDialog("ไม่สามารถสนับสนุนโหวตนี้ได้");
+            this.isCantVote = true;
           }
           if (err.error.message === "This vote only for membershipMFP, You are not membership.") {
-            this.showDialogEngagementMember('โหวตได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
+            this.showDialogEngagementMember('สนับสนุนได้เฉพาะสมาชิกพรรคเท่านั้น', 'vote');
           }
         }
       });
@@ -522,7 +534,7 @@ export class DialogPostCrad extends AbstractPage {
       voteItemId: question._id,
       voteChoice: [],
       type: question.type,
-      answer: this.answerTextbox,
+      answer: this.answerTextbox[index],
     };
   }
 

@@ -510,12 +510,40 @@ export class DialogCreateVote extends AbstractPage {
       }
 
       if (data.title === undefined || data.title === '') {
-        this.showAlertDialog("กรุณากรอกชื่อโหวต");
+        let dialog = this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: "กรุณากรอกชื่อโหวต",
+            bottomText2: "ตกลง",
+            bottomColorText2: "black",
+            btDisplay1: "none"
+          }
+        });
+        dialog.afterClosed().subscribe((res) => {
+          if (res) {
+            this.changeQuestion(null, 'settings');
+          }
+        });
         this.isLoading = false;
         return;
       }
+
       if (data.voteItem.length === 0) {
-        this.showAlertDialog("กรุณาเพิ่มคำถามของโหวต");
+        let dialog = this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: "กรุณาเพิ่มคำถามของโหวต",
+            bottomText2: "ตกลง",
+            bottomColorText2: "black",
+            btDisplay1: "none"
+          }
+        });
+        dialog.afterClosed().subscribe((res) => {
+          if (res) {
+            console.log("res", res)
+            this.clickAddQuestion();
+          }
+        });
         this.isLoading = false;
         return;
       }
@@ -594,12 +622,38 @@ export class DialogCreateVote extends AbstractPage {
   private _clickCreateVote() {
     this.isLoading = true;
     if (this._setDataVote().title === undefined || this._setDataVote().title === '') {
-      this.showAlertDialog("กรุณากรอกชื่อโหวต");
+      let dialog = this.dialog.open(DialogAlert, {
+        disableClose: true,
+        data: {
+          text: "กรุณากรอกชื่อโหวต",
+          bottomText2: "ตกลง",
+          bottomColorText2: "black",
+          btDisplay1: "none"
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          this.changeQuestion(null, 'settings');
+        }
+      });
       this.isLoading = false;
       return;
     }
     if (this._setDataVote().voteItem.length === 0) {
-      this.showAlertDialog("กรุณาเพิ่มคำถามของโหวต");
+      let dialog = this.dialog.open(DialogAlert, {
+        disableClose: true,
+        data: {
+          text: "กรุณาเพิ่มคำถามของโหวต",
+          bottomText2: "ตกลง",
+          bottomColorText2: "black",
+          btDisplay1: "none"
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          this.clickAddQuestion();
+        }
+      });
       this.isLoading = false;
       return;
     }
@@ -704,7 +758,20 @@ export class DialogCreateVote extends AbstractPage {
               }
               if (err.error.message === 'Cannot create a voting Item, Vote Choice is empty.') {
                 this.isLoading = false;
-                this.showAlertDialog("กรุณาเพิ่มคำถามของโหวต");
+                let dialog = this.dialog.open(DialogAlert, {
+                  disableClose: true,
+                  data: {
+                    text: "กรุณาเพิ่มคำถามของโหวต",
+                    bottomText2: "ตกลง",
+                    bottomColorText2: "black",
+                    btDisplay1: "none"
+                  }
+                });
+                dialog.afterClosed().subscribe((res) => {
+                  if (res) {
+                    this.clickAddQuestion();
+                  }
+                });
               }
               if (err.error.message === 'You have no permission to create the vote event.') {
                 this.isLoading = false;
@@ -744,7 +811,20 @@ export class DialogCreateVote extends AbstractPage {
               }
               if (err.error.message === 'Cannot create a voting Item, Vote Choice is empty.') {
                 this.isLoading = false;
-                this.showAlertDialog("กรุณาเพิ่มคำถามของโหวต");
+                let dialog = this.dialog.open(DialogAlert, {
+                  disableClose: true,
+                  data: {
+                    text: "กรุณาเพิ่มคำถามของโหวต",
+                    bottomText2: "ตกลง",
+                    bottomColorText2: "black",
+                    btDisplay1: "none"
+                  }
+                });
+                dialog.afterClosed().subscribe((res) => {
+                  if (res) {
+                    this.clickAddQuestion();
+                  }
+                });
               }
               if (err.error.message === 'You have no permission to create the vote event.') {
                 this.isLoading = false;

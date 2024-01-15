@@ -389,6 +389,21 @@
           > p {
             word-break: break-all;
           }
+
+          &.hashtag {
+            margin-bottom: 25px;
+            margin-top: 30pt;
+            pointer-events: none;
+            @include font-size-9($font-head-100);
+
+            > span {
+              background-color: #f3f3f3;
+              border: 1px solid #f3f3f3;
+              border-radius: 60px;
+              padding: 7px 16px;
+              color: #c5c5c5;
+            }
+          }
         }
 
         > hr {
@@ -432,6 +447,16 @@
             color: $brandcolor2;
             @include font-size-11($font-head-500);
           }
+        }
+
+        > .show-voter-name {
+          margin: 0 auto;
+          width: 80%;
+          display: block;
+          text-align: center;
+          margin-top: 15pt;
+          color: #757575;
+          @include font-size-10($font-head-100);
         }
 
         > .question {
@@ -660,6 +685,13 @@
           justify-content: center;
           margin-top: 20pt;
           gap: 10px;
+
+          > .button-vote {
+            &.disabled {
+              opacity: 0.5;
+              pointer-events: none;
+            }
+          }
         }
       }
     }

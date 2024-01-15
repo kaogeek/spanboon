@@ -156,11 +156,24 @@
           gap: 15px;
         }
 
+        > .button-back {
+          border: 1px solid;
+          background-color: $black;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .mat-icon {
+            color: $white;
+          }
+        }
+
         > .search {
           height: 40px;
           width: 85%;
           display: flex;
           flex: 1 1 0%;
+          position: relative;
 
           > .icon-search {
             opacity: 0.5;
