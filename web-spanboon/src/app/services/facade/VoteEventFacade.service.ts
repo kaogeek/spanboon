@@ -63,18 +63,18 @@ export class VoteEventFacade extends AbstractFacade {
     });
   }
 
-  public searchOwn(filter: any, keyword?: string): Promise<any> {
+  public searchOwn(key: any, keyword?: string, limit?: any, offset?: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/voting/own/search/';
       let body: any = {
-        limit: filter.limit,
-        offset: filter.offset,
-        myVote: true,
-        myVoterSupport: true,
-        myVoted: true,
-        mySupported: true,
-        keyword: keyword ? keyword : "",
+        limit: limit,
+        offset: offset,
+        keyword: !!keyword ? keyword : "",
       };
+
+      if (!!key) {
+        Object.assign(body, key);
+      }
       let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
