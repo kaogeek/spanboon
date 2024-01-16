@@ -224,6 +224,7 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }   
 
+
         const query = {_id:voteObjId};
         // approved.
         newValues = {
@@ -246,6 +247,29 @@ export class AdminVotedController {
                 showVoteResult: votingEventRequest.showVoteResult,
             }
         };
+
+        if(votingEventRequest.closed === true) {
+            newValues = {
+                $set:{
+                    closed: true,
+                    closeDate:null,
+                    approved:voteApproved,
+                    approveUsername:user.displayName,
+                    approveDatetime:today,
+                    pin:votingEventRequest.pin,
+                    status:'close',
+    
+                    startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
+                    endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
+    
+                    startVoteDatetime: new Date(votingEventRequest.startVoteDatetime),
+                    endVoteDatetime:   new Date(votingEventRequest.endVoteDatetime), 
+    
+                    showVoterName: votingEventRequest.showVoterName,
+                    showVoteResult: votingEventRequest.showVoteResult,
+                }
+            };
+        }
 
         const update = await this.votingEventService.update(query,newValues);
         if(update){
