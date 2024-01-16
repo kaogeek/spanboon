@@ -3022,6 +3022,12 @@ export class VotingController {
                             path: '$votingEvent'
                         }
                     },
+                    {
+                        $skip: offset
+                    },
+                    {
+                        $limit: take
+                    }
                 ]
             );
         }
