@@ -224,7 +224,6 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }   
 
-
         const query = {_id:voteObjId};
         // approved.
         newValues = {
@@ -269,6 +268,52 @@ export class AdminVotedController {
                     showVoteResult: votingEventRequest.showVoteResult,
                 }
             };
+        }
+
+        if(votingEventRequest.closed === false) {
+            if(voteObj.startVoteDatetime === null && voteObj.endVoteDatetime === null) {
+                newValues = {
+                    $set:{
+                        closed: false,
+                        closeDate:null,
+                        approved:voteApproved,
+                        approveUsername:user.displayName,
+                        approveDatetime:today,
+                        pin:votingEventRequest.pin,
+                        status:'support',
+        
+                        startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
+                        endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
+        
+                        startVoteDatetime: new Date(votingEventRequest.startVoteDatetime),
+                        endVoteDatetime:   new Date(votingEventRequest.endVoteDatetime), 
+        
+                        showVoterName: votingEventRequest.showVoterName,
+                        showVoteResult: votingEventRequest.showVoteResult,
+                    }
+                };
+            } else {
+                newValues = {
+                    $set:{
+                        closed: false,
+                        closeDate:null,
+                        approved:voteApproved,
+                        approveUsername:user.displayName,
+                        approveDatetime:today,
+                        pin:votingEventRequest.pin,
+                        status:'vote',
+        
+                        startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
+                        endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
+        
+                        startVoteDatetime: new Date(votingEventRequest.startVoteDatetime),
+                        endVoteDatetime:   new Date(votingEventRequest.endVoteDatetime), 
+        
+                        showVoterName: votingEventRequest.showVoterName,
+                        showVoteResult: votingEventRequest.showVoteResult,
+                    }
+                };
+            }
         }
 
         const update = await this.votingEventService.update(query,newValues);
