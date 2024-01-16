@@ -20,7 +20,15 @@
                         <ng-template #elseVoteImageNull>
                             <img class="image-vote" src="../../../../assets/img/logo/vote-01.jpg" alt="">
                         </ng-template>
-
+                        <div class="bottom-vote">
+                            <div class="type-vote">
+                                <div class="status-vote"
+                                    [ngClass]="{'public': data.post.type === 'public' || data.post.type === 'private','member': data.post.type === 'member'}">
+                                </div>
+                                <span>{{data.post.type === 'public' ? 'ทั่วไป' : (data.post.type === 'member' ?
+                                    'สมาชิกพรรค' : 'ส่วนตัว')}}</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="bottom-image">
                         <div class="wrapper-detail-vote">

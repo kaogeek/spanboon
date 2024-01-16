@@ -188,22 +188,20 @@
       top: 8px;
       pointer-events: none;
 
-      > .status-g {
+      > .status-vote {
         width: 10px;
         height: 10px;
         border-radius: 50px;
         border: 1px solid $white;
-        background-color: $status-post-general;
         box-shadow: 0px 0px 4px rgba($black, 0.25);
-      }
 
-      > .status-n {
-        width: 10px;
-        height: 10px;
-        border-radius: 50px;
-        border: 1px solid $white;
-        background-color: $status-post-need;
-        box-shadow: 0px 0px 4px rgba($black, 0.25);
+        &.public {
+          background-color: $status-post-general;
+        }
+
+        &.member {
+          background-color: $status-post-need;
+        }
       }
 
       > span {
