@@ -162,6 +162,11 @@ export class VotePage extends AbstractPage implements OnInit {
             this.paramsKey === 'ใกล้ปิดโหวต' ||
             this.paramsKey === 'ใกล้ปิดล่ารายชื่อ') {
             this._searchContent(null, this.paramsKey);
+          } else if (this.paramsKey === 'โหวตที่ฉันสร้าง' ||
+            this.paramsKey === 'โหวตที่ฉันสร้างและเปิดล่ารายชื่ออยู่' ||
+            this.paramsKey === 'ที่ฉันเคยโหวต' ||
+            this.paramsKey === 'ที่ฉันลงชื่อให้การสนับสนุน') {
+            this._searchContent(null, this.paramsKey, false, true);
           } else {
             this._searchContent(this.paramsKey, this.paramsKey);
           }
@@ -228,59 +233,105 @@ export class VotePage extends AbstractPage implements OnInit {
     });
   }
 
-  public _searchContent(keyword?, type?, isScroll?) {
+  public _searchContent(keyword?, type?, isScroll?, isOwn?) {
     this.isLoading = true;
-    if (type === 'ปักหมุด') {
-      this.typeAll = 'pin';
-    } else if (type === 'ใกล้ปิดโหวต') {
-      this.typeAll = 'closeDate';
-    } else if (type === 'ใกล้ปิดล่ารายชื่อ') {
-      this.typeAll = 'closeSupport';
-    } else if (!!keyword && this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closeSupport') {
+    if (type === 'ปักหมุด') this.typeAll = 'pin';
+    else if (type === 'ใกล้ปิดโหวต') this.typeAll = 'closeDate';
+    else if (type === 'ใกล้ปิดล่ารายชื่อ') this.typeAll = 'closeSupport';
+    else if (!!keyword && this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closeSupport') {
       this.typeAll = 'hashTagVote';
       this.isHashTagAll = true;
     } else {
       this.typeAll = type;
     }
+    if (isOwn) {
+      if (type === 'โหวตที่ฉันสร้าง') this.typeAll = 'myVote';
+      if (type === 'โหวตที่ฉันสร้างและเปิดล่ารายชื่ออยู่') this.typeAll = 'myVoterSupport';
+      if (type === 'ที่ฉันเคยโหวต') this.typeAll = 'myVoted';
+      if (type === 'ที่ฉันลงชื่อให้การสนับสนุน') this.typeAll = 'mySupported';
+    }
     let key = {};
     if (!!type) {
-      key = {
-        pin: type === 'pin' || type === 'ปักหมุด' ? true : false,
-        closeVote: type === 'closeDate' || type === 'ใกล้ปิดโหวต' ? true : false,
-        closetSupport: type === 'closeSupport' || type === 'ใกล้ปิดล่ารายชื่อ' ? true : false,
-        hashTagVote: this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closeSupport' ? true : false
-      };
+      if (isOwn) {
+        key = {
+          myVote: this.typeAll === 'myVote' ? true : false,
+          myVoterSupport: this.typeAll === 'myVoterSupport' ? true : false,
+          myVoted: this.typeAll === 'myVoted' ? true : false,
+          mySupported: this.typeAll === 'mySupported' ? true : false,
+        };
+      } else {
+        key = {
+          pin: type === 'pin' || type === 'ปักหมุด' ? true : false,
+          closeVote: type === 'closeDate' || type === 'ใกล้ปิดโหวต' ? true : false,
+          closetSupport: type === 'closeSupport' || type === 'ใกล้ปิดล่ารายชื่อ' ? true : false,
+          hashTagVote: this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closeSupport' ? true : false
+        };
+      }
     } else {
-      key = {
-        pin: true,
-        closeVote: true,
-        closetSupport: true,
-        hashTagVote: true,
-      };
+      if (isOwn) {
+        key = {
+          myVote: true,
+          myVoterSupport: true,
+          myVoted: true,
+          mySupported: true,
+        };
+      } else {
+        key = {
+          pin: true,
+          closeVote: true,
+          closetSupport: true,
+          hashTagVote: true,
+        };
+      }
     }
     if (!!isScroll) this.offset += this.limit;
-    this.voteFacade.searchAll(this.isLogin(), key, keyword, this.limit, this.offset).then((res: any) => {
-      if (res) {
-        if (!!type && isScroll) {
-          this.model[type] = this.model[type].concat(res[type]);
-        } else {
-          this.model = res;
+    if (isOwn) {
+      this.voteFacade.searchOwn(key, keyword, this.limit, this.offset).then((res: any) => {
+        if (res) {
+          if (!!type && isScroll) {
+            this.model[type] = this.model[type].concat(res[type]);
+          } else {
+            this.model = res;
+          }
+          if (res[type].length === 0) {
+            this.limitLoad++;
+          }
+          if (this.limitLoad === 2) this.isCantLoad = true;
+          if (res.closeDate.length === 0 &&
+            res.hashTagVote.length === 0 &&
+            res.pin.length === 0 &&
+            res.supporter.length === 0 && !type) this.isEmpty = true;
+          this.isLoading = false;
         }
-        if (res[type].length === 0) {
-          this.limitLoad++;
+      }).catch((err) => {
+        if (err) {
+          this.isLoading = false;
         }
-        if (this.limitLoad === 2) this.isCantLoad = true;
-        if (res.closeDate.length === 0 &&
-          res.hashTagVote.length === 0 &&
-          res.pin.length === 0 &&
-          res.supporter.length === 0 && !type) this.isEmpty = true;
-        this.isLoading = false;
-      }
-    }).catch((err) => {
-      if (err) {
-        this.isLoading = false;
-      }
-    });
+      });
+    } else {
+      this.voteFacade.searchAll(this.isLogin(), key, keyword, this.limit, this.offset).then((res: any) => {
+        if (res) {
+          if (!!type && isScroll) {
+            this.model[type] = this.model[type].concat(res[type]);
+          } else {
+            this.model = res;
+          }
+          if (res[type].length === 0) {
+            this.limitLoad++;
+          }
+          if (this.limitLoad === 2) this.isCantLoad = true;
+          if (res.closeDate.length === 0 &&
+            res.hashTagVote.length === 0 &&
+            res.pin.length === 0 &&
+            res.supporter.length === 0 && !type) this.isEmpty = true;
+          this.isLoading = false;
+        }
+      }).catch((err) => {
+        if (err) {
+          this.isLoading = false;
+        }
+      });
+    }
   }
 
   public searchVoteContent(condition?, isOwn?, keyword?) {
@@ -295,8 +346,14 @@ export class VotePage extends AbstractPage implements OnInit {
       search.limit = 8;
       whereConditions = {}
     }
+    let key = {
+      myVote: true,
+      myVoterSupport: true,
+      myVoted: true,
+      mySupported: true,
+    }
     if (isOwn) {
-      this.voteFacade.searchOwn(search, keyword ? keyword : null).then((res: any) => {
+      this.voteFacade.searchOwn(key, keyword, this.limit, this.offset).then((res: any) => {
         if (res) {
           if (!!keyword) this.voteData = [];
           this.voteData = res;
@@ -405,18 +462,18 @@ export class VotePage extends AbstractPage implements OnInit {
     } else if (menu === '' && this.activeUrl['name'] !== undefined || isLoad) {
       this.model = [];
       this._searchContent();
-    } else if (menu === 'all') {
+    } else if (menu === 'all' || menu === 'own') {
       this.voteData = [];
       this.model = [];
       this.setValueChangeMenu();
-      this.router.navigate(['', 'vote', 'all'], { queryParams: { key: text } });
+      this.router.navigate(['', 'vote', menu], { queryParams: { key: text } });
     } else {
       this.isLoading = false;
     }
   }
 
   private _checkRouting(id: any): boolean {
-    const menu = this.menuList.filter((item) => item.status === id.name || id.name === 'event' || id.name === 'all');
+    const menu = this.menuList.filter((item) => item.status === id.name || id.name === 'event' || id.name === 'all' || id.name === 'own');
     return menu.length != 0 ? true : false;
   }
 
@@ -614,9 +671,10 @@ export class VotePage extends AbstractPage implements OnInit {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: 'จะลบโหวตหรือไม่',
+        text: 'คุณต้องการลบโหวตนี้ใช่หรือไม่',
         bottomText2: 'ใช่',
         bottomText1: 'ไม่',
+        isDelete: true,
       }
     });
     dialog.afterClosed().subscribe((res) => {
@@ -677,6 +735,8 @@ export class VotePage extends AbstractPage implements OnInit {
         this._scrollSearchContent({ "closed": true });
       } else if (this.activeUrl['name'] === 'all') {
         this._searchContent(null, this.typeAll, true);
+      } else if (this.activeUrl['name'] === 'own') {
+        this._searchContent(null, this.typeAll, true, true);
       }
     }
   }
