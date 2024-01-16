@@ -6,7 +6,7 @@
         </button>
     </div>
     <div class="wrapper-list-content">
-        <div class="list-content">
+        <div class="list-content" *ngIf="!!data.model">
             <ng-container *ngFor="let item of data.model">
                 <div class="list">
                     <div class="user" *ngIf="isShowVoterName">
@@ -23,6 +23,14 @@
                     </div>
                 </div>
             </ng-container>
+        </div>
+
+        <div class="wrapper-text" *ngIf="!!data.text">
+            <div class="text">
+                <div class="content">
+                    <span>{{data.text}}</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -233,7 +233,7 @@ export class VotePage extends AbstractPage implements OnInit {
     });
   }
 
-  public _searchContent(keyword?, type?, isScroll?, isOwn?) {
+  private _searchContent(keyword?, type?, isScroll?, isOwn?) {
     this.isLoading = true;
     if (type === 'ปักหมุด') this.typeAll = 'pin';
     else if (type === 'ใกล้ปิดโหวต') this.typeAll = 'closeDate';
@@ -285,6 +285,7 @@ export class VotePage extends AbstractPage implements OnInit {
       }
     }
     if (!!isScroll) this.offset += this.limit;
+    this.isEmpty = false;
     if (isOwn) {
       this.voteFacade.searchOwn(key, keyword, this.limit, this.offset).then((res: any) => {
         if (res) {
@@ -292,15 +293,15 @@ export class VotePage extends AbstractPage implements OnInit {
             this.model[type] = this.model[type].concat(res[type]);
           } else {
             this.model = res;
+            if (res.closeDate.length === 0 &&
+              res.hashTagVote.length === 0 &&
+              res.pin.length === 0 &&
+              res.supporter.length === 0 && !type) this.isEmpty = true;
           }
           if (res[type].length === 0) {
             this.limitLoad++;
           }
           if (this.limitLoad === 2) this.isCantLoad = true;
-          if (res.closeDate.length === 0 &&
-            res.hashTagVote.length === 0 &&
-            res.pin.length === 0 &&
-            res.supporter.length === 0 && !type) this.isEmpty = true;
           this.isLoading = false;
         }
       }).catch((err) => {
@@ -315,15 +316,16 @@ export class VotePage extends AbstractPage implements OnInit {
             this.model[type] = this.model[type].concat(res[type]);
           } else {
             this.model = res;
+            if (res.closeDate.length === 0 &&
+              res.hashTagVote.length === 0 &&
+              res.closetSupport.length === 0 &&
+              res.pin.length === 0 &&
+              res.supporter.length === 0 && !type) this.isEmpty = true;
           }
           if (res[type].length === 0) {
             this.limitLoad++;
           }
           if (this.limitLoad === 2) this.isCantLoad = true;
-          if (res.closeDate.length === 0 &&
-            res.hashTagVote.length === 0 &&
-            res.pin.length === 0 &&
-            res.supporter.length === 0 && !type) this.isEmpty = true;
           this.isLoading = false;
         }
       }).catch((err) => {

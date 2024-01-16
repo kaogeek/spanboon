@@ -39,6 +39,31 @@
     display: flex;
     overflow: hidden;
 
+    > .wrapper-text {
+      flex: 1 1 0%;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      background-color: $white;
+
+      > .text {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 20px;
+        background-color: $white;
+
+        > .content {
+          display: flex;
+          align-items: center;
+
+          > span {
+            word-break: break-all;
+            @include font-size-9($font-head-100);
+          }
+        }
+      }
+    }
+
     > .list-content {
       flex: 1 1 0%;
       overflow-y: auto;

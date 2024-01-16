@@ -578,6 +578,20 @@ export class DialogPostCrad extends AbstractPage {
     });
   }
 
+  public seeAnswerTextUser(text: string) {
+    let dialog = this.dialog.open(DialogList, {
+      panelClass: 'panel-backgroud-vote',
+      disableClose: true,
+      data: {
+        text: text
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+      }
+    });
+  }
+
   private _getVotedOwn(id: string) {
     if (this.isLogin()) {
       this.voteFacade.getVotedOwn(id).then((res) => {
