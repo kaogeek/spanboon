@@ -261,15 +261,20 @@ export class RegisterPage extends AbstractPage implements OnInit {
       register.province = formData.province;
       // unqueId
       if (formData.username === undefined || formData.username === '') {
-        this.generatorUnqueId(formData.displayName).then((isVaild: any) => {
-          if (isVaild) {
+        this.generatorUnqueId(formData.displayName).then((isValid: any) => {
+          if (isValid.message === "Spacebar is not allowed" && isValid.status === 0) {
+            this.showAlertDialogWarming("ยูสเซอร์เนมไม่สามารถมีช่องว่างได้", "none");
+            this.isRegister = false;
+            return;
+          }
+          if (isValid && isValid.status === 1) {
             register.uniqueId = formData.displayName;
             this.isRegister = false;
           } else {
             let emailSubstring = !!formData!.email ? formData.email.substring(1, 0) : this.inputEmail.nativeElement.value.substring(1, 0);
             let newUnique = formData.displayName + '.' + emailSubstring;
-            this.generatorUnqueId(newUnique).then((isVaild1: any) => {
-              if (isVaild1) {
+            this.generatorUnqueId(newUnique).then((isValid1: any) => {
+              if (isValid1) {
                 register.uniqueId = newUnique;
               }
             }).catch((err: any) => {
@@ -278,6 +283,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
             });
           }
         }).catch((err: any) => {
+          console.log("err", err)
           if (err) {
             console.log(err)
           }

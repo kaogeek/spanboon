@@ -250,11 +250,17 @@
                                         </button>
                                     </ng-container>
                                     <ng-template #elseCloseText>
-                                        <input [ngStyle]="{'pointer-events': data.post.closed ? 'none' : 'unset'}"
-                                            type="text" placeholder="ตอบคำถาม"
-                                            [(ngModel)]="isVoteAlready ? item.answerData.answer : answerTextbox[index]"
-                                            [attr.disabled]="isVoteAlready ? true : null"
-                                            (keyup)="setAnswer(item,index)">
+                                        <div class="wrapper-answer-vote">
+                                            <input [ngStyle]="{'pointer-events': data.post.closed ? 'none' : 'unset'}"
+                                                type="text" placeholder="ตอบคำถาม"
+                                                [(ngModel)]="isVoteAlready ? item.answerData.answer : answerTextbox[index]"
+                                                [attr.disabled]="isVoteAlready ? true : null"
+                                                (keyup)="setAnswer(item,index)">
+                                            <button mat-icon-button *ngIf="isVoteAlready"
+                                                (click)="seeAnswerTextUser(item.answerData.answer)">
+                                                <mat-icon>visibility</mat-icon>
+                                            </button>
+                                        </div>
                                     </ng-template>
                                 </ng-container>
                                 <div class="next" *ngIf="!data.post.closed && index === posts.length - 1">
