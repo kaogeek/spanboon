@@ -218,11 +218,6 @@ export class AdminVotedController {
         if (voteShowed === null || voteShowed === undefined) {
             voteShowed = voteObj.showVoteResult;
         }
-
-        if(voteObj.status === 'vote') {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot update: status is approved.', undefined);
-            return res.status(400).send(errorResponse);
-        }  
         
         if(voteObj.status === 'close') {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot update: status is closed.', undefined);
@@ -239,7 +234,7 @@ export class AdminVotedController {
                 approveUsername:user.displayName,
                 approveDatetime:today,
                 pin:votingEventRequest.pin,
-                status:votingEventRequest.status,
+                status:voteObj.status,
 
                 startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
                 endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
