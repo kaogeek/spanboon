@@ -4585,7 +4585,7 @@ export class VotingController {
 
     @Post('/own')
     @Authorized('user')
-    public async CreateVotingEventOwn(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async createVotingEventOwn(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const today = moment().toDate();
         let minSupportValue = DEFAULT_MIN_SUPPORT;
@@ -4723,6 +4723,20 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
         */
+        const regex = /[$%^&*()_+|~=`{}\[\]\/<>]/;
+        const matchTitle = title.match(regex);
+        if(matchTitle !== null && matchTitle.length > 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
+            return res.status(400).send(errorResponse);
+        }
+
+        const matchDetail = detail.match(regex);
+
+        if(matchDetail !== null && matchDetail.length > 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Found special characters in detail what you wrote.', matchTitle);
+            return res.status(400).send(errorResponse);
+        }
+
         if (status === undefined && status === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Status is undefined.', undefined);
             return res.status(400).send(errorResponse);
@@ -4757,6 +4771,33 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Status should be support.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        if(votingEventRequest.voteItem.length > 0) {
+            for(const item of votingEventRequest.voteItem) {
+                const foundItemTitle =  item.titleItem.match(regex);
+                if(foundItemTitle !== null && foundItemTitle.length > 0) {
+                    const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteItem title what you wrote.', foundItemTitle);
+                    return res.status(400).send(errorResponse);
+                }
+
+                if(item.titleItem === ''){
+                    const errorResponse = ResponseUtil.getErrorResponse('VoteItem Title is required.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+                const voteChoice = await this.CheckEmptyTitleVoteChoice(item);
+                if(voteChoice !== undefined && voteChoice.length > 0) {
+                    const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteChoice title what you wrote.', foundItemTitle);
+                    return res.status(400).send(errorResponse);
+                }
+
+                if(voteChoice === ''){
+                    const errorResponse = ResponseUtil.getErrorResponse('VoteChoice Title is required.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+            }
+        }
+
         const signUrl = await this.s3Service.s3signCloudFront(votingEventRequest.s3CoverPageURL);
 
         const votingEvent = new VotingEventModel();
@@ -4880,7 +4921,7 @@ export class VotingController {
 
     @Post('/:pageId/page')
     @Authorized('user')
-    public async CreateVotingEvent(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('pageId') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async createVotingEvent(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('pageId') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         let pageObjId = null;
         let pageData: Page[];
@@ -5035,6 +5076,20 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         } */
 
+        const regex = /[$%^&*()_+|~=`{}\[\]\/<>]/;
+        const matchTitle = title.match(regex);
+        if(matchTitle !== null && matchTitle.length > 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
+            return res.status(400).send(errorResponse);
+        }
+
+        const matchDetail = detail.match(regex);
+
+        if(matchDetail !== null && matchDetail.length > 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Found special characters in detail what you wrote.', matchTitle);
+            return res.status(400).send(errorResponse);
+        }
+
         if (status === undefined && status === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Status is undefined.', undefined);
             return res.status(400).send(errorResponse);
@@ -5069,6 +5124,33 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Status should be support.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        if(votingEventRequest.voteItem.length > 0) {
+            for(const item of votingEventRequest.voteItem) {
+                const foundItemTitle =  item.titleItem.match(regex);
+                if(foundItemTitle !== null && foundItemTitle.length > 0) {
+                    const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteItem title what you wrote.', foundItemTitle);
+                    return res.status(400).send(errorResponse);
+                }
+
+                if(item.titleItem === ''){
+                    const errorResponse = ResponseUtil.getErrorResponse('VoteItem Title is required.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+                const voteChoice = await this.CheckEmptyTitleVoteChoice(item);
+                if(voteChoice !== undefined && voteChoice.length > 0) {
+                    const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteChoice title what you wrote.', foundItemTitle);
+                    return res.status(400).send(errorResponse);
+                }
+
+                if(voteChoice === ''){
+                    const errorResponse = ResponseUtil.getErrorResponse('VoteChoice Title is required.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+            }
+        }
+
         const signUrl = await this.s3Service.s3signCloudFront(votingEventRequest.s3CoverPageURL);
 
         const votingEvent = new VotingEventModel();
@@ -5681,6 +5763,24 @@ export class VotingController {
                     stack.push(result);
                 }
                 return stack;
+            }
+        }
+    }
+
+    private async CheckEmptyTitleVoteChoice(voteItems: any): Promise<any> {
+        const regex = /[$%^&*()_+|~=`{}\[\]\/<>]/;
+        if (voteItems) {
+            const voteChoiceObj = voteItems.voteChoice;
+            if (voteChoiceObj.length > 0) {
+                for (const voteChoicePiece of voteChoiceObj) {
+                    const foundTitleVoteChoice = voteChoicePiece.title.match(regex);
+                    if(foundTitleVoteChoice !== null && foundTitleVoteChoice.length > 0) {
+                        return foundTitleVoteChoice;
+                    }
+                    if(voteChoicePiece.title === ''){
+                        return voteChoicePiece.title;
+                    }
+                }
             }
         }
     }
