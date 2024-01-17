@@ -219,10 +219,14 @@ export class AdminVotedController {
             voteShowed = voteObj.showVoteResult;
         }
         
-        if(voteObj.status === 'close') {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot update: status is closed.', undefined);
-            return res.status(400).send(errorResponse);
-        }   
+        let startVoteDate = new Date(votingEventRequest.startVoteDatetime);
+        if(startVoteDate === null) {
+            startVoteDate = null;
+        }
+        let endVoteDate = new Date(votingEventRequest.endVoteDatetime);
+        if(endVoteDate === null) {
+            endVoteDate = null;
+        }
 
         const query = {_id:voteObjId};
         // approved.
@@ -239,8 +243,8 @@ export class AdminVotedController {
                 startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
                 endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
 
-                startVoteDatetime: new Date(votingEventRequest.startVoteDatetime),
-                endVoteDatetime:   new Date(votingEventRequest.endVoteDatetime), 
+                startVoteDatetime: startVoteDate,
+                endVoteDatetime:   endVoteDate, 
 
                 showVoterName: votingEventRequest.showVoterName,
                 showVoteResult: votingEventRequest.showVoteResult,
@@ -261,8 +265,8 @@ export class AdminVotedController {
                     startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
                     endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
     
-                    startVoteDatetime: new Date(votingEventRequest.startVoteDatetime),
-                    endVoteDatetime:   new Date(votingEventRequest.endVoteDatetime), 
+                    startVoteDatetime: startVoteDate,
+                    endVoteDatetime:   endVoteDate, 
     
                     showVoterName: votingEventRequest.showVoterName,
                     showVoteResult: votingEventRequest.showVoteResult,
@@ -285,8 +289,8 @@ export class AdminVotedController {
                         startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
                         endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
         
-                        startVoteDatetime: new Date(votingEventRequest.startVoteDatetime),
-                        endVoteDatetime:   new Date(votingEventRequest.endVoteDatetime), 
+                        startVoteDatetime: startVoteDate,
+                        endVoteDatetime:   endVoteDate, 
         
                         showVoterName: votingEventRequest.showVoterName,
                         showVoteResult: votingEventRequest.showVoteResult,
@@ -306,8 +310,8 @@ export class AdminVotedController {
                         startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
                         endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
         
-                        startVoteDatetime: new Date(votingEventRequest.startVoteDatetime),
-                        endVoteDatetime:   new Date(votingEventRequest.endVoteDatetime), 
+                        startVoteDatetime: startVoteDate,
+                        endVoteDatetime:   endVoteDate, 
         
                         showVoterName: votingEventRequest.showVoterName,
                         showVoteResult: votingEventRequest.showVoteResult,
