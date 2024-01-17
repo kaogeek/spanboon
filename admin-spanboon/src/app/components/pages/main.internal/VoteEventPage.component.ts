@@ -6,16 +6,13 @@
  */
 
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { SearchFilter } from '../../../models/SearchFilter';
-import { EmergencyEvent } from '../../../models/EmergencyEvent';
-import { EmergencyEventFacade } from '../../../services/facade/EmergencyEventFacade.service';
 import { AbstractPage } from '../AbstractPage.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogWarningComponent } from '../../shares/DialogWarningComponent.component';
+import { DialogImagePreview } from '../../shares/DialogImagePreview.component';
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
 import { VoteEventFacade } from '../../../services/facade/VoteEventFacade.service';
-import { DialogImagePreview } from '../../components';
 
 
 const PAGE_NAME: string = "vote";
