@@ -14,16 +14,16 @@
         </div>
         <div class="dialog-image-title-right">
             <i class="material-icons" (click)="onNoClick()">
-                    clear
-                </i>
+                clear
+            </i>
         </div>
     </div>
     <div class="dialog-image-body">
         <div class="file-upload">
             <label class="label-open-img">
-                    + อัพโหลดรูปภาพ            
-                    <input #fileimg type="file" (change)="fileChangeListener($event)" class="input-img" accept="image/*" />
-                </label>
+                + อัพโหลดรูปภาพ
+                <input #fileimg type="file" (change)="fileChangeListener($event)" class="input-img" accept="image/*" />
+            </label>
         </div>
         <img-cropper #cropper [image]="imageCropData" [settings]="cropperSettings"></img-cropper>
         <img [src]="imageCropData.image" class="img-fix" *ngIf="imageCropData.image" id="inputimage">
