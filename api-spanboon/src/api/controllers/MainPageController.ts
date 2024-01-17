@@ -97,7 +97,6 @@ import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelPro
 import { MAILService } from '../../auth/mail.services';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { NotificationNewsService } from '../services/NotificationNewsService';
-import pm2 from 'pm2';
 import { FollowingContentsModelProcessor } from '../processors/FollowingContentsModelProcessor';
 import moment from 'moment';
 import { HidePostService } from '../services/HidePostService';
@@ -2805,27 +2804,6 @@ export class MainPageController {
     }
 
     public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date, jobscheduler: string): Promise<any> {
-        // check before create
-        let pid = undefined;
-        let idPm2 = undefined;
-        pm2.list((err: Error | null, processList: pm2.ProcessDescription[]) => {
-            if (err) {
-                console.error(err);
-                return;
-            }
-
-            // Find the process by name or other criteria
-            const targetProcess = processList.find((process) => process.name === 'Today API');
-
-            if (targetProcess) {
-                pid = targetProcess.pid;
-                idPm2 = targetProcess.pm_id;
-                console.log(`PID of the process: ${pid}`);
-                console.log(`PM2 ID of the process: ${idPm2}`);
-            } else {
-                console.log('Process not found.');
-            }
-        });
 
         const scheduler = String(jobscheduler);
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
@@ -2882,7 +2860,9 @@ export class MainPageController {
             result.count = 0;
             result.sumCount = 0;
             const snapshot = await this.kaokaiTodaySnapShotService.create(result);
-            
+            // kaokaiToday.case.send.email.available === false ใช้ในการ switch ว่าจะส่ง email หาทั้งหมดหรือส่งเฉพาะกลุ่ม
+            // ถ้า true ส่งเฉพาะบ้างกลุ่ม
+            // ถ้า false ส่งทั้งหมด
             if (String(switchSendEm) === 'true' && snapshot) {
                 let user = undefined;
                 for (const userEmail of emailStack) {
@@ -2905,6 +2885,10 @@ export class MainPageController {
                     }
                 }
             }
+            // kaokaiToday.case.send.noti.available	=== false ใช้ในการ switch ว่าจะส่ง noti หาทั้งหมดหรือส่งเฉพาะกลุ่ม
+            // ถ้า true ส่งเฉพาะบ้างกลุ่ม
+            // ถ้า false ส่งทั้งหมด
+            // emailStack คือ email ที่อยู่ใน list ของคนเฉพาะที่เราจะส่งไป  -> send.email.to.user
             if (String(sendNotification) === 'true' && snapshot) {
                 for (const userEmail of emailStack) {
                     const user = await this.userService.findOne({ email: userEmail.toString() });
@@ -2976,7 +2960,7 @@ export class MainPageController {
                         }
                     }
                 }
-                // if config kaokaiToday.case.send.noti.available === false that means send noti the the people.
+            // if config kaokaiToday.case.send.noti.available === false that means send noti the the people.
             } else {
                 const deviceToken = await this.deviceTokenService.aggregate(
                     [
