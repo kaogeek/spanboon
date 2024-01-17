@@ -19,7 +19,6 @@ import { DialogCreateVote } from '../../shares/dialog/DialogCreateVote.component
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { SeoService } from 'src/app/services/SeoService.service';
-import { debounce } from '../../shares/directive/DebounceScroll.directive';
 
 const PAGE_NAME: string = 'vote';
 const PAGE_TITLE: string = 'ก้าวไกลโหวต';
