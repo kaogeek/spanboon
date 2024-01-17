@@ -193,6 +193,12 @@ export class VoteEventPage extends AbstractPage implements OnInit {
             this._setFields();
             this.edit = false;
             this.drawer.toggle();
+        }).catch((err) => {
+            if (err) {
+                if (err.error.message === "Cannot update: status is approved.") {
+                    this.dialogWarning("ไม่สามารถแก้ไขได้เนื่องจากอนุมัติแล้ว");
+                }
+            }
         });
     }
 

@@ -540,7 +540,6 @@ export class DialogCreateVote extends AbstractPage {
         });
         dialog.afterClosed().subscribe((res) => {
           if (res) {
-            console.log("res", res)
             this.clickAddQuestion();
           }
         });

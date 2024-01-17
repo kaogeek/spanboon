@@ -1862,21 +1862,20 @@ export class VotingController {
                                             ]
                                         }
                                     }
+                                },
+                                {
+                                    $skip: skips
+                                },
+                                {
+                                    $limit: take
                                 }
                             ],
                             as: 'votingEvent'
                         }
-                    },
-                    {
-                        $skip: skips
-                    },
-                    {
-                        $limit: take
                     }
                 ]
             );
         }
-
         // DEFAULT_CLOSET_SUPPORT,
         // CLOSET_SUPPORT
         if (votingContentsRequest.closetSupport === true) {
@@ -2120,7 +2119,7 @@ export class VotingController {
         let hashTagCount = 0;
         if (hashTagVote !== undefined && hashTagVote.length > 0) {
             for (const count of hashTagVote) {
-                hashTagCount += count.count;
+                hashTagCount += count.votingEvent.length;
             }
         }
 

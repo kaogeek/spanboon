@@ -150,6 +150,18 @@ export class DialogPostCrad extends AbstractPage {
           this.questions.push(index);
         }
       }
+
+      if (!this.data.post.endVoteDay) {
+        if (this.data.post.status === 'support') {
+          this.data.post.endVoteDay = this._calculateDate(this.data.post.endSupportDatetime, true);
+          this.data.post.endVoteHour = this._calculateDate(this.data.post.endSupportDatetime, false);
+          this.data.post.endVoteMinute = this._calculateDate(this.data.post.endSupportDatetime, false, true);
+        } else {
+          this.data.post.endVoteDay = this._calculateDate(this.data.post.endVoteDatetime, true);
+          this.data.post.endVoteHour = this._calculateDate(this.data.post.endVoteDatetime, false);
+          this.data.post.endVoteMinute = this._calculateDate(this.data.post.endVoteDatetime, false, true);
+        }
+      }
     }
   }
   public ngOnDestroy(): void {
@@ -645,5 +657,16 @@ export class DialogPostCrad extends AbstractPage {
         text: window.location.origin + this.router.url
       }
     });
+  }
+
+  private _calculateDate(end, isDay, isMinute?) {
+    var countDownDate = new Date(end).getTime();
+    var now = new Date().getTime();
+    var distance = countDownDate - now;
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+    return isDay ? days : (isMinute ? minutes : hours);
   }
 }

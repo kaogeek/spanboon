@@ -218,11 +218,6 @@ export class AdminVotedController {
         if (voteShowed === null || voteShowed === undefined) {
             voteShowed = voteObj.showVoteResult;
         }
-
-        if(voteObj.status === 'vote') {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot update: status is approved.', undefined);
-            return res.status(400).send(errorResponse);
-        }  
         
         if(voteObj.status === 'close') {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot update: status is closed.', undefined);
@@ -239,7 +234,7 @@ export class AdminVotedController {
                 approveUsername:user.displayName,
                 approveDatetime:today,
                 pin:votingEventRequest.pin,
-                status:votingEventRequest.status,
+                status:voteObj.status,
 
                 startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
                 endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
@@ -251,6 +246,75 @@ export class AdminVotedController {
                 showVoteResult: votingEventRequest.showVoteResult,
             }
         };
+
+        if(votingEventRequest.closed === true) {
+            newValues = {
+                $set:{
+                    closed: true,
+                    closeDate:null,
+                    approved:voteApproved,
+                    approveUsername:user.displayName,
+                    approveDatetime:today,
+                    pin:votingEventRequest.pin,
+                    status:'close',
+    
+                    startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
+                    endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
+    
+                    startVoteDatetime: new Date(votingEventRequest.startVoteDatetime),
+                    endVoteDatetime:   new Date(votingEventRequest.endVoteDatetime), 
+    
+                    showVoterName: votingEventRequest.showVoterName,
+                    showVoteResult: votingEventRequest.showVoteResult,
+                }
+            };
+        }
+
+        if(votingEventRequest.closed === false) {
+            if(voteObj.startVoteDatetime === null && voteObj.endVoteDatetime === null) {
+                newValues = {
+                    $set:{
+                        closed: false,
+                        closeDate:null,
+                        approved:voteApproved,
+                        approveUsername:user.displayName,
+                        approveDatetime:today,
+                        pin:votingEventRequest.pin,
+                        status:'support',
+        
+                        startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
+                        endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
+        
+                        startVoteDatetime: new Date(votingEventRequest.startVoteDatetime),
+                        endVoteDatetime:   new Date(votingEventRequest.endVoteDatetime), 
+        
+                        showVoterName: votingEventRequest.showVoterName,
+                        showVoteResult: votingEventRequest.showVoteResult,
+                    }
+                };
+            } else {
+                newValues = {
+                    $set:{
+                        closed: false,
+                        closeDate:null,
+                        approved:voteApproved,
+                        approveUsername:user.displayName,
+                        approveDatetime:today,
+                        pin:votingEventRequest.pin,
+                        status:'vote',
+        
+                        startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
+                        endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
+        
+                        startVoteDatetime: new Date(votingEventRequest.startVoteDatetime),
+                        endVoteDatetime:   new Date(votingEventRequest.endVoteDatetime), 
+        
+                        showVoterName: votingEventRequest.showVoterName,
+                        showVoteResult: votingEventRequest.showVoteResult,
+                    }
+                };
+            }
+        }
 
         const update = await this.votingEventService.update(query,newValues);
         if(update){
