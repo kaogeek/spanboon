@@ -4260,7 +4260,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
-        const regex = /[%^&*()_+|~=`{}\[\]\/]/;
+        const regex = /[%^&*_+|~=`{}\[\]\/]/;
         const matchTitle = votingEventRequest.title.match(regex);
         if(matchTitle !== null && matchTitle.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
@@ -4736,7 +4736,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
         */
-        const regex = /[%^&*()_+|~=`{}\[\]\/]/;
+        const regex = /[%^&*_+|~=`{}\[\]\/]/;
         const matchTitle = title.match(regex);
         if(matchTitle !== null && matchTitle.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
@@ -4785,9 +4785,20 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
+        if(votingEventRequest.voteItem.length === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('VoteItem is empty.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         if(votingEventRequest.voteItem.length > 0) {
             for(const item of votingEventRequest.voteItem) {
-                const foundItemTitle =  item.titleItem.match(regex);
+
+                if(item.titleItem === undefined) {
+                    const errorResponse = ResponseUtil.getErrorResponse('VoteItem Title is required.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+                const foundItemTitle =  item.titleItem ? item.titleItem.match(regex) : null;
                 if(foundItemTitle !== null && foundItemTitle.length > 0) {
                     const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteItem title what you wrote.', foundItemTitle);
                     return res.status(400).send(errorResponse);
@@ -4798,12 +4809,17 @@ export class VotingController {
                     return res.status(400).send(errorResponse);
                 }
                 const voteChoice = await this.CheckEmptyTitleVoteChoice(item);
-                if(voteChoice !== undefined && voteChoice.length > 0) {
+                if(voteChoice !== null && voteChoice !== '' && voteChoice.length === 0) {
+                    const errorResponse = ResponseUtil.getErrorResponse('VoteChoice is empty.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+                if(voteChoice !== null && voteChoice.length > 0) {
                     const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteChoice title what you wrote.', foundItemTitle);
                     return res.status(400).send(errorResponse);
                 }
 
-                if(voteChoice === ''){
+                if(voteChoice !== null && voteChoice === ''){
                     const errorResponse = ResponseUtil.getErrorResponse('VoteChoice Title is required.', undefined);
                     return res.status(400).send(errorResponse);
                 }
@@ -5089,7 +5105,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         } */
 
-        const regex = /[$%^&*()_+|~=`{}\[\]\/<>]/;
+        const regex = /[$%^&*_+|~=`{}\[\]\/<>]/;
         const matchTitle = title.match(regex);
         if(matchTitle !== null && matchTitle.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
@@ -5138,9 +5154,20 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
+        if(votingEventRequest.voteItem.length === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('VoteItem is empty.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         if(votingEventRequest.voteItem.length > 0) {
             for(const item of votingEventRequest.voteItem) {
-                const foundItemTitle =  item.titleItem.match(regex);
+
+                if(item.titleItem === undefined) {
+                    const errorResponse = ResponseUtil.getErrorResponse('VoteItem Title is required.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+                const foundItemTitle =  item.titleItem ? item.titleItem.match(regex) : null;
                 if(foundItemTitle !== null && foundItemTitle.length > 0) {
                     const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteItem title what you wrote.', foundItemTitle);
                     return res.status(400).send(errorResponse);
@@ -5151,6 +5178,12 @@ export class VotingController {
                     return res.status(400).send(errorResponse);
                 }
                 const voteChoice = await this.CheckEmptyTitleVoteChoice(item);
+
+                if(voteChoice === undefined) {
+                    const errorResponse = ResponseUtil.getErrorResponse('VoteChoice is empty.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
                 if(voteChoice !== undefined && voteChoice.length > 0) {
                     const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteChoice title what you wrote.', foundItemTitle);
                     return res.status(400).send(errorResponse);
@@ -5781,7 +5814,7 @@ export class VotingController {
     }
 
     private async CheckEmptyTitleVoteChoice(voteItems: any): Promise<any> {
-        const regex = /[%^&*()_+|~=`{}\[\]\/]/;
+        const regex = /[%^&*_+|~=`{}\[\]\/]/;
         if (voteItems) {
             const voteChoiceObj = voteItems.voteChoice;
             if (voteChoiceObj.length > 0) {
@@ -5791,9 +5824,12 @@ export class VotingController {
                         return foundTitleVoteChoice;
                     }
                     if(voteChoicePiece.title === ''){
-                        return voteChoicePiece.title;
+                        return '';
                     }
+                    return foundTitleVoteChoice;
                 }
+            } else {
+                return [];
             }
         }
     }
