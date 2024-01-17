@@ -378,8 +378,8 @@ export class DialogCreateVote extends AbstractPage {
 
   private _setDataVote() {
     this.dataVote = {
-      title: this.title,
-      detail: this.detail,
+      title: this.title.trim(),
+      detail: this.detail.trim(),
       assetId: !!this.image ? this.image.assetId : null,
       coverPageURL: this.image ? this.image.coverPageURL : null,
       s3CoverPageURL: this.image ? this.image.s3CoverPageURL : null,
@@ -613,8 +613,32 @@ export class DialogCreateVote extends AbstractPage {
       }).catch((err) => {
         if (err) {
           this.isLoading = false;
+          this._errorMsgCreateVote(err);
         }
       });
+    }
+  }
+
+  private _errorMsgCreateVote(err) {
+    if (err.error.message === 'Found special characters in title what you wrote.') {
+      this.isLoading = false;
+      this.showAlertDialog("ไม่สามารถมีอักษรพิเศษในหัวเรื่องได้");
+    }
+    if (err.error.message === 'Found special characters in detail what you wrote.') {
+      this.isLoading = false;
+      this.showAlertDialog("ไม่สามารถมีอักษรพิเศษในรายละเอียดได้");
+    }
+    if (err.error.message === 'Found special characters in voteItem title what you wrote.') {
+      this.isLoading = false;
+      this.showAlertDialog("ไม่สามารถมีอักษรพิเศษในหัวเรื่องคำถามได้");
+    }
+    if (err.error.message === 'VoteItem Title is required.') {
+      this.isLoading = false;
+      this.showAlertDialog("กรุณาใส่คำถาม");
+    }
+    if (err.error.message === 'VoteChoice Title is required.') {
+      this.isLoading = false;
+      this.showAlertDialog("กรุณาใส่ตัวเลือก");
     }
   }
 
@@ -755,6 +779,8 @@ export class DialogCreateVote extends AbstractPage {
                 this.isLoading = false;
                 this.showAlertDialog("ไม่สามารถกำหนดวันที่สิ้นสุดต่ำกว่าวันที่ปัจจุบันได้");
               }
+              this._errorMsgCreateVote(err);
+
               if (err.error.message === 'Cannot create a voting Item, Vote Choice is empty.') {
                 this.isLoading = false;
                 let dialog = this.dialog.open(DialogAlert, {
@@ -808,6 +834,8 @@ export class DialogCreateVote extends AbstractPage {
                 this.isLoading = false;
                 this.showAlertDialog("ไม่สามารถกำหนดวันที่สิ้นสุดต่ำกว่าวันที่ปัจจุบันได้");
               }
+              this._errorMsgCreateVote(err);
+
               if (err.error.message === 'Cannot create a voting Item, Vote Choice is empty.') {
                 this.isLoading = false;
                 let dialog = this.dialog.open(DialogAlert, {

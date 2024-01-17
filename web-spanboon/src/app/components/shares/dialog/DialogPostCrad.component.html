@@ -77,10 +77,11 @@
                 </div>
                 <div class="box-content">
                     <div class="title">
-                        <p>{{data.post.title}}</p>
+                        <!-- <div [innerHTML]="data.post.title | readmore:300"></div> -->
+                        <div>{{data.post.title}}</div>
                     </div>
                     <div class="title detail">
-                        <p>{{data.post.detail}}</p>
+                        <div>{{data.post.detail}}</div>
                     </div>
                     <div class="title hashtag" *ngIf="!!data.post.hashTag">
                         <span>#{{data.post.hashTag}}</span>
@@ -174,8 +175,17 @@
                         </div>
                         <hr>
                     </ng-container>
-                    <span class="show-voter-name">{{data.post.showVoterName ? 'โหวตนี้มีการแสดงชื่อผู้โหวต' :
+                    <span class="show-voter-name" *ngIf="data.post.status !== 'support'">{{data.post.showVoterName ?
+                        'โหวตนี้มีการแสดงชื่อผู้โหวต' :
                         'โหวตนี้ไม่แสดงชื่อผู้โหวต'}}</span>
+                    <ng-container *ngIf="data.post.status === 'support'">
+                        <div class="detail-vote-support">
+                            <span>โหวตจะเปิดให้ลงคะแนน เมื่อได้รับการสนับสนุนครบ {{data.post.minSupport}} คน ภายใน
+                                {{data.post.supportDaysRange}} วัน</span>
+                            <span>ร่วมลงชื่อสนับสนุนได้ที่ด้านล่าง</span>
+                        </div>
+                    </ng-container>
+
                     <ng-container *ngIf="data.post.approved; else elseApproved">
                         <ng-container *ngFor="let item of posts;let index = index">
                             <div class="question">
@@ -190,7 +200,8 @@
                                             (click)="chooseChoice(item,choice,index,i,item.type)">
                                             <div class="choice">
                                                 <div class="image" *ngIf="!!choice.coverPageURL">
-                                                    <img [src]="apiBaseURL + choice.coverPageURL + '/image'" alt="">
+                                                    <display-gallery [gallery]="[{imageURL: choice.coverPageURL}]"
+                                                        (clickShowImage)="showDialogGallery($event)"></display-gallery>
                                                 </div>
                                                 <div class="answer">
                                                     <span>{{choice.title}}</span>
@@ -223,7 +234,8 @@
                                             choice.active ? addOrRemoveActive(choice,'multi','remove',index,i) : addOrRemoveActive(choice,'multi','add',index,i)">
                                             <div class="choice">
                                                 <div class="image" *ngIf="!!choice.coverPageURL">
-                                                    <img [src]="apiBaseURL + choice.coverPageURL + '/image'" alt="">
+                                                    <display-gallery [gallery]="[{imageURL: choice.coverPageURL}]"
+                                                        (clickShowImage)="showDialogGallery($event)"></display-gallery>
                                                 </div>
                                                 <div class="answer">
                                                     <span>{{choice.title}}</span>

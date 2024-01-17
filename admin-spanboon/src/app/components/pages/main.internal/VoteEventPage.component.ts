@@ -186,8 +186,9 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         } else {
             result.startSupportDatetime = this.valueStartSupport;
             result.endSupportDatetime = this.valueEndSupport;
+            result.startVoteDatetime = null;
+            result.endVoteDatetime = null;
         }
-
         this.voteEventFacade.edit(this._id, result).then((res) => {
             this.table.searchData();
             this._setFields();

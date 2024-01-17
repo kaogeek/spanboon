@@ -18,10 +18,9 @@ import { environment } from '../../../../environments/environment';
 import { MESSAGE } from '../../../../custom/variable';
 import { SearchFilter } from 'src/app/models/SearchFilter';
 import { DialogList } from './DialogList.component';
+import Glightbox from 'glightbox';
 
 const PAGE_NAME: string = 'postcard';
-const SEARCH_LIMIT: number = 10;
-const SEARCH_OFFSET: number = 0;
 
 @Component({
   selector: 'dialog-postcard',
@@ -656,6 +655,24 @@ export class DialogPostCrad extends AbstractPage {
         title: "แชร์",
         text: window.location.origin + this.router.url
       }
+    });
+  }
+
+  public async showDialogGallery(imageGallery) {
+    let lightbox = Glightbox();
+    let arrayImage = [];
+    for await (let galleryImage of imageGallery.gallerys) {
+      arrayImage.push({
+        href: this.apiBaseURL + galleryImage.imageURL + '/image',
+        type: 'image' // Type is only required if GlIghtbox fails to know what kind of content should display
+      })
+    }
+    lightbox.setElements(arrayImage);
+    lightbox.openAt(imageGallery.index);
+    lightbox.on('open', (target) => {
+    });
+    lightbox.on('close', (target) => {
+      lightbox.destroy();
     });
   }
 

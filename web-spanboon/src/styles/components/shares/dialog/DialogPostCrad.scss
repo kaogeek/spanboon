@@ -429,8 +429,14 @@
             }
           }
 
-          > p {
+          > div {
             word-break: break-all;
+
+            > span {
+              color: blue;
+              cursor: pointer;
+              text-decoration: underline;
+            }
           }
 
           &.hashtag {
@@ -502,6 +508,17 @@
           @include font-size-10($font-head-100);
         }
 
+        > .detail-vote-support {
+          margin: 0 auto;
+          width: 80%;
+          display: flex;
+          flex-direction: column;
+          text-align: center;
+          margin-top: 15pt;
+          color: #757575;
+          @include font-size-10($font-head-100);
+        }
+
         > .question {
           display: flex;
           flex-direction: column;
@@ -524,19 +541,21 @@
 
           > span {
             @include font-size-11($font-head-100);
-            color: #c5c5c5;
-            margin: 15px 0 15px 0;
+            color: #9f9f9f;
+            margin: 15px 0 10px 0;
           }
 
           > img {
             border-radius: 16px;
+            margin: 10px 0 20px 0;
           }
 
           > .title {
             color: black;
             @include font-size-8($font-head-500);
             margin: 0px;
-            padding: 20px 0 13px 0;
+            padding: 0 0 13px 0;
+            word-break: break-all;
           }
 
           > .wrapper-choice {
@@ -610,6 +629,7 @@
               gap: 10px;
 
               > .image {
+                pointer-events: all;
                 flex: 0 0 auto;
 
                 > img {
@@ -618,6 +638,15 @@
                   border-radius: 4px;
                   object-fit: cover;
                   @include pointer;
+                }
+
+                > display-gallery {
+                  > .div-image-gallery {
+                    > display-image {
+                      width: 44px;
+                      height: 44px;
+                    }
+                  }
                 }
               }
 

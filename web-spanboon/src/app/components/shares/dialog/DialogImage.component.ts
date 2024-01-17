@@ -8,7 +8,6 @@
 import { Component, Input, Inject, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { ImageCropperComponent, CropperSettings } from "ngx-img-cropper";
-
 @Component({
   selector: 'dialog-image',
   templateUrl: './DialogImage.component.html'
