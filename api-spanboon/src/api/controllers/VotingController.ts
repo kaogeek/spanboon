@@ -5179,17 +5179,17 @@ export class VotingController {
                 }
                 const voteChoice = await this.CheckEmptyTitleVoteChoice(item);
 
-                if(voteChoice === undefined) {
+                if(voteChoice !== null && voteChoice !== '' && voteChoice.length === 0) {
                     const errorResponse = ResponseUtil.getErrorResponse('VoteChoice is empty.', undefined);
                     return res.status(400).send(errorResponse);
                 }
 
-                if(voteChoice !== undefined && voteChoice.length > 0) {
+                if(voteChoice !== null && voteChoice.length > 0) {
                     const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteChoice title what you wrote.', foundItemTitle);
                     return res.status(400).send(errorResponse);
                 }
 
-                if(voteChoice === ''){
+                if(voteChoice !== null && voteChoice === ''){
                     const errorResponse = ResponseUtil.getErrorResponse('VoteChoice Title is required.', undefined);
                     return res.status(400).send(errorResponse);
                 }
