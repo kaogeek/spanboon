@@ -170,6 +170,7 @@ export class VotePage extends AbstractPage implements OnInit {
             this.paramsKey === 'ที่ฉันลงชื่อให้การสนับสนุน') {
             this._searchContent(null, this.paramsKey, false, true);
           } else {
+            this.isHashTagAll = true;
             this._searchContent(this.paramsKey, this.paramsKey);
           }
         } else {
@@ -287,6 +288,7 @@ export class VotePage extends AbstractPage implements OnInit {
       }
     }
     if (!!isScroll) this.offset += this.limit;
+    if (this.isHashTagAll) keyword = this.paramsKey;
     this.isEmpty = false;
     if (isOwn) {
       this.voteFacade.searchOwn(key, keyword, this.limit, this.offset).then((res: any) => {
@@ -315,16 +317,22 @@ export class VotePage extends AbstractPage implements OnInit {
       this.voteFacade.searchAll(this.isLogin(), key, keyword, this.limit, this.offset).then((res: any) => {
         if (res) {
           if (!!type && isScroll) {
-            this.model[type] = this.model[type].concat(res[type]);
+            if (this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closeSupport' && this.typeAll === 'hashTagVote') {
+              this.model[type][0].votingEvent = this.model[type][0].votingEvent.concat(res[type][0].votingEvent);
+            } else {
+              this.model[type] = this.model[type].concat(res[type]);
+            }
           } else {
             this.model = res;
             if (res.closeDate.length === 0 &&
               res.hashTagVote.length === 0 &&
               res.closetSupport.length === 0 &&
               res.pin.length === 0 &&
-              res.supporter.length === 0 && !type) this.isEmpty = true;
+              res.supporter.length === 0 && !type) {
+              this.isEmpty = true;
+            }
           }
-          if (res[type].length === 0) {
+          if (res[type].length === 0 || res[type][0].votingEvent.length === 0) {
             this.limitLoad++;
           }
           if (this.limitLoad === 2) this.isCantLoad = true;
@@ -528,6 +536,19 @@ export class VotePage extends AbstractPage implements OnInit {
             });
             dialogRef.afterClosed().subscribe((res) => {
               this.checkOpenDialog = false;
+              if (res) {
+                let pattern = /key=(.+)/;
+                let match = res.match(pattern);
+                if (match && match[1]) {
+                  if (this.router.url.includes($event._id)) {
+                    this.offset = 0;
+                    this.limitLoad = 1;
+                    this.isCantLoad = false;
+                    this.router.navigate(['', 'vote', 'all'], { queryParams: { key: match[1] } });
+                    this.paramsKey = match[1];
+                  }
+                }
+              }
               if (res === 'my-vote') {
                 if (this.router.url.includes($event._id)) {
                   this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '/my-vote')]);
