@@ -4260,6 +4260,20 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
+        const regex = /[%^&*()_+|~=`{}\[\]\/]/;
+        const matchTitle = votingEventRequest.title.match(regex);
+        if(matchTitle !== null && matchTitle.length > 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
+            return res.status(400).send(errorResponse);
+        }
+
+        const matchDetail = votingEventRequest.detail ? votingEventRequest.detail.match(regex) : null;
+
+        if(matchDetail !== null && matchDetail.length > 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Found special characters in detail what you wrote.', matchTitle);
+            return res.status(400).send(errorResponse);
+        }
+
         if (votingEventRequest.oldPictures.length > 0) {
             for (const assetId of votingEventRequest.oldPictures) {
                 await this.assetService.update({ _id: new ObjectID(assetId) }, { $set: { expirationDate: today } });
@@ -4722,14 +4736,14 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
         */
-        const regex = /[$%^&*()_+|~=`{}\[\]\/<>]/;
+        const regex = /[%^&*()_+|~=`{}\[\]\/]/;
         const matchTitle = title.match(regex);
         if(matchTitle !== null && matchTitle.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
             return res.status(400).send(errorResponse);
         }
 
-        const matchDetail = detail.match(regex);
+        const matchDetail = detail ? detail.match(regex) : null;
 
         if(matchDetail !== null && matchDetail.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in detail what you wrote.', matchTitle);
@@ -5082,7 +5096,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
-        const matchDetail = detail.match(regex);
+        const matchDetail = detail ? detail.match(regex) : null;
 
         if(matchDetail !== null && matchDetail.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in detail what you wrote.', matchTitle);
@@ -5767,7 +5781,7 @@ export class VotingController {
     }
 
     private async CheckEmptyTitleVoteChoice(voteItems: any): Promise<any> {
-        const regex = /[$%^&*()_+|~=`{}\[\]\/<>]/;
+        const regex = /[%^&*()_+|~=`{}\[\]\/]/;
         if (voteItems) {
             const voteChoiceObj = voteItems.voteChoice;
             if (voteChoiceObj.length > 0) {
