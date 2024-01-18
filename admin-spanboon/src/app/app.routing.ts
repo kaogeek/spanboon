@@ -103,10 +103,10 @@ const routes: Routes = [
         path: ManipulatePost.PAGE_NAME,
         component: ManipulatePost
       },
-      {
-        path: StandardItemPage.PAGE_NAME,
-        component: StandardItemPage
-      },
+      // {
+      //   path: StandardItemPage.PAGE_NAME,
+      //   component: StandardItemPage
+      // },
       {
         path: HashtagPage.PAGE_NAME,
         component: HashtagPage
