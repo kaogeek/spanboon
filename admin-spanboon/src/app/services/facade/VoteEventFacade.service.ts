@@ -34,6 +34,17 @@ export class VoteEventFacade extends AbstractFacade {
     });
   }
 
+  public getVoteHashtag(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/admin/voted/hashtag';
+      this.http.get(url).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public search(searchFilter: SearchFilter): Promise<VoteEvent[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/admin/voted/all/search';
