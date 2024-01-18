@@ -398,6 +398,17 @@
   }
 }
 
+.hashtag {
+  .mat-form-field-infix {
+    width: 100%;
+    display: flex;
+
+    > span {
+      width: 80pt;
+    }
+  }
+}
+
 .input-group[disabled] {
   .input-group-prepend .input-group-text,
   .input-group-append .input-group-text {
