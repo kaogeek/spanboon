@@ -4809,7 +4809,11 @@ export class VotingController {
                     return res.status(400).send(errorResponse);
                 }
                 const voteChoice = await this.CheckEmptyTitleVoteChoice(item);
-                if(voteChoice !== null && voteChoice !== '' && voteChoice.length === 0) {
+                if(item.typeChoice !== 'text' && 
+                   voteChoice !== null && 
+                   voteChoice !== '' && 
+                   voteChoice.length === 0
+                ) {
                     const errorResponse = ResponseUtil.getErrorResponse('VoteChoice is empty.', undefined);
                     return res.status(400).send(errorResponse);
                 }
@@ -5179,7 +5183,11 @@ export class VotingController {
                 }
                 const voteChoice = await this.CheckEmptyTitleVoteChoice(item);
 
-                if(voteChoice !== null && voteChoice !== '' && voteChoice.length === 0) {
+                if(item.typeChoice !== 'text' && 
+                   voteChoice !== null && 
+                   voteChoice !== '' && 
+                   voteChoice.length === 0) 
+                {
                     const errorResponse = ResponseUtil.getErrorResponse('VoteChoice is empty.', undefined);
                     return res.status(400).send(errorResponse);
                 }
