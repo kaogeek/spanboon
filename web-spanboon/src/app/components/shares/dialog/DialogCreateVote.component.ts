@@ -378,8 +378,8 @@ export class DialogCreateVote extends AbstractPage {
 
   private _setDataVote() {
     this.dataVote = {
-      title: this.title.trim(),
-      detail: this.detail.trim(),
+      title: !!this.title ? this.title.trim() : null,
+      detail: !!this.detail ? this.detail.trim() : null,
       assetId: !!this.image ? this.image.assetId : null,
       coverPageURL: this.image ? this.image.coverPageURL : null,
       s3CoverPageURL: this.image ? this.image.s3CoverPageURL : null,
