@@ -13,6 +13,9 @@ import { DialogImagePreview } from '../../shares/DialogImagePreview.component';
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
 import { VoteEventFacade } from '../../../services/facade/VoteEventFacade.service';
+import { FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 
 const PAGE_NAME: string = "vote";
@@ -54,6 +57,11 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     public imageCover: any;
     public _id: any;
     public listStatus: any[] = ['vote', 'support', 'close'];
+    public listHashtag: any[] = [];
+
+    public hashTag = new FormControl();
+    public filteredOptions: Observable<string[]>;
+
     constructor(voteEventFacade: VoteEventFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
         this.voteEventFacade = voteEventFacade;
@@ -119,6 +127,29 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     }
 
     public ngOnInit() {
+        this._getHashTag();
+
+        this.filteredOptions = this.hashTag.valueChanges
+            .pipe(
+                startWith(''),
+                map(value => this._filter(value))
+            );
+    }
+
+    private _filter(value: string): string[] {
+        const filterValue = value.toLowerCase();
+
+        return this.listHashtag.filter(option => option.toLowerCase().includes(filterValue));
+    }
+
+    private _getHashTag() {
+        this.voteEventFacade.getVoteHashtag().then((res) => {
+            if (res) {
+                this.listHashtag = res;
+            }
+        }).catch((err) => {
+            if (err) { }
+        });
     }
 
     private _setFields(): void {
@@ -153,6 +184,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         this.valueEndVote = data.endVoteDatetime;
         this.valueTitle = data.title;
         this.valueDetail = data.detail;
+        this.hashTag.setValue(data.hashTag);
         this.drawer.toggle();
     }
 
@@ -174,6 +206,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         result.pin = this.valuePin;
         result.showVoterName = this.valueShowName;
         result.showVoteResult = this.valueShowResult;
+        result.hashTag = this.hashTag.value;
 
         if (!!this.valueStartVote && !!this.valueEndVote) {
             result.startSupportDatetime = this.valueStartSupport;

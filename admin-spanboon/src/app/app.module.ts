@@ -27,7 +27,7 @@ import {
   MatSlideToggleModule, MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule,
   MatStepperModule, MatTabsModule, MatExpansionModule, MatButtonToggleModule,
   MatChipsModule, MatIconModule, MatProgressSpinnerModule, MatProgressBarModule, MatDialogModule,
-  MatTooltipModule, MatSnackBarModule, MatTableModule, MatSortModule, MatPaginatorModule, MatNativeDateModule, MatCardModule, MatRippleModule
+  MatTooltipModule, MatSnackBarModule, MatTableModule, MatSortModule, MatPaginatorModule, MatNativeDateModule, MatCardModule, MatRippleModule, MAT_DATE_LOCALE
 } from '@angular/material';
 
 import { AppRoutingModule } from './app.routing';
@@ -185,6 +185,10 @@ const SERVICE_CLASSES: any[] = [
     provide: SWIPER_CONFIG,
     useValue: DEFAULT_SWIPER_CONFIG
   },
+  {
+    provide: MAT_DATE_LOCALE,
+    useValue: 'en-GB'
+  }
 ];
 
 @NgModule({
