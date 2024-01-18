@@ -71,6 +71,7 @@ export class VotePage extends AbstractPage implements OnInit {
   public offset: number = 0;
   public limitLoad: number = 1;
   public scrollDistance = 2;
+  public positionY: number;
   public menuList: any[] = [
     {
       name: 'โหวตทั้งหมด',
@@ -202,8 +203,9 @@ export class VotePage extends AbstractPage implements OnInit {
       filter((e: KeyboardEvent) => e.keyCode === 13),
       distinctUntilChanged()
     ).subscribe((text: any) => {
+      this.offset = 0;
       if (this.activeUrl['name'] === undefined || this.activeUrl['name'] === '') {
-        this._searchContent(text.target.value);
+        this._searchContent(null, null, null, null, text.target.value);
       } else {
         this.searchValue(text.target.value);
       }
@@ -236,8 +238,10 @@ export class VotePage extends AbstractPage implements OnInit {
     });
   }
 
-  private _searchContent(keyword?, type?, isScroll?, isOwn?) {
+  private _searchContent(keyword?, type?, isScroll?, isOwn?, inputKeyword?) {
     this.isLoading = true;
+    this.isSearch = true;
+    if (inputKeyword === undefined || inputKeyword === '') this.isSearch = false;
     if (type === 'ปักหมุด') this.typeAll = 'pin';
     else if (type === 'ใกล้ปิดโหวต') this.typeAll = 'closeDate';
     else if (type === 'ใกล้ปิดล่ารายชื่อ') this.typeAll = 'closeSupport';
@@ -288,6 +292,7 @@ export class VotePage extends AbstractPage implements OnInit {
       }
     }
     if (!!isScroll) this.offset += this.limit;
+    if (!!inputKeyword) keyword = inputKeyword;
     if (this.isHashTagAll) keyword = this.paramsKey;
     this.isEmpty = false;
     if (isOwn) {
@@ -318,7 +323,13 @@ export class VotePage extends AbstractPage implements OnInit {
         if (res) {
           if (!!type && isScroll) {
             if (this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closeSupport' && this.typeAll === 'hashTagVote') {
-              this.model[type][0].votingEvent = this.model[type][0].votingEvent.concat(res[type][0].votingEvent);
+              if (res[type].length > 1) {
+                const indexModel = this.model.hashTagVote.findIndex(item => item._id === this.paramsKey);
+                const index = res.hashTagVote.findIndex(item => item._id === this.paramsKey);
+                this.model[type][indexModel].votingEvent = this.model[type][indexModel].votingEvent.concat(res[type][index].votingEvent);
+              } else {
+                this.model[type][0].votingEvent = this.model[type][0].votingEvent.concat(res[type][0].votingEvent);
+              }
             } else {
               this.model[type] = this.model[type].concat(res[type]);
             }
@@ -395,7 +406,7 @@ export class VotePage extends AbstractPage implements OnInit {
             this.isEmpty = false;
           }
           this.isLoading = false;
-          this._scrollSearchContent(condition);
+          if (res.length >= this.limit) this._scrollSearchContent(condition);
         }
       }).catch((err) => {
         if (err) {
@@ -507,6 +518,8 @@ export class VotePage extends AbstractPage implements OnInit {
   public openDialogPost($event) {
     if (!this.isOpenDialog) {
       this.isOpenDialog = true;
+      sessionStorage.setItem('posY', this.positionY.toString());
+      let posY = sessionStorage.getItem('posY');
       if (!$event.approved && $event.status === 'support') {
         this.voteFacade.getSupport($event._id).then((res) => {
           if (res) {
@@ -570,6 +583,13 @@ export class VotePage extends AbstractPage implements OnInit {
                   this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '')]);
                   this.activeMenu = '';
                 }
+              }
+
+              if (!!posY) {
+                setTimeout(() => {
+                  this._scrollToHeightSmooth(Number(posY));
+                  sessionStorage.removeItem('posY');
+                }, 300);
               }
             });
             this.isOpenDialog = false;
@@ -652,6 +672,12 @@ export class VotePage extends AbstractPage implements OnInit {
                     this.router.navigate([this.router.url.replace(`/event/${$event._id}`, '')]);
                     this.activeMenu = '';
                   }
+                }
+                if (!!posY) {
+                  setTimeout(() => {
+                    this._scrollToHeightSmooth(Number(posY));
+                    sessionStorage.removeItem('posY');
+                  }, 300);
                 }
               });
             }
@@ -765,9 +791,9 @@ export class VotePage extends AbstractPage implements OnInit {
       } else if (this.activeUrl['name'] === 'result') {
         this._scrollSearchContent({ "closed": true });
       } else if (this.activeUrl['name'] === 'all') {
-        this._searchContent(null, this.typeAll, true);
+        this._searchContent(!!this.searchInputValue ? this.searchInputValue : null, this.typeAll, true);
       } else if (this.activeUrl['name'] === 'own') {
-        this._searchContent(null, this.typeAll, true, true);
+        this._searchContent(!!this.searchInputValue ? this.searchInputValue : null, this.typeAll, true, true);
       }
     }
   }
@@ -779,7 +805,7 @@ export class VotePage extends AbstractPage implements OnInit {
     search.limit = this.limit;
     search.offset = this.offset += this.limit;
     let whereConditions = condition;
-    this.voteFacade.search(search, whereConditions, null).then((res: any) => {
+    this.voteFacade.search(search, whereConditions, !!this.searchInputValue ? this.searchInputValue : null).then((res: any) => {
       if (res) {
         if (res.length === 0) this.limitLoad++;
         if (this.limitLoad === 2) this.isCantLoad = true;
@@ -811,5 +837,17 @@ export class VotePage extends AbstractPage implements OnInit {
     } else {
       this.isRes = false;
     }
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  WindowScrollEvent(event: KeyboardEvent) {
+    this.positionY = window.scrollY;
+  }
+
+  private _scrollToHeightSmooth(position) {
+    window.scrollTo({
+      top: position,
+      behavior: 'smooth'
+    });
   }
 }

@@ -54,7 +54,7 @@ export class LoginPage implements OnInit {
         setTimeout(() => {
             this.authenManager.login(this.username, this.password).then((res) => {
                 this.isLoading = false;
-                this.router.navigateByUrl("main/item")
+                this.router.navigateByUrl("main/emergency")
             }).catch((err) => {
                 this.isLoading = false;
                 this.dialogWarning(err.error.message);

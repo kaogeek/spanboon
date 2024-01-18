@@ -151,7 +151,6 @@
         justify-content: space-between;
         position: relative;
         gap: 25px;
-        padding-top: $height-header-top;
 
         @media (max-width: $medium) {
           gap: 15px;
