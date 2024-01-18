@@ -292,7 +292,10 @@ export class VotePage extends AbstractPage implements OnInit {
       }
     }
     if (!!isScroll) this.offset += this.limit;
-    if (!!inputKeyword) keyword = inputKeyword;
+    if (!!inputKeyword) {
+      this.searchInputValue = inputKeyword;
+      keyword = inputKeyword;
+    }
     if (this.isHashTagAll) keyword = this.paramsKey;
     this.isEmpty = false;
     if (isOwn) {
@@ -304,8 +307,7 @@ export class VotePage extends AbstractPage implements OnInit {
             this.model = res;
             if (res.closeDate.length === 0 &&
               res.hashTagVote.length === 0 &&
-              res.pin.length === 0 &&
-              res.supporter.length === 0 && !type) this.isEmpty = true;
+              res.pin.length === 0 && !type) this.isEmpty = true;
           }
           if (res[type].length === 0) {
             this.limitLoad++;
@@ -338,8 +340,7 @@ export class VotePage extends AbstractPage implements OnInit {
             if (res.closeDate.length === 0 &&
               res.hashTagVote.length === 0 &&
               res.closetSupport.length === 0 &&
-              res.pin.length === 0 &&
-              res.supporter.length === 0 && !type) {
+              res.pin.length === 0 && !type) {
               this.isEmpty = true;
             }
           }
