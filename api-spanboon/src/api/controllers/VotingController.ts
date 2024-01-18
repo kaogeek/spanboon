@@ -2788,7 +2788,8 @@ export class VotingController {
                 [
                     {
                         $match: {
-                            userId: userObjId
+                            userId: userObjId,
+                            title: exp
                         }
                     },
                     {
@@ -3036,7 +3037,8 @@ export class VotingController {
                 [
                     {
                         $match: {
-                            userId: userObjId
+                            userId: userObjId,
+                            title: exp
                         }
                     },
                     {
