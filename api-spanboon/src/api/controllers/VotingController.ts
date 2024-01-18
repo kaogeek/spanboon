@@ -2788,7 +2788,7 @@ export class VotingController {
                 [
                     {
                         $match: {
-                            userId: userObjId
+                            userId: userObjId,
                         }
                     },
                     {
@@ -2806,6 +2806,11 @@ export class VotingController {
                                         $expr: {
                                             $eq: ['$$id', '$_id']
                                         }
+                                    }
+                                },
+                                {
+                                    $match:{
+                                        title: exp
                                     }
                                 },
                                 {
@@ -3036,7 +3041,7 @@ export class VotingController {
                 [
                     {
                         $match: {
-                            userId: userObjId
+                            userId: userObjId,
                         }
                     },
                     {
@@ -3049,6 +3054,11 @@ export class VotingController {
                                         $expr: {
                                             $eq: ['$$votingId', '$_id']
                                         }
+                                    }
+                                },
+                                {
+                                    $match:{
+                                        title: exp
                                     }
                                 },
                                 {
