@@ -245,7 +245,8 @@ export class AdminVotedController {
 
                 startVoteDatetime: startVoteDate,
                 endVoteDatetime:   endVoteDate, 
-
+                hashTag: votingEventRequest.hashTag,
+                
                 showVoterName: votingEventRequest.showVoterName,
                 showVoteResult: votingEventRequest.showVoteResult,
             }
@@ -267,7 +268,8 @@ export class AdminVotedController {
     
                     startVoteDatetime: startVoteDate,
                     endVoteDatetime:   endVoteDate, 
-    
+                    hashTag: votingEventRequest.hashTag,
+
                     showVoterName: votingEventRequest.showVoterName,
                     showVoteResult: votingEventRequest.showVoteResult,
                 }
@@ -291,7 +293,8 @@ export class AdminVotedController {
         
                         startVoteDatetime: startVoteDate,
                         endVoteDatetime:   endVoteDate, 
-        
+                        hashTag: votingEventRequest.hashTag,
+
                         showVoterName: votingEventRequest.showVoterName,
                         showVoteResult: votingEventRequest.showVoteResult,
                     }
@@ -312,7 +315,8 @@ export class AdminVotedController {
         
                         startVoteDatetime: startVoteDate,
                         endVoteDatetime:   endVoteDate, 
-        
+                        hashTag: votingEventRequest.hashTag,
+
                         showVoterName: votingEventRequest.showVoterName,
                         showVoteResult: votingEventRequest.showVoteResult,
                     }
