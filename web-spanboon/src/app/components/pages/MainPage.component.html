@@ -5,7 +5,8 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="spanboon-main-page" id="menubottom" #mainpage (window:resize)="scrollTop($event)">
+<div class="spanboon-main-page" [ngStyle]="{'padding-top': !hidebar ? '0px' : '45pt'}" id="menubottom" #mainpage
+    (window:resize)="scrollTop($event)">
     <!-- (window:resize)="removeSize($event)" -->
     <!-- check authen -->
     <authen-check-page></authen-check-page>
