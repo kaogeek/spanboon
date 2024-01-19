@@ -18,6 +18,7 @@ import { VotingEventModel } from '../models/VotingEventModel';
 import { UserSupport as UserSupportModel } from '../models/UserSupportModel';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
+import * as fs from 'fs';
 import { PageService } from '../services/PageService';
 import moment from 'moment';
 // import { RetrieveVoteService } from '../services/RetrieveVotingOptionService';
@@ -25,6 +26,7 @@ import { Page } from '../models/Page';
 import { ObjectUtil } from '../../utils/ObjectUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
+import * as path from 'path';
 import {
     DEFAULT_MIN_SUPPORT,
     MIN_SUPPORT,
@@ -631,7 +633,6 @@ export class VotingController {
 
         const successResponse = ResponseUtil.getSuccessResponse('You good to go.', undefined);
         return res.status(200).send(successResponse);
-
     }
 
     @Post('/contents')
@@ -5740,7 +5741,6 @@ export class VotingController {
     const newValues = {$set:{countSupport:voteEventObj.countSupport + 1}};
     await this.votingEventService.update(query,newValues);
     */
-
     @Post('/unsupport/')
     @Authorized('user')
     public async Unsupport(@Body({ validate: true }) supportRequest: SupportRequest, @Res() res: any, @Req() req: any): Promise<any> {
@@ -5776,7 +5776,19 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
     }
+    
+    @Get('/.well-known/apple-app-site-association/')
+    public async DeepLink(@Res() res: any, @Req() req: any): Promise<any> {
+        const test = path.join(__dirname, '../../../apple-app-site-association'); // Construct an absolute file path
 
+        if(fs.existsSync(test) === false) {
+            return null;
+        }
+        const readfile = fs.readFileSync(test, { encoding: 'utf8' });
+      
+        return res.status(200).send(readfile);
+    }
+    
     private async VoteChoice(voteItemId: string, voteItem: any, votingId: string, userId: string, pageId: string): Promise<any> {
         const created: any = [];
         if (voteItem.voteItemId !== undefined && voteItem.answer === undefined) {
@@ -5960,5 +5972,4 @@ export class VotingController {
             }
         }
     }
-
 }
