@@ -1,6 +1,6 @@
 <ng-container *ngIf="isAndroid; else elseTemplate">
-    <pre>{{ data.default | json}}</pre>
+    <pre>{{ android.default | json}}</pre>
 </ng-container>
 <ng-template #elseTemplate>
-    <pre>{{respone | json}}</pre>
+    <pre>{{iOS | json}}</pre>
 </ng-template>
