@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
     templateUrl: './DialogImagePreview.component.html'
 })
 export class DialogImagePreview {
-    private baseURL: string;
+    public baseURL: string;
 
     constructor(public dialogRef: MatDialogRef<DialogImagePreview>,
         @Inject(MAT_DIALOG_DATA) public data: any) {
