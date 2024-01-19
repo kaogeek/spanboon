@@ -118,13 +118,14 @@
                                             style="margin-left: 0px;padding: 9px;">ขณะนี้ยังไม่มีคนโหวตหัวข้อนี้</span>
                                     </ng-container>
                                     <ng-template #elseVoteShowName>
-                                        <span style="margin-left: 10px;padding: 9px;"
+                                        <span style="padding: 9px;"
+                                            [ngStyle]="{'margin-left': data.choice.voteCount > 0 && data.post.showVoterName ? '10px' : '0px'}"
                                             [innerHTML]="data.choice.voteCount > 0 ? 'โหวตนี้มีผู้โหวตแล้วทั้งหมด ' + data.choice.voteCount + ' คน' : 'ขณะนี้ยังไม่มีคนโหวตหัวข้อนี้'"></span>
                                     </ng-template>
                                 </ng-container>
                                 <ng-template #elseVoteLength>
                                     <span *ngIf="!data.post.showVoterName"
-                                        style="margin-left: 10px;padding: 9px;">โหวตนี้มีผู้โหวตแล้วทั้งหมด
+                                        style="margin-left: 0px;padding: 9px;">โหวตนี้มีผู้โหวตแล้วทั้งหมด
                                         {{data.choice.voteCount}} คน</span>
                                 </ng-template>
                             </ng-container>
