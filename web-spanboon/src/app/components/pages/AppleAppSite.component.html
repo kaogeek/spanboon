@@ -1,1 +1,6 @@
-<pre>{{ data.default | json}}</pre>
+<ng-container *ngIf="isAndroid; else elseTemplate">
+    <pre>{{ data.default | json}}</pre>
+</ng-container>
+<ng-template #elseTemplate>
+    <pre>{{respone | json}}</pre>
+</ng-template>

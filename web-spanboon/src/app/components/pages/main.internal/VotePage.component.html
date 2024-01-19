@@ -7,7 +7,7 @@
                     [routerLink]="!!item.status ? ['', 'vote', item.status] : ['','vote']"
                     (click)="activeMenu = item.status;changeMenu(activeMenu)">
                     <div class="icon">
-                        <img [ngStyle]="{'width': item.status !== activeMenu && item.status === 'my-vote' ? '50px' : '16px'}"
+                        <img [ngStyle]="{'width': item.status !== activeMenu && (item.status === 'my-vote' || item.status === 'result') ? '24px' : '16px','height': item.status !== activeMenu && (item.status === 'my-vote' || item.status === 'result') ? '24px' : '16px'}"
                             [src]="item.status === activeMenu ? item.icon2 : item.icon">
                     </div>
                     <span>{{item.name}}</span>
