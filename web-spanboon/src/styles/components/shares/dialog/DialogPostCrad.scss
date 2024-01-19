@@ -430,7 +430,7 @@
           }
 
           > div {
-            word-break: break-all;
+            word-break: break-word;
 
             > span {
               color: blue;
@@ -555,7 +555,7 @@
             @include font-size-8($font-head-500);
             margin: 0px;
             padding: 0 0 13px 0;
-            word-break: break-all;
+            word-break: break-word;
           }
 
           > .wrapper-choice {

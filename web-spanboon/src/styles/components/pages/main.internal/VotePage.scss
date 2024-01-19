@@ -139,6 +139,7 @@
         align-items: center;
 
         > span {
+          text-align: center;
           color: #c5c5c5;
           margin-top: 16px;
           @include font-size-7($font-head-500);
