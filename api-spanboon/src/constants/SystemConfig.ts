@@ -133,3 +133,6 @@ export const SUPPORT_DAYS_RANGE = 'support.days.range';
 
 export const DEFAULT_VOTE_DAYS_RANGE = 30;
 export const VOTE_DAYS_RANGE ='vote.days.range';
+
+export const DEFAULT_TRIGGER_SWITCH_CREATE_VOTES = false;
+export const TRIGGER_SWITCH_CREATE_VOTES = 'trigger.switch.create.votes';

@@ -167,7 +167,7 @@ export class AdminVotedController {
                 approved:voteApproved,
                 approveUsername:user.displayName,
                 approveDatetime:today,
-                pin:votingEventRequest.pin ? votingEventRequest.pin : voteObj.pin,
+                pin:false,
                 status: votingEventRequest.status ? votingEventRequest.status : voteObj.status,
 
                 startVoteDatetime: today,
@@ -560,7 +560,7 @@ export class AdminVotedController {
                             approveDatetime:today,
                             startVoteDatetime:today,
                             endVoteDatetime: new Date(today.getTime() + ( (24 * vote.voteDaysRange) * 60 * 60 * 1000)), // voteDaysRange;
-                            pin:true,
+                            pin:false,
                             status: 'vote'
                         }};  
                     await this.votingEventService.update(query,newValues);              

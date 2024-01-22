@@ -26,6 +26,9 @@ import { Page } from '../models/Page';
 import { ObjectUtil } from '../../utils/ObjectUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
+// import { DeviceToken } from '../models/DeviceToken';
+import axios from 'axios';
+import qs from 'qs';
 import * as path from 'path';
 import {
     DEFAULT_MIN_SUPPORT,
@@ -41,7 +44,9 @@ import {
     DEFAULT_VOTE_DAYS_RANGE,
     VOTE_DAYS_RANGE,
     DEFAULT_CLOSET_SUPPORT,
-    CLOSET_SUPPORT
+    CLOSET_SUPPORT,
+    DEFAULT_TRIGGER_SWITCH_CREATE_VOTES,
+    TRIGGER_SWITCH_CREATE_VOTES,
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -1038,6 +1043,7 @@ export class VotingController {
                     },
                     {
                         $match: {
+                            pin:false,
                             userId: userObjId,
                             title: exp
                         }
@@ -1267,6 +1273,7 @@ export class VotingController {
                     },
                     {
                         $match: {
+                            pin:false,
                             status: 'support',
                             title: exp
                         }
@@ -1508,7 +1515,8 @@ export class VotingController {
                             endVoteDatetime: { $gte: today, $lte: dateNow },
                             approved: true,
                             closed: false,
-                            title: exp
+                            title: exp,
+                            pin: false,
                         }
                     },
                     {
@@ -1865,6 +1873,11 @@ export class VotingController {
                                     }
                                 },
                                 {
+                                    $match:{
+                                        pin: false,
+                                    }
+                                },
+                                {
                                     $skip: skips
                                 },
                                 {
@@ -2117,6 +2130,7 @@ export class VotingController {
                 ]
             );
         }
+
         let hashTagCount = 0;
         if (hashTagVote !== undefined && hashTagVote.length > 0) {
             for (const count of hashTagVote) {
@@ -4977,9 +4991,9 @@ export class VotingController {
         let minSupportValue = DEFAULT_MIN_SUPPORT;
         // ELIGIBLE_VOTES
         let triggerValue = DEFAULT_TRIGGER_VOTE;
-        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
         const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
         let eligibleValue = undefined;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
         const configMinSupport = await this.configService.getConfig(MIN_SUPPORT);
 
         if (sdrConfig) {
@@ -5432,7 +5446,6 @@ export class VotingController {
             for (const item of votedRequest.voteItem) {
 
                 const voted = await this.CheckSpamVote(item, votingObjId, votedRequest.pageId, userObjId);
-                console.log('voted', voted);
                 if (voted === undefined) {
                     const voteItemObj = await this.voteItemService.findOne({ _id: new ObjectID(item.voteItemId) });
                     if (voteItemObj === undefined && voteItemObj === null) {
@@ -5735,6 +5748,121 @@ export class VotingController {
         }
     }
 
+    @Post('/ranking/')
+    public async RankingLevel(@Res() res: any, @Req() req: any): Promise<any> {
+        if(req.headers.userid === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('UserId not found.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const userObjId = new ObjectID(req.headers.userid);
+        // ranking level
+        let triggerSwitchCreateVote = DEFAULT_TRIGGER_SWITCH_CREATE_VOTES;
+        const triggerSwitchCreateVoteConfig = await this.configService.getConfig(TRIGGER_SWITCH_CREATE_VOTES);
+        if (triggerSwitchCreateVoteConfig) {
+            triggerSwitchCreateVote = triggerSwitchCreateVoteConfig.value;
+        }
+
+        if(String(triggerSwitchCreateVote) === 'true') {
+            const successResponse = ResponseUtil.getSuccessResponse('Everyone can create votes level 3.', triggerSwitchCreateVote);
+            return res.status(200).send(successResponse);
+        }
+
+        let eligibleValue = undefined;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        if (eligibleConfig) {
+            eligibleValue = eligibleConfig.value;
+        }
+        // whitelist
+        const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+        const userObj = await this.userService.findOne({ _id: userObjId });
+        if (split.includes(userObj.email) === true) {
+            const successResponse = ResponseUtil.getSuccessResponse('You good to go level 1.', triggerSwitchCreateVote);
+            return res.status(200).send(successResponse);
+        }
+        // membership
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
+
+        const response = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        // check the status user MFP
+        const tokenCredential = response.data.access_token;
+        const getMembershipById = await axios.get(
+            process.env.API_MFP_GET_ID + userObjId,
+            {
+                headers: {
+                    Authorization: `Bearer ${tokenCredential}`
+                }
+            }
+        );
+
+        if (getMembershipById.data.data.state !== 'APPROVED') {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Login Your state is not APPROVED.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const today = moment().toDate();
+
+        // check the expired_membership
+        const date = new Date(getMembershipById.data.data.expired_at);
+        const expired_at = date.getTime();
+        // check authentication by id or mobile or identification_number
+        // .getTime() <= today.getTime()
+        if (expired_at <= today.getTime()) {
+            const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
+            return res.status(400).send(errorUserNameResponse);
+        }
+        if (getMembershipById.data.data.state === 'PENDING_PAYMENT' && getMembershipById.data.data.membership_type === 'UNKNOWN') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_PAYMENT', undefined));
+        }
+        // PENDING_APPROVAL 400
+        if (getMembershipById.data.data.state === 'PENDING_APPROVAL') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_APPROVAL', undefined));
+        }
+        // REJECTED 400
+        if (getMembershipById.data.data.state === 'REJECTED') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('REJECTED', undefined));
+        }
+        // PROFILE_RECHECKED 400
+        if (getMembershipById.data.data.state === 'PROFILE_RECHECKED') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('PROFILE_RECHECKED', undefined));
+        }
+        if (getMembershipById.data.data.state === 'ARCHIVED') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('ARCHIVED', undefined));
+        }
+
+        const authentication = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP'});
+
+        if(authentication !== undefined) {
+            const successResponse = ResponseUtil.getSuccessResponse('Your membership of MFP Level 2.', undefined);
+            return res.status(200).send(successResponse);
+        }
+        const success = ResponseUtil.getSuccessResponse('You are not whitelist and membership and config is false', triggerSwitchCreateVote);
+        return res.status(400).send(success);
+    }
+
+    @Get('/.well-known/apple-app-site-association/')
+    public async DeepLink(@Res() res: any, @Req() req: any): Promise<any> {
+        const test = path.join(__dirname, '../../../apple-app-site-association'); // Construct an absolute file path
+
+        if(fs.existsSync(test) === false) {
+            return null;
+        }
+        const readfile = fs.readFileSync(test, { encoding: 'utf8' });
+      
+        return res.status(200).send(readfile);
+    }
+
     // RetrieveVotingOptions ## Unsupport
     /*
     const query = {_id:votingObjId};
@@ -5775,18 +5903,6 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot support vote.', undefined);
             return res.status(400).send(errorResponse);
         }
-    }
-    
-    @Get('/.well-known/apple-app-site-association/')
-    public async DeepLink(@Res() res: any, @Req() req: any): Promise<any> {
-        const test = path.join(__dirname, '../../../apple-app-site-association'); // Construct an absolute file path
-
-        if(fs.existsSync(test) === false) {
-            return null;
-        }
-        const readfile = fs.readFileSync(test, { encoding: 'utf8' });
-      
-        return res.status(200).send(readfile);
     }
     
     private async VoteChoice(voteItemId: string, voteItem: any, votingId: string, userId: string, pageId: string): Promise<any> {
