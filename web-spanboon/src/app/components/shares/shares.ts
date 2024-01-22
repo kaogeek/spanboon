@@ -40,3 +40,4 @@ export * from './FulfillItem.component';
 export * from './TagEvent.component';
 export * from './FulFillMenu.component';
 export * from './Spinners.component';
+export * from './CustomHeaderDatePicker.component';

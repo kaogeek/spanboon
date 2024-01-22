@@ -43,6 +43,7 @@ import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { CustomHeaderDatePicker, HeaderDate } from './components/shares/CustomHeaderDatePicker.component';
 
 initializeApp(environment.firebase);
 
@@ -60,7 +61,7 @@ import { DeviceDetectorModule } from 'ngx-device-detector';
 
 import {
   PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, PipeThFormatDatetime,
-  PipeThDatetime, HighlightText, HighlightTextEvent, ConvertTextNotification
+  PipeThDatetime, HighlightText, HighlightTextEvent, ConvertTextNotification, ReadmorePipe, CustomDateFormat
 } from './components/shares/pipes/pipes';
 
 import {
@@ -106,6 +107,7 @@ import {
   FulfillPage,
   PageHashTag,
   EventSearch,
+  ProcessingPage,
   LoginMemberProcessing,
   MemberProcess,
   MobileProcessing,
@@ -357,6 +359,7 @@ const COMPONENTS: any[] = [
   FulfillPage,
   PageHashTag,
   EventSearch,
+  ProcessingPage,
   LoginMemberProcessing,
   MemberProcess,
   MobileProcessing,
@@ -489,13 +492,15 @@ const PIPE_CLASSES: any[] = [
   ShortNumberPipe,
   PrefixNumberPipe,
   PipeDatetime,
+  CustomDateFormat,
   PipeThFormatDatetime,
   PipeThDatetime,
   HighlightText,
   HighlightTextEvent,
   ConvertTextNotification,
   SafePipe,
-  RemoveBadWords
+  RemoveBadWords,
+  ReadmorePipe,
 ];
 
 const DIRECTIVE_CLASSES: any[] = [
@@ -638,7 +643,7 @@ registerLocaleData(localeFr, 'th-TH', localeFrExtra);
   ],
   providers: SERVICE_CLASSES,
   bootstrap: BOOSTRAP_CLASSES,
-  declarations: [COMPONENTS, PIPE_CLASSES, DIRECTIVE_CLASSES],
+  declarations: [COMPONENTS, PIPE_CLASSES, DIRECTIVE_CLASSES, CustomHeaderDatePicker, HeaderDate],
   entryComponents: COMPONENTS,
 })
 export class AppModule {

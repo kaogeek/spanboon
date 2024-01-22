@@ -45,10 +45,12 @@ export class CardContentVote implements OnInit {
         let user = JSON.parse(localStorage.getItem('pageUser'));
         this.userId = !!user ? user.id : undefined;
         if (this.model.status === 'support') {
+            this.model.isMoreThanMonth = this._calculateDate(this.model.endSupportDatetime, true) > 30;
             this.model.endVoteDay = this._calculateDate(this.model.endSupportDatetime, true);
             this.model.endVoteHour = this._calculateDate(this.model.endSupportDatetime, false);
             this.model.endVoteMinute = this._calculateDate(this.model.endSupportDatetime, false, true);
         } else {
+            this.model.isMoreThanMonth = this._calculateDate(this.model.endVoteDatetime, true) > 30;
             this.model.endVoteDay = this._calculateDate(this.model.endVoteDatetime, true);
             this.model.endVoteHour = this._calculateDate(this.model.endVoteDatetime, false);
             this.model.endVoteMinute = this._calculateDate(this.model.endVoteDatetime, false, true);
