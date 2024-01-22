@@ -469,3 +469,4 @@ export * from './main.internal/MobileProcessing.component';
 export * from './main.internal/KnowledgeCenter.component';
 export * from './main.internal/VotePage.component';
 export * from './main.internal/MenuList.component';
+export * from './main.internal/ProcessingPage.component';

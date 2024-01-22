@@ -371,11 +371,13 @@
               }
 
               > span {
-                @include font-size-9($font-head-500);
-                color: #fff;
-                &:last-child {
-                  opacity: 0.6;
-                  @include font-size-11($font-head-500);
+                opacity: 0.6;
+                color: $white;
+                @include font-size-11($font-head-500);
+
+                &:first-of-type {
+                  @include font-size-9($font-head-500);
+                  opacity: 1;
                 }
               }
 

@@ -152,10 +152,12 @@ export class DialogPostCrad extends AbstractPage {
 
       if (!this.data.post.endVoteDay) {
         if (this.data.post.status === 'support') {
+          this.data.post.isMoreThanMonth = this._calculateDate(this.data.post.endSupportDatetime, true) > 30;
           this.data.post.endVoteDay = this._calculateDate(this.data.post.endSupportDatetime, true);
           this.data.post.endVoteHour = this._calculateDate(this.data.post.endSupportDatetime, false);
           this.data.post.endVoteMinute = this._calculateDate(this.data.post.endSupportDatetime, false, true);
         } else {
+          this.data.post.isMoreThanMonth = this._calculateDate(this.data.post.endVoteDatetime, true) > 30;
           this.data.post.endVoteDay = this._calculateDate(this.data.post.endVoteDatetime, true);
           this.data.post.endVoteHour = this._calculateDate(this.data.post.endVoteDatetime, false);
           this.data.post.endVoteMinute = this._calculateDate(this.data.post.endVoteDatetime, false, true);

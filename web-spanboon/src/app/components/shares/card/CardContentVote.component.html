@@ -51,8 +51,9 @@
                         [ngClass]="{'one-day-left': model.endVoteDay === 0,'three-days-left': model.endVoteDay > 1 && model.endVoteDay <= 2}">
                         <span>{{model.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
                         <ng-container *ngIf="model.endVoteDay > 0">
-                            <span>{{model.endVoteDay}}</span>
-                            <span> วัน </span>
+                            <span>{{!model.isMoreThanMonth ? model.endVoteDay : model.endVoteDay |
+                                customDateFormat}}</span>
+                            <span *ngIf="!model.isMoreThanMonth"> วัน </span>
                         </ng-container>
                         <ng-container *ngIf="model.endVoteHour > 0 && model.endVoteDay <= 0">
                             <span>{{model.endVoteHour}}</span>
