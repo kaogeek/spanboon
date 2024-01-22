@@ -1038,6 +1038,7 @@ export class VotingController {
                     },
                     {
                         $match: {
+                            pin:false,
                             userId: userObjId,
                             title: exp
                         }
@@ -1267,6 +1268,7 @@ export class VotingController {
                     },
                     {
                         $match: {
+                            pin:false,
                             status: 'support',
                             title: exp
                         }
@@ -1508,7 +1510,8 @@ export class VotingController {
                             endVoteDatetime: { $gte: today, $lte: dateNow },
                             approved: true,
                             closed: false,
-                            title: exp
+                            title: exp,
+                            pin: false,
                         }
                     },
                     {
@@ -1865,6 +1868,11 @@ export class VotingController {
                                     }
                                 },
                                 {
+                                    $match:{
+                                        pin: false,
+                                    }
+                                },
+                                {
                                     $skip: skips
                                 },
                                 {
@@ -2117,6 +2125,7 @@ export class VotingController {
                 ]
             );
         }
+
         let hashTagCount = 0;
         if (hashTagVote !== undefined && hashTagVote.length > 0) {
             for (const count of hashTagVote) {
