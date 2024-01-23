@@ -4814,20 +4814,21 @@ export class VotingController {
         const today = moment().toDate();
         let minSupportValue = DEFAULT_MIN_SUPPORT;
         // ELIGIBLE_VOTES
-        let triggerValue = DEFAULT_TRIGGER_VOTE;
+        // let triggerValue = DEFAULT_TRIGGER_VOTE;
         let sdr = DEFAULT_SUPPORT_DAYS_RANGE;
         let vdr = DEFAULT_VOTE_DAYS_RANGE;
         const voteDaysRangeConfig = await this.configService.getConfig(VOTE_DAYS_RANGE);
         const sdrConfig = await this.configService.getConfig(SUPPORT_DAYS_RANGE);
-        const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
-        let eligibleValue = undefined;
-        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        // const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
+        // let eligibleValue = undefined;
+        // const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
         const configMinSupport = await this.configService.getConfig(MIN_SUPPORT);
 
         if (sdrConfig) {
             sdr = sdrConfig.value;
         }
 
+        /* 
         if (triggerConfig) {
             triggerValue = triggerConfig.value;
         }
@@ -4835,7 +4836,7 @@ export class VotingController {
         if (eligibleConfig) {
             eligibleValue = eligibleConfig.value;
         }
-
+        */
         if (voteDaysRangeConfig) {
             vdr = voteDaysRangeConfig.value;
         }
