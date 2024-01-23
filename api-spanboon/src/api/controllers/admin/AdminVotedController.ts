@@ -258,6 +258,8 @@ export class AdminVotedController {
         if(votingEventRequest.closed === true) {
             newValues = {
                 $set:{
+                    title: votingEventRequest.title,
+                    detail: votingEventRequest.detail,
                     closed: true,
                     closeDate:null,
                     approved:voteApproved,
@@ -283,6 +285,8 @@ export class AdminVotedController {
             if(voteObj.startVoteDatetime === null && voteObj.endVoteDatetime === null) {
                 newValues = {
                     $set:{
+                        title: votingEventRequest.title,
+                        detail: votingEventRequest.detail,
                         closed: false,
                         closeDate:null,
                         approved:voteApproved,
@@ -305,6 +309,8 @@ export class AdminVotedController {
             } else {
                 newValues = {
                     $set:{
+                        title: votingEventRequest.title,
+                        detail: votingEventRequest.detail,
                         closed: false,
                         closeDate:null,
                         approved:voteApproved,
