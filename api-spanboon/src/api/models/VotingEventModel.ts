@@ -103,6 +103,9 @@ export class VotingEventModel extends BaseModel {
     @Column({ name: 'service' })
     public service: string;
 
+    @Column({ name: 'hide' })
+    public hide: boolean;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

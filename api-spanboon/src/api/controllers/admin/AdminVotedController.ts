@@ -232,6 +232,8 @@ export class AdminVotedController {
         // approved.
         newValues = {
             $set:{
+                title: votingEventRequest.title,
+                detail: votingEventRequest.detail,
                 closed: votingEventRequest.closed,
                 closeDate:null,
                 approved:voteApproved,
@@ -249,6 +251,7 @@ export class AdminVotedController {
                 
                 showVoterName: votingEventRequest.showVoterName,
                 showVoteResult: votingEventRequest.showVoteResult,
+                hide: votingEventRequest.hide,
             }
         };
 
