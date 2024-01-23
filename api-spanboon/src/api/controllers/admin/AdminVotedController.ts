@@ -131,10 +131,6 @@ export class AdminVotedController {
         let votePin = votingEventRequest.pin;
         let voteShowed = votingEventRequest.showVoteResult;
 
-        if (voteApproved === null || voteApproved === undefined) {
-            voteApproved = voteObj.approved;
-        }
-
         if (votePin === null || votePin === undefined) {
             votePin = voteObj.pin;
         }
@@ -143,7 +139,7 @@ export class AdminVotedController {
 
         }
 
-        if(voteApproved === false){
+        if(voteObj === true && voteApproved === false){
             const errorResponse = ResponseUtil.getErrorResponse('Approve vote should be true.', undefined);
             return res.status(400).send(errorResponse);
         }
