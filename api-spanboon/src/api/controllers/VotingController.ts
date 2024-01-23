@@ -415,6 +415,7 @@ export class VotingController {
                         pin: 1,
                         showVoterName: 1,
                         showVoteResult: 1,
+                        hide:1,
                         voted: 1,
                         service: 1,
                         passing_scores: 1,
@@ -723,6 +724,7 @@ export class VotingController {
                             voted: 1,
                             service: 1,
                             passing_scores: 1,
+                            hide:1,
                             createPage: {
                                 $cond: [
                                     {
@@ -993,6 +995,7 @@ export class VotingController {
                             showVoteResult: 1,
                             voted: 1,
                             service: 1,
+                            hide:1,
                             createPage: {
                                 $cond: [
                                     {
@@ -1222,6 +1225,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
+                            hide:1,
                             voted: 1,
                             service: 1,
                             createPage: {
@@ -1462,6 +1466,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
+                            hide:1,
                             voted: 1,
                             service: 1,
                             createPage: {
@@ -1781,6 +1786,7 @@ export class VotingController {
                                         pin: 1,
                                         showVoterName: 1,
                                         showVoteResult: 1,
+                                        hide:1,
                                         voted: 1,
                                         service: 1,
                                         createPage: {
@@ -2052,6 +2058,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
+                            hide:1,
                             voted: 1,
                             service: 1,
                             createPage: {
@@ -2518,6 +2525,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
+                            hide:1,
                             service: 1,
                             createPage: {
                                 $cond: [
