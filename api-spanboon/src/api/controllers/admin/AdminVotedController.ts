@@ -122,12 +122,7 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
 
-        if(voteObj.approveDatetime !== null && voteObj.approveUsername !== null) {
-            const errorResponse = ResponseUtil.getErrorResponse('This vote has been approved.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        let voteApproved = votingEventRequest.approved;
+        const voteApproved = votingEventRequest.approved;
         let votePin = votingEventRequest.pin;
         let voteShowed = votingEventRequest.showVoteResult;
 
