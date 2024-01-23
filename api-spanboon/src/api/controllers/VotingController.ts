@@ -415,6 +415,7 @@ export class VotingController {
                         pin: 1,
                         showVoterName: 1,
                         showVoteResult: 1,
+                        hide:1,
                         voted: 1,
                         service: 1,
                         passing_scores: 1,
@@ -552,6 +553,27 @@ export class VotingController {
                     }
                 },
                 {
+                    $lookup: {
+                        from: 'Voted',
+                        let: { 'id': '$_id' },
+                        pipeline: [
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$id','$votingId']
+                                    }
+                                }
+                            },
+                            {
+                                $match:{
+                                    userId: userObjId
+                                }
+                            }
+                        ],
+                        as: 'myVotes'
+                    }
+                },
+                {
                     $project: {
                         _id: 1,
                         createdDate: 1,
@@ -581,10 +603,20 @@ export class VotingController {
                         page: 1,
                         user: 1,
                         service: 1,
+                        hide: 1,
                         userSupport: {
                             $cond: [
                                 {
                                     $gt: [{ $size: '$userSupport' }, 0]
+                                },
+                                true,
+                                false
+                            ]
+                        },
+                        myVotes:{
+                            $cond:[
+                                {
+                                    $gt: [{ $size : '$myVotes'}, 0]
                                 },
                                 true,
                                 false
@@ -692,6 +724,7 @@ export class VotingController {
                             voted: 1,
                             service: 1,
                             passing_scores: 1,
+                            hide:1,
                             createPage: {
                                 $cond: [
                                     {
@@ -839,6 +872,27 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup: {
+                            from: 'Voted',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                {
+                                    $match:{
+                                        $expr:{
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match:{
+                                        userId: userObjId
+                                    }
+                                }
+                            ],
+                            as: 'myVotes'
+                        }
+                    },
+                    {
                         $project: {
                             _id: 1,
                             createdDate: 1,
@@ -868,10 +922,20 @@ export class VotingController {
                             page: 1,
                             user: 1,
                             service: 1,
+                            hide: 1,
                             userSupport: {
                                 $cond: [
                                     {
                                         $gt: [{ $size: '$userSupport' }, 0]
+                                    },
+                                    true,
+                                    false
+                                ]
+                            },
+                            myVotes:{
+                                $cond:[
+                                    {
+                                        $gt: [{ $size : '$myVotes'}, 0]
                                     },
                                     true,
                                     false
@@ -931,6 +995,7 @@ export class VotingController {
                             showVoteResult: 1,
                             voted: 1,
                             service: 1,
+                            hide:1,
                             createPage: {
                                 $cond: [
                                     {
@@ -1103,6 +1168,7 @@ export class VotingController {
                             page: 1,
                             user: 1,
                             service: 1,
+                            hide: 1,
                             userSupport: {
                                 $cond: [
                                     {
@@ -1159,6 +1225,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
+                            hide:1,
                             voted: 1,
                             service: 1,
                             createPage: {
@@ -1333,6 +1400,7 @@ export class VotingController {
                             page: 1,
                             user: 1,
                             service: 1,
+                            hide: 1,
                             userSupport: {
                                 $cond: [
                                     {
@@ -1398,6 +1466,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
+                            hide:1,
                             voted: 1,
                             service: 1,
                             createPage: {
@@ -1545,6 +1614,48 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup: {
+                            from: 'Voted',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                {
+                                    $match:{
+                                        $expr:{
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match:{
+                                        userId: userObjId
+                                    }
+                                }
+                            ],
+                            as: 'myVotes'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'Voted',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                {
+                                    $match:{
+                                        $expr:{
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match:{
+                                        userId: userObjId
+                                    }
+                                }
+                            ],
+                            as: 'myVotes'
+                        }
+                    },
+                    {
                         $project: {
                             _id: 1,
                             createdDate: 1,
@@ -1574,10 +1685,20 @@ export class VotingController {
                             page: 1,
                             user: 1,
                             service: 1,
+                            hide: 1,
                             userSupport: {
                                 $cond: [
                                     {
                                         $gt: [{ $size: '$userSupport' }, 0]
+                                    },
+                                    true,
+                                    false
+                                ]
+                            },
+                            myVotes:{
+                                $cond:[
+                                    {
+                                        $gt: [{ $size : '$myVotes'}, 0]
                                     },
                                     true,
                                     false
@@ -1665,6 +1786,7 @@ export class VotingController {
                                         pin: 1,
                                         showVoterName: 1,
                                         showVoteResult: 1,
+                                        hide:1,
                                         voted: 1,
                                         service: 1,
                                         createPage: {
@@ -1852,6 +1974,7 @@ export class VotingController {
                                         page: 1,
                                         user: 1,
                                         service: 1,
+                                        hide: 1,
                                         myVote: {
                                             $cond: [
                                                 {
@@ -1935,6 +2058,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
+                            hide:1,
                             voted: 1,
                             service: 1,
                             createPage: {
@@ -2081,6 +2205,27 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup: {
+                            from: 'Voted',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                {
+                                    $match:{
+                                        $expr:{
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match:{
+                                        userId: userObjId
+                                    }
+                                }
+                            ],
+                            as: 'myVotes'
+                        }
+                    },
+                    {
                         $project: {
                             _id: 1,
                             createdDate: 1,
@@ -2110,10 +2255,20 @@ export class VotingController {
                             page: 1,
                             user: 1,
                             service: 1,
+                            hide: 1,
                             userSupport: {
                                 $cond: [
                                     {
                                         $gt: [{ $size: '$userSupport' }, 0]
+                                    },
+                                    true,
+                                    false
+                                ]
+                            },
+                            myVotes: {
+                                $cond:[
+                                    {
+                                        $gt: [{ $size : '$myVotes'}, 0]
                                     },
                                     true,
                                     false
@@ -2370,6 +2525,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
+                            hide:1,
                             service: 1,
                             createPage: {
                                 $cond: [
@@ -2502,6 +2658,27 @@ export class VotingController {
                         }
                     },
                     {
+                        $lookup: {
+                            from: 'Voted',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                {
+                                    $match:{
+                                        $expr:{
+                                            $eq:['$$id','$votingId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match:{
+                                        userId: userObjId
+                                    }
+                                }
+                            ],
+                            as: 'myVotes'
+                        }
+                    },
+                    {
                         $project: {
                             _id: 1,
                             createdDate: 1,
@@ -2531,10 +2708,20 @@ export class VotingController {
                             page: 1,
                             user: 1,
                             service: 1,
+                            hide: 1,
                             userSupport: {
                                 $cond: [
                                     {
                                         $gt: [{ $size: '$userSupport' }, 0]
+                                    },
+                                    true,
+                                    false
+                                ]
+                            },
+                            myVotes:{
+                                $cond:[
+                                    {
+                                        $gt: [{ $size : '$myVotes'}, 0]
                                     },
                                     true,
                                     false
@@ -2765,6 +2952,7 @@ export class VotingController {
                             page: 1,
                             user: 1,
                             service: 1,
+                            hide: 1,
                             userSupport: {
                                 $cond: [
                                     {
@@ -3021,6 +3209,7 @@ export class VotingController {
                                         page: 1,
                                         user: 1,
                                         service: 1,
+                                        hide: 1,
                                         userSupport: {
                                             $cond: [
                                                 {
@@ -3109,6 +3298,7 @@ export class VotingController {
                                         showVoterName: 1,
                                         showVoteResult: 1,
                                         service: 1,
+                                        hide: 1,
                                         createPage: {
                                             $cond: [
                                                 {
@@ -3269,6 +3459,7 @@ export class VotingController {
                                         page: 1,
                                         user: 1,
                                         service: 1,
+                                        hide: 1,
                                         userSupport: {
                                             $cond: [
                                                 {
@@ -3649,7 +3840,8 @@ export class VotingController {
                         voted: 1,
                         page: 1,
                         user: 1,
-                        service: 1
+                        service: 1,
+                        hide: 1,
                     }
                 },
                 {
@@ -3769,6 +3961,7 @@ export class VotingController {
                                     pin: 1,
                                     showVoterName: 1,
                                     showVoteResult: 1,
+                                    hide: 1,
                                     createPage: {
                                         $cond: [
                                             {
@@ -3903,6 +4096,7 @@ export class VotingController {
                                     pin: 1,
                                     showVoterName: 1,
                                     showVoteResult: 1,
+                                    hide: 1,
                                     voted: 1,
                                     page: 1,
                                     user: 1
@@ -4628,20 +4822,21 @@ export class VotingController {
         const today = moment().toDate();
         let minSupportValue = DEFAULT_MIN_SUPPORT;
         // ELIGIBLE_VOTES
-        let triggerValue = DEFAULT_TRIGGER_VOTE;
+        // let triggerValue = DEFAULT_TRIGGER_VOTE;
         let sdr = DEFAULT_SUPPORT_DAYS_RANGE;
         let vdr = DEFAULT_VOTE_DAYS_RANGE;
         const voteDaysRangeConfig = await this.configService.getConfig(VOTE_DAYS_RANGE);
         const sdrConfig = await this.configService.getConfig(SUPPORT_DAYS_RANGE);
-        const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
-        let eligibleValue = undefined;
-        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        // const triggerConfig = await this.configService.getConfig(TRIGGER_VOTE);
+        // let eligibleValue = undefined;
+        // const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
         const configMinSupport = await this.configService.getConfig(MIN_SUPPORT);
 
         if (sdrConfig) {
             sdr = sdrConfig.value;
         }
 
+        /* 
         if (triggerConfig) {
             triggerValue = triggerConfig.value;
         }
@@ -4649,18 +4844,9 @@ export class VotingController {
         if (eligibleConfig) {
             eligibleValue = eligibleConfig.value;
         }
-
+        */
         if (voteDaysRangeConfig) {
             vdr = voteDaysRangeConfig.value;
-        }
-
-        if (String(triggerValue) === 'true') {
-            const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
-            const userObj = await this.userService.findOne({ _id: userObjId });
-            if (split.includes(userObj.email) === false) {
-                const errorResponse = ResponseUtil.getErrorResponse('You have no permission to create the vote event.', undefined);
-                return res.status(400).send(errorResponse);
-            }
         }
 
         if (votingEventRequest.voteDaysRange !== undefined) {
@@ -4856,6 +5042,36 @@ export class VotingController {
             }
         }
 
+        let hideMode = false;
+        const resRank = await this.RankingLevelFunction(userObjId);
+
+        if(resRank.status === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse(resRank.message, resRank.data);
+            return res.status(400).send(errorResponse);
+        }
+
+        let triggerSwitchCreateVote = DEFAULT_TRIGGER_SWITCH_CREATE_VOTES;
+        const triggerSwitchCreateVoteConfig = await this.configService.getConfig(TRIGGER_SWITCH_CREATE_VOTES);
+        if (triggerSwitchCreateVoteConfig) {
+            triggerSwitchCreateVote = triggerSwitchCreateVoteConfig.value;
+        }
+
+        if(resRank.message === 'You are levels 1.') {
+            hideMode = true;
+        }
+        
+        if(resRank.message === 'You are levels 2.') {
+            if(String(triggerSwitchCreateVote) === 'true') {
+                hideMode = true;
+            }
+        }
+
+        if(resRank.message === 'You are levels 3.') {
+            if(String(triggerSwitchCreateVote) === 'true') {
+                hideMode = true;
+            }
+        }
+
         const signUrl = await this.s3Service.s3signCloudFront(votingEventRequest.s3CoverPageURL);
 
         const votingEvent = new VotingEventModel();
@@ -4890,7 +5106,7 @@ export class VotingController {
         votingEvent.showVoterName = showed;
         votingEvent.showVoteResult = votingEventRequest.showVoteResult;
         votingEvent.service = votingEventRequest.service;
-
+        votingEvent.hide = hideMode;
         const result = await this.votingEventService.create(votingEvent);
         const stackVoteItem:any = {
             'VoteItem':[],
@@ -4965,6 +5181,7 @@ export class VotingController {
                 response.showVoteResult = result.showVoteResult;
                 response.voteItems = formatVoteItem;
                 response.service = votingEventRequest.service;
+                response.hide = result.hide;
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully create Voting Event.', response);
                 return res.status(200).send(successResponse);
             } else {
@@ -5230,6 +5447,36 @@ export class VotingController {
             }
         }
 
+        let hideMode = false;
+        const resRank = await this.RankingLevelFunction(userObjId);
+
+        if(resRank.status === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse(resRank.message, resRank.data);
+            return res.status(400).send(errorResponse);
+        }
+
+        let triggerSwitchCreateVote = DEFAULT_TRIGGER_SWITCH_CREATE_VOTES;
+        const triggerSwitchCreateVoteConfig = await this.configService.getConfig(TRIGGER_SWITCH_CREATE_VOTES);
+        if (triggerSwitchCreateVoteConfig) {
+            triggerSwitchCreateVote = triggerSwitchCreateVoteConfig.value;
+        }
+
+        if(resRank.message === 'You are levels 1.') {
+            hideMode = true;
+        }
+        
+        if(resRank.message === 'You are levels 2.') {
+            if(String(triggerSwitchCreateVote) === 'true') {
+                hideMode = true;
+            }
+        }
+
+        if(resRank.message === 'You are levels 3.') {
+            if(String(triggerSwitchCreateVote) === 'true') {
+                hideMode = true;
+            }
+        }
+
         const signUrl = await this.s3Service.s3signCloudFront(votingEventRequest.s3CoverPageURL);
 
         const votingEvent = new VotingEventModel();
@@ -5263,7 +5510,7 @@ export class VotingController {
         votingEvent.showVoterName = showed;
         votingEvent.showVoteResult = votingEventRequest.showVoteResult;
         votingEvent.service = votingEventRequest.service;
-
+        votingEvent.hide = hideMode;
         const result = await this.votingEventService.create(votingEvent);
         
         const stackVoteItem:any = {
@@ -5338,7 +5585,7 @@ export class VotingController {
                 response.showVoteResult = result.showVoteResult;
                 response.voteItems = formatVoteItem;
                 response.service = votingEventRequest.service;
-
+                response.hide = result.hide;
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully create Voting Event.', response);
                 return res.status(200).send(successResponse);
             } else {
@@ -5750,105 +5997,19 @@ export class VotingController {
 
     @Post('/ranking/')
     public async RankingLevel(@Res() res: any, @Req() req: any): Promise<any> {
-        if(req.headers.userid === undefined) {
-            const errorResponse = ResponseUtil.getErrorResponse('UserId not found.', undefined);
+        const reqUserId = req.headers.userid ? req.headers.userid : null;
+
+        const response = await this.RankingLevelFunction(reqUserId);
+
+        if(response.status === 1) {
+            const successResponse = ResponseUtil.getSuccessResponse(response.message, response.data);
+            return res.status(200).send(successResponse);
+        }
+
+        if(response.status === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse(response.message, response.data);
             return res.status(400).send(errorResponse);
         }
-        const userObjId = new ObjectID(req.headers.userid);
-        // ranking level
-        let triggerSwitchCreateVote = DEFAULT_TRIGGER_SWITCH_CREATE_VOTES;
-        const triggerSwitchCreateVoteConfig = await this.configService.getConfig(TRIGGER_SWITCH_CREATE_VOTES);
-        if (triggerSwitchCreateVoteConfig) {
-            triggerSwitchCreateVote = triggerSwitchCreateVoteConfig.value;
-        }
-
-        if(String(triggerSwitchCreateVote) === 'true') {
-            const successResponse = ResponseUtil.getSuccessResponse('Everyone can create votes level 3.', triggerSwitchCreateVote);
-            return res.status(200).send(successResponse);
-        }
-
-        let eligibleValue = undefined;
-        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
-        if (eligibleConfig) {
-            eligibleValue = eligibleConfig.value;
-        }
-        // whitelist
-        const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
-        const userObj = await this.userService.findOne({ _id: userObjId });
-        if (split.includes(userObj.email) === true) {
-            const successResponse = ResponseUtil.getSuccessResponse('You good to go level 1.', triggerSwitchCreateVote);
-            return res.status(200).send(successResponse);
-        }
-        // membership
-        const requestBody = {
-            'grant_type': process.env.GRANT_TYPE,
-            'client_id': process.env.CLIENT_ID,
-            'client_secret': process.env.CLIENT_SECRET,
-            'scope': process.env.SCOPE
-        };
-        const formattedData = qs.stringify(requestBody);
-
-        const response = await axios.post(
-            process.env.APP_MFP_API_OAUTH,
-            formattedData, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Accept: 'application/json'
-            }
-        });
-        // check the status user MFP
-        const tokenCredential = response.data.access_token;
-        const getMembershipById = await axios.get(
-            process.env.API_MFP_GET_ID + userObjId,
-            {
-                headers: {
-                    Authorization: `Bearer ${tokenCredential}`
-                }
-            }
-        );
-
-        if (getMembershipById.data.data.state !== 'APPROVED') {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot Login Your state is not APPROVED.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-        const today = moment().toDate();
-
-        // check the expired_membership
-        const date = new Date(getMembershipById.data.data.expired_at);
-        const expired_at = date.getTime();
-        // check authentication by id or mobile or identification_number
-        // .getTime() <= today.getTime()
-        if (expired_at <= today.getTime()) {
-            const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
-            return res.status(400).send(errorUserNameResponse);
-        }
-        if (getMembershipById.data.data.state === 'PENDING_PAYMENT' && getMembershipById.data.data.membership_type === 'UNKNOWN') {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_PAYMENT', undefined));
-        }
-        // PENDING_APPROVAL 400
-        if (getMembershipById.data.data.state === 'PENDING_APPROVAL') {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_APPROVAL', undefined));
-        }
-        // REJECTED 400
-        if (getMembershipById.data.data.state === 'REJECTED') {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('REJECTED', undefined));
-        }
-        // PROFILE_RECHECKED 400
-        if (getMembershipById.data.data.state === 'PROFILE_RECHECKED') {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('PROFILE_RECHECKED', undefined));
-        }
-        if (getMembershipById.data.data.state === 'ARCHIVED') {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('ARCHIVED', undefined));
-        }
-
-        const authentication = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP'});
-
-        if(authentication !== undefined) {
-            const successResponse = ResponseUtil.getSuccessResponse('Your membership of MFP Level 2.', undefined);
-            return res.status(200).send(successResponse);
-        }
-        const success = ResponseUtil.getSuccessResponse('You are not whitelist and membership and config is false', triggerSwitchCreateVote);
-        return res.status(400).send(success);
     }
 
     @Get('/.well-known/apple-app-site-association/')
@@ -5978,6 +6139,114 @@ export class VotingController {
                 return [];
             }
         }
+    }
+
+    private async RankingLevelFunction(user: string): Promise<any>{
+        const reqUserId = user ? user : null;
+        if(
+            reqUserId === undefined || 
+            reqUserId === null 
+        ) {
+            const errorResponse = ResponseUtil.getErrorResponse('Headers.userid not found.', undefined);
+            return errorResponse;
+        }
+        const userObjId = new ObjectID(user);
+
+        // ranking level
+        let triggerSwitchCreateVote = DEFAULT_TRIGGER_SWITCH_CREATE_VOTES;
+        const triggerSwitchCreateVoteConfig = await this.configService.getConfig(TRIGGER_SWITCH_CREATE_VOTES);
+        if (triggerSwitchCreateVoteConfig) {
+            triggerSwitchCreateVote = triggerSwitchCreateVoteConfig.value;
+        }
+
+        let eligibleValue = undefined;
+        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+        if (eligibleConfig) {
+            eligibleValue = eligibleConfig.value;
+        }
+        // whitelist
+        const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+        const userObj = await this.userService.findOne({ _id: userObjId });
+        if (split.includes(userObj.email) === true) {
+            const successResponse = ResponseUtil.getSuccessResponse('You are levels 1.', triggerSwitchCreateVote);
+            return successResponse;
+        }
+        // membership
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
+
+        const response = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        // check the status user MFP
+        const tokenCredential = response.data.access_token;
+        const getMembershipById = await axios.get(
+            process.env.API_MFP_GET_ID + userObjId,
+            {
+                headers: {
+                    Authorization: `Bearer ${tokenCredential}`
+                }
+            }
+        );
+
+        if (getMembershipById.data.data.state !== 'APPROVED') {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Login Your state is not APPROVED.', undefined);
+            return errorResponse;
+        }
+        const today = moment().toDate();
+
+        // check the expired_membership
+        const date = new Date(getMembershipById.data.data.expired_at);
+        const expired_at = date.getTime();
+        // check authentication by id or mobile or identification_number
+        // .getTime() <= today.getTime()
+        if (expired_at <= today.getTime()) {
+            const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
+            return errorUserNameResponse;
+        }
+        if (getMembershipById.data.data.state === 'PENDING_PAYMENT' && getMembershipById.data.data.membership_type === 'UNKNOWN') {
+            const errorResponse = ResponseUtil.getErrorResponse('PENDING_PAYMENT', undefined);
+            return errorResponse;
+        }
+        // PENDING_APPROVAL 400
+        if (getMembershipById.data.data.state === 'PENDING_APPROVAL') {
+            const errorResponse = ResponseUtil.getErrorResponse('PENDING_APPROVAL', undefined);
+            return errorResponse;
+        }
+        // REJECTED 400
+        if (getMembershipById.data.data.state === 'REJECTED') {
+            const errorResponse = ResponseUtil.getErrorResponse('REJECTED', undefined);
+            return errorResponse;
+        }
+        // PROFILE_RECHECKED 400
+        if (getMembershipById.data.data.state === 'PROFILE_RECHECKED') {
+            const errorResponse = ResponseUtil.getErrorResponse('PROFILE_RECHECKED', undefined);
+            return errorResponse;
+        }
+        if (getMembershipById.data.data.state === 'ARCHIVED') {
+            const errorResponse = ResponseUtil.getErrorResponse('ARCHIVED', undefined);
+            return errorResponse;
+        }
+
+        const authentication = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP'});
+        if(authentication !== undefined) {
+            const successResponse = ResponseUtil.getSuccessResponse('You are levels 2.', triggerSwitchCreateVote);
+            return successResponse;
+        } else {
+            const successResponse = ResponseUtil.getSuccessResponse('You are levels 3.', triggerSwitchCreateVote);
+            return successResponse;
+        }
+        
     }
 
     private async UpdateVoteChoice(voteItem: any): Promise<any> {

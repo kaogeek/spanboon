@@ -122,18 +122,9 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
 
-        if(voteObj.approveDatetime !== null && voteObj.approveUsername !== null) {
-            const errorResponse = ResponseUtil.getErrorResponse('This vote has been approved.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        let voteApproved = votingEventRequest.approved;
+        const voteApproved = votingEventRequest.approved;
         let votePin = votingEventRequest.pin;
         let voteShowed = votingEventRequest.showVoteResult;
-
-        if (voteApproved === null || voteApproved === undefined) {
-            voteApproved = voteObj.approved;
-        }
 
         if (votePin === null || votePin === undefined) {
             votePin = voteObj.pin;
@@ -143,7 +134,7 @@ export class AdminVotedController {
 
         }
 
-        if(voteApproved === false){
+        if(voteObj === true && voteApproved === false){
             const errorResponse = ResponseUtil.getErrorResponse('Approve vote should be true.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -232,6 +223,8 @@ export class AdminVotedController {
         // approved.
         newValues = {
             $set:{
+                title: votingEventRequest.title,
+                detail: votingEventRequest.detail,
                 closed: votingEventRequest.closed,
                 closeDate:null,
                 approved:voteApproved,
@@ -249,12 +242,15 @@ export class AdminVotedController {
                 
                 showVoterName: votingEventRequest.showVoterName,
                 showVoteResult: votingEventRequest.showVoteResult,
+                hide: votingEventRequest.hide,
             }
         };
 
         if(votingEventRequest.closed === true) {
             newValues = {
                 $set:{
+                    title: votingEventRequest.title,
+                    detail: votingEventRequest.detail,
                     closed: true,
                     closeDate:null,
                     approved:voteApproved,
@@ -280,6 +276,8 @@ export class AdminVotedController {
             if(voteObj.startVoteDatetime === null && voteObj.endVoteDatetime === null) {
                 newValues = {
                     $set:{
+                        title: votingEventRequest.title,
+                        detail: votingEventRequest.detail,
                         closed: false,
                         closeDate:null,
                         approved:voteApproved,
@@ -302,6 +300,8 @@ export class AdminVotedController {
             } else {
                 newValues = {
                     $set:{
+                        title: votingEventRequest.title,
+                        detail: votingEventRequest.detail,
                         closed: false,
                         closeDate:null,
                         approved:voteApproved,
