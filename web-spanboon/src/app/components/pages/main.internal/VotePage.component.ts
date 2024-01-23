@@ -244,8 +244,8 @@ export class VotePage extends AbstractPage implements OnInit {
     if (inputKeyword === undefined || inputKeyword === '') this.isSearch = false;
     if (type === 'ปักหมุด') this.typeAll = 'pin';
     else if (type === 'ใกล้ปิดโหวต') this.typeAll = 'closeDate';
-    else if (type === 'ใกล้ปิดล่ารายชื่อ') this.typeAll = 'closeSupport';
-    else if (!!keyword && this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closeSupport') {
+    else if (type === 'ใกล้ปิดล่ารายชื่อ') this.typeAll = 'closetSupport';
+    else if (!!keyword && this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closetSupport') {
       this.typeAll = 'hashTagVote';
       this.isHashTagAll = true;
     } else {
@@ -270,8 +270,8 @@ export class VotePage extends AbstractPage implements OnInit {
         key = {
           pin: type === 'pin' || type === 'ปักหมุด' ? true : false,
           closeVote: type === 'closeDate' || type === 'ใกล้ปิดโหวต' ? true : false,
-          closetSupport: type === 'closeSupport' || type === 'ใกล้ปิดล่ารายชื่อ' ? true : false,
-          hashTagVote: this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closeSupport' ? true : false
+          closetSupport: type === 'closetSupport' || type === 'ใกล้ปิดล่ารายชื่อ' ? true : false,
+          hashTagVote: this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closetSupport' ? true : false
         };
       }
     } else {
@@ -324,7 +324,7 @@ export class VotePage extends AbstractPage implements OnInit {
       this.voteFacade.searchAll(this.isLogin(), key, keyword, this.limit, this.offset).then((res: any) => {
         if (res) {
           if (!!type && isScroll) {
-            if (this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closeSupport' && this.typeAll === 'hashTagVote') {
+            if (this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closetSupport' && this.typeAll === 'hashTagVote') {
               if (res[type].length > 1) {
                 const indexModel = this.model.hashTagVote.findIndex(item => item._id === this.paramsKey);
                 const index = res.hashTagVote.findIndex(item => item._id === this.paramsKey);

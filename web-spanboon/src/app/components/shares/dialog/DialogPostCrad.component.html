@@ -60,11 +60,28 @@
                                 <div class="owner-name">
                                     <span>{{user.firstName !== undefined ? user.firstName : user.pageUsername}}</span>
                                     <ng-container
-                                        *ngIf="!data.post.closed && data.post.endVoteDay >= 0; else elseClosedVote">
-                                        <span>ปิดโหวตใน {{data.post.endVoteDay}} วัน {{data.post.endVoteHour <= 0 ? '' :
-                                                data.post.endVoteHour + ' ชั่วโมง' }}</span>
+                                        *ngIf="!data.post.closed && data.post.endVoteDay >= 0; else elseClosed">
+                                        <span>
+                                            <span>{{data.post.status === 'vote' ? 'ปิดโหวตใน' : 'ปิดลงชื่อใน'}} </span>
+                                            <ng-container *ngIf="data.post.endVoteDay > 0">
+                                                <span>{{!data.post.isMoreThanMonth ? data.post.endVoteDay :
+                                                    data.post.endVoteDay |
+                                                    customDateFormat}}</span>
+                                                <span *ngIf="!data.post.isMoreThanMonth"> วัน </span>
+                                            </ng-container>
+                                            <ng-container
+                                                *ngIf="data.post.endVoteHour > 0 && data.post.endVoteDay <= 0">
+                                                <span>{{data.post.endVoteHour}}</span>
+                                                <span> ชั่วโมง</span>
+                                            </ng-container>
+                                            <ng-container
+                                                *ngIf="data.post.endVoteDay <= 0 && data.post.endVoteHour <= 0">
+                                                <span>{{data.post.endVoteMinute}}</span>
+                                                <span> นาที</span>
+                                            </ng-container>
+                                        </span>
                                     </ng-container>
-                                    <ng-template #elseClosedVote>
+                                    <ng-template #elseClosed>
                                         <span>ปิดโหวตแล้ว</span>
                                     </ng-template>
                                 </div>

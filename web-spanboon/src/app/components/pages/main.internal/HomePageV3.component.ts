@@ -953,7 +953,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           disableClose: true,
           maxWidth: '100%',
           data: {
-            text: 'testNakrub ',
+            text: '',
             bottomText1: 'ไม่ใช่ตอนนี้',
             bottomText2: 'ดาวน์โหลดเลย',
             options: 'download',
