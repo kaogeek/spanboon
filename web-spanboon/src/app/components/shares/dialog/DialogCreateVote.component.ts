@@ -127,9 +127,9 @@ export class DialogCreateVote extends AbstractPage {
   }
 
   private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
+    const filterValue = value;
 
-    return this.listHashtag.filter(option => option.toLowerCase().includes(filterValue));
+    return this.listHashtag.filter(option => option.includes(filterValue));
   }
 
   private _performInput() {
@@ -147,20 +147,20 @@ export class DialogCreateVote extends AbstractPage {
   public ngAfterViewInit(): void {
   }
 
-  private _setValues(value: any) {
-    this.title = value.title;
-    this.detail = value.detail;
-    this.image.assetId = value.assetId;
-    this.image.coverPageURL = value.coverPageURL;
-    this.image.s3CoverPageURL = value.s3CoverPageURL;
-    this.voteDayRange = value.voteDaysRange;
-    this.type = value.type;
-    this.hashTag.setValue(value.hashTag);
-    this.isShowVoterName = value.showVoterName;
-    this.isShowVoteResult = value.showVoteResult;
-    this.thanksMessage = value.service;
-    this.listQuestion = this.data.support.voteItem;
-    this.indexQuestion = !!value.voteItem ? value.voteItem.length + 1 : this.data.support.voteItem.length + 1;
+  private _setValues(value: any, isNull?) {
+    this.title = isNull ? '' : value.title;
+    this.detail = isNull ? '' : value.detail;
+    this.image.assetId = isNull ? null : value.assetId;
+    this.image.coverPageURL = isNull ? null : value.coverPageURL;
+    this.image.s3CoverPageURL = isNull ? null : value.s3CoverPageURL;
+    this.voteDayRange = isNull ? this.voteDayRange : value.voteDaysRange;
+    this.type = isNull ? this.type : value.type;
+    this.hashTag.setValue(isNull ? '' : value.hashTag);
+    this.isShowVoterName = isNull ? false : value.showVoterName;
+    this.isShowVoteResult = isNull ? false : value.showVoteResult;
+    this.thanksMessage = isNull ? this.thanksMessage : value.service;
+    this.listQuestion = isNull ? this.listQuestion : this.data.support.voteItem;
+    this.indexQuestion = isNull ? 1 : !!value.voteItem ? value.voteItem.length + 1 : this.data.support.voteItem.length + 1;
   }
 
   // private _setDate() {
@@ -255,7 +255,11 @@ export class DialogCreateVote extends AbstractPage {
           if (mode === 'close') {
             this.dialogRef.close(false);
           } else {
-            this._setValues(this.data.post);
+            if (this.data.post === undefined) {
+              this._setValues(null, true);
+            } else {
+              this._setValues(this.data.post);
+            }
           }
         }
       });
