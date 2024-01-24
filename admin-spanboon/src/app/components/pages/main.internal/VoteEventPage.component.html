@@ -68,6 +68,28 @@
                             </div>
                             <div class="row" *ngIf="!preview">
                                 <div class="col-md-12">
+                                    <div class="form-group title">
+                                        <div class="wrapper-title">
+                                            <span>หัวข้อ :</span>
+                                            <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueTitle"
+                                                [ngModelOptions]="{standalone: true}"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" *ngIf="!preview">
+                                <div class="col-md-12">
+                                    <div class="form-group detail">
+                                        <div class="wrapper-detail">
+                                            <span>รายละเอียด :</span>
+                                            <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueDetail"
+                                                [ngModelOptions]="{standalone: true}"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" *ngIf="!preview">
+                                <div class="col-md-12">
                                     <div class="form-group hashtag">
                                         <mat-form-field style="display: flex;">
                                             <span>แฮชแท็ค : #</span>

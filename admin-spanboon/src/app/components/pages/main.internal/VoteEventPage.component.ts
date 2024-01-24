@@ -137,9 +137,9 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     }
 
     private _filter(value: string): string[] {
-        const filterValue = value.toLowerCase();
+        const filterValue = value;
 
-        return this.listHashtag.filter(option => option.toLowerCase().includes(filterValue));
+        return this.listHashtag.filter(option => option.includes(filterValue));
     }
 
     private _getHashTag() {
@@ -204,6 +204,8 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         const result: any = {};
         result.closed = this.valueClosed;
         result.pin = this.valuePin;
+        result.title = this.valueTitle;
+        result.detail = this.valueDetail;
         result.showVoterName = this.valueShowName;
         result.showVoteResult = this.valueShowResult;
         result.hashTag = this.hashTag.value;
