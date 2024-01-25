@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, EventEmitter, HostListener, Output } from '@angular/core';
-import { MatDatepickerInputEvent, MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
 import { AbstractPage } from '../AbstractPage';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -38,7 +38,6 @@ import {
 declare var $: any;
 
 const PAGE_NAME: string = 'home';
-const ANNOUNCE_DEFAULT: string = 'ต้องก้าวไกลให้ไทยก้าวหน้า เปลี่ยนรัฐบาลไม่พอ ต้องเปลี่ยนประเทศ';
 const TIMESTAMP_SNAPSHOT: string = 'snapshotTimestamp';
 const SNAPSHOT_ID: string = 'listSnapshotId';
 
@@ -82,7 +81,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public queryParamsUrl: any;
   public filterDate: any = [];
   public filterMonth: any = [];
-  public announcement = ANNOUNCE_DEFAULT;
+  public announcement: any;
   public linkAnnounce = undefined;
   public listContent: any = [];
   public readContent: any[] = [];
@@ -181,6 +180,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this._getConfigAdminAnnouncement();
     this.hidebar = this.authenManager.getHidebar();
     let user = this.authenManager.getCurrentUser();
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
@@ -208,6 +208,28 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.observManager.complete('tos_ua_check');
   }
 
+  private _getConfigAdminAnnouncement() {
+    this.mainPageModelFacade.getConfigAnnouncement().then((res: any) => {
+      if (res) {
+        if (res.value === "true") {
+          this.mainPageModelFacade.getAnnouncement().then((res: any) => {
+            this.linkAnnounce = res.value;
+          });
+          this.mainPageModelFacade.getDefaultAnnouncement().then((res: any) => {
+            this.announcement = res.value;
+          });
+        } else {
+          this.linkAnnounce = undefined;
+          this.mainPageModelFacade.getDefaultAnnouncement().then((res: any) => {
+            this.announcement = res.value;
+          });
+        }
+      }
+    }).catch((err) => {
+      if (err) { }
+    });
+  }
+
   private _getReadPost() {
     this.mainPageModelFacade.getReadPost().then((res) => {
       if (res) {
@@ -219,8 +241,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   public async saveDate(event: any) {
-    this.announcement = ANNOUNCE_DEFAULT;
-    this.linkAnnounce = undefined;
+    this.announcement;
     this.isLoading = true;
     this.user;
     this.startDateLong = new Date(event.value).getTime();
@@ -420,12 +441,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         if (res) {
           this.dateValues = new Date(this.queryParamsUrl).toISOString();
           this.model = res.data.data;
-          if (!!res.announcement) {
-            this.announcement = res.announcement;
-          }
-          if (!!res.linkAnnounceMent) {
-            this.linkAnnounce = res.linkAnnounceMent;
-          }
           if (!this.isConfirmTosUa) {
             this._selectProvince();
           }
@@ -477,12 +492,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         await this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res) => {
           if (res) {
             this.model = res.data.data ? res.data.data : res.data;
-            if (!!res.announcement || !!res.data.announcement || !!res.data.data.announcement) {
-              this.announcement = res.announcement ? res.announcement : res.data.announcement ? res.data.announcement : res.data.data.announcement;
-            }
-            if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent || !!res.data.data.linkAnnounceMent) {
-              this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent ? res.data.linkAnnounceMent : res.data.data.linkAnnounceMent;
-            }
             if (!this.isConfirmTosUa) {
               this._selectProvince();
             }

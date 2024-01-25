@@ -11,6 +11,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
 import { AbstractFacade } from "./AbstractFacade";
 import { MainPageModel } from '../../models/models';
+import { environment } from '../../../environments/environment';
 @Injectable()
 export class MainPageSlideFacade extends AbstractFacade {
 
@@ -252,4 +253,36 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
+  public getConfigAnnouncement(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + environment.announcement.config;
+      this.http.get(url, {}).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getAnnouncement(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + environment.announcement.annouce;
+      this.http.get(url, {}).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getDefaultAnnouncement(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + environment.announcement.default;
+      this.http.get(url, {}).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
 }
