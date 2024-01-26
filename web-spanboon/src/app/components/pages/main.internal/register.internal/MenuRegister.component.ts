@@ -20,6 +20,8 @@ import { GoogleLoginProvider, SocialAuthService, SocialUser } from 'angularx-soc
 import { TwitterService } from "../../../../services/facade/TwitterService.service";
 import { CheckMergeUserFacade } from "src/app/services/facade/CheckMergeUserFacade.service";
 import { SeoService } from "src/app/services/SeoService.service";
+import { initializeApp } from "firebase/app";
+import { fetchAndActivate, getRemoteConfig, getString } from "firebase/remote-config";
 
 const PAGE_NAME: string = 'register/menu';
 
@@ -57,6 +59,11 @@ export class MenuRegister extends AbstractPage implements OnInit {
     };
     public mockDataMergeSocial: any = {
         social: undefined,
+    };
+    public socialButton: any = {
+        FB: false,
+        GG: false,
+        TW: false,
     };
 
     private regis_merge: string = 'register.merge';
@@ -97,7 +104,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
         this.observManager.createSubject(this.regis_merge);
     }
 
-    ngOnInit(): void {
+    public async ngOnInit(): Promise<void> {
+        await this._getConfigButton();
         this.seoService.updateTitle("สมัครสมาชิก");
         super.ngOnInit();
         this.checkLoginAndRedirection();
@@ -144,6 +152,23 @@ export class MenuRegister extends AbstractPage implements OnInit {
     onDirtyDialogCancelButtonClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
+    }
+
+    private async _getConfigButton() {
+        try {
+            initializeApp(environment.firebase);
+            const remoteConfig = getRemoteConfig();
+            remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
+            const isFect = await fetchAndActivate(remoteConfig);
+            const social = JSON.parse(getString(remoteConfig, "LOGIN_WITH_SOCIAL"));
+            if (!!social) {
+                if (social.web.facebook) this.socialButton.FB = true;
+                if (social.web.google) this.socialButton.GG = true;
+                if (social.web.twitter) this.socialButton.TW = true;
+            }
+        } catch (err) {
+            console.log("err", err)
+        }
     }
 
     public clickLoginGoogle(): void {
