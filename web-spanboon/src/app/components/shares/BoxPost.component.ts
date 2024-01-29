@@ -2602,7 +2602,9 @@ export class BoxPost extends AbstractPage implements OnInit {
               this.objCategory = undefined;
               this.isPublic = false;
               this.dataObjective = object;
-              this.clickCardObjective(0, this.dataObjective);
+              if (this.resObjective.length > 1) {
+                this.clickCardObjective(0, this.dataObjective);
+              }
               this.keyUpSearchObjective("");
               this.closeDialog();
               this.imageIcon = {};
@@ -2724,7 +2726,9 @@ export class BoxPost extends AbstractPage implements OnInit {
               this.isPublic = false;
               this.isEditObject = false;
               this.dataObjective = object;
-              this.clickCardObjective(0, this.dataObjective);
+              if (this.resObjective.length > 1) {
+                this.clickCardObjective(0, this.dataObjective);
+              }
               this.closeDialog();
               this.imageIcon = {};
               this.selectedValue = 'เลือกหมวดหมู่';
@@ -2740,6 +2744,7 @@ export class BoxPost extends AbstractPage implements OnInit {
               this.isLoading = false;
             }
           }).catch((err: any) => {
+            console.log("err", err)
             if (err) {
               console.log(err);
               let alertMessage: string;

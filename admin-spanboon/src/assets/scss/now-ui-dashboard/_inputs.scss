@@ -409,6 +409,23 @@
   }
 }
 
+.title,
+.detail {
+  > .wrapper-title,
+  .wrapper-detail {
+    display: flex;
+    flex-direction: column;
+
+    > span {
+      font-weight: 500;
+    }
+
+    > textarea {
+      border-radius: 8px;
+    }
+  }
+}
+
 .input-group[disabled] {
   .input-group-prepend .input-group-text,
   .input-group-append .input-group-text {

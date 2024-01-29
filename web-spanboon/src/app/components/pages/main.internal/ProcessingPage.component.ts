@@ -11,6 +11,9 @@ const PAGE_NAME: string = 'on-process';
 @Component({
   selector: 'processing-page',
   templateUrl: './ProcessingPage.component.html',
+  host: {
+    'class': 'processing-page'
+  }
 })
 export class ProcessingPage extends AbstractPageImageLoader implements OnInit {
   deviceInfo = null;
@@ -34,10 +37,16 @@ export class ProcessingPage extends AbstractPageImageLoader implements OnInit {
     if (this.platform.IOS) platform = 'ios';
     if (this.platform.ANDROID) platform = 'android';
     this.deviceInfo = this.deviceService.getDeviceInfo();
-    if (platform === 'ios' || this.deviceInfo.os === 'Mac') {
-      window.location.href = 'https://apps.apple.com/us/app/mfp-today/id6444463783';
+    if (this.deviceService.isMobile() || this.deviceService.isTablet()) {
+      if (platform === 'ios') {
+        window.location.href = 'https://apps.apple.com/us/app/mfp-today/id6444463783';
+      } else if (platform === 'android') {
+        window.location.href = 'https://play.google.com/store/search?q=mfp+today&c=apps';
+      } else {
+        window.location.href = 'https://today.moveforwardparty.org/';
+      }
     } else {
-      window.location.href = 'https://play.google.com/store/search?q=mfp+today&c=apps';
+      window.location.href = 'https://today.moveforwardparty.org/';
     }
   }
 
