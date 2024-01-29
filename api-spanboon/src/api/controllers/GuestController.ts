@@ -3058,8 +3058,10 @@ export class GuestController {
         delete user.createdByUsername;
         delete user.modifiedBy;
         delete user.modifiedByUsername;
-
-        const cloudfront = await this.s3Service.s3signCloudFront(user.s3ImageURL);
+        let cloudfront = null;
+        if(user.s3ImageURL !== null) {
+            cloudfront = await this.s3Service.s3signCloudFront(user.s3ImageURL);
+        }
 
         user.signURL = cloudfront;
         const successResponse: any = { status: 1, message: 'Account was valid.', data: { user, token: tokenParam, mode: isMode } };

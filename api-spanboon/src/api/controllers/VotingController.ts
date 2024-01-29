@@ -685,6 +685,8 @@ export class VotingController {
         let closeVote: any = undefined;
         let hashTagVote: any = undefined;
         let closetSupportAggr: any = undefined;
+        let generalSection: any = undefined;
+        const stackId:any = [];
 
         if (votingContentsRequest.pin === true) {
             pinned = await this.votingEventService.aggregate(
@@ -1188,6 +1190,11 @@ export class VotingController {
                     }
                 ]
             );
+            if(myVote !== undefined && myVote.length > 0) {
+                for(const objMyVote of myVote) {
+                    stackId.push(new ObjectID(objMyVote._id));
+                }
+            }
         }
 
         if (votingContentsRequest.supporter === true) {
@@ -1586,6 +1593,7 @@ export class VotingController {
                             closed: false,
                             title: exp,
                             pin: false,
+                            _id:{$in:stackId}
                         }
                     },
                     {
@@ -1998,6 +2006,7 @@ export class VotingController {
                                 {
                                     $match:{
                                         pin: false,
+                                        _id: {$in:stackId}
                                     }
                                 },
                                 {
@@ -2277,15 +2286,61 @@ export class VotingController {
                         }
                     },
                     {
-                        $limit: take
-                    },
-                    {
                         $skip: skips
                     },
+                    {
+                        $limit: take
+                    }
                 ]
             );
         }
-
+        // section อื่นๆ
+        if(votingContentsRequest.generalSection === true) {
+            // stackId need to be cached to better performance.
+            // It Need more Instances to cache the data.
+            if(pinned !== undefined && pinned.length > 0) {
+                for(const pin of pinned) {
+                    stackId.push(new ObjectID(pin._id));
+                }
+            }
+            if(supporter !== undefined && supporter.length > 0) {
+                for(const ObjSupporter of supporter) {
+                    stackId.push(new ObjectID(ObjSupporter._id));
+                }
+            }
+            if(closeVote !== undefined && closeVote.length > 0) {
+                for(const ObjcloseVote of closeVote) {
+                    stackId.push(new ObjectID(ObjcloseVote._id));
+                }
+            }
+            if(hashTagVote !== undefined && hashTagVote.length > 0) {
+                for(const ObjHashTagVote of hashTagVote){
+                    const returnResult = await this.HashTagVoting(ObjHashTagVote);
+                    stackId.concat(returnResult);
+                }
+            }
+            if(closetSupportAggr !== undefined && closetSupportAggr.length > 0) {
+                for(const ObjClosetSupportAggr of closetSupportAggr) {
+                    stackId.push(new ObjectID(ObjClosetSupportAggr._id));
+                }
+            }
+            if(votingContentsRequest.voteObjId !== undefined && votingContentsRequest.voteObjId.length > 0) {
+                for(const voteIds of votingContentsRequest.voteObjId) {
+                    stackId.push(new ObjectID(voteIds));
+                }
+            }
+            // Votes Id.
+            generalSection = await this.votingEventService.aggregate(
+                [
+                    {$match:{_id:{$nin:stackId}}},
+                    {
+                        $skip: skips
+                    },
+                    {
+                        $limit: take
+                    }
+                ]);
+        }
         let hashTagCount = 0;
         if (hashTagVote !== undefined && hashTagVote.length > 0) {
             for (const count of hashTagVote) {
@@ -2307,7 +2362,8 @@ export class VotingController {
         result.closeDate = closeVote;
         result.hashTagVote = hashTagVote;
         result.closetSupport = closetSupportAggr;
-
+        result.generalSection = generalSection;
+        result.voteObjId = stackId;
         const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', result, countRows[0].count);
         return res.status(200).send(successResponse);
     }
@@ -6267,6 +6323,17 @@ export class VotingController {
             }
             return true;
         }
+    }
+
+    private async HashTagVoting(hashTagObjs:any): Promise<any>{
+        const stackId:any = [];
+        if(hashTagObjs.votingEvent.length > 0){
+            for(const hashTagObj of hashTagObjs.votingEvent){
+                stackId.push(new ObjectID(hashTagObj._id));
+            }
+        }
+
+        return stackId;
     }
 
     private async CheckSpamVote(voteObject: any, voteEventId: string, pageId: string, userId: string): Promise<any> {

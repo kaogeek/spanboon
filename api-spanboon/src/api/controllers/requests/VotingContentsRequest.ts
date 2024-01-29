@@ -20,4 +20,6 @@ export class VotingContentsRequest {
     public myVoted: boolean;
     public mySupported: boolean;
     public closetSupport: boolean;
+    public generalSection: boolean;
+    public voteObjId: any;
 }
