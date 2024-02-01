@@ -33,8 +33,12 @@ export const environment = {
    accessTokenSecretTwitter: "${process.env["TWITTER_ACCESS_TOKEN_SECRET_KEY"]}",
    apiBaseURL: "${process.env["API_BASE_URL"]}",
    webBaseURL: "${process.env["WEB_BASE_URL"]}",
-   sha256_cert_fingerprints: ${process.env["SHA_256_CERT_FINGER_PRINTS"]},
-   apple_app_link: "${process.env["APPLE_APP_LINK"]}",
+   sha256_cert_fingerprints: "${process.env["SHA_256_CERT_FINGER_PRINTS"]}",
+   announcement: {
+    config: "${process.env["CONFIG_ADMIN_ANNOUNCEMENT"]}",
+    default: "${process.env["DEFAULT_ANNOUNCEMENT"]}",
+    annouce: "${process.env["ANNOUNCEMENT"]}",
+   },
    firebase: {
     apiKey: "${process.env["FIREBASE_API_KEY"]}",
     authDomain: "${process.env["FIREBASE_AUTH_DOMAIN"]}",
@@ -57,19 +61,21 @@ export const environment = {
 };
 `;
 
-const firebaseFileContent = `importScripts("https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/9.1.3/firebase-messaging-compat.js");
+const firebaseFileContent = `
+
+importScripts("https://www.gstatic.com/firebasejs/9.8.3/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/9.8.3/firebase-messaging-compat.js");
 
 firebase.initializeApp({
-    apiKey: "${process.env["FIREBASE_API_KEY"]}",
-    authDomain: "${process.env["FIREBASE_AUTH_DOMAIN"]}",
-    databaseURL: "${process.env["FIREBASE_DATABASE_URL"]}",
-    projectId: "${process.env["FIREBASE_PROJECT_ID"]}",
-    storageBucket: "${process.env["FIREBASE_STORAGE_BUCKET"]}",
-    messagingSenderId: "${process.env["FIREBASE_MESSAGE_SENDER_ID"]}",
-    appId: "${process.env["FIREBASE_APP_ID"]}",
-    measurementId: "${process.env["FIREBASE_MEASUREMENT_ID"]}",
-    vapidKey: "${process.env["FIREBASE_VAPID_KEY"]}"
+    apiKey: "AIzaSyCwPc356BjVhcuahlIcdGoJr7LP-zqAZjc",
+    authDomain: "mfp-today.firebaseapp.com",
+    databaseURL: "https://mfp-today-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "mfp-today",
+    storageBucket: "mfp-today.appspot.com",
+    messagingSenderId: "1062438301611",
+    appId: "1:1062438301611:web:13d294be340da947642cee",
+    measurementId: "G-MZTEBYJD62",
+    vapidKey: "BFL7fI6__aC8vJrNNJSiO8bUaQb_xqzI_4rZJdDJ6kNCLXEspw1tBuGdI6d-D7DJkbhbShQquE2Y_MfUYJEtgvc"
 });
 const messaging = firebase.messaging();
 `;
