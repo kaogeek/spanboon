@@ -24,7 +24,7 @@ export class ResponseUtil {
         }
 
     }
-    public static getSuccessResponse(msg: string, value: any, countNumber?: any, objective?: any,joinObjective?:any): any {
+    public static getSuccessResponse(msg: any, value: any, countNumber?: any, objective?: any,joinObjective?:any): any {
         if (value !== null || value !== undefined || value !== '') {
             const sucessRes: any = {
                 status: 1,
