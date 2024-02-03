@@ -711,14 +711,17 @@ export class FacebookWebhookController {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
                     if (posted) {
                         const query = { _id: posted.id };
-                        const update = await this.postsService.delete(query);
+                        await this.postsService.delete(query);
                         const deletePhotos = await this.postsGalleryService.find({ post: posted.id });
                         if (deletePhotos.length > 0) {
-                            await this.postsGalleryService.deleteMany({ post: posted.id });
-                        }
-                        if (update) {
-                            const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
-                            return res.status(200).send(successResponseError);
+                            const deleted = await this.postsGalleryService.deleteMany({ post: posted.id });
+                            for(const assetId of deletePhotos) {
+                                await this.assetService.update({_id: new ObjectID(assetId.fileId)}, {$set:{expirationDate:today}});
+                            }
+                            if (deleted) {
+                                const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
+                                return res.status(200).send(successResponseError);
+                            }
                         }
                     }
                 } else {
@@ -729,8 +732,8 @@ export class FacebookWebhookController {
             // delete Post with pic
             else if (
                 (
-                    message_webhooks === undefined ||
-                    message_webhooks === null) &&
+                message_webhooks === undefined ||
+                message_webhooks === null) &&
                 change_value_link === undefined &&
                 value_photos === undefined &&
                 body.entry[0].changes[0].value.item === Webhooks.value_item_photo &&
@@ -742,17 +745,20 @@ export class FacebookWebhookController {
                 console.log('delete with pic no pics');
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
-                    const posted = await this.postsService.findOne({ _id: findPost.postId });
+                    const posted = await this.postsService.findOne({ _id: new ObjectID(findPost.postId) });
                     if (posted) {
                         const query = { _id: posted.id };
-                        const update = await this.postsService.delete(query);
+                        await this.postsService.delete(query);
                         const deletePhotos = await this.postsGalleryService.find({ post: posted.id });
                         if (deletePhotos.length > 0) {
-                            await this.postsGalleryService.deleteMany({ post: posted.id });
-                        }
-                        if (update) {
-                            const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
-                            return res.status(200).send(successResponseError);
+                            const deleted = await this.postsGalleryService.deleteMany({ post: posted.id });
+                            for(const assetId of deletePhotos) {
+                                await this.assetService.update({_id: new ObjectID(assetId.fileId)}, {$set:{expirationDate:today}});
+                            }
+                            if (deleted) {
+                                const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
+                                return res.status(200).send(successResponseError);
+                            }
                         }
                     }
                 } else {
@@ -765,8 +771,8 @@ export class FacebookWebhookController {
             // body.entry[0].changes[0].value.item === 'photo'
             else if (
                 (
-                    message_webhooks === undefined ||
-                    message_webhooks === null) &&
+                message_webhooks === undefined ||
+                message_webhooks === null) &&
                 change_value_link !== undefined &&
                 value_photos !== undefined &&
                 body.entry[0].changes[0].value.item === Webhooks.value_item_photo &&
@@ -782,14 +788,17 @@ export class FacebookWebhookController {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
                     if (posted) {
                         const query = { _id: posted.id };
-                        const update = await this.postsService.delete(query);
+                        await this.postsService.delete(query);
                         const deletePhotos = await this.postsGalleryService.find({ post: posted.id });
                         if (deletePhotos.length > 0) {
-                            await this.postsGalleryService.deleteMany({ post: posted.id });
-                        }
-                        if (update) {
-                            const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
-                            return res.status(200).send(successResponseError);
+                            const deleted = await this.postsGalleryService.deleteMany({ post: posted.id });
+                            for(const assetId of deletePhotos) {
+                                await this.assetService.update({_id: new ObjectID(assetId.fileId)}, {$set:{expirationDate:today}});
+                            }
+                            if (deleted) {
+                                const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
+                                return res.status(200).send(successResponseError);
+                            }
                         }
                     }
                 } else {
@@ -1330,7 +1339,6 @@ export class FacebookWebhookController {
                 return res.status(200).send(successResponse);
             }
         } else {
-            console.log('pass11');
             const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
             return res.status(200).send(successResponse);
         }
