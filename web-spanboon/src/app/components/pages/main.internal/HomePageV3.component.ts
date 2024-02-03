@@ -90,7 +90,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   // public throttle = 150;
   public scrollDistance = 3;
   public offset: number = 0;
-  public limit: number = 4;
+  public limit: number = 8;
   public isOnLoad: boolean;
   public loadingCount: number = 0;
   public loadContentCount: number = 0;
@@ -367,6 +367,12 @@ export class HomePageV3 extends AbstractPage implements OnInit {
               this.isOnLoad = false;
               this.isLoadingPost = false;
             }
+            if (res[post].length === 0 && post !== 'followingContent') {
+              this.onScrollDown(null);
+            }
+            if (this.isBottomOfPage() && this.countBlockBottom !== 3 && this.isGetBottom === false) {
+              this.getBottomContent(this.userCloneDatas.id);
+            }
           } else {
             this.modelBottom = res;
           }
@@ -416,6 +422,12 @@ export class HomePageV3 extends AbstractPage implements OnInit {
               this.loadingCount++;
               this.isOnLoad = false;
               this.isLoadingPost = false;
+            }
+            if (res[post].length === 0 && post !== 'followingContent') {
+              this.onScrollDown(null);
+            }
+            if (this.isBottomOfPage() && this.countBlockBottom !== 3 && this.isGetBottom === false) {
+              this.getBottomContent();
             }
           } else {
             this.modelBottom = res;
@@ -939,7 +951,15 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.isLoadingPost = true;
       await this.getBottomContent();
     }
+  }
 
+  private isBottomOfPage(): boolean {
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    const scrollPosition = window.scrollY || window.pageYOffset;
+    const threshold = 100;
+
+    return windowHeight + scrollPosition >= documentHeight - threshold;
   }
 
   private _downloadApp() {
