@@ -4930,7 +4930,8 @@ export class VotingController {
                         ordering: voteItem.ordering,
                         title: voteItem.title,
                         coverPageURL: voteItem.coverPageURL,
-                        s3CoverPageURL: voteItem.s3CoverPageURL
+                        s3CoverPageURL: voteItem.s3CoverPageURL,
+                        assetId: voteItem.assetId,
                     }
                 };
                 await this.voteItemService.update(query, newValues);
@@ -6678,7 +6679,8 @@ export class VotingController {
                     $set: {
                         title: voteChoice.title,
                         coverPageURL: voteChoice.coverPageURL,
-                        s3CoverPageURL: voteChoice.s3CoverPageURL
+                        s3CoverPageURL: voteChoice.s3CoverPageURL,
+                        assetId: voteChoice.assetId
                     }
                 };
                 await this.voteChoiceService.update(query, newValues);
