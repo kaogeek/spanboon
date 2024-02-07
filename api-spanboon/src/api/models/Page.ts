@@ -101,6 +101,9 @@ export class Page extends BaseModel {
     @Column({ name: 'autoApprove' })
     public autoApprove:boolean;
 
+    @Column({ name: 'delete'})
+    public delete:boolean;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

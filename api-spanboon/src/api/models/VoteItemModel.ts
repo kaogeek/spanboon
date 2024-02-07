@@ -40,6 +40,12 @@ export class VoteItem extends BaseModel {
     @Column({ name: 's3CoverPageURL' })
     public s3CoverPageURL: string;
 
+    @Column({ name: 'userId' })
+    public userId: ObjectID;
+
+    @Column({ name: 'pageId' })
+    public pageId: ObjectID;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

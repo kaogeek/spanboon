@@ -4905,12 +4905,12 @@ export class VotingController {
                     const createVoteItem = await this.voteItemService.create(voteItemEdit);
                     if (voteItem.voteChoice.length > 0) {
                         if (createVoteItem) {
-                            await this.CreateVoteChoice(createVoteItem, createVoteItem.id);
+                            await this.FuncUpdateVoteChoice(createVoteItem, voteItem);
                         }
                     }
                 }
 
-                if (voteItem.voteChoice.length > 0) {
+                if (voteItem._id !== undefined && voteItem.voteChoice.length > 0) {
                     const voteChoice = await this.UpdateVoteChoice(voteItem);
                     if (voteChoice === undefined) {
                         const errorResponse = ResponseUtil.getErrorResponse('VoteChoice id is undefined.', undefined);
@@ -5507,10 +5507,11 @@ export class VotingController {
                         voteItem.assetId = voteItems.assetIdItem;
                         voteItem.coverPageURL = voteItems.coverPageURLItem;
                         voteItem.s3CoverPageURL = voteItems.s3CoverPageURLItem;
+                        voteItem.userId = userObjId;
                         const createVoteItem = await this.voteItemService.create(voteItem);
                         if (createVoteItem) {
                             stackVoteItem['VoteItem'].push(createVoteItem);
-                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems);
+                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems,userObjId);
                             stackVoteItem['VoteChoice'].push(createdVoteChoice);
                         }
                     } else {
@@ -5887,7 +5888,7 @@ export class VotingController {
         votingEvent.hashTag = createHashTag;
         // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
         votingEvent.status = status;
-        votingEvent.createAsPage = pageObjId;
+        votingEvent.createAsPage = new ObjectID(pageObjId);
         votingEvent.type = type;
         votingEvent.pin = pin;
         votingEvent.showVoterName = showed;
@@ -5913,10 +5914,12 @@ export class VotingController {
                         voteItem.assetId = voteItems.assetIdItem;
                         voteItem.coverPageURL = voteItems.coverPageURLItem;
                         voteItem.s3CoverPageURL = voteItems.s3CoverPageURLItem;
+                        voteItem.userId = userObjId;
+                        voteItem.pageId = new ObjectID(pageObjId);
                         const createVoteItem = await this.voteItemService.create(voteItem);
                         if (createVoteItem) {
                             stackVoteItem['VoteItem'].push(createVoteItem);
-                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems);
+                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems,userObjId,pageObjId);
                             stackVoteItem['VoteChoice'].push(createdVoteChoice);
                         }
                     } else {
@@ -6481,7 +6484,35 @@ export class VotingController {
         return created;
     }
 
-    private async CreateVoteChoice(createVoteItem: any, voteItems: any): Promise<any> {
+    private async CreateVoteChoice(createVoteItem: any, voteItems: any, userId?: string, pageId?:string): Promise<any> {
+        const userObjId = new ObjectID(userId);
+        const pageObjId = pageId !== null ? new ObjectID(pageId) : null;
+        if (voteItems) {
+            const voteChoiceObj = voteItems.voteChoice;
+            const stack:any = [];
+            if (voteChoiceObj.length > 0) {
+                for (const voteChoicePiece of voteChoiceObj) {
+                    if(voteChoicePiece.title === ''){
+                        continue;
+                    }
+                    const voteChoice = new VoteChoiceModel();
+                    voteChoice.voteItemId = new ObjectID(createVoteItem.id);
+                    voteChoice.coverPageURL = voteChoicePiece.coverPageURL;
+                    voteChoice.s3coverPageURL = voteChoicePiece.s3CoverPageURL;
+                    voteChoice.title = voteChoicePiece.title;
+                    voteChoice.assetId = voteChoicePiece.assetId;
+                    voteChoice.userId = userObjId;
+                    voteChoice.pageId = pageObjId;
+                    const result = await this.voteChoiceService.create(voteChoice);
+                    stack.push(result);
+                }
+                return stack;
+            }
+        }
+    }
+
+    private async FuncUpdateVoteChoice(createVoteItem: any, voteItems: any): Promise<any> {
+
         if (voteItems) {
             const voteChoiceObj = voteItems.voteChoice;
             const stack:any = [];

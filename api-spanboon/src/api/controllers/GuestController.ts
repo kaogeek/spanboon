@@ -1304,6 +1304,11 @@ export class GuestController {
             const modeAuthen = [];
             const data: User = await this.userService.findOne({ where: { username: userEmail } });
 
+            if(data.delete === true) {
+                const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+
             if (data === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
@@ -1331,6 +1336,7 @@ export class GuestController {
                     modeAuthen.push(authen.providerName);
                 }
             }
+
             if (data.banned === true) {
                 const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                 return res.status(400).send(errorResponse);
@@ -1442,6 +1448,12 @@ export class GuestController {
             if (mfpAuthentication === undefined) {
                 // check email
                 const userEmailMfp = await this.userService.findOne({ email: String(getMembershipById.data.data.email) });
+
+                if(userEmailMfp.delete === true) {
+                    const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+                
                 if (userEmailMfp !== undefined && userEmailMfp !== null) {
                     if (getMembershipById.data.data.state === 'PENDING_PAYMENT' && getMembershipById.data.data.membership_type === 'UNKNOWN') {
                         return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_PAYMENT', undefined));
@@ -1467,6 +1479,10 @@ export class GuestController {
                             getMembershipById.data.data.membership_type === 'MEMBERSHIP_PERMANENT')) {
 
                         const user = await this.userService.findOne({ _id: userEmailMfp.id });
+                        if(user.delete === true) {
+                            const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
                         if (user) {
                             // check authentication MFP Is existing ?
                             const encryptIdentification = await bcrypt.hash(getMembershipById.data.data.identification_number, 10);
@@ -1537,6 +1553,10 @@ export class GuestController {
                     const expirationDate = moment().add(userExrTime, 'days').toDate();
                     const token = jwt.sign({ id: mfpAuthenIdentification.user }, env.SECRET_KEY);
                     const user: User = await this.userService.findOne({ where: { username: userEmail } });
+                    if(user.delete === true) {
+                        const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
                     loginUser = user;
 
                     loginToken = token;
@@ -1572,7 +1592,10 @@ export class GuestController {
                     modeAuthen.push(authen.providerName);
                 }
             }
-
+            if(data.delete === true) {
+                const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                return res.status(400).send(errorResponse);
+            }
             if (data.banned === true) {
                 const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                 return res.status(400).send(errorResponse);
@@ -1649,6 +1672,12 @@ export class GuestController {
                     const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                     return res.status(400).send(errorResponse);
                 }
+
+                if(findUserFb.delete === true) {
+                    const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
                     for (authenFB of authenAll) {
@@ -1706,6 +1735,11 @@ export class GuestController {
                             return res.status(400).send(errorResponse);
                         }
 
+                        if(loginUser.delete === true) {
+                            const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+                        
                         if (loginUser.banned === true) {
                             const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                             return res.status(400).send(errorResponse);
@@ -1795,6 +1829,11 @@ export class GuestController {
                         return res.status(400).send(errorResponse);
                     }
 
+                    if(loginUser.delete === true) {
+                        const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+
                     if (loginUser.banned === true) {
                         const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                         return res.status(400).send(errorResponse);
@@ -1839,6 +1878,12 @@ export class GuestController {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                     return res.status(400).send(errorUserNameResponse);
                 }
+
+                if(userApple.delete === true) {
+                    const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
                 if (userApple.banned === true) {
                     const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                     return res.status(400).send(errorResponse);
@@ -1900,6 +1945,11 @@ export class GuestController {
                         return res.status(400).send(errorResponse);
                     }
 
+                    if(loginUser.delete === true) {
+                        const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+
                     if (loginUser.banned === true) {
                         const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                         return res.status(400).send(errorResponse);
@@ -1931,6 +1981,10 @@ export class GuestController {
             }
 
             const authenGG = await this.authenticationIdService.findOne({ providerUserId: checkIdToken.userId, providerName: PROVIDER.GOOGLE });
+            if(userGG.delete === true) {
+                const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                return res.status(400).send(errorResponse);
+            }
             if (userGG !== undefined && authenGG === undefined) {
                 const stackAuth = [];
                 pic.push(checkIdToken.imageURL);
@@ -2001,6 +2055,11 @@ export class GuestController {
                         return res.status(400).send(errorResponse);
                     }
 
+                    if(loginUser.delete === true) {
+                        const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+
                     if (loginUser.banned === true) {
                         const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                         return res.status(400).send(errorResponse);
@@ -2020,7 +2079,9 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } else if (mode === PROVIDER.TWITTER) {
+        } 
+        /*else if (mode === PROVIDER.TWITTER) {
+
             const twitterOauthToken = users.twitterOauthToken;
             const twitterOauthTokenSecret = users.twitterOauthTokenSecret;
             if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
@@ -2141,6 +2202,7 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         }
+        */
     }
     // send otp
     @Post('/send_otp')

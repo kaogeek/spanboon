@@ -34,6 +34,12 @@ export class VoteChoice extends BaseModel {
     @Column({ name: 'assetId' })
     public assetId: ObjectID;
 
+    @Column({ name: 'userId' })
+    public userId: ObjectID;
+
+    @Column({ name: 'pageId' })
+    public pageId: ObjectID;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();
