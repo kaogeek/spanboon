@@ -331,6 +331,10 @@ export class TableComponent implements OnInit {
                 }
                 res = o;
             }
+            let skipPage: boolean;
+            if (this.paginator.pageIndex !== 0) {
+                skipPage = true;
+            }
             if (isNextPage && this.manipulate) {
                 let array = this.data;
                 for (let data of res) {
@@ -339,11 +343,17 @@ export class TableComponent implements OnInit {
                 this.data = array;
             } else if (isNextPage && !this.manipulate) {
                 this.data = res;
+            } else if (skipPage) {
+                this.data = res;
             } else {
                 this.paginator.pageIndex = 0;
                 this.data = res ? res : [];
             }
-            this.setTableConfig(this.data);
+            if (this.paginator.pageIndex !== 0) {
+                this.setTableConfig(this.data, this.paginator.pageIndex);
+            } else {
+                this.setTableConfig(this.data);
+            }
             // this.isLoading = false;
         }).catch((err: any) => {
             if (!this.parentId) {
@@ -363,7 +373,7 @@ export class TableComponent implements OnInit {
         }
     }
 
-    public setTableConfig(data: any): void {
+    public setTableConfig(data: any, skipPage?: number): void {
         // fix bug TypeError: data.slice is not a function
         if (!Array.isArray(data)) {
             return;
@@ -381,6 +391,9 @@ export class TableComponent implements OnInit {
             const endIndex = startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize;
             return `${startIndex + 1} - ${endIndex} ของ ${length}`;
         };
+        if (skipPage !== 0) {
+            this.paginator.pageIndex = skipPage;
+        }
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
     }

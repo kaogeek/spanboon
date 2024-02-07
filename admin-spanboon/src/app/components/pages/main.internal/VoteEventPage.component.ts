@@ -188,6 +188,14 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         this.drawer.toggle();
     }
 
+    public changeClosed($event) {
+        if ($event.checked) {
+            this.valueClosed = false;
+        } else {
+            this.valueClosed = true;
+        }
+    }
+
     public clickPreview(data: any): void {
         this.imageCover = data.coverPageURL;
         this.valueHashtag = data.hashTag;

@@ -45,6 +45,10 @@ export class PostsGalleryService {
     public async update(query: any, newValue: any): Promise<any> {
         return await this.postGalleryRepository.updateOne(query, newValue);
     }
+    
+    public async updateMany(query: any, newValue: any): Promise<any> {
+        return await this.postGalleryRepository.updateMany(query, newValue);
+    }
 
     // delete postGallery
     public async delete(query: any, options?: any): Promise<any> {

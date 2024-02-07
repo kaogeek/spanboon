@@ -1,4 +1,4 @@
-import { JsonController, Res, Post, Body, Req, Authorized, Param, Delete, Put, Get, QueryParam } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Authorized, Param, Delete, Put, Get } from 'routing-controllers';
 import { VotingEventRequest } from './requests/VotingEventRequest';
 import { VotingContentsRequest } from './requests/VotingContentsRequest';
 // import { UserSupportRequest } from './requests/UserSupportRequest';
@@ -673,7 +673,7 @@ export class VotingController {
     }
 
     @Post('/contents')
-    public async votingContents(@Body({ validate: true }) votingContentsRequest: VotingContentsRequest, @QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Res() res: any, @Req() req: any): Promise<any> {
+    public async votingContents(@Body({ validate: true }) votingContentsRequest: VotingContentsRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = req.headers.userid ? new ObjectID(req.headers.userid) : undefined;
         const keywords = votingContentsRequest.keyword;
         const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
@@ -685,6 +685,8 @@ export class VotingController {
         let closeVote: any = undefined;
         let hashTagVote: any = undefined;
         let closetSupportAggr: any = undefined;
+        let generalSection: any = undefined;
+        const stackId:any = [];
 
         if (votingContentsRequest.pin === true) {
             pinned = await this.votingEventService.aggregate(
@@ -1188,6 +1190,11 @@ export class VotingController {
                     }
                 ]
             );
+            if(myVote !== undefined && myVote.length > 0) {
+                for(const objMyVote of myVote) {
+                    stackId.push(new ObjectID(objMyVote._id));
+                }
+            }
         }
 
         if (votingContentsRequest.supporter === true) {
@@ -1586,6 +1593,7 @@ export class VotingController {
                             closed: false,
                             title: exp,
                             pin: false,
+                            _id:{$in:stackId}
                         }
                     },
                     {
@@ -1998,6 +2006,7 @@ export class VotingController {
                                 {
                                     $match:{
                                         pin: false,
+                                        _id: {$in:stackId}
                                     }
                                 },
                                 {
@@ -2277,15 +2286,61 @@ export class VotingController {
                         }
                     },
                     {
-                        $limit: take
-                    },
-                    {
                         $skip: skips
                     },
+                    {
+                        $limit: take
+                    }
                 ]
             );
         }
-
+        // section อื่นๆ
+        if(votingContentsRequest.generalSection === true) {
+            // stackId need to be cached to better performance.
+            // It Need more Instances to cache the data.
+            if(pinned !== undefined && pinned.length > 0) {
+                for(const pin of pinned) {
+                    stackId.push(new ObjectID(pin._id));
+                }
+            }
+            if(supporter !== undefined && supporter.length > 0) {
+                for(const ObjSupporter of supporter) {
+                    stackId.push(new ObjectID(ObjSupporter._id));
+                }
+            }
+            if(closeVote !== undefined && closeVote.length > 0) {
+                for(const ObjcloseVote of closeVote) {
+                    stackId.push(new ObjectID(ObjcloseVote._id));
+                }
+            }
+            if(hashTagVote !== undefined && hashTagVote.length > 0) {
+                for(const ObjHashTagVote of hashTagVote){
+                    const returnResult = await this.HashTagVoting(ObjHashTagVote);
+                    stackId.concat(returnResult);
+                }
+            }
+            if(closetSupportAggr !== undefined && closetSupportAggr.length > 0) {
+                for(const ObjClosetSupportAggr of closetSupportAggr) {
+                    stackId.push(new ObjectID(ObjClosetSupportAggr._id));
+                }
+            }
+            if(votingContentsRequest.voteObjId !== undefined && votingContentsRequest.voteObjId.length > 0) {
+                for(const voteIds of votingContentsRequest.voteObjId) {
+                    stackId.push(new ObjectID(voteIds));
+                }
+            }
+            // Votes Id.
+            generalSection = await this.votingEventService.aggregate(
+                [
+                    {$match:{_id:{$nin:stackId}}},
+                    {
+                        $skip: skips
+                    },
+                    {
+                        $limit: take
+                    }
+                ]);
+        }
         let hashTagCount = 0;
         if (hashTagVote !== undefined && hashTagVote.length > 0) {
             for (const count of hashTagVote) {
@@ -2307,7 +2362,332 @@ export class VotingController {
         result.closeDate = closeVote;
         result.hashTagVote = hashTagVote;
         result.closetSupport = closetSupportAggr;
+        result.generalSection = generalSection;
+        result.voteObjId = stackId;
+        const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', result, countRows[0].count);
+        return res.status(200).send(successResponse);
+    }
 
+    // hashTag/search
+    @Post('/hashtag/search')
+    public async VotinghashTagSearch(@Body({ validate: true }) votingContentsRequest: VotingContentsRequest,@Res() res: any, @Req() req: any): Promise<any>{
+        const userObjId = req.headers.userid ? new ObjectID(req.headers.userid) : undefined;
+        const keywords = votingContentsRequest.keyword;
+        const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
+        const take = votingContentsRequest.limit ? votingContentsRequest.limit : 10;
+        const skips = votingContentsRequest.offset ? votingContentsRequest.offset : 0;
+        let hashTagVote: any = undefined;
+
+        if (votingContentsRequest.hashTagVote === true) {
+            const mfpHashTag = await this.configService.getConfig(MFPHASHTAG);
+            const splitHashTag = mfpHashTag.value.split(',');
+            hashTagVote = await this.votingEventService.aggregate(
+                [
+                    {
+                        $match: {
+                            hashTag: { $in: splitHashTag },
+                        }
+                    },
+                    {
+                        $match:{
+                            hashTag: exp
+                        }
+                    },
+                    {
+                        $sort: {
+                            createdDate: -1
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: '$hashTag',
+                            count: { $sum: 1 },
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'VotingEvent',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$id', '$hashTag']
+                                        }
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        _id: 1,
+                                        createdDate: 1,
+                                        title: 1,
+                                        detail: 1,
+                                        assertId: 1,
+                                        coverPageURL: 1,
+                                        s3CoverPageURL: 1,
+                                        userId: 1,
+                                        approved: 1,
+                                        closed: 1,
+                                        minSupport: 1,
+                                        countSupport: 1,
+                                        supportDaysRange: 1,
+                                        startSupportDatetime: 1,
+                                        endSupportDatetime: 1,
+                                        voteDaysRange: 1,
+                                        startVoteDatetime: 1,
+                                        endVoteDatetime: 1,
+                                        approveDatetime: 1,
+                                        approveUsername: 1,
+                                        updateDatetime: 1,
+                                        closeDate: 1,
+                                        status: 1,
+                                        createAsPage: 1,
+                                        type: 1,
+                                        public: 1,
+                                        hashTag: 1,
+                                        pin: 1,
+                                        showVoterName: 1,
+                                        showVoteResult: 1,
+                                        hide:1,
+                                        voted: 1,
+                                        service: 1,
+                                        createPage: {
+                                            $cond: [
+                                                {
+                                                    $ne: ['$createAsPage', null]  // Check if 'showVoterName' is true
+                                                },
+                                                'Yes',
+                                                'No',
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    $facet: {
+                                        showVoterName: [
+                                            {
+                                                $match: {
+                                                    createPage: 'Yes'
+                                                },
+
+                                            },
+                                            {
+                                                $lookup: {
+                                                    from: 'Page',
+                                                    let: { 'createAsPage': '$createAsPage' },
+                                                    pipeline: [
+                                                        {
+                                                            $match: {
+                                                                $expr: {
+                                                                    $eq: ['$$createAsPage', '$_id']
+                                                                }
+                                                            },
+                                                        },
+                                                        {
+                                                            $project: {
+                                                                _id: 1,
+                                                                name: 1,
+                                                                pageUsername: 1,
+                                                                isOfficial: 1,
+                                                                imageURL: 1,
+                                                                s3ImageURL: 1,
+                                                                banned: 1
+                                                            }
+                                                        }
+                                                    ],
+                                                    as: 'page'
+                                                }
+                                            },
+                                            {
+                                                $unwind: {
+                                                    path: '$page'
+                                                }
+                                            }
+                                        ],
+                                        notShowVoterName: [
+                                            {
+                                                $match: {
+                                                    createPage: 'No'
+                                                }
+                                            },
+                                            {
+                                                $lookup: {
+                                                    from: 'User',
+                                                    let: { userId: '$userId' },
+                                                    pipeline: [
+                                                        {
+                                                            $match: {
+                                                                $expr:
+                                                                {
+                                                                    $eq: ['$$userId', '$_id']
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            $project: {
+                                                                _id: 1,
+                                                                firstName: 1,
+                                                                lastName: 1,
+                                                                imageURL: 1,
+                                                                s3ImageURL: 1
+                                                            }
+                                                        }
+                                                    ],
+                                                    as: 'user'
+                                                }
+                                            },
+                                            {
+                                                $unwind: {
+                                                    path: '$user'
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    $addFields: {
+                                        combinedResults: {
+                                            $concatArrays: ['$showVoterName', '$notShowVoterName'],
+                                        }
+                                    }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$combinedResults',
+                                    },
+                                },
+                                {
+                                    $replaceRoot: {
+                                        newRoot: '$combinedResults',
+                                    },
+                                },
+                                {
+                                    $sort: {
+                                        createdDate: -1
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'UserSupport',
+                                        let: { 'id': '$_id' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr:
+                                                    {
+                                                        $eq: ['$$id', '$votingId']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $match: { userId: userObjId }
+                                            }
+                                        ],
+                                        as: 'userSupport'
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Voted',
+                                        let: { id: '$_id' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr:
+                                                    {
+                                                        $eq: ['$$id', '$votingId']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $match: { userId: userObjId }
+                                            }
+                                        ],
+                                        as: 'myVote'
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        _id: 1,
+                                        createdDate: 1,
+                                        title: 1,
+                                        detail: 1,
+                                        coverPageURL: 1,
+                                        s3CoverPageURL: 1,
+                                        userId: 1,
+                                        approved: 1,
+                                        closed: 1,
+                                        minSupport: 1,
+                                        countSupport: 1,
+                                        supportDaysRange: 1,
+                                        startSupportDatetime: 1,
+                                        endSupportDatetime: 1,
+                                        voteDaysRange: 1,
+                                        startVoteDatetime: 1,
+                                        endVoteDatetime: 1,
+                                        closeDate: 1,
+                                        status: 1,
+                                        type: 1,
+                                        hashTag: 1,
+                                        pin: 1,
+                                        showVoterName: 1,
+                                        showVoteResult: 1,
+                                        voted: 1,
+                                        page: 1,
+                                        user: 1,
+                                        service: 1,
+                                        hide: 1,
+                                        myVote: {
+                                            $cond: [
+                                                {
+                                                    $gt: [{ $size: '$myVote' }, 0]
+                                                },
+                                                true,
+                                                false
+                                            ]
+                                        },
+                                        userSupport: {
+                                            $cond: [
+                                                {
+                                                    $gt: [{ $size: '$userSupport' }, 0]
+                                                },
+                                                true,
+                                                false
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    $match:{
+                                        pin: false,
+                                    }
+                                },
+                                {
+                                    $skip: skips
+                                },
+                                {
+                                    $limit: take
+                                }
+                            ],
+                            as: 'votingEvent'
+                        }
+                    }
+                ]
+            );
+        }
+        let hashTagCount = 0;
+        if (hashTagVote !== undefined && hashTagVote.length > 0) {
+            for (const count of hashTagVote) {
+                hashTagCount += count.votingEvent.length;
+            }
+        }
+
+        const countRows: any = [{ 'count': 0 }];
+        countRows[0].count += hashTagCount;
+
+        const result: any = {};
+        result.hashTagVote = hashTagVote;
+        
         const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', result, countRows[0].count);
         return res.status(200).send(successResponse);
     }
@@ -5056,17 +5436,19 @@ export class VotingController {
             triggerSwitchCreateVote = triggerSwitchCreateVoteConfig.value;
         }
 
-        if(resRank.message === 'You are levels 1.') {
+        // ตรงนี้เราจะใช้ในการเช็ดว่า ค่าระบบ triggerSwitchCreateVote เป็น true หรือเป็น false
+        // โดยถ้า triggerSwitchCreateVote เป็น true จะทำให้ hidemode ของ level 2 และ 3 เป็น true ซึ่งเมื่อสร้าง vote แล้วจะแสดงทันที
+        if(resRank.message === 1) {
             hideMode = true;
         }
         
-        if(resRank.message === 'You are levels 2.') {
+        if(resRank.message === 2) {
             if(String(triggerSwitchCreateVote) === 'true') {
                 hideMode = true;
             }
         }
 
-        if(resRank.message === 'You are levels 3.') {
+        if(resRank.message === 3) {
             if(String(triggerSwitchCreateVote) === 'true') {
                 hideMode = true;
             }
@@ -5460,18 +5842,19 @@ export class VotingController {
         if (triggerSwitchCreateVoteConfig) {
             triggerSwitchCreateVote = triggerSwitchCreateVoteConfig.value;
         }
-
-        if(resRank.message === 'You are levels 1.') {
+        // ตรงนี้เราจะใช้ในการเช็ดว่า ค่าระบบ triggerSwitchCreateVote เป็น true หรือเป็น false
+        // โดยถ้า triggerSwitchCreateVote เป็น true จะทำให้ hidemode ของ level 2 และ 3 เป็น true ซึ่งเมื่อสร้าง vote แล้วจะแสดงทันที
+        if(resRank.message === 1) {
             hideMode = true;
         }
         
-        if(resRank.message === 'You are levels 2.') {
+        if(resRank.message === 2) {
             if(String(triggerSwitchCreateVote) === 'true') {
                 hideMode = true;
             }
         }
 
-        if(resRank.message === 'You are levels 3.') {
+        if(resRank.message === 3) {
             if(String(triggerSwitchCreateVote) === 'true') {
                 hideMode = true;
             }
@@ -5996,6 +6379,7 @@ export class VotingController {
     }
 
     @Post('/ranking/')
+    @Authorized('user')
     public async RankingLevel(@Res() res: any, @Req() req: any): Promise<any> {
         const reqUserId = req.headers.userid ? req.headers.userid : null;
 
@@ -6153,6 +6537,10 @@ export class VotingController {
         const userObjId = new ObjectID(user);
 
         // ranking level
+        // trigger.switch.create.votes ค่าระบบตัวนี้ใช้ในการตรวจสอบว่า อนุญาติให้มีการเปิด vote แบบ private หรือ public 
+        // ซึ่งถ้าค่าระบบเป็น false เราจะใช้ในการเช็ดสิทธิ์ว่าให้สามารถสร้าง vote ได้มั้ย โดยถ้าเป็น false คนที่เป็น whitelist เท่านั้นถึงจะสามารถสร้างได้ และ hidemode เป็น true เสมอถ้าเป็น whitelist
+        // ส่วน membership หรือสมาชิกพรรค สามารถสร้าง vote ได้ แต่ว่า hidemode จะเป็น false 
+        // และถ้าค่าระบบเป็น true หมายความว่า สามารถให้ทุกคนสร้าง vote ได้และ hidemode เป็น true
         let triggerSwitchCreateVote = DEFAULT_TRIGGER_SWITCH_CREATE_VOTES;
         const triggerSwitchCreateVoteConfig = await this.configService.getConfig(TRIGGER_SWITCH_CREATE_VOTES);
         if (triggerSwitchCreateVoteConfig) {
@@ -6168,7 +6556,7 @@ export class VotingController {
         const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
         const userObj = await this.userService.findOne({ _id: userObjId });
         if (split.includes(userObj.email) === true) {
-            const successResponse = ResponseUtil.getSuccessResponse('You are levels 1.', triggerSwitchCreateVote);
+            const successResponse = ResponseUtil.getSuccessResponse(1, triggerSwitchCreateVote);
             return successResponse;
         }
         // membership
@@ -6240,13 +6628,12 @@ export class VotingController {
 
         const authentication = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP'});
         if(authentication !== undefined) {
-            const successResponse = ResponseUtil.getSuccessResponse('You are levels 2.', triggerSwitchCreateVote);
+            const successResponse = ResponseUtil.getSuccessResponse(2, triggerSwitchCreateVote);
             return successResponse;
         } else {
-            const successResponse = ResponseUtil.getSuccessResponse('You are levels 3.', triggerSwitchCreateVote);
+            const successResponse = ResponseUtil.getSuccessResponse(3, triggerSwitchCreateVote);
             return successResponse;
-        }
-        
+        }  
     }
 
     private async UpdateVoteChoice(voteItem: any): Promise<any> {
@@ -6267,6 +6654,17 @@ export class VotingController {
             }
             return true;
         }
+    }
+
+    private async HashTagVoting(hashTagObjs:any): Promise<any>{
+        const stackId:any = [];
+        if(hashTagObjs.votingEvent.length > 0){
+            for(const hashTagObj of hashTagObjs.votingEvent){
+                stackId.push(new ObjectID(hashTagObj._id));
+            }
+        }
+
+        return stackId;
     }
 
     private async CheckSpamVote(voteObject: any, voteEventId: string, pageId: string, userId: string): Promise<any> {
