@@ -4951,7 +4951,7 @@ export class VotingController {
                     // check ordering exists?
                     const voteItemEdit: any = new VoteItemModel();
                     voteItemEdit.votingId = voteObjId;
-                    voteItemEdit.ordering = voteItem.ordering;
+                    voteItemEdit.ordering = i+1;
                     voteItemEdit.type = voteItem.typeChoice;
                     voteItemEdit.title = voteItem.title;
                     voteItemEdit.assetId = voteItem.assetId;
@@ -4974,7 +4974,7 @@ export class VotingController {
                     // check ordering exists?
                     const voteItemEdit: any = new VoteItemModel();
                     voteItemEdit.votingId = voteObjId;
-                    voteItemEdit.ordering = voteItem.ordering;
+                    voteItemEdit.ordering = i+1;
                     voteItemEdit.type = voteItem.typeChoice;
                     voteItemEdit.title = voteItem.title;
                     voteItemEdit.assetId = voteItem.assetId;
@@ -4996,7 +4996,7 @@ export class VotingController {
                 ) {
                     const voteItemEdit: any = new VoteItemModel();
                     voteItemEdit.votingId = voteObjId;
-                    voteItemEdit.ordering = voteItem.ordering;
+                    voteItemEdit.ordering = i+1;
                     voteItemEdit.type = voteItem.typeChoice;
                     voteItemEdit.title = voteItem.title;
                     voteItemEdit.assetId = voteItem.assetId;
@@ -5015,10 +5015,10 @@ export class VotingController {
                     // ถ้าต้องการลบ voteChoice ออกไปด้วยใน array voteItem.voteChoice จะต้อง shift หรือ pop ออกมาแล้ว
                     // api ถึงจะ compare ได้ว่าตัวไหนหายไป
                 }
-                query = { votingId: voteObjId };
+                query = { _id: new ObjectID(voteItem._id),votingId: voteObjId };
                 newValues = {
                     $set: {
-                        ordering: i,
+                        ordering: i+1,
                         title: voteItem.title,
                         coverPageURL: voteItem.coverPageURL,
                         s3CoverPageURL: voteItem.s3CoverPageURL,
