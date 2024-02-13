@@ -5507,7 +5507,7 @@ export class VotingController {
             // check voteChoices
             const resultError = await this.CheckVoteChoices(voteItems,maxVoteChoices);
             if(resultError === 0) {
-                const errorResponse = ResponseUtil.getErrorResponse('The number of VoteChoice exceeds the maximym configured for VoteChoice.', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('The number of VoteChoice exceeds the maximum configured for VoteChoice.', undefined);
                 return res.status(400).send(errorResponse);
             }
         }
