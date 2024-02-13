@@ -4907,6 +4907,34 @@ export class VotingController {
             }
         }
 
+        let maxVoteChoices = DEFAULT_MAX_VOTE_CHOICES;
+        let maxVote = DEFAULT_MAX_VOTE_QUESTIONS;
+
+        const maxConfigVoteChoices = await this.configService.getConfig(MAX_VOTE_CHOICES);
+
+        if(maxConfigVoteChoices){
+            maxVoteChoices = maxConfigVoteChoices.value;
+        }
+
+        const maxConfigVoteQuestion = await this.configService.getConfig(MAX_VOTE_QUESTIONS);
+        if(maxConfigVoteQuestion) {
+            maxVote = maxConfigVoteQuestion.value;
+        }
+
+        if(votingEventRequest.voteItem.length > maxVote) {
+            const errorResponse = ResponseUtil.getErrorResponse('The number of VoteItem exceeds the maximum configured for VoteQuestion.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        for (const voteItems of votingEventRequest.voteItem) {
+            // check voteChoices
+            const resultError = await this.CheckVoteChoices(voteItems,maxVoteChoices);
+            if(resultError === 0) {
+                const errorResponse = ResponseUtil.getErrorResponse('The number of VoteChoice exceeds the maximum configured for VoteChoice.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
         let query: any;
         let newValues: any;
         // const objIds = [];
