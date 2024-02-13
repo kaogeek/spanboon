@@ -136,3 +136,9 @@ export const VOTE_DAYS_RANGE ='vote.days.range';
 
 export const DEFAULT_TRIGGER_SWITCH_CREATE_VOTES = false;
 export const TRIGGER_SWITCH_CREATE_VOTES = 'trigger.switch.create.votes';
+
+export const DEFAULT_MAX_VOTE_CHOICES = 10;
+export const MAX_VOTE_CHOICES = 'max.vote.choices';
+
+export const DEFAULT_MAX_VOTE_QUESTIONS = 10;
+export const MAX_VOTE_QUESTIONS = 'max.vote.questions';

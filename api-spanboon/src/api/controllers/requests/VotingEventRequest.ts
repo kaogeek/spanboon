@@ -43,5 +43,6 @@ export class VotingEventRequest {
     public service: string;
     public oldPictures: any[];
     public delete: any[];
+    public deleteChoices: any[];
     public hide: boolean;
 }
