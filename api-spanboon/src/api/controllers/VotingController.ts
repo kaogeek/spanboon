@@ -1,4 +1,4 @@
-import { JsonController, Res, Post, Body, Req, Authorized, Param, Delete, Put, Get } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Authorized, Param, Delete, Put, Get,QueryParam } from 'routing-controllers';
 import { VotingEventRequest } from './requests/VotingEventRequest';
 import { VotingContentsRequest } from './requests/VotingContentsRequest';
 // import { UserSupportRequest } from './requests/UserSupportRequest';
@@ -47,6 +47,10 @@ import {
     CLOSET_SUPPORT,
     DEFAULT_TRIGGER_SWITCH_CREATE_VOTES,
     TRIGGER_SWITCH_CREATE_VOTES,
+    DEFAULT_MAX_VOTE_CHOICES,
+    MAX_VOTE_CHOICES,
+    DEFAULT_MAX_VOTE_QUESTIONS,
+    MAX_VOTE_QUESTIONS
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -1593,7 +1597,7 @@ export class VotingController {
                             closed: false,
                             title: exp,
                             pin: false,
-                            _id:{$in:stackId}
+                            _id:{$nin:stackId}
                         }
                     },
                     {
@@ -2006,7 +2010,7 @@ export class VotingController {
                                 {
                                     $match:{
                                         pin: false,
-                                        _id: {$in:stackId}
+                                        _id: {$nin:stackId}
                                     }
                                 },
                                 {
@@ -4521,7 +4525,7 @@ export class VotingController {
 
     // get Item
     @Get('/item/vote/:votingId')
-    public async getItemVote(@Body({ validate: true }) search: FindVoteRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async getItemVote(@Body({ validate: true }) search: FindVoteRequest, @Param('votingId') votingId: string,@QueryParam('limit') limit: number,@QueryParam('offset') offset: number,  @Res() res: any, @Req() req: any): Promise<any> {
         const voteObjId = new ObjectID(votingId);
 
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId });
@@ -4529,23 +4533,28 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
-        let filter: any = search.filter;
-        if (filter === undefined) {
-            filter = new SearchFilter();
+        let takeLimit = 0;
+        let takeOffset = 0;
+
+        const voteItemFind = await this.voteItemService.find({votingId:voteObjId});
+
+        if(limit !== undefined) {
+            takeLimit = limit;
         }
-        const take = filter.limit ? filter.limit : 10;
-        const offset = filter.offset ? filter.offset : 0;
+
+        if(offset !== undefined) {
+            takeOffset = offset;
+        }
+
+        if(limit === undefined) {
+            takeLimit = voteItemFind.length;
+        }
 
         const voteItem = await this.voteItemService.aggregate([
             {
                 $match: {
                     votingId: voteObjId,
                 },
-            },
-            {
-                $sort: {
-                    ordering: 1
-                }
             },
             {
                 $project: {
@@ -4664,10 +4673,15 @@ export class VotingController {
                 },
             },
             {
-                $skip: offset
+                $sort: {
+                    ordering: 1
+                }
             },
             {
-                $limit: take
+                $skip: takeOffset
+            },
+            {
+                $limit: takeLimit
             }
         ]);
         let voteEvent: any = undefined;
@@ -4859,7 +4873,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
-        const regex = /[%^*_+|~=`{}\[\]\/]/;
+        const regex = /[%^*+|~=`{}\[\]\/]/;
         const matchTitle = votingEventRequest.title.match(regex);
         if(matchTitle !== null && matchTitle.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
@@ -4878,64 +4892,143 @@ export class VotingController {
                 await this.assetService.update({ _id: new ObjectID(assetId) }, { $set: { expirationDate: today } });
             }
         }
-
+        
         if (votingEventRequest.delete.length > 0) {
             for (const voteItem of votingEventRequest.delete) {
                 await this.voteItemService.delete({ _id: new ObjectID(voteItem), votingId: voteObjId });
+                await this.voteChoiceService.delete({voteItem: new ObjectID(voteItem)});
+            }
+        }
+        
+        if(votingEventRequest.deleteChoices !== undefined &&
+            votingEventRequest.deleteChoices.length >0) {
+            for(const voteChoice of votingEventRequest.deleteChoices) {
+                await this.voteChoiceService.delete({_id: new ObjectID(voteChoice)});
+            }
+        }
+
+        let maxVoteChoices = DEFAULT_MAX_VOTE_CHOICES;
+        let maxVote = DEFAULT_MAX_VOTE_QUESTIONS;
+
+        const maxConfigVoteChoices = await this.configService.getConfig(MAX_VOTE_CHOICES);
+
+        if(maxConfigVoteChoices){
+            maxVoteChoices = maxConfigVoteChoices.value;
+        }
+
+        const maxConfigVoteQuestion = await this.configService.getConfig(MAX_VOTE_QUESTIONS);
+        if(maxConfigVoteQuestion) {
+            maxVote = maxConfigVoteQuestion.value;
+        }
+
+        if(votingEventRequest.voteItem.length > maxVote) {
+            const errorResponse = ResponseUtil.getErrorResponse('The number of VoteItem exceeds the maximum configured for VoteQuestion.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        for (const voteItems of votingEventRequest.voteItem) {
+            // check voteChoices
+            const resultError = await this.CheckVoteChoices(voteItems,maxVoteChoices);
+            if(resultError === 0) {
+                const errorResponse = ResponseUtil.getErrorResponse('The number of VoteChoice exceeds the maximum configured for VoteChoice.', undefined);
+                return res.status(400).send(errorResponse);
             }
         }
 
         let query: any;
         let newValues: any;
-
+        // const objIds = [];
         if (votingEventRequest.voteItem.length > 0) {
-            for (const voteItem of votingEventRequest.voteItem) {
+            for (const [i,voteItem] of votingEventRequest.voteItem.entries()) {
+                // objIds.push(new ObjectID(voteItem._id));
 
-                if (voteItem._id === undefined) {
+                // ไม่มี voteItem ต้องการสร้าง voteItem เพิ่ม และ สร้าง voteChoice
+                // และ type เป็น single
+                if (voteItem.typeChoice !== 'text' &&
+                    voteItem.typeChoice !== 'multi' &&
+                    voteItem.typeChoice === 'single'
+                    && voteItem._id === undefined) {
                     // check ordering exists?
-
                     const voteItemEdit: any = new VoteItemModel();
                     voteItemEdit.votingId = voteObjId;
                     voteItemEdit.ordering = voteItem.ordering;
                     voteItemEdit.type = voteItem.typeChoice;
                     voteItemEdit.title = voteItem.title;
-                    voteItemEdit.assetId = voteItem.assetIdItem;
-                    voteItemEdit.coverPageURL = voteItem.coverPageURLItem;
-                    voteItemEdit.s3CoverPageURL = voteItem.s3CoverPageURLItem;
+                    voteItemEdit.assetId = voteItem.assetId;
+                    voteItemEdit.coverPageURL = voteItem.coverPageURL;
+                    voteItemEdit.s3CoverPageURL = voteItem.s3coverPageURL;
                     const createVoteItem = await this.voteItemService.create(voteItemEdit);
                     if (voteItem.voteChoice.length > 0) {
                         if (createVoteItem) {
-                            await this.CreateVoteChoice(createVoteItem, createVoteItem.id);
+                            await this.FuncUpdateVoteChoice(createVoteItem, voteItem);
                         }
                     }
                 }
 
-                if (voteItem.voteChoice.length > 0) {
-                    const voteChoice = await this.UpdateVoteChoice(voteItem);
-                    if (voteChoice === undefined) {
-                        const errorResponse = ResponseUtil.getErrorResponse('VoteChoice id is undefined.', undefined);
-                        return res.status(400).send(errorResponse);
+                // ไม่มี voteItem ต้องการสร้าง voteItem เพิ่ม และ สร้าง voteChoice
+                // และ type เป็น multi
+                if (voteItem.typeChoice !== 'text' &&
+                    voteItem.typeChoice === 'multi' &&
+                    voteItem.typeChoice !== 'single'
+                    && voteItem._id === undefined) {
+                    // check ordering exists?
+                    const voteItemEdit: any = new VoteItemModel();
+                    voteItemEdit.votingId = voteObjId;
+                    voteItemEdit.ordering = voteItem.ordering;
+                    voteItemEdit.type = voteItem.typeChoice;
+                    voteItemEdit.title = voteItem.title;
+                    voteItemEdit.assetId = voteItem.assetId;
+                    voteItemEdit.coverPageURL = voteItem.coverPageURL;
+                    voteItemEdit.s3CoverPageURL = voteItem.s3coverPageURL;
+                    const createVoteItem = await this.voteItemService.create(voteItemEdit);
+                    if (voteItem.voteChoice.length > 0) {
+                        if (createVoteItem) {
+                            await this.FuncUpdateVoteChoice(createVoteItem, voteItem);
+                        }
                     }
                 }
-                // check id 
-                /*
-                if(voteItem._id === undefined) {
-                    const errorResponse = ResponseUtil.getErrorResponse('VoteItem id is undefined.', undefined);
-                    return res.status(400).send(errorResponse);
+
+                // สร้างเฉพาะ voteItem ที่เป็นแบบคำถาม
+                if(voteItem.typeChoice === 'text' && 
+                    voteItem.typeChoice !== 'multi' && 
+                    voteItem.typeChoice !== 'single' &&
+                    voteItem._id === undefined
+                ) {
+                    const voteItemEdit: any = new VoteItemModel();
+                    voteItemEdit.votingId = voteObjId;
+                    voteItemEdit.ordering = voteItem.ordering;
+                    voteItemEdit.type = voteItem.typeChoice;
+                    voteItemEdit.title = voteItem.title;
+                    voteItemEdit.assetId = voteItem.assetId;
+                    voteItemEdit.coverPageURL = voteItem.coverPageURL;
+                    voteItemEdit.s3CoverPageURL = voteItem.s3coverPageURL;
+                    await this.voteItemService.create(voteItemEdit);
                 }
-                */
-                query = { _id: new ObjectID(voteItem._id), votingId: voteObjId };
+
+                // มี voteItem อยู่แล้ว และต้องการที่จะสร้างหรืออัพเดทเพิ่มจาก voteItem 
+                // UpdateVoteChoice อัพเดท voteChoices
+                // CreateVoteChoice สร้าง choice เพิ่ม
+                if (voteItem._id !== undefined && voteItem.voteChoice.length > 0) {
+                    const obJId = {'id':voteItem._id};
+                    await this.UpdateVoteChoice(voteItem);
+                    await this.CreateVoteChoice(obJId,voteItem);
+                    // ถ้าต้องการลบ voteChoice ออกไปด้วยใน array voteItem.voteChoice จะต้อง shift หรือ pop ออกมาแล้ว
+                    // api ถึงจะ compare ได้ว่าตัวไหนหายไป
+                }
+                query = { votingId: voteObjId };
                 newValues = {
                     $set: {
-                        ordering: voteItem.ordering,
+                        ordering: i,
                         title: voteItem.title,
                         coverPageURL: voteItem.coverPageURL,
-                        s3CoverPageURL: voteItem.s3CoverPageURL
+                        s3CoverPageURL: voteItem.s3CoverPageURL,
+                        assetId: voteItem.assetId,
                     }
                 };
                 await this.voteItemService.update(query, newValues);
             }
         }
+        // console.log('objIds',objIds);
 
         query = { _id: voteObjId, userId: userObjId };
         newValues = {
@@ -4966,14 +5059,11 @@ export class VotingController {
 
     // supported ???
     @Get('/get/support/:id')
-    public async getSupport(@Body({ validate: true }) search: FindVoteRequest, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async getSupport(@Body({ validate: true }) search: FindVoteRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }
-        let filter: any = search.filter;
-        if (filter === undefined) {
-            filter = new SearchFilter();
-        }
+
         const objIds = new ObjectID(id);
         if (objIds === undefined && objIds === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Vote Id is undefined.', undefined);
@@ -5327,7 +5417,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
         */
-        const regex = /[%^*_+|~=`{}\[\]\/]/;
+        const regex = /[%^*+|~=`{}\[\]\/]/;
         const matchTitle = title.match(regex);
         if(matchTitle !== null && matchTitle.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
@@ -5422,6 +5512,34 @@ export class VotingController {
             }
         }
 
+        let maxVoteChoices = DEFAULT_MAX_VOTE_CHOICES;
+        let maxVote = DEFAULT_MAX_VOTE_QUESTIONS;
+
+        const maxConfigVoteChoices = await this.configService.getConfig(MAX_VOTE_CHOICES);
+
+        if(maxConfigVoteChoices){
+            maxVoteChoices = maxConfigVoteChoices.value;
+        }
+
+        const maxConfigVoteQuestion = await this.configService.getConfig(MAX_VOTE_QUESTIONS);
+        if(maxConfigVoteQuestion) {
+            maxVote = maxConfigVoteQuestion.value;
+        }
+
+        if(votingEventRequest.voteItem.length > maxVote) {
+            const errorResponse = ResponseUtil.getErrorResponse('The number of VoteItem exceeds the maximum configured for VoteQuestion.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        for (const voteItems of votingEventRequest.voteItem) {
+            // check voteChoices
+            const resultError = await this.CheckVoteChoices(voteItems,maxVoteChoices);
+            if(resultError === 0) {
+                const errorResponse = ResponseUtil.getErrorResponse('The number of VoteChoice exceeds the maximum configured for VoteChoice.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
         let hideMode = false;
         const resRank = await this.RankingLevelFunction(userObjId);
 
@@ -5495,6 +5613,7 @@ export class VotingController {
             'VoteChoice':[]
         };
         if (result) {
+            
             // const stackVoteItems:any = {};
             if (votingEventRequest.voteItem.length > 0) {
                 for (const voteItems of votingEventRequest.voteItem) {
@@ -5507,10 +5626,11 @@ export class VotingController {
                         voteItem.assetId = voteItems.assetIdItem;
                         voteItem.coverPageURL = voteItems.coverPageURLItem;
                         voteItem.s3CoverPageURL = voteItems.s3CoverPageURLItem;
+                        voteItem.userId = userObjId;
                         const createVoteItem = await this.voteItemService.create(voteItem);
                         if (createVoteItem) {
                             stackVoteItem['VoteItem'].push(createVoteItem);
-                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems);
+                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems,userObjId);
                             stackVoteItem['VoteChoice'].push(createdVoteChoice);
                         }
                     } else {
@@ -5635,6 +5755,34 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
+        let maxVoteChoices = DEFAULT_MAX_VOTE_CHOICES;
+        let maxVote = DEFAULT_MAX_VOTE_QUESTIONS;
+
+        const maxConfigVoteChoices = await this.configService.getConfig(MAX_VOTE_CHOICES);
+
+        if(maxConfigVoteChoices){
+            maxVoteChoices = maxConfigVoteChoices.value;
+        }
+
+        const maxConfigVoteQuestion = await this.configService.getConfig(MAX_VOTE_QUESTIONS);
+        if(maxConfigVoteQuestion) {
+            maxVote = maxConfigVoteQuestion.value;
+        }
+
+        if(votingEventRequest.voteItem.length > maxVote) {
+            const errorResponse = ResponseUtil.getErrorResponse('The number of VoteItem exceeds the maximum configured for VoteQuestion.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        for (const voteItems of votingEventRequest.voteItem) {
+            // check voteChoices
+            const resultError = await this.CheckVoteChoices(voteItems,maxVoteChoices);
+            if(resultError === 0) {
+                const errorResponse = ResponseUtil.getErrorResponse('The number of VoteChoice exceeds the maximym configured for VoteChoice.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
         const closetValue = (24 * sdr) * 60 * 60 * 1000; // one day in milliseconds
         const dateNow = new Date(today.getTime() + closetValue);
         if (configMinSupport) {
@@ -5733,7 +5881,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         } */
 
-        const regex = /[$%^&*_+|~=`{}\[\]\/<>]/;
+        const regex = /[$%^&*+|~=`{}\[\]\/<>]/;
         const matchTitle = title.match(regex);
         if(matchTitle !== null && matchTitle.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
@@ -5887,7 +6035,7 @@ export class VotingController {
         votingEvent.hashTag = createHashTag;
         // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
         votingEvent.status = status;
-        votingEvent.createAsPage = pageObjId;
+        votingEvent.createAsPage = new ObjectID(pageObjId);
         votingEvent.type = type;
         votingEvent.pin = pin;
         votingEvent.showVoterName = showed;
@@ -5913,10 +6061,12 @@ export class VotingController {
                         voteItem.assetId = voteItems.assetIdItem;
                         voteItem.coverPageURL = voteItems.coverPageURLItem;
                         voteItem.s3CoverPageURL = voteItems.s3CoverPageURLItem;
+                        voteItem.userId = userObjId;
+                        voteItem.pageId = new ObjectID(pageObjId);
                         const createVoteItem = await this.voteItemService.create(voteItem);
                         if (createVoteItem) {
                             stackVoteItem['VoteItem'].push(createVoteItem);
-                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems);
+                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems,userObjId,pageObjId);
                             stackVoteItem['VoteChoice'].push(createdVoteChoice);
                         }
                     } else {
@@ -6481,7 +6631,39 @@ export class VotingController {
         return created;
     }
 
-    private async CreateVoteChoice(createVoteItem: any, voteItems: any): Promise<any> {
+    private async CreateVoteChoice(createVoteItem: any, voteItems: any, userId?: string, pageId?:string): Promise<any> {
+        const userObjId = new ObjectID(userId);
+        const pageObjId = pageId !== null ? new ObjectID(pageId) : null;
+        if (voteItems) {
+            const voteChoiceObj = voteItems.voteChoice;
+            const stack:any = [];
+            if (voteChoiceObj.length > 0) {
+                for (const voteChoicePiece of voteChoiceObj) {
+                    if(voteChoicePiece._id !== undefined) {
+                        continue;
+                    }
+                    if(voteChoicePiece.title === ''){
+                        continue;
+                    }
+                    const voteChoice = new VoteChoiceModel();
+                    voteChoice.voteItemId = new ObjectID(createVoteItem.id);
+                    voteChoice.coverPageURL = voteChoicePiece.coverPageURL;
+                    voteChoice.s3coverPageURL = voteChoicePiece.s3CoverPageURL;
+                    voteChoice.title = voteChoicePiece.title;
+                    voteChoice.assetId = voteChoicePiece.assetId;
+                    voteChoice.userId = userObjId;
+                    voteChoice.pageId = pageObjId;
+                    const result = await this.voteChoiceService.create(voteChoice);
+                    stack.push(result);
+                }
+                return stack;
+            }
+        }
+    }
+    // function นี้อย่าสับสนกับ CreateVoteChoice วัตถุประสงค์ไม่เหมือนกัน ของ CreateVoteChoice เป็นการแก้ไข vote แล้วสร้าง voteitem เพิ่ม
+    // ส่วน FuncUpdateVoteChoice เพิ่ม voteChoice เข้ามา
+    private async FuncUpdateVoteChoice(createVoteItem: any, voteItems: any): Promise<any> {
+
         if (voteItems) {
             const voteChoiceObj = voteItems.voteChoice;
             const stack:any = [];
@@ -6490,6 +6672,7 @@ export class VotingController {
                     if(voteChoicePiece.title === ''){
                         continue;
                     }
+
                     const voteChoice = new VoteChoiceModel();
                     voteChoice.voteItemId = new ObjectID(createVoteItem.id);
                     voteChoice.coverPageURL = voteChoicePiece.coverPageURL;
@@ -6505,7 +6688,7 @@ export class VotingController {
     }
 
     private async CheckEmptyTitleVoteChoice(voteItems: any): Promise<any> {
-        const regex = /[%^*_+|~=`{}\[\]\/]/;
+        const regex = /[%^*+|~=`{}\[\]\/]/;
         if (voteItems) {
             const voteChoiceObj = voteItems.voteChoice;
             if (voteChoiceObj.length > 0) {
@@ -6636,6 +6819,15 @@ export class VotingController {
         }  
     }
 
+    private async CheckVoteChoices(voteItems:any,maxVoteChoices:any): Promise<any>{
+        const voteChoiceObj = voteItems.voteChoice;
+        if (voteChoiceObj.length > 0) {    
+            if(voteChoiceObj.length > maxVoteChoices) {
+                return 0;
+            }
+        } 
+    }
+
     private async UpdateVoteChoice(voteItem: any): Promise<any> {
         if (voteItem.voteChoice.length > 0) {
             for (const voteChoice of voteItem.voteChoice) {
@@ -6647,7 +6839,8 @@ export class VotingController {
                     $set: {
                         title: voteChoice.title,
                         coverPageURL: voteChoice.coverPageURL,
-                        s3CoverPageURL: voteChoice.s3CoverPageURL
+                        s3CoverPageURL: voteChoice.s3CoverPageURL,
+                        assetId: voteChoice.assetId
                     }
                 };
                 await this.voteChoiceService.update(query, newValues);
