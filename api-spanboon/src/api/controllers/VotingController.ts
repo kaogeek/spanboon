@@ -384,6 +384,9 @@ export class VotingController {
         if (keywords !== undefined && keywords !== null && keywords !== '') {
             matchVoteEvent.title = exp;
         }
+
+        matchVoteEvent.hide = true;
+
         const userObjId = req.headers.userid ? ObjectID(req.headers.userid) : undefined;
         const voteEventAggr: any = await this.votingEventService.aggregate(
             [
