@@ -160,6 +160,7 @@ export class AdminVotedController {
                 approveDatetime:today,
                 pin:false,
                 status: votingEventRequest.status ? votingEventRequest.status : voteObj.status,
+                hide: true,
 
                 startVoteDatetime: today,
                 endVoteDatetime:   new Date(today.getTime() + ( (24 * voteObj.voteDaysRange) * 60 * 60 * 1000)), 
@@ -265,6 +266,7 @@ export class AdminVotedController {
                     startVoteDatetime: startVoteDate,
                     endVoteDatetime:   endVoteDate, 
                     hashTag: votingEventRequest.hashTag,
+                    hide: votingEventRequest.hide,
 
                     showVoterName: votingEventRequest.showVoterName,
                     showVoteResult: votingEventRequest.showVoteResult,
@@ -292,6 +294,7 @@ export class AdminVotedController {
                         startVoteDatetime: startVoteDate,
                         endVoteDatetime:   endVoteDate, 
                         hashTag: votingEventRequest.hashTag,
+                        hide: votingEventRequest.hide,
 
                         showVoterName: votingEventRequest.showVoterName,
                         showVoteResult: votingEventRequest.showVoteResult,
@@ -312,7 +315,8 @@ export class AdminVotedController {
         
                         startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
                         endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
-        
+                        hide: votingEventRequest.hide,
+
                         startVoteDatetime: startVoteDate,
                         endVoteDatetime:   endVoteDate, 
                         hashTag: votingEventRequest.hashTag,
@@ -534,6 +538,8 @@ export class AdminVotedController {
         const userObjId = new ObjectID(req.user.id);
         const user = await this.userService.findOne({_id:userObjId});
         const today = moment().toDate();
+
+        // ถ้าเป็น auto approve hide = false 
 
         const voteAggs = await this.votingEventService.aggregate(
             [

@@ -1116,7 +1116,8 @@ export class VotingController {
                         $match: {
                             pin:false,
                             userId: userObjId,
-                            title: exp
+                            title: exp,
+                            hide: true
                         }
                     },
                     {
@@ -1597,6 +1598,7 @@ export class VotingController {
                             closed: false,
                             title: exp,
                             pin: false,
+                            hide: true,
                             _id:{$nin:stackId}
                         }
                     },
@@ -2010,6 +2012,7 @@ export class VotingController {
                                 {
                                     $match:{
                                         pin: false,
+                                        hide: true,
                                         _id: {$nin:stackId}
                                     }
                                 },
@@ -2189,6 +2192,7 @@ export class VotingController {
                             endSupportDatetime: { $gte: today, $lte: now },
                             closed: false,
                             status: 'support',
+                            hide: true,
                             title: exp
                         }
                     },
@@ -2664,6 +2668,7 @@ export class VotingController {
                                 {
                                     $match:{
                                         pin: false,
+                                        hide: true,
                                     }
                                 },
                                 {
@@ -3117,7 +3122,9 @@ export class VotingController {
                         $match: {
                             status: { $ne: 'support' },
                             userId: userObjId,
-                            title: exp
+                            hide: true,
+                            title: exp,
+                            
                         }
                     },
                     {
@@ -3351,6 +3358,7 @@ export class VotingController {
                     {
                         $match: {
                             userId: userObjId,
+                            hide: true,
                             status: 'support',
                             title: exp
                         }
@@ -3397,6 +3405,7 @@ export class VotingController {
                                 },
                                 {
                                     $match:{
+                                        hide: true,
                                         title: exp
                                     }
                                 },
@@ -3646,6 +3655,7 @@ export class VotingController {
                                 },
                                 {
                                     $match:{
+                                        hide: true,
                                         title: exp
                                     }
                                 },
@@ -3928,6 +3938,8 @@ export class VotingController {
         if (keywords !== undefined && keywords !== null && keywords !== '') {
             matchVoteEvent.title = exp;
         }
+
+        matchVoteEvent.hide = true;
 
         const voteEventAggr: any = await this.votingEventService.aggregate(
             [
@@ -4313,6 +4325,11 @@ export class VotingController {
                                     {
                                         $eq: ['$$votingId', '$_id']
                                     }
+                                }
+                            },
+                            {
+                                $match:{
+                                    hide: true,
                                 }
                             },
                             {
