@@ -103,7 +103,7 @@ export class VoteEventFacade extends AbstractFacade {
 
   public getVoteChoice(id: string): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/voting/item/vote/' + id;
+      let url: string = this.baseURL + '/voting/item/vote/' + id + '?limit=10&offset=0';
       let httpOptions = this.authMgr.getDefaultOptions();
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
         resolve(response.data);
@@ -118,19 +118,6 @@ export class VoteEventFacade extends AbstractFacade {
       let url: string = this.baseURL + '/voting/' + id;
       let httpOptions = this.authMgr.getDefaultOptions();
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
-        resolve(response.data);
-      }).catch((error: any) => {
-        reject(error);
-      });
-    });
-  }
-
-  public getPermissible(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/voting/permissible/';
-      let body: any = {};
-      let options = this.authMgr.getDefaultOptions();
-      this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);
@@ -216,6 +203,19 @@ export class VoteEventFacade extends AbstractFacade {
       let body: any = data;
       let option = this.authMgr.getDefaultOptions();
       this.http.put(url, body, option).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getRanking(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/voting/ranking';
+      let body = {};
+      let options = this.authMgr.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
         reject(error);

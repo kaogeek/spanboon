@@ -23,9 +23,6 @@
                             <i [ngClass]="indexPage === index ? 'material-icons' : 'material-icons-outlined'"
                                 style="transform: scaleX(-1) rotate(-90deg)">note</i>
                             <span>#คำถามที่ {{index+1}}</span>
-                            <!-- <span>{{item.typeChoice === 'single' ? '#'+(index+1)+' Checkbox' : (item.typeChoice ===
-                                    'multi' ? '#'+(index+1)+'
-                                    Multiple' : '#'+(index+1)+' Textbox')}}</span> -->
                         </div>
                         <button mat-icon-button [matMenuTriggerFor]="menu">
                             <mat-icon>more_horiz</mat-icon>
@@ -83,7 +80,6 @@
                 </div>
                 <div class="vote-box">
                     <span>คำอธิบาย</span>
-                    <!-- <input type="text" placeholder="เพิ่มคำอธิบาย"> -->
                     <textarea style="resize: none;" name="detail" cols="30" rows="3" placeholder="เพิ่มคำอธิบาย"
                         [(ngModel)]="detail"></textarea>
                 </div>
@@ -222,8 +218,6 @@
                 </div>
                 <div class="vote-box">
                     <span>คำถาม</span>
-                    <!-- <input type="text" placeholder="ตั้งคำถาม" [(ngModel)]="titleQuestion"
-                        (keyup)="setFieldData(indexPage,true,true)"> -->
                     <textarea style="resize: none;" name="detail" cols="30" rows="3" placeholder="ตั้งคำถาม"
                         [(ngModel)]="titleQuestion" (keyup)="setFieldData(indexPage,true,true)"></textarea>
                 </div>
@@ -236,20 +230,27 @@
                             <div class="vote-option">
                                 <input id="answerSingle" name="answer" type="text"
                                     placeholder="{{index+1}}. ใส่ตัวเลือก" value="" (input)="onType()">
-                                <div class="image"
-                                    [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURL === null}"
-                                    (click)="fileInput.click()">
-                                    <ng-container
-                                        *ngIf="listQuestion[indexPage]?.voteChoice[index]?.coverPageURL === null else elseImageChoiceSingle">
-                                        <img src="../../../../assets/img/icons/votepage/add-photo.svg">
-                                    </ng-container>
-                                    <ng-template #elseImageChoiceSingle>
-                                        <img class="data-image"
-                                            [src]="apiBaseURL + listQuestion[indexPage]?.voteChoice[index]?.coverPageURL + '/image'">
-                                    </ng-template>
-                                    <div class="image-upload">
-                                        <input #fileInput type="file" (change)="onFileSelect($event,'choice',index)"
-                                            accept="image/*" />
+                                <div class="wrapper-image-choice">
+                                    <div class="image"
+                                        [ngClass]="{'none-image': listQuestion[indexPage]?.coverPageURL === null,'edit': data.edit}"
+                                        (click)="fileInput.click()">
+                                        <ng-container
+                                            *ngIf="listQuestion[indexPage]?.voteChoice[index]?.coverPageURL === null else elseImageChoiceSingle">
+                                            <img src="../../../../assets/img/icons/votepage/add-photo.svg">
+                                        </ng-container>
+                                        <ng-template #elseImageChoiceSingle>
+                                            <img class="data-image"
+                                                [src]="apiBaseURL + listQuestion[indexPage]?.voteChoice[index]?.coverPageURL + '/image'">
+                                        </ng-template>
+                                        <div class="image-upload">
+                                            <input #fileInput type="file" (change)="onFileSelect($event,'choice',index)"
+                                                accept="image/*" />
+                                        </div>
+                                    </div>
+                                    <div class="remove-choice">
+                                        <button mat-menu-item (click)="removeChoice(index)">
+                                            <mat-icon>close</mat-icon>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -307,9 +308,6 @@
                         <i [ngClass]="indexPage === index ? 'material-icons' : 'material-icons-outlined'"
                             style="transform: scaleX(-1) rotate(-90deg)">note</i>
                         <span>#{{index+1}}</span>
-                        <!-- <span>{{item.typeChoice === 'single' ? '#'+(index+1)+' Checkbox' : (item.typeChoice ===
-                                    'multi' ? '#'+(index+1)+'
-                                    Multiple' : '#'+(index+1)+' Textbox')}}</span> -->
                     </div>
                     <button mat-icon-button [matMenuTriggerFor]="menu">
                         <mat-icon>more_horiz</mat-icon>
@@ -357,7 +355,7 @@
             </button>
             <button mat-button class="button-vote submit"
                 (click)="!isAddQuestion ? clickConfirm() : next(voteQuestionType)">
-                <span>{{data.edit ? 'แก้ไข' : (!isAddQuestion ? 'สร้างโหวต' : 'ถัดไป')}}</span>
+                <span>{{data.edit && !isAddQuestion ? 'แก้ไข' : (!isAddQuestion ? 'สร้างโหวต' : 'ถัดไป')}}</span>
             </button>
         </div>
     </div>

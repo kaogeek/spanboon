@@ -111,11 +111,14 @@ export class DialogPostCrad extends AbstractPage {
       }
       if (this.posts.length > 0) {
         for (let index = 0; index < this.posts.length; index++) {
+          this.voteChoiceValue.push({
+            maxValue: this._getVoteMaxCount(index),
+            value: [],
+          });
+        }
+        for (let index = 0; index < this.posts.length; index++) {
           if (this.posts[index].voteChoice !== undefined) {
-            this.voteChoiceValue.push({
-              maxValue: this._getVoteMaxCount(index),
-              value: [],
-            });
+            this.voteChoiceValue[index].maxValue = this._getVoteMaxCount(index);
             for (let i = 0; i < this.posts[index].voteChoice.length; i++) {
               if (this.posts[index].voteChoice[i].voted.length > 0) {
                 this.voteChoiceValue[index].value.push(this.posts[index].voteChoice[i].voted[0].votedCount);

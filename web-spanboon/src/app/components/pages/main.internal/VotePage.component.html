@@ -33,13 +33,13 @@
                     <mat-icon>arrow_back</mat-icon>
                 </button>
                 <div class="search">
-                    <label class="material-icons icon-search" for="searchInput">
+                    <label class="material-icons icon-search" for="inputSearch">
                         search
                     </label>
-                    <input #searchInput id="searchInput" type="search" [placeholder]="'ค้นหาโหวต'">
+                    <input #inputSearch id="inputSearch" type="search" [placeholder]="'ค้นหาโหวต'">
                     <!-- (keyup.enter)="searchValue($event.target.value)" -->
                 </div>
-                <div class="create-vote" *ngIf="isAllowCreate" (click)="openDialogCreateVote()">
+                <div class="create-vote" *ngIf="(ranking === 1) || isAllowCreate" (click)="openDialogCreateVote()">
                     <img src="../../../../assets/img/icons/votepage/create.svg">
                     <span>สร้างโหวต</span>
                 </div>
@@ -56,10 +56,12 @@
                         [ngStyle]="{'grid-template-columns': model.pin.length === 0 ? '1fr' : null}">
                         <ng-container *ngIf="model.pin.length > 0">
                             <ng-container *ngFor="let data of model.pin">
-                                <card-content-vote #pinContent class="pin-content-data" [model]="data"
-                                    [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                    [image]="data.coverPageURL"></card-content-vote>
+                                <ng-container *ngIf="data.hide">
+                                    <card-content-vote #pinContent class="pin-content-data" [model]="data"
+                                        [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                        [image]="data.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
                         </ng-container>
                     </div>
@@ -75,10 +77,12 @@
                         [ngStyle]="{'grid-template-columns': model.myVote.length === 0 ? '1fr' : null}">
                         <ng-container *ngIf="model.myVote.length > 0">
                             <ng-container *ngFor="let data of model.myVote">
-                                <card-content-vote #pinContent class="myvote-content-data" [model]="data"
-                                    [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                    [image]="data.coverPageURL"></card-content-vote>
+                                <ng-container *ngIf="data.hide">
+                                    <card-content-vote #pinContent class="myvote-content-data" [model]="data"
+                                        [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                        [image]="data.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
                         </ng-container>
                     </div>
@@ -94,10 +98,12 @@
                         [ngStyle]="{'grid-template-columns': model.closeDate.length === 0 ? '1fr' : null}">
                         <ng-container *ngIf="model.closeDate.length > 0">
                             <ng-container *ngFor="let data of model.closeDate">
-                                <card-content-vote #pinContent class="support-content-data" [model]="data"
-                                    [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                    [image]="data.coverPageURL"></card-content-vote>
+                                <ng-container *ngIf="data.hide">
+                                    <card-content-vote #pinContent class="support-content-data" [model]="data"
+                                        [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                        [image]="data.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
                         </ng-container>
                     </div>
@@ -113,10 +119,12 @@
                         [ngStyle]="{'grid-template-columns': model.closetSupport.length === 0 ? '1fr' : null}">
                         <ng-container *ngIf="model.closetSupport.length > 0">
                             <ng-container *ngFor="let data of model.closetSupport">
-                                <card-content-vote #pinContent class="support-content-data" [model]="data"
-                                    [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                    [image]="data.coverPageURL"></card-content-vote>
+                                <ng-container *ngIf="data.hide">
+                                    <card-content-vote #pinContent class="support-content-data" [model]="data"
+                                        [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                        [image]="data.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
                         </ng-container>
                     </div>
@@ -132,10 +140,13 @@
                             <hr>
                             <div class="wrapper-content">
                                 <ng-container *ngFor="let data of item.votingEvent">
-                                    <card-content-vote #pinContent class="support-content-data" [model]="data"
-                                        [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                        [image]="data.coverPageURL"></card-content-vote>
+                                    <ng-container *ngIf="data.hide">
+                                        <card-content-vote #pinContent class="support-content-data" [model]="data"
+                                            [title]="data.title"
+                                            (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                            (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                            [image]="data.coverPageURL"></card-content-vote>
+                                    </ng-container>
                                 </ng-container>
                             </div>
                         </ng-container>
@@ -171,10 +182,12 @@
                         <hr>
                         <div class="wrapper-content">
                             <ng-container *ngFor="let data of voteData.myVote">
-                                <card-content-vote class="support-content-data" [model]="data" [title]="data.title"
-                                    (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                    [image]="data.coverPageURL"></card-content-vote>
+                                <ng-container *ngIf="data.hide">
+                                    <card-content-vote class="support-content-data" [model]="data" [title]="data.title"
+                                        (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                        [image]="data.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
                         </div>
                     </ng-container>
@@ -188,10 +201,12 @@
                         <hr>
                         <div class="wrapper-content">
                             <ng-container *ngFor="let data of voteData.myVoterSupport">
-                                <card-content-vote class="support-content-data" [model]="data" [title]="data.title"
-                                    (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                    [image]="data.coverPageURL"></card-content-vote>
+                                <ng-container *ngIf="data.hide">
+                                    <card-content-vote class="support-content-data" [model]="data" [title]="data.title"
+                                        (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                        [image]="data.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
                         </div>
                     </ng-container>
@@ -204,12 +219,14 @@
                         <hr>
                         <div class="wrapper-content">
                             <ng-container *ngFor="let data of voteData.myVoted">
-                                <card-content-vote class="support-content-data" [model]="data.votingEvent"
-                                    [title]="data.votingEvent.title"
-                                    (openDialog)="checkOpenDialog = true; openDialogPost(data.votingEvent)"
-                                    (deleteVote)="deleteDataVote($event.votingEvent)"
-                                    (editVote)="editVote($event.votingEvent)"
-                                    [image]="data.votingEvent.coverPageURL"></card-content-vote>
+                                <ng-container *ngIf="data.votingEvent.hide">
+                                    <card-content-vote class="support-content-data" [model]="data.votingEvent"
+                                        [title]="data.votingEvent.title"
+                                        (openDialog)="checkOpenDialog = true; openDialogPost(data.votingEvent)"
+                                        (deleteVote)="deleteDataVote($event.votingEvent)"
+                                        (editVote)="editVote($event.votingEvent)"
+                                        [image]="data.votingEvent.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
                         </div>
                     </ng-container>
@@ -222,12 +239,14 @@
                         <hr>
                         <div class="wrapper-content">
                             <ng-container *ngFor="let data of voteData.mySupported">
-                                <card-content-vote class="support-content-data" [model]="data.votingEvent"
-                                    [title]="data.votingEvent.title"
-                                    (openDialog)="checkOpenDialog = true; openDialogPost(data.votingEvent)"
-                                    (deleteVote)="deleteDataVote($event.votingEvent)"
-                                    (editVote)="editVote($event.votingEvent)"
-                                    [image]="data.votingEvent.coverPageURL"></card-content-vote>
+                                <ng-container *ngIf="data.votingEvent.hide">
+                                    <card-content-vote class="support-content-data" [model]="data.votingEvent"
+                                        [title]="data.votingEvent.title"
+                                        (openDialog)="checkOpenDialog = true; openDialogPost(data.votingEvent)"
+                                        (deleteVote)="deleteDataVote($event.votingEvent)"
+                                        (editVote)="editVote($event.votingEvent)"
+                                        [image]="data.votingEvent.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
                         </div>
                     </ng-container>
@@ -253,10 +272,12 @@
                 <div class="wrapper-content">
                     <ng-container *ngFor="let data of voteData">
                         <ng-container *ngIf="data?.status === 'support'">
-                            <card-content-vote #supportContent class="support-content-data" [model]="data"
-                                [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                [image]="data.coverPageURL"></card-content-vote>
+                            <ng-container *ngIf="data.hide">
+                                <card-content-vote #supportContent class="support-content-data" [model]="data"
+                                    [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                    [image]="data.coverPageURL"></card-content-vote>
+                            </ng-container>
                         </ng-container>
                     </ng-container>
                 </div>
@@ -281,10 +302,12 @@
                 <div class="wrapper-content">
                     <ng-container *ngFor="let data of voteData">
                         <ng-container *ngIf="data?.status === 'vote' && !data.closed">
-                            <card-content-vote [model]="data" [title]="data.title"
-                                (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                [image]="data.coverPageURL"></card-content-vote>
+                            <ng-container *ngIf="data.hide">
+                                <card-content-vote [model]="data" [title]="data.title"
+                                    (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                    [image]="data.coverPageURL"></card-content-vote>
+                            </ng-container>
                         </ng-container>
                     </ng-container>
                 </div>
@@ -309,10 +332,12 @@
                 <div class="wrapper-content">
                     <ng-container *ngFor="let data of voteData">
                         <ng-container *ngIf="data.closed">
-                            <card-content-vote #myVoteContent class="myvote-content-data" [model]="data"
-                                [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                [image]="data.coverPageURL"></card-content-vote>
+                            <ng-container *ngIf="data.hide">
+                                <card-content-vote #myVoteContent class="myvote-content-data" [model]="data"
+                                    [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                    [image]="data.coverPageURL"></card-content-vote>
+                            </ng-container>
                         </ng-container>
                     </ng-container>
                 </div>
@@ -327,20 +352,24 @@
                     <ng-container *ngIf="!!model && model[typeAll]?.length > 0">
                         <ng-container *ngIf="typeAll === 'myVoted' || typeAll === 'mySupported'; else elseMyVotedOwn">
                             <ng-container *ngFor="let data of model[typeAll]">
-                                <card-content-vote class="pin-content-data" [model]="data.votingEvent"
-                                    [title]="data.votingEvent.title"
-                                    (openDialog)="checkOpenDialog = true; openDialogPost(data.votingEvent)"
-                                    (deleteVote)="deleteDataVote($event.votingEvent)"
-                                    (editVote)="editVote($event.votingEvent)"
-                                    [image]="data.votingEvent.coverPageURL"></card-content-vote>
+                                <ng-container *ngIf="data.votingEvent.hide">
+                                    <card-content-vote class="pin-content-data" [model]="data.votingEvent"
+                                        [title]="data.votingEvent.title"
+                                        (openDialog)="checkOpenDialog = true; openDialogPost(data.votingEvent)"
+                                        (deleteVote)="deleteDataVote($event.votingEvent)"
+                                        (editVote)="editVote($event.votingEvent)"
+                                        [image]="data.votingEvent.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
                         </ng-container>
                         <ng-template #elseMyVotedOwn>
                             <ng-container *ngFor="let data of model[typeAll]">
-                                <card-content-vote class="pin-content-data" [model]="data" [title]="data.title"
-                                    (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                    [image]="data.coverPageURL"></card-content-vote>
+                                <ng-container *ngIf="data.hide">
+                                    <card-content-vote class="pin-content-data" [model]="data" [title]="data.title"
+                                        (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                        [image]="data.coverPageURL"></card-content-vote>
+                                </ng-container>
                             </ng-container>
                         </ng-template>
                     </ng-container>
@@ -355,10 +384,12 @@
                 <div class="wrapper-content">
                     <ng-container *ngIf="!!model && model[typeAll]?.length > 0">
                         <ng-container *ngFor="let data of model[typeAll]">
-                            <card-content-vote class="pin-content-data" [model]="data" [title]="data.title"
-                                (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                [image]="data.coverPageURL"></card-content-vote>
+                            <ng-container *ngIf="data.hide">
+                                <card-content-vote class="pin-content-data" [model]="data" [title]="data.title"
+                                    (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                    (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                    [image]="data.coverPageURL"></card-content-vote>
+                            </ng-container>
                         </ng-container>
                     </ng-container>
                 </div>
@@ -375,10 +406,13 @@
                             <hr>
                             <div class="wrapper-content">
                                 <ng-container *ngFor="let data of item.votingEvent">
-                                    <card-content-vote class="support-content-data" [model]="data" [title]="data.title"
-                                        (openDialog)="checkOpenDialog = true; openDialogPost(data)"
-                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
-                                        [image]="data.coverPageURL"></card-content-vote>
+                                    <ng-container *ngIf="data.hide">
+                                        <card-content-vote class="support-content-data" [model]="data"
+                                            [title]="data.title"
+                                            (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                            (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                            [image]="data.coverPageURL"></card-content-vote>
+                                    </ng-container>
                                 </ng-container>
                             </div>
                         </ng-container>
