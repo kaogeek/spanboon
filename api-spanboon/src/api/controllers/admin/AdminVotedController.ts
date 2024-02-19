@@ -202,7 +202,7 @@ export class AdminVotedController {
             $set:{
                 approveUsername:user.displayName,
                 approveDatetime:today,
-                hide: true,
+                hide: votingEventRequest.hide,
             }
         };
 
