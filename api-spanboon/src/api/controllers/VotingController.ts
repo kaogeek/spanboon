@@ -852,6 +852,7 @@ export class VotingController {
                                 { status: { $eq: 'vote' } },
                                 { status: { $eq: 'close' } }
                             ],
+                            hide: true,
                             title: exp
                         }
                     },
