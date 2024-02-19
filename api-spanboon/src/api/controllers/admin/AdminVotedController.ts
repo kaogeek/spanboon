@@ -180,6 +180,42 @@ export class AdminVotedController {
         }
     }
 
+    @Post('/hide/:id')
+    @Authorized('')
+    public async EditHide(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        const voteObjId = new ObjectID(id);
+        const today = moment().toDate();
+        let newValues:any = {};
+        // check exist?
+        const user = await this.userService.findOne({_id:userObjId});
+
+        const voteObj = await this.votingEventService.findOne({_id:voteObjId});
+        if(voteObj === undefined && voteObj === null){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const query = {_id:voteObjId};
+        // approved.
+        newValues = {
+            $set:{
+                approveUsername:user.displayName,
+                approveDatetime:today,
+                hide: true,
+            }
+        };
+
+        const update = await this.votingEventService.update(query,newValues);
+        if(update){
+            const successResponse = ResponseUtil.getSuccessResponse('Update vote event is success.', undefined);
+            return res.status(200).send(successResponse);
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot update a VoteEvent.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     @Put('/:id')
     @Authorized('')
     public async updateVoteEvent(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
