@@ -26,6 +26,7 @@ export class VoteEventFacade extends AbstractFacade {
         offset: offset,
         myVote: false,
         supporter: false,
+        generalSection: true,
         keyword: !!keyword ? keyword : "",
       };
       // supporter: key.pin && key.closeVote && key.closetSupport ? true : false,

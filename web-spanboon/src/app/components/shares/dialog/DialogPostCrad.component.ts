@@ -109,6 +109,17 @@ export class DialogPostCrad extends AbstractPage {
       } else {
         this.posts = this.data.choice.voteItem;
       }
+      if (this.data.post.status === 'close') {
+        this.posts.forEach(item => {
+          if (!!item.voteChoice) {
+            item.voteChoice.sort((a, b) => {
+              const countA = a.voted.length > 0 ? Math.max(...a.voted.map(vote => vote.votedCount)) : 0;
+              const countB = b.voted.length > 0 ? Math.max(...b.voted.map(vote => vote.votedCount)) : 0;
+              return countB - countA;
+            });
+          }
+        });
+      }
       if (this.posts.length > 0) {
         for (let index = 0; index < this.posts.length; index++) {
           this.voteChoiceValue.push({

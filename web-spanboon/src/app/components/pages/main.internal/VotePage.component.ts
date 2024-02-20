@@ -48,6 +48,7 @@ export class VotePage extends AbstractPage implements OnInit {
   public mode: string;
   public voteData: any;
   public voteModel: any = {};
+  public voteObjId: any = [];
   public activeMenu: string = '';
   public userId: string;
 
@@ -303,6 +304,15 @@ export class VotePage extends AbstractPage implements OnInit {
         };
       }
     }
+    if (type === 'generalSection') {
+      key = {
+        pin: false,
+        closeVote: false,
+        closetSupport: false,
+        hashTagVote: false,
+        voteObjId: this.voteObjId
+      }
+    }
     if (!!isScroll) this.offset += this.limit;
     if (!!inputKeyword) {
       this.searchInputValue = inputKeyword;
@@ -335,6 +345,9 @@ export class VotePage extends AbstractPage implements OnInit {
     } else {
       this.voteFacade.searchAll(this.isLogin(), key, keyword, this.limit, this.offset).then((res: any) => {
         if (res) {
+          if (res.generalSection.length > 0) {
+            this.voteObjId = res.voteObjId;
+          }
           if (!!type && isScroll) {
             if (this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closetSupport' && this.typeAll === 'hashTagVote') {
               if (res[type].length > 1) {
@@ -807,6 +820,8 @@ export class VotePage extends AbstractPage implements OnInit {
         this._searchContent(!!this.searchInputValue ? this.searchInputValue : null, this.typeAll, true);
       } else if (this.activeUrl['name'] === 'own') {
         this._searchContent(!!this.searchInputValue ? this.searchInputValue : null, this.typeAll, true, true);
+      } else if (this.activeUrl['name'] === undefined) {
+        this._searchContent(null, 'generalSection', true, null, null);
       }
     }
   }

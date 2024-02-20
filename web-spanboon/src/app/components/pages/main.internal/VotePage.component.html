@@ -152,6 +152,27 @@
                         </ng-container>
                     </ng-container>
                 </ng-container>
+
+                <ng-container *ngIf="!!model && !!model.generalSection && model.generalSection.length > 0">
+                    <div class="header-content">
+                        <p>อื่นๆ</p>
+                        <!-- <span (click)="changeMenu('all',false,'ใกล้ปิดล่ารายชื่อ')">ดูทั้งหมด</span> -->
+                    </div>
+                    <hr>
+                    <div class="wrapper-content"
+                        [ngStyle]="{'grid-template-columns': model.generalSection.length === 0 ? '1fr' : null}">
+                        <ng-container *ngIf="model.generalSection.length > 0">
+                            <ng-container *ngFor="let data of model.generalSection">
+                                <ng-container *ngIf="data.hide">
+                                    <card-content-vote #pinContent class="support-content-data" [model]="data"
+                                        [title]="data.title" (openDialog)="checkOpenDialog = true; openDialogPost(data)"
+                                        (deleteVote)="deleteDataVote($event)" (editVote)="editVote($event)"
+                                        [image]="data.coverPageURL"></card-content-vote>
+                                </ng-container>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </ng-container>
             </ng-container>
 
             <ng-container *ngIf="activeUrl['name'] === undefined && isEmpty">
