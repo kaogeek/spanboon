@@ -306,20 +306,26 @@ export class UserController {
         }
     }
 
-    @Post('/access/')
+    @Get('/access/')
     @Authorized('user')
     public async RankingLevel(@Res() res: any, @Req() req: any): Promise<any> {
         const reqUserId = req.headers.userid ? req.headers.userid : null;
-
+        let data:boolean = undefined;
         const response = await this.RankingLevelFunction(reqUserId);
+        
+        if(response.data === 'true') {
+            data = true;
+        } else if(response.data === 'false') {
+            data = false;
+        }
 
         if(response.status === 1) {
-            const successResponse = ResponseUtil.getSuccessResponse(response.message, response.data);
+            const successResponse = ResponseUtil.getSuccessResponse(response.message, data);
             return res.status(200).send(successResponse);
         }
 
         if(response.status === 0) {
-            const errorResponse = ResponseUtil.getErrorResponse(response.message, response.data);
+            const errorResponse = ResponseUtil.getErrorResponse(response.message, data);
             return res.status(400).send(errorResponse);
         }
     }
