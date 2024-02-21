@@ -20,6 +20,7 @@ import { VoteEventFacade } from 'src/app/services/facade/VoteEventFacade.service
 import { AuthenManager } from 'src/app/services/AuthenManager.service';
 import { DialogAlert } from './DialogAlert.component';
 import { UserAccessFacade } from 'src/app/services/facade/UserAccessFacade.service';
+import { CacheConfigInfo } from 'src/app/services/CacheConfigInfo.service';
 
 const PAGE_NAME: string = 'createvote';
 
@@ -75,6 +76,7 @@ export class DialogCreateVote extends AbstractPage {
   public listInputAns = [0, 1, 2, 3];
   public listHashtag: any[] = [];
   public deleteItem: any[] = [];
+  public deleteChoices: any[] = [];
   public userPage: any;
   public user: any;
   public image = {
@@ -83,6 +85,7 @@ export class DialogCreateVote extends AbstractPage {
     s3CoverPageURL: null
   };
   public dataVote: any = {};
+  public maxVoteItem: any = {};
 
   public hashTag = new FormControl();
   public filteredOptions: Observable<string[]>;
@@ -98,6 +101,7 @@ export class DialogCreateVote extends AbstractPage {
     voteFacade: VoteEventFacade,
     userAccessFacade: UserAccessFacade,
     private changeDetectorRef: ChangeDetectorRef,
+    private cacheConfigInfo: CacheConfigInfo,
     dialog: MatDialog, authenManager: AuthenManager, router: Router) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
@@ -112,7 +116,7 @@ export class DialogCreateVote extends AbstractPage {
     }
     this._getAccessUser();
     this._getVoteHashtag();
-
+    this._getConfig();
     this.filteredOptions = this.hashTag.valueChanges
       .pipe(
         startWith(''),
@@ -136,8 +140,8 @@ export class DialogCreateVote extends AbstractPage {
     this.clickSave(this.indexPage);
   }
 
-  public onType() {
-    this.input.next(this.inputText);
+  public onType(text?) {
+    this.input.next(text ? text : this.inputText);
   }
 
   public ngOnDestroy() {
@@ -162,15 +166,6 @@ export class DialogCreateVote extends AbstractPage {
     this.listQuestion = isNull ? this.listQuestion : this.data.support.voteItem;
     this.indexQuestion = isNull ? 1 : !!value.voteItem ? value.voteItem.length + 1 : this.data.support.voteItem.length + 1;
   }
-
-  // private _setDate() {
-  //   let date_start = new Date();
-  //   let date_end = new Date();
-  //   date_start.setHours(0, 0, 0, 0);
-  //   date_end.setHours(23, 59, 59, 0);
-  //   date_end.setDate(date_end.getDate() + 15);
-  //   this.voteDayRange = new FormControl(date_end);
-  // }
 
   public onClose(isSkip?: boolean, type?: string): void {
     if (isSkip) {
@@ -301,6 +296,10 @@ export class DialogCreateVote extends AbstractPage {
   }
 
   public clickAddQuestion() {
+    if (this.listQuestion.length === this.maxVoteItem.question) {
+      this.showAlertDialog("ไม่สามารถมีคำถามมากกว่า 10 ข้อได้");
+      return;
+    }
     if (!!this.indexPage) {
       this.clickSave(this.indexPage, 'add');
     } else {
@@ -401,6 +400,7 @@ export class DialogCreateVote extends AbstractPage {
       service: this.thanksMessage,
       voteItem: this.listQuestion,
       delete: this.deleteItem,
+      deleteChoices: this.deleteChoices
     }
 
     return this.dataVote;
@@ -433,8 +433,8 @@ export class DialogCreateVote extends AbstractPage {
     }
     this.changeDetectorRef.detectChanges();
     let input: HTMLInputElement[] = Array.from(document.getElementsByName('answer')) as HTMLInputElement[];
-    for (var i = 0; i < data.voteChoice.length; i++) {
-      input[i].value = data.voteChoice[i].title;
+    for (var i = 0; i < input.length; i++) {
+      input[i].value = !!data.voteChoice[i] && !!data.voteChoice[i]!.title ? data.voteChoice[i].title : '';
     }
   }
 
@@ -462,26 +462,6 @@ export class DialogCreateVote extends AbstractPage {
       isSubmit = true;
     }
 
-    // for (let index = 0; index < data.length; index++) {
-    //   if (
-    //     data[index]?.coverPageURL !== (!new_data[index].coverPageURLItem ? new_data[index]?.coverPageURL : new_data[index]?.coverPageURLItem) ||
-    //     data[index].title !== new_data[index].title ||
-    //     data[index].ordering !== new_data[index].ordering) {
-    //     isSubmit = true;
-    //     break;
-    //   }
-    //   if (!!this.data.support.voteItem[index].voteChoice) {
-    //     for (let i = 0; i < this.data.support.voteItem[index].voteChoice.length; i++) {
-    //       if (
-    //         this.data.support.voteItem[index].voteChoice[i].title !== new_data[index].voteChoice[i].title ||
-    //         this.data.support.voteItem[index].voteChoice[i].coverPageURL !== new_data[index].voteChoice[i].coverPageURL) {
-    //         isSubmit = true;
-    //         break;
-    //       }
-    //     }
-    //   }
-    // }
-
     if (isSubmit) {
       const voteData = this._setDataVote();
       let data: any = {
@@ -498,6 +478,7 @@ export class DialogCreateVote extends AbstractPage {
         hashTag: voteData.hashTag,
         voteItem: voteData.voteItem,
         delete: voteData.delete,
+        deleteChoices: voteData.deleteChoices,
         oldPictures: [],
       }
 
@@ -560,6 +541,7 @@ export class DialogCreateVote extends AbstractPage {
       }
 
       for (let index = 0; index < this.listQuestion.length; index++) {
+        let arrayIsLengthAns = [];
         if ((this.listQuestion[index].titleItem === '' || this.listQuestion[index].title === '')) {
           let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
@@ -580,8 +562,35 @@ export class DialogCreateVote extends AbstractPage {
           this.isLoading = false;
           return;
         }
+        let count: number = 0;
         for (let i = 0; i < this.listQuestion[index].voteChoice.length; i++) {
-          if (this.listQuestion[index].voteChoice[i].title === '' && i <= 1) {
+          if (this.listQuestion[index].voteChoice[i].title !== '') {
+            arrayIsLengthAns.push(index);
+            count++;
+            if (count > this.maxVoteItem.choice) {
+              let dialog = this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: "คำถามที่ " + (index + 1) + " ไม่สามารถมีตัวเลือกมากกว่า " + this.maxVoteItem.choice + " ตัวเลือกได้",
+                  bottomText2: "ตกลง",
+                  bottomColorText2: "black",
+                  btDisplay1: "none"
+                }
+              });
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+                  if (index !== this.indexPage) {
+                    this.changeQuestion(index, this.listQuestion[index].typeChoice);
+                  }
+                }
+              });
+              this.isLoading = false;
+              return;
+            }
+          }
+        }
+        for (let i = 0; i < this.listQuestion[index].voteChoice.length; i++) {
+          if (this.listQuestion[index].voteChoice[i].title === '' && arrayIsLengthAns.length <= 1) {
             let dialog = this.dialog.open(DialogAlert, {
               disableClose: true,
               data: {
@@ -601,9 +610,12 @@ export class DialogCreateVote extends AbstractPage {
             this.isLoading = false;
             return;
           }
-          if (this.listQuestion[index].voteChoice[i].title === '' || this.listQuestion[index].voteChoice[i].title === undefined) {
-            this.listQuestion[index].voteChoice.splice(i, 1);
-            this.listQuestion[index].voteChoice.splice(i, 1);
+          if (this.listQuestion[index].voteChoice[i].title.trim() === '' || this.listQuestion[index].voteChoice[i].title === undefined) {
+            if (!!this.listQuestion[index].voteChoice[i]._id && this.listQuestion[index].voteChoice[i].title === '') {
+              this.deleteChoices.push(this.listQuestion[index].voteChoice[i]._id);
+            }
+            this.listQuestion[index].voteChoice.splice(i, 2);
+            continue;
           }
         }
       }
@@ -643,6 +655,14 @@ export class DialogCreateVote extends AbstractPage {
     if (err.error.message === 'VoteChoice Title is required.') {
       this.isLoading = false;
       this.showAlertDialog("กรุณาใส่ตัวเลือก");
+    }
+    if (err.error.message === 'The number of VoteChoice exceeds the maximum configured for VoteChoice.') {
+      this.isLoading = false;
+      this.showAlertDialog("ไม่สามารถมีตัวเลือกมากเกินกว่าค่าของระบบได้");
+    }
+    if (err.error.message === 'The number of VoteItem exceeds the maximum configured for VoteQuestion.') {
+      this.isLoading = false;
+      this.showAlertDialog("ไม่สามารถมีคำถามมากเกินกว่าค่าของระบบได้");
     }
   }
 
@@ -693,7 +713,6 @@ export class DialogCreateVote extends AbstractPage {
         }
       }
     }
-
     for (let index = 0; index < this.listQuestion.length; index++) {
       if (this.listQuestion[index].titleItem === '') {
         let dialog = this.dialog.open(DialogAlert, {
@@ -714,6 +733,32 @@ export class DialogCreateVote extends AbstractPage {
         })
         this.isLoading = false;
         return;
+      }
+      let count: number = 0;
+      for (let i = 0; i < this.listQuestion[index].voteChoice.length; i++) {
+        if (this.listQuestion[index].voteChoice[i].title !== '') {
+          count++;
+          if (count > this.maxVoteItem.choice) {
+            let dialog = this.dialog.open(DialogAlert, {
+              disableClose: true,
+              data: {
+                text: "คำถามที่ " + (index + 1) + " ไม่สามารถมีตัวเลือกมากกว่า " + this.maxVoteItem.choice + " ตัวเลือกได้",
+                bottomText2: "ตกลง",
+                bottomColorText2: "black",
+                btDisplay1: "none"
+              }
+            });
+            dialog.afterClosed().subscribe((res) => {
+              if (res) {
+                if (index !== this.indexPage) {
+                  this.changeQuestion(index, this.listQuestion[index].typeChoice);
+                }
+              }
+            });
+            this.isLoading = false;
+            return;
+          }
+        }
       }
       for (let i = 0; i < this.listQuestion[index].voteChoice.length; i++) {
         if (this.listQuestion[index].voteChoice[i].title === '' && i <= 1) {
@@ -1185,5 +1230,32 @@ export class DialogCreateVote extends AbstractPage {
     }).catch((err) => {
       if (err) { }
     });
+  }
+
+  public removeChoice(index) {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'ต้องการที่จะลบตัวเลือกนี้ใช่หรือไม่',
+        bottomText1: 'ไม่',
+        bottomText2: 'ใช่',
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        let id = this.listQuestion[this.indexPage].voteChoice[index]._id;
+        this.listInputAns.splice(index, 1);
+        this.listQuestion[this.indexPage].voteChoice.splice(index, 1);
+        this.input.next(this.inputText);
+        let input: HTMLInputElement[] = Array.from(document.getElementsByName('answer')) as HTMLInputElement[];
+        input[index].value = '';
+        this.deleteChoices.push(id);
+      }
+    });
+  }
+
+  private async _getConfig() {
+    this.maxVoteItem.choice = Number((await this.cacheConfigInfo.getConfig(environment.maxVoteChoice)).value);
+    this.maxVoteItem.question = Number((await this.cacheConfigInfo.getConfig(environment.maxVoteQuestion)).value);
   }
 }

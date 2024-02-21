@@ -51,6 +51,15 @@
                                 </ng-container>
                                 <label style="margin-left: 10px;">แสดงผลโหวตเมื่อปิดโหวต</label>
                             </div>
+                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
+                                <ng-container>
+                                    <span style="cursor: pointer;" (click)="clickShowVote()">
+                                        <mat-slide-toggle style="pointer-events: none;"
+                                            [checked]="valueHide"></mat-slide-toggle>
+                                    </span>
+                                </ng-container>
+                                <label style="margin-left: 10px;">ซ่อน/แสดง โหวต</label>
+                            </div>
                             <div class="row" *ngIf="preview">
                                 <div class="col-md-12">
                                     <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">

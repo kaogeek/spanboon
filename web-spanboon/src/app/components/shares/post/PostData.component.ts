@@ -378,17 +378,17 @@ export class PostData {
         arr = res
         for (let comment of arr) {
           if (comment.commentAsPage !== undefined && comment.commentAsPage !== null) {
-            search.limit = 0
+            search.limit = 0;
             this.pageFacade.search(search).then((page: any) => {
               let index = page.map(function (e) { return e.id; }).indexOf(comment.commentAsPage);
-              comment.user.displayName = page[index].name
+              comment.user.displayName = page[index].name;
               this.assetFacade.getPathFile(page[index].imageURL).then((res: any) => {
-                comment.user.imageURL = res.data
+                comment.user.imageURL = res.data;
               }).catch((err: any) => {
               });
             }).catch((err: any) => {
               this.assetFacade.getPathFile(comment.user.imageURL).then((res: any) => {
-                comment.user.imageURL = res.data
+                comment.user.imageURL = res.data;
               }).catch((err: any) => {
               });
             });
