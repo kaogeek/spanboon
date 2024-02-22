@@ -127,8 +127,21 @@ export class AdminDashBoardController {
                 }
             }
         }
+        const totalUser = await this.userService.aggregate(
+            [
+
+                {
+                    $match: {
+                        banned: false,
+                    }
+                },
+                {
+                    $count: 'Total_users'
+                }
+            ]
+        );
         result['Year'] = yearString;
-        result['Total_users'] = users.length;
+        result['Total_users'] = totalUser[0].Total_users;
         result['Total_MFP'] = totalMFP.length > 0 ? totalMFP[0].Total_MFP : [];
         result['January'] = result['January'].length;
         result['February'] = result['February'].length;
