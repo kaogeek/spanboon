@@ -48,4 +48,8 @@ export class AuthenticationIdService {
     public async create(accessToken: any): Promise<AuthenticationId> {
         return this.authenticationIdRepository.save(accessToken);
     }
+
+    public async aggregate(query: any, options?: any): Promise<any[]> {
+        return await this.authenticationIdRepository.aggregate(query, options).toArray();
+    }
 }
