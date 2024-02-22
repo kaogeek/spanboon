@@ -45,12 +45,11 @@ import {
     VOTE_DAYS_RANGE,
     DEFAULT_CLOSET_SUPPORT,
     CLOSET_SUPPORT,
-    DEFAULT_TRIGGER_SWITCH_CREATE_VOTES,
-    TRIGGER_SWITCH_CREATE_VOTES,
     DEFAULT_MAX_VOTE_CHOICES,
     MAX_VOTE_CHOICES,
     DEFAULT_MAX_VOTE_QUESTIONS,
-    MAX_VOTE_QUESTIONS
+    MAX_VOTE_QUESTIONS,
+    RANKING
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -5802,34 +5801,24 @@ export class VotingController {
 
         let hideMode = false;
         const resRank = await this.RankingLevelFunction(userObjId);
-
         if(resRank.status === 0) {
             const errorResponse = ResponseUtil.getErrorResponse(resRank.message, resRank.data);
             return res.status(400).send(errorResponse);
         }
 
-        let triggerSwitchCreateVote = DEFAULT_TRIGGER_SWITCH_CREATE_VOTES;
-        const triggerSwitchCreateVoteConfig = await this.configService.getConfig(TRIGGER_SWITCH_CREATE_VOTES);
-        if (triggerSwitchCreateVoteConfig) {
-            triggerSwitchCreateVote = triggerSwitchCreateVoteConfig.value;
-        }
-
         // ตรงนี้เราจะใช้ในการเช็ดว่า ค่าระบบ triggerSwitchCreateVote เป็น true หรือเป็น false
         // โดยถ้า triggerSwitchCreateVote เป็น true จะทำให้ hidemode ของ level 2 และ 3 เป็น true ซึ่งเมื่อสร้าง vote แล้วจะแสดงทันที
         if(resRank.message === 1) {
-            hideMode = true;
+            hideMode = resRank.data;
         }
         
         if(resRank.message === 2) {
-            if(String(triggerSwitchCreateVote) === 'true') {
-                hideMode = true;
-            }
+            hideMode = resRank.data;
+
         }
 
         if(resRank.message === 3) {
-            if(String(triggerSwitchCreateVote) === 'true') {
-                hideMode = true;
-            }
+            hideMode = resRank.data;
         }
 
         const signUrl = await this.s3Service.s3signCloudFront(votingEventRequest.s3CoverPageURL);
@@ -6239,33 +6228,24 @@ export class VotingController {
 
         let hideMode = false;
         const resRank = await this.RankingLevelFunction(userObjId);
-
         if(resRank.status === 0) {
             const errorResponse = ResponseUtil.getErrorResponse(resRank.message, resRank.data);
             return res.status(400).send(errorResponse);
         }
 
-        let triggerSwitchCreateVote = DEFAULT_TRIGGER_SWITCH_CREATE_VOTES;
-        const triggerSwitchCreateVoteConfig = await this.configService.getConfig(TRIGGER_SWITCH_CREATE_VOTES);
-        if (triggerSwitchCreateVoteConfig) {
-            triggerSwitchCreateVote = triggerSwitchCreateVoteConfig.value;
-        }
         // ตรงนี้เราจะใช้ในการเช็ดว่า ค่าระบบ triggerSwitchCreateVote เป็น true หรือเป็น false
         // โดยถ้า triggerSwitchCreateVote เป็น true จะทำให้ hidemode ของ level 2 และ 3 เป็น true ซึ่งเมื่อสร้าง vote แล้วจะแสดงทันที
         if(resRank.message === 1) {
-            hideMode = true;
+            hideMode = resRank.data;
         }
         
         if(resRank.message === 2) {
-            if(String(triggerSwitchCreateVote) === 'true') {
-                hideMode = true;
-            }
+            hideMode = resRank.data;
+
         }
 
         if(resRank.message === 3) {
-            if(String(triggerSwitchCreateVote) === 'true') {
-                hideMode = true;
-            }
+            hideMode = resRank.data;
         }
 
         const signUrl = await this.s3Service.s3signCloudFront(votingEventRequest.s3CoverPageURL);
@@ -6980,103 +6960,292 @@ export class VotingController {
         const userObjId = new ObjectID(user);
 
         // ranking level
-        // trigger.switch.create.votes ค่าระบบตัวนี้ใช้ในการตรวจสอบว่า อนุญาติให้มีการเปิด vote แบบ private หรือ public 
-        // ซึ่งถ้าค่าระบบเป็น false เราจะใช้ในการเช็ดสิทธิ์ว่าให้สามารถสร้าง vote ได้มั้ย โดยถ้าเป็น false คนที่เป็น whitelist เท่านั้นถึงจะสามารถสร้างได้ และ hidemode เป็น true เสมอถ้าเป็น whitelist
-        // ส่วน membership หรือสมาชิกพรรค สามารถสร้าง vote ได้ แต่ว่า hidemode จะเป็น false 
-        // และถ้าค่าระบบเป็น true หมายความว่า สามารถให้ทุกคนสร้าง vote ได้และ hidemode เป็น true
-        let triggerSwitchCreateVote = DEFAULT_TRIGGER_SWITCH_CREATE_VOTES;
-        const triggerSwitchCreateVoteConfig = await this.configService.getConfig(TRIGGER_SWITCH_CREATE_VOTES);
-        if (triggerSwitchCreateVoteConfig) {
-            triggerSwitchCreateVote = triggerSwitchCreateVoteConfig.value;
+        let rank = null;
+        const rankingConfig = await this.configService.getConfig(RANKING);
+        if(rankingConfig.value === '1'){
+            rank = 1;
         }
-
-        let eligibleValue = undefined;
-        const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
-        if (eligibleConfig) {
-            eligibleValue = eligibleConfig.value;
+        if(rankingConfig.value === '2'){
+            rank = 2;
         }
-        // whitelist
-        const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
-        const userObj = await this.userService.findOne({ _id: userObjId });
-        if (split.includes(userObj.email) === true) {
-            const successResponse = ResponseUtil.getSuccessResponse(1, triggerSwitchCreateVote);
-            return successResponse;
+        if(rankingConfig.value === '3'){
+            rank = 3;
         }
-        // membership
-        const requestBody = {
-            'grant_type': process.env.GRANT_TYPE,
-            'client_id': process.env.CLIENT_ID,
-            'client_secret': process.env.CLIENT_SECRET,
-            'scope': process.env.SCOPE
-        };
-        const formattedData = qs.stringify(requestBody);
-
-        const response = await axios.post(
-            process.env.APP_MFP_API_OAUTH,
-            formattedData, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Accept: 'application/json'
+        if(rank === 1) {
+            let eligibleValue = undefined;
+            const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+            if (eligibleConfig) {
+                eligibleValue = eligibleConfig.value;
             }
-        });
-        // check the status user MFP
-        const tokenCredential = response.data.access_token;
-        const getMembershipById = await axios.get(
-            process.env.API_MFP_GET_ID + userObjId,
-            {
+            // whitelist
+            const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+            const userObj = await this.userService.findOne({ _id: userObjId });
+            if (split.includes(userObj.email) === true) {
+                const successResponse = ResponseUtil.getSuccessResponse(1, true);
+                return successResponse;
+            }
+
+                    // membership
+            const requestBody = {
+                'grant_type': process.env.GRANT_TYPE,
+                'client_id': process.env.CLIENT_ID,
+                'client_secret': process.env.CLIENT_SECRET,
+                'scope': process.env.SCOPE
+            };
+            
+            const formattedData = qs.stringify(requestBody);
+
+            const response = await axios.post(
+                process.env.APP_MFP_API_OAUTH,
+                formattedData, {
                 headers: {
-                    Authorization: `Bearer ${tokenCredential}`
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Accept: 'application/json'
                 }
+            });
+            // check the status user MFP
+            const tokenCredential = response.data.access_token;
+            const getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + userObjId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
+                }
+            );
+
+            if (getMembershipById.data.data.state !== 'APPROVED') {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot Login Your state is not APPROVED.', undefined);
+                return errorResponse;
             }
-        );
+            const today = moment().toDate();
 
-        if (getMembershipById.data.data.state !== 'APPROVED') {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot Login Your state is not APPROVED.', undefined);
-            return errorResponse;
-        }
-        const today = moment().toDate();
+            // check the expired_membership
+            const date = new Date(getMembershipById.data.data.expired_at);
+            const expired_at = date.getTime();
+            // check authentication by id or mobile or identification_number
+            // .getTime() <= today.getTime()
+            if (expired_at <= today.getTime()) {
+                const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
+                return errorUserNameResponse;
+            }
+            if (getMembershipById.data.data.state === 'PENDING_PAYMENT' && getMembershipById.data.data.membership_type === 'UNKNOWN') {
+                const errorResponse = ResponseUtil.getErrorResponse('PENDING_PAYMENT', undefined);
+                return errorResponse;
+            }
+            // PENDING_APPROVAL 400
+            if (getMembershipById.data.data.state === 'PENDING_APPROVAL') {
+                const errorResponse = ResponseUtil.getErrorResponse('PENDING_APPROVAL', undefined);
+                return errorResponse;
+            }
+            // REJECTED 400
+            if (getMembershipById.data.data.state === 'REJECTED') {
+                const errorResponse = ResponseUtil.getErrorResponse('REJECTED', undefined);
+                return errorResponse;
+            }
+            // PROFILE_RECHECKED 400
+            if (getMembershipById.data.data.state === 'PROFILE_RECHECKED') {
+                const errorResponse = ResponseUtil.getErrorResponse('PROFILE_RECHECKED', undefined);
+                return errorResponse;
+            }
+            if (getMembershipById.data.data.state === 'ARCHIVED') {
+                const errorResponse = ResponseUtil.getErrorResponse('ARCHIVED', undefined);
+                return errorResponse;
+            }
 
-        // check the expired_membership
-        const date = new Date(getMembershipById.data.data.expired_at);
-        const expired_at = date.getTime();
-        // check authentication by id or mobile or identification_number
-        // .getTime() <= today.getTime()
-        if (expired_at <= today.getTime()) {
-            const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
-            return errorUserNameResponse;
-        }
-        if (getMembershipById.data.data.state === 'PENDING_PAYMENT' && getMembershipById.data.data.membership_type === 'UNKNOWN') {
-            const errorResponse = ResponseUtil.getErrorResponse('PENDING_PAYMENT', undefined);
-            return errorResponse;
-        }
-        // PENDING_APPROVAL 400
-        if (getMembershipById.data.data.state === 'PENDING_APPROVAL') {
-            const errorResponse = ResponseUtil.getErrorResponse('PENDING_APPROVAL', undefined);
-            return errorResponse;
-        }
-        // REJECTED 400
-        if (getMembershipById.data.data.state === 'REJECTED') {
-            const errorResponse = ResponseUtil.getErrorResponse('REJECTED', undefined);
-            return errorResponse;
-        }
-        // PROFILE_RECHECKED 400
-        if (getMembershipById.data.data.state === 'PROFILE_RECHECKED') {
-            const errorResponse = ResponseUtil.getErrorResponse('PROFILE_RECHECKED', undefined);
-            return errorResponse;
-        }
-        if (getMembershipById.data.data.state === 'ARCHIVED') {
-            const errorResponse = ResponseUtil.getErrorResponse('ARCHIVED', undefined);
-            return errorResponse;
+            const authentication = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP'});
+            if(authentication !== undefined) {
+                const successResponse = ResponseUtil.getSuccessResponse(2, false);
+                return successResponse;
+            } else {
+                const successResponse = ResponseUtil.getSuccessResponse(3, false);
+                return successResponse;
+            } 
+        } 
+
+        if(rank === 2) {
+            let eligibleValue = undefined;
+            const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+            if (eligibleConfig) {
+                eligibleValue = eligibleConfig.value;
+            }
+            // whitelist
+            const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+            const userObj = await this.userService.findOne({ _id: userObjId });
+            if (split.includes(userObj.email) === true) {
+                const successResponse = ResponseUtil.getSuccessResponse(1, false);
+                return successResponse;
+            }
+
+                    // membership
+            const requestBody = {
+                'grant_type': process.env.GRANT_TYPE,
+                'client_id': process.env.CLIENT_ID,
+                'client_secret': process.env.CLIENT_SECRET,
+                'scope': process.env.SCOPE
+            };
+            
+            const formattedData = qs.stringify(requestBody);
+
+            const response = await axios.post(
+                process.env.APP_MFP_API_OAUTH,
+                formattedData, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Accept: 'application/json'
+                }
+            });
+            // check the status user MFP
+            const tokenCredential = response.data.access_token;
+            const getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + userObjId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
+                }
+            );
+
+            if (getMembershipById.data.data.state !== 'APPROVED') {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot Login Your state is not APPROVED.', undefined);
+                return errorResponse;
+            }
+            const today = moment().toDate();
+
+            // check the expired_membership
+            const date = new Date(getMembershipById.data.data.expired_at);
+            const expired_at = date.getTime();
+            // check authentication by id or mobile or identification_number
+            // .getTime() <= today.getTime()
+            if (expired_at <= today.getTime()) {
+                const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
+                return errorUserNameResponse;
+            }
+            if (getMembershipById.data.data.state === 'PENDING_PAYMENT' && getMembershipById.data.data.membership_type === 'UNKNOWN') {
+                const errorResponse = ResponseUtil.getErrorResponse('PENDING_PAYMENT', undefined);
+                return errorResponse;
+            }
+            // PENDING_APPROVAL 400
+            if (getMembershipById.data.data.state === 'PENDING_APPROVAL') {
+                const errorResponse = ResponseUtil.getErrorResponse('PENDING_APPROVAL', undefined);
+                return errorResponse;
+            }
+            // REJECTED 400
+            if (getMembershipById.data.data.state === 'REJECTED') {
+                const errorResponse = ResponseUtil.getErrorResponse('REJECTED', undefined);
+                return errorResponse;
+            }
+            // PROFILE_RECHECKED 400
+            if (getMembershipById.data.data.state === 'PROFILE_RECHECKED') {
+                const errorResponse = ResponseUtil.getErrorResponse('PROFILE_RECHECKED', undefined);
+                return errorResponse;
+            }
+            if (getMembershipById.data.data.state === 'ARCHIVED') {
+                const errorResponse = ResponseUtil.getErrorResponse('ARCHIVED', undefined);
+                return errorResponse;
+            }
+
+            const authentication = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP'});
+            if(authentication !== undefined) {
+                const successResponse = ResponseUtil.getSuccessResponse(2, true);
+                return successResponse;
+            } else {
+                const successResponse = ResponseUtil.getSuccessResponse(3, false);
+                return successResponse;
+            } 
         }
 
-        const authentication = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP'});
-        if(authentication !== undefined) {
-            const successResponse = ResponseUtil.getSuccessResponse(2, triggerSwitchCreateVote);
-            return successResponse;
-        } else {
-            const successResponse = ResponseUtil.getSuccessResponse(3, triggerSwitchCreateVote);
-            return successResponse;
-        }  
+        if(rank === 3) {
+            let eligibleValue = undefined;
+            const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
+            if (eligibleConfig) {
+                eligibleValue = eligibleConfig.value;
+            }
+            // whitelist
+            const split = eligibleValue ? eligibleValue.split(',') : eligibleValue;
+            const userObj = await this.userService.findOne({ _id: userObjId });
+            if (split.includes(userObj.email) === true) {
+                const successResponse = ResponseUtil.getSuccessResponse(1, false);
+                return successResponse;
+            }
+
+                    // membership
+            const requestBody = {
+                'grant_type': process.env.GRANT_TYPE,
+                'client_id': process.env.CLIENT_ID,
+                'client_secret': process.env.CLIENT_SECRET,
+                'scope': process.env.SCOPE
+            };
+            
+            const formattedData = qs.stringify(requestBody);
+
+            const response = await axios.post(
+                process.env.APP_MFP_API_OAUTH,
+                formattedData, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Accept: 'application/json'
+                }
+            });
+            // check the status user MFP
+            const tokenCredential = response.data.access_token;
+            const getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + userObjId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
+                }
+            );
+
+            if (getMembershipById.data.data.state !== 'APPROVED') {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot Login Your state is not APPROVED.', undefined);
+                return errorResponse;
+            }
+            const today = moment().toDate();
+
+            // check the expired_membership
+            const date = new Date(getMembershipById.data.data.expired_at);
+            const expired_at = date.getTime();
+            // check authentication by id or mobile or identification_number
+            // .getTime() <= today.getTime()
+            if (expired_at <= today.getTime()) {
+                const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
+                return errorUserNameResponse;
+            }
+            if (getMembershipById.data.data.state === 'PENDING_PAYMENT' && getMembershipById.data.data.membership_type === 'UNKNOWN') {
+                const errorResponse = ResponseUtil.getErrorResponse('PENDING_PAYMENT', undefined);
+                return errorResponse;
+            }
+            // PENDING_APPROVAL 400
+            if (getMembershipById.data.data.state === 'PENDING_APPROVAL') {
+                const errorResponse = ResponseUtil.getErrorResponse('PENDING_APPROVAL', undefined);
+                return errorResponse;
+            }
+            // REJECTED 400
+            if (getMembershipById.data.data.state === 'REJECTED') {
+                const errorResponse = ResponseUtil.getErrorResponse('REJECTED', undefined);
+                return errorResponse;
+            }
+            // PROFILE_RECHECKED 400
+            if (getMembershipById.data.data.state === 'PROFILE_RECHECKED') {
+                const errorResponse = ResponseUtil.getErrorResponse('PROFILE_RECHECKED', undefined);
+                return errorResponse;
+            }
+            if (getMembershipById.data.data.state === 'ARCHIVED') {
+                const errorResponse = ResponseUtil.getErrorResponse('ARCHIVED', undefined);
+                return errorResponse;
+            }
+
+            const authentication = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP'});
+            if(authentication !== undefined) {
+                const successResponse = ResponseUtil.getSuccessResponse(2, false);
+                return successResponse;
+            } else {
+                const successResponse = ResponseUtil.getSuccessResponse(3, true);
+                return successResponse;
+            }
+        }
     }
 
     private async CheckVoteChoices(voteItems:any,maxVoteChoices:any): Promise<any>{
