@@ -21,17 +21,17 @@ import axios from 'axios';
 @JsonController('/admin/dashboard')
 export class AdminDashBoardController {
     constructor(
-        private userService:UserService,
-        private authenticationIdService:AuthenticationIdService
+        private userService: UserService,
+        private authenticationIdService: AuthenticationIdService
     ) { }
 
     @Post('/')
     @Authorized()
-    public async dashboard(@Body({ validate: true}) search: DashBoardRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const startDate:any = new Date(search.createDate);
-        const endDate:any = new Date(search.endDate);
+    public async dashboard(@Body({ validate: true }) search: DashBoardRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const startDate: any = new Date(search.createDate);
+        const endDate: any = new Date(search.endDate);
 
-        if(startDate.getTime() > endDate.getTime()) {
+        if (startDate.getTime() > endDate.getTime()) {
             const errorResponse = ResponseUtil.getErrorResponse('StartDate > EndDate.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -44,21 +44,21 @@ export class AdminDashBoardController {
             [
 
                 {
-                    $match:{
-                        banned:false,
-                        createdDate:{$gte:startDate,$lte:endDate}
+                    $match: {
+                        banned: false,
+                        createdDate: { $gte: startDate, $lte: endDate }
                     }
                 },
                 {
-                    $sort:{
-                        createdDate:1
+                    $sort: {
+                        createdDate: 1
                     }
-                },                
+                },
                 {
-                    $project:{
-                        _id:1,
-                        firstName:1,
-                        createdDate:1
+                    $project: {
+                        _id: 1,
+                        firstName: 1,
+                        createdDate: 1
                     }
                 }
             ]
@@ -67,69 +67,69 @@ export class AdminDashBoardController {
         const totalMFP = await this.authenticationIdService.aggregate(
             [
                 {
-                    $match:{
+                    $match: {
                         providerName: 'MFP'
                     }
                 },
                 {
-                    $count:'Total_MFP'
+                    $count: 'Total_MFP'
                 }
             ]
         );
 
-        const result:any = {
-            'January':[],
-            'February':[],
-            'March':[],
-            'April':[],
-            'May':[],
-            'June':[],
-            'July':[],
-            'August':[],
-            'September':[],
-            'October':[],
-            'November':[],
-            'December':[],
-            'province':[]
+        const result: any = {
+            'January': [],
+            'February': [],
+            'March': [],
+            'April': [],
+            'May': [],
+            'June': [],
+            'July': [],
+            'August': [],
+            'September': [],
+            'October': [],
+            'November': [],
+            'December': [],
+            'province': []
         };
 
-        if(users.length>0){
+        if (users.length > 0) {
 
-            for(const user of users) {
+            for (const user of users) {
                 const parsedTimestamp = moment(user.createdDate);
                 const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
                 // console.log('monthString',monthString);
-                if(String(monthString) === 'January'){
+                if (String(monthString) === 'January') {
                     // console.log('pass1');
                     result['January'].push(user);
-                } else if(String(monthString) === 'February'){
+                } else if (String(monthString) === 'February') {
                     result['February'].push(user);
-                } else if(String(monthString) === 'March'){
+                } else if (String(monthString) === 'March') {
                     result['March'].push(user);
-                } else if(String(monthString) === 'April'){
+                } else if (String(monthString) === 'April') {
                     result['April'].push(user);
-                } else if(String(monthString) === 'May'){
+                } else if (String(monthString) === 'May') {
                     result['May'].push(user);
-                } else if(String(monthString) === 'June'){
+                } else if (String(monthString) === 'June') {
                     result['June'].push(user);
-                } else if(String(monthString) === 'July'){
+                } else if (String(monthString) === 'July') {
                     result['July'].push(user);
-                } else if(String(monthString) === 'August'){
+                } else if (String(monthString) === 'August') {
                     result['August'].push(user);
-                } else if(String(monthString) === 'September'){
+                } else if (String(monthString) === 'September') {
                     result['September'].push(user);
-                } else if(String(monthString) === 'October'){
+                } else if (String(monthString) === 'October') {
                     result['October'].push(user);
-                } else if(String(monthString) === 'November'){
-                    result['November'].push(user); 
-                } else if(String(monthString) === 'December'){
-                    result['December'].push(user); 
+                } else if (String(monthString) === 'November') {
+                    result['November'].push(user);
+                } else if (String(monthString) === 'December') {
+                    result['December'].push(user);
                 }
-            } 
+            }
         }
         result['Year'] = yearString;
-        result['Total users'] = users.length;
-        result['Total_MFP'] = totalMFP.length>0 ? totalMFP[0].Total_MFP: [];
+        result['Total_users'] = users.length;
+        result['Total_MFP'] = totalMFP.length > 0 ? totalMFP[0].Total_MFP : [];
         result['January'] = result['January'].length;
         result['February'] = result['February'].length;
         result['March'] = result['March'].length;
@@ -138,36 +138,36 @@ export class AdminDashBoardController {
         result['June'] = result['June'].length;
         result['July'] = result['July'].length;
         result['August'] = result['August'].length;
-        result['September']= result['September'].length;
+        result['September'] = result['September'].length;
         result['October'] = result['October'].length;
         result['November'] = result['November'].length;
         result['December'] = result['December'].length;
 
-        if(provinces.data.length > 0){
-            for(const province of provinces.data) {
+        if (provinces.data.length > 0) {
+            for (const province of provinces.data) {
                 result['province'].push(province.province);
             }
         }
         result['province'] = result['province'].filter((item,
-            index) => result['province'].indexOf(item) === index 
+            index) => result['province'].indexOf(item) === index
         );
         const findUsersByProvince = await this.userService.aggregate(
             [
                 {
-                    $match:{
-                        province:{$in:result['province']}
+                    $match: {
+                        province: { $in: result['province'] }
                     }
                 },
                 {
                     $group: {
                         _id: '$province',
-                        count: {$sum:1}
+                        count: { $sum: 1 }
                     }
                 }
             ]
         );
         result['province'] = findUsersByProvince;
-        if(users.length>0){
+        if (users.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
             return res.status(200).send(successResponse);
         } else {
