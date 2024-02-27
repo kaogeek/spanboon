@@ -49,7 +49,7 @@ import {
     MAX_VOTE_CHOICES,
     DEFAULT_MAX_VOTE_QUESTIONS,
     MAX_VOTE_QUESTIONS,
-    RANKING
+    PRIVILEGES
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -1117,7 +1117,6 @@ export class VotingController {
                     },
                     {
                         $match: {
-                            pin:false,
                             userId: userObjId,
                             title: exp,
                             hide: true
@@ -2614,7 +2613,15 @@ export class VotingController {
         countRows[0].count += supporter ? supporter.length : 0;
         countRows[0].count += closeVote ? closeVote.length : 0;
         countRows[0].count += hashTagCount;
-
+        /*
+                            pin:false,
+                            status: 'support',
+                            title: exp
+        */
+        const pinTotalCount = await this.votingEventService.aggregate([{$match:{pin:true,hide:true}},{$count:'count'}]);
+        const myVoteTotalCount = await this.votingEventService.aggregate([{$match:{userId: userObjId,hide:true}},{$count:'count'}]);
+        pinned = pinned.concat(pinTotalCount);
+        myVote = myVote.concat(myVoteTotalCount);
         const result: any = {};
         result.pin = pinned;
         result.myVote = myVote;
@@ -6961,7 +6968,7 @@ export class VotingController {
 
         // ranking level
         let rank = null;
-        const rankingConfig = await this.configService.getConfig(RANKING);
+        const rankingConfig = await this.configService.getConfig(PRIVILEGES);
         if(rankingConfig.value === '1'){
             rank = 1;
         }
