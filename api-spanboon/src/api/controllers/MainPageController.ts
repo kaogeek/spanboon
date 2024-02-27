@@ -85,8 +85,8 @@ import {
     DEFAULT_SWITCH_CASE_SEND_NOTI,
     DEFAULT_SEARCH_CONFIG_VALUE,
     SEARCH_CONFIG_VALUES,
-    DEFAULT_RETROSPECT,
-    RETROSPECT,
+    DEFAULT_REVERSE_SEARCH,
+    REVERSE_SEARCH,
     DEFAULT_FILTER_NEWS,
     FILTER_NEWS,
     VOTE_DASHBOARD
@@ -492,14 +492,14 @@ export class MainPageController {
             ]
         );
         const hidePost = await this.hidePostService.find({ userId: objIds });
-        const configRetrospect = await this.configService.getConfig(RETROSPECT);
-        let retrospects = DEFAULT_RETROSPECT;
+        const configRetrospect = await this.configService.getConfig(REVERSE_SEARCH);
+        let reverseSearch = DEFAULT_REVERSE_SEARCH;
         if (configRetrospect) {
-            retrospects = parseInt(configRetrospect.value, 10);
+            reverseSearch = parseInt(configRetrospect.value, 10);
         }
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
-        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), retrospects);
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), reverseSearch);
         let isReadPosts = undefined;
         let pageFollowing = undefined;
         let emergenFollowing = undefined;
@@ -513,7 +513,7 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
-            retrospects,
+            reverseSearch,
             hidePost
         });
 

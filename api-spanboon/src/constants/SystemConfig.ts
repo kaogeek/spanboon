@@ -91,8 +91,8 @@ export const DEFAULT_KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS=5;
 export const DEFAULT_SEND_NOTIFICATION_NEWS = 5000;
 export const SEND_NOTIFICATION_NEWS = 'send.notification.news';
 
-export const DEFAULT_RETROSPECT = 7;
-export const RETROSPECT = 'RETROSPECT';
+export const DEFAULT_REVERSE_SEARCH = 7;
+export const REVERSE_SEARCH = 'reverse.search';
 
 export const DEFAULT_FILTER_NEWS = true;
 export const FILTER_NEWS = 'filter.news';
@@ -143,4 +143,4 @@ export const MAX_VOTE_CHOICES = 'max.vote.choices';
 export const DEFAULT_MAX_VOTE_QUESTIONS = 10;
 export const MAX_VOTE_QUESTIONS = 'max.vote.questions';
 
-export const RANKING = 'ranking';
+export const PRIVILEGES = 'privileges';

@@ -52,7 +52,7 @@ import { DeleteUserService } from '../services/DeleteUserSerivce';
 import { CheckEmailUserRequest } from './requests/CheckEmailUserRequest';
 import {
     ELIGIBLE_VOTES,
-    RANKING
+    PRIVILEGES
 } from '../../constants/SystemConfig';
 import axios from 'axios';
 import qs from 'qs';
@@ -1350,7 +1350,7 @@ export class UserController {
 
         // ranking level
         let rank = null;
-        const rankingConfig = await this.configService.getConfig(RANKING);
+        const rankingConfig = await this.configService.getConfig(PRIVILEGES);
         if(rankingConfig.value === '1'){
             rank = 1;
         }
