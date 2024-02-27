@@ -2613,15 +2613,11 @@ export class VotingController {
         countRows[0].count += supporter ? supporter.length : 0;
         countRows[0].count += closeVote ? closeVote.length : 0;
         countRows[0].count += hashTagCount;
-        /*
-                            pin:false,
-                            status: 'support',
-                            title: exp
-        */
-        const pinTotalCount = await this.votingEventService.aggregate([{$match:{pin:true,hide:true}},{$count:'count'}]);
-        const myVoteTotalCount = await this.votingEventService.aggregate([{$match:{userId: userObjId,hide:true}},{$count:'count'}]);
-        pinned = pinned.concat(pinTotalCount);
-        myVote = myVote.concat(myVoteTotalCount);
+
+        // const pinTotalCount = await this.votingEventService.aggregate([{$match:{pin:true,hide:true}},{$count:'count'}]);
+        // const myVoteTotalCount = await this.votingEventService.aggregate([{$match:{userId: userObjId,hide:true}},{$count:'count'}]);
+        // pinned = pinned.length > 0 ? pinned.concat(pinTotalCount): [];
+        // myVote = myVote.length > 0 ? myVote.concat(myVoteTotalCount): [];
         const result: any = {};
         result.pin = pinned;
         result.myVote = myVote;
