@@ -53,6 +53,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     public valueTitle: any;
     public valueDetail: any;
     public valueHashtag: any;
+    public valueHide: any;
     public previewData: any;
     public imageCover: any;
     public _id: any;
@@ -163,6 +164,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         this.valueEndSupport = undefined;
         this.valueStartVote = undefined;
         this.valueEndVote = undefined;
+        this.valueHide = undefined;
     }
     public clickCloseDrawer(): void {
         this.edit = false;
@@ -184,6 +186,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         this.valueEndVote = data.endVoteDatetime;
         this.valueTitle = data.title;
         this.valueDetail = data.detail;
+        this.valueHide = data.hide;
         this.hashTag.setValue(data.hashTag);
         this.drawer.toggle();
     }
@@ -217,6 +220,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         result.showVoterName = this.valueShowName;
         result.showVoteResult = this.valueShowResult;
         result.hashTag = this.hashTag.value;
+        result.hide = this.valueHide;
 
         if (!!this.valueStartVote && !!this.valueEndVote) {
             result.startSupportDatetime = this.valueStartSupport;
@@ -258,6 +262,24 @@ export class VoteEventPage extends AbstractPage implements OnInit {
             }
         }).catch((err) => {
             this.dialogWarning(err.error.message);
+        });
+    }
+
+    public clickShowVote() {
+        const voteData: any = {};
+        voteData.hide = !this.valueHide;
+        let dialogRef = this.dialog.open(DialogWarningComponent, {
+            data: {
+                title: this.valueHide ? "คุณต้องการปิดการแสดงโหวตนี้ใช่หรือไม่" : "คุณต้องการแสดงโหวตนี้ใช่หรือไม่"
+            }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.voteEventFacade.showHide(this._id, voteData).then((res) => {
+                    this.valueHide = !this.valueHide;
+                    this.table.searchData();
+                });
+            }
         });
     }
 

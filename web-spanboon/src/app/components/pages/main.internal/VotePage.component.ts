@@ -29,8 +29,8 @@ const PAGE_TITLE: string = 'ก้าวไกลโหวต';
 export class VotePage extends AbstractPage implements OnInit {
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
-  @ViewChild('searchInput', { static: false })
-  searchInput: ElementRef;
+  @ViewChild('inputSearch', { static: false })
+  inputSearch: ElementRef;
   @ViewChild('pinContent', { static: false })
   pinContent: ElementRef;
   @ViewChild('myVoteContent', { static: false })
@@ -48,6 +48,7 @@ export class VotePage extends AbstractPage implements OnInit {
   public mode: string;
   public voteData: any;
   public voteModel: any = {};
+  public voteObjId: any = [];
   public activeMenu: string = '';
   public userId: string;
 
@@ -61,6 +62,7 @@ export class VotePage extends AbstractPage implements OnInit {
   public isAllowCreate: boolean = false;
   public isOpenDialog: boolean = false;
 
+  public ranking: number;
   public searchInputValue: string;
   public typeAll: string;
   public scrollAll: any;
@@ -181,24 +183,24 @@ export class VotePage extends AbstractPage implements OnInit {
   }
 
   public async ngOnInit() {
+    this.getScreenSize();
+    await this._getRanking();
     if (this.isLogin()) {
       const updateMenu = [0, 2, 3, 4];
       updateMenu.forEach(index => {
         this.menuList[index].isLogin = true;
       });
-      this._getPermissible();
     }
     this.userId = this.authenManager.getCurrentUser() ? this.authenManager.getCurrentUser().id : '';
-    if (this.activeMenu === undefined || this.activeMenu === '') {
-      this._searchContent();
-    } else {
+    if (!!this.activeMenu) {
       this.searchValue();
+    } else {
+      this._searchContent();
     }
-    this.getScreenSize();
   }
 
   public ngAfterViewInit(): void {
-    fromEvent(this.searchInput && this.searchInput.nativeElement, 'keyup').pipe(
+    fromEvent(this.inputSearch && this.inputSearch.nativeElement, 'keyup').pipe(
       debounceTime(400),
       filter((e: KeyboardEvent) => e.keyCode === 13),
       distinctUntilChanged()
@@ -232,9 +234,20 @@ export class VotePage extends AbstractPage implements OnInit {
     return;
   }
 
-  private _getPermissible() {
-    this.voteFacade.getPermissible().then((res) => {
-      this.isAllowCreate = true;
+  private _getRanking() {
+    new Promise((resolve, reject) => {
+      this.voteFacade.getRanking().then((res: any) => {
+        if (res) {
+          this.ranking = res.message;
+          if ((res.data === true || res.data === 'true')) {
+            this.isAllowCreate = true;
+          }
+          resolve(res);
+        }
+      }).catch((err) => {
+        console.log("err", err);
+        reject(err);
+      });
     });
   }
 
@@ -291,6 +304,15 @@ export class VotePage extends AbstractPage implements OnInit {
         };
       }
     }
+    if (type === 'generalSection') {
+      key = {
+        pin: false,
+        closeVote: false,
+        closetSupport: false,
+        hashTagVote: false,
+        voteObjId: this.voteObjId
+      }
+    }
     if (!!isScroll) this.offset += this.limit;
     if (!!inputKeyword) {
       this.searchInputValue = inputKeyword;
@@ -323,6 +345,9 @@ export class VotePage extends AbstractPage implements OnInit {
     } else {
       this.voteFacade.searchAll(this.isLogin(), key, keyword, this.limit, this.offset).then((res: any) => {
         if (res) {
+          if (res.generalSection.length > 0) {
+            this.voteObjId = res.voteObjId;
+          }
           if (!!type && isScroll) {
             if (this.typeAll !== 'pin' && this.typeAll !== 'closeDate' && this.typeAll !== 'closetSupport' && this.typeAll === 'hashTagVote') {
               if (res[type].length > 1) {
@@ -463,7 +488,7 @@ export class VotePage extends AbstractPage implements OnInit {
   public changeMenu(menu, isLoad?, text?) {
     this.isLoading = true;
     this.setValueChangeMenu();
-    this.searchInput.nativeElement.value = "";
+    this.inputSearch.nativeElement.value = "";
     if ((menu === 'support' && this.activeUrl['name'] !== 'support') || (menu === 'support' && isLoad)) {
       this.voteData = [];
       this.searchVoteContent({
@@ -795,6 +820,8 @@ export class VotePage extends AbstractPage implements OnInit {
         this._searchContent(!!this.searchInputValue ? this.searchInputValue : null, this.typeAll, true);
       } else if (this.activeUrl['name'] === 'own') {
         this._searchContent(!!this.searchInputValue ? this.searchInputValue : null, this.typeAll, true, true);
+      } else if (this.activeUrl['name'] === undefined) {
+        this._searchContent(null, 'generalSection', true, null, null);
       }
     }
   }

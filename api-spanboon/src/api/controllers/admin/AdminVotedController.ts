@@ -160,12 +160,49 @@ export class AdminVotedController {
                 approveDatetime:today,
                 pin:false,
                 status: votingEventRequest.status ? votingEventRequest.status : voteObj.status,
+                hide: true,
 
                 startVoteDatetime: today,
                 endVoteDatetime:   new Date(today.getTime() + ( (24 * voteObj.voteDaysRange) * 60 * 60 * 1000)), 
 
                 showVoterName: votingEventRequest.showVoterName ? votingEventRequest.showVoterName : voteObj.showVoterName,
                 showVoteResult: votingEventRequest.showVoteResult ? votingEventRequest.showVoteResult : voteObj.showVoteResult,
+            }
+        };
+
+        const update = await this.votingEventService.update(query,newValues);
+        if(update){
+            const successResponse = ResponseUtil.getSuccessResponse('Update vote event is success.', undefined);
+            return res.status(200).send(successResponse);
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot update a VoteEvent.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/hide/:id')
+    @Authorized('')
+    public async EditHide(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        const voteObjId = new ObjectID(id);
+        const today = moment().toDate();
+        let newValues:any = {};
+        // check exist?
+        const user = await this.userService.findOne({_id:userObjId});
+
+        const voteObj = await this.votingEventService.findOne({_id:voteObjId});
+        if(voteObj === undefined && voteObj === null){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const query = {_id:voteObjId};
+        // approved.
+        newValues = {
+            $set:{
+                approveUsername:user.displayName,
+                approveDatetime:today,
+                hide: votingEventRequest.hide,
             }
         };
 
@@ -265,6 +302,7 @@ export class AdminVotedController {
                     startVoteDatetime: startVoteDate,
                     endVoteDatetime:   endVoteDate, 
                     hashTag: votingEventRequest.hashTag,
+                    hide: votingEventRequest.hide,
 
                     showVoterName: votingEventRequest.showVoterName,
                     showVoteResult: votingEventRequest.showVoteResult,
@@ -292,6 +330,7 @@ export class AdminVotedController {
                         startVoteDatetime: startVoteDate,
                         endVoteDatetime:   endVoteDate, 
                         hashTag: votingEventRequest.hashTag,
+                        hide: votingEventRequest.hide,
 
                         showVoterName: votingEventRequest.showVoterName,
                         showVoteResult: votingEventRequest.showVoteResult,
@@ -312,7 +351,8 @@ export class AdminVotedController {
         
                         startSupportDatetime: new Date(votingEventRequest.startSupportDatetime),
                         endSupportDatetime: new Date(votingEventRequest.endSupportDatetime),
-        
+                        hide: votingEventRequest.hide,
+
                         startVoteDatetime: startVoteDate,
                         endVoteDatetime:   endVoteDate, 
                         hashTag: votingEventRequest.hashTag,
@@ -534,6 +574,8 @@ export class AdminVotedController {
         const userObjId = new ObjectID(req.user.id);
         const user = await this.userService.findOne({_id:userObjId});
         const today = moment().toDate();
+
+        // ถ้าเป็น auto approve hide = false 
 
         const voteAggs = await this.votingEventService.aggregate(
             [

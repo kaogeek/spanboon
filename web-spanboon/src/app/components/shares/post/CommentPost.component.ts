@@ -43,6 +43,19 @@ export class CommentPost {
   }
 
   public ngOnInit(): void {
+    this._checkNullPage();
+  }
+
+  private _checkNullPage() {
+    for (let index = 0; index < this.commentdata.length; index++) {
+      if (!!this.commentdata[index]!.commentAsPage) {
+        if (!!this.commentdata[index]!.page && !!this.commentdata[index]!.commentAsPage) {
+          continue;
+        } else {
+          this.commentdata.splice(index, 1);
+        }
+      }
+    }
   }
 
   public commentAction(action: any, comment: any, index: number) {

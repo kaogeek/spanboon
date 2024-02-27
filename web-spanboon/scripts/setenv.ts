@@ -57,7 +57,9 @@ export const environment = {
     scope: "${process.env["SCOPE"]}",
     webBaseURL: "${process.env["WEB_BASE_URL"]}",
     bindingBaseURL: "${process.env["APP_MFP_API"]}",
- }
+   },
+   maxVoteChoice: "${process.env["MAX_VOTE_CHOICE"]}",
+   maxVoteQuestion: "${process.env["MAX_VOTE_QUESTION"]}",
 };
 `;
 

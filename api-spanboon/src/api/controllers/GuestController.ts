@@ -3088,7 +3088,7 @@ export class GuestController {
                 await this.userService.update(query, newValues);
                 await this.authenticationIdService.update(queryAuthen, newValues);
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
-                await this.deviceToken.delete({ userId: user.id });
+                // await this.deviceToken.delete({ userId: user.id });
                 return response.status(400).send(errorUserNameResponse);
             }
         }

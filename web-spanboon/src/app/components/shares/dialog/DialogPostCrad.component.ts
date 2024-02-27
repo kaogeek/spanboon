@@ -109,13 +109,27 @@ export class DialogPostCrad extends AbstractPage {
       } else {
         this.posts = this.data.choice.voteItem;
       }
+      if (this.data.post.status === 'close') {
+        this.posts.forEach(item => {
+          if (!!item.voteChoice) {
+            item.voteChoice.sort((a, b) => {
+              const countA = a.voted.length > 0 ? Math.max(...a.voted.map(vote => vote.votedCount)) : 0;
+              const countB = b.voted.length > 0 ? Math.max(...b.voted.map(vote => vote.votedCount)) : 0;
+              return countB - countA;
+            });
+          }
+        });
+      }
       if (this.posts.length > 0) {
         for (let index = 0; index < this.posts.length; index++) {
+          this.voteChoiceValue.push({
+            maxValue: this._getVoteMaxCount(index),
+            value: [],
+          });
+        }
+        for (let index = 0; index < this.posts.length; index++) {
           if (this.posts[index].voteChoice !== undefined) {
-            this.voteChoiceValue.push({
-              maxValue: this._getVoteMaxCount(index),
-              value: [],
-            });
+            this.voteChoiceValue[index].maxValue = this._getVoteMaxCount(index);
             for (let i = 0; i < this.posts[index].voteChoice.length; i++) {
               if (this.posts[index].voteChoice[i].voted.length > 0) {
                 this.voteChoiceValue[index].value.push(this.posts[index].voteChoice[i].voted[0].votedCount);

@@ -142,3 +142,5 @@ export const MAX_VOTE_CHOICES = 'max.vote.choices';
 
 export const DEFAULT_MAX_VOTE_QUESTIONS = 10;
 export const MAX_VOTE_QUESTIONS = 'max.vote.questions';
+
+export const RANKING = 'ranking';
