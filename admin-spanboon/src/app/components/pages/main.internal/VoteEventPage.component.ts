@@ -220,6 +220,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
         result.showVoterName = this.valueShowName;
         result.showVoteResult = this.valueShowResult;
         result.hashTag = this.hashTag.value;
+        result.hide = this.valueHide;
 
         if (!!this.valueStartVote && !!this.valueEndVote) {
             result.startSupportDatetime = this.valueStartSupport;

@@ -213,10 +213,9 @@ export class VoteEventFacade extends AbstractFacade {
 
   public getRanking(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/voting/ranking';
-      let body = {};
+      let url: string = this.baseURL + '/user/access';
       let options = this.authMgr.getDefaultOptions();
-      this.http.post(url, body, options).toPromise().then((response: any) => {
+      this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
         reject(error);
