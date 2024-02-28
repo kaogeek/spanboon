@@ -168,6 +168,7 @@ export class AdminDashBoardController {
             [
                 {
                     $match: {
+                        createdDate: { $gte: startDate, $lte: endDate },
                         province: { $in: result['province'] }
                     }
                 },
