@@ -1,33 +1,28 @@
-import { JsonController, Res, Post, Body, Req, Authorized } from 'routing-controllers';
-// , Put, Delete, Get
-// import { VotingEventRequest } from '../requests/VotingEventRequest';
-// import { VotingEventService } from '../../services/VotingEventService';
-// import { VoteItemService } from '../../services/VoteItemService';
-// import { VoteChoiceService } from '../../services/VoteChoiceService';
-// import { VotedService } from '../../services/VotedService';
-import { AuthenticationIdService } from '../../services/AuthenticationIdService';
-// import { UserSupportService } from '../../services/UserSupportService';
-import { UserService } from '../../services/UserService';
-// import { VotingEventModel } from '../../models/VotingEventModel';
-import { ResponseUtil } from '../../../utils/ResponseUtil';
-// import { ObjectID } from 'mongodb';
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
+ */
+
+import { JsonController, Res, Post, Body, Req } from 'routing-controllers';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
+import { UserService } from '../services/UserService';
+import { ResponseUtil } from '../../utils/ResponseUtil';
 import moment from 'moment';
-// import { SearchFilter } from '../requests/SearchFilterRequest';
-import { DashBoardRequest } from '../requests/DashBoardRequest';
-// import { ObjectUtil } from '../../../utils/ObjectUtil';
-// import { ConfigService } from '../../services/ConfigService';
+import { DashBoardRequest } from './requests/DashBoardRequest';
 import axios from 'axios';
 import { ObjectID } from 'mongodb';
 
-@JsonController('/admin/dashboard')
-export class AdminDashBoardController {
+@JsonController('/dashboard')
+export class AssetController {
+
     constructor(
         private userService: UserService,
         private authenticationIdService: AuthenticationIdService
     ) { }
 
     @Post('/')
-    @Authorized()
     public async dashboard(@Body({ validate: true }) search: DashBoardRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const startDate: any = new Date(search.createDate);
         const endDate: any = new Date(search.endDate);
@@ -193,7 +188,6 @@ export class AdminDashBoardController {
     }
 
     @Post('/users/mfp')
-    @Authorized()
     public async findUsersMFP(@Body({ validate: true }) search: DashBoardRequest, @Res() res: any, @Req() req: any): Promise<any>{
         const provinces = await axios.get('https://raw.githubusercontent.com/earthchie/jquery.Thailand.js/master/jquery.Thailand.js/database/raw_database/raw_database.json');
         const result: any = {
@@ -253,4 +247,5 @@ export class AdminDashBoardController {
             return res.status(200).send(successResponse);
         }
     }
+
 }
