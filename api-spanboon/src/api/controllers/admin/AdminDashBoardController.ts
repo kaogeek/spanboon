@@ -8,6 +8,7 @@ import { JsonController, Res, Post, Body, Req, Authorized } from 'routing-contro
 import { AuthenticationIdService } from '../../services/AuthenticationIdService';
 // import { UserSupportService } from '../../services/UserSupportService';
 import { UserService } from '../../services/UserService';
+import { PageService } from '../../services/PageService';
 // import { VotingEventModel } from '../../models/VotingEventModel';
 import { ResponseUtil } from '../../../utils/ResponseUtil';
 // import { ObjectID } from 'mongodb';
@@ -23,6 +24,7 @@ import { ObjectID } from 'mongodb';
 export class AdminDashBoardController {
     constructor(
         private userService: UserService,
+        private pageService:PageService,
         private authenticationIdService: AuthenticationIdService
     ) { }
 
@@ -197,17 +199,17 @@ export class AdminDashBoardController {
     @Authorized()
     public async findUsersMFP(@Body({ validate: true }) search: DashBoardRequest, @Res() res: any, @Req() req: any): Promise<any>{
         const provinces = await axios.get('https://raw.githubusercontent.com/earthchie/jquery.Thailand.js/master/jquery.Thailand.js/database/raw_database/raw_database.json');
-        const result: any = {
-            'province': []
+        const stack: any = {
+            'province': [],
         };
 
         if (provinces.data.length > 0) {
             for (const province of provinces.data) {
-                result['province'].push(province.province);
+                stack['province'].push(province.province);
             }
         }
-        result['province'] = result['province'].filter((item,
-            index) => result['province'].indexOf(item) === index
+        stack['province'] = stack['province'].filter((item,
+            index) => stack['province'].indexOf(item) === index
         );
 
         const mfpUserId = [];
@@ -223,7 +225,6 @@ export class AdminDashBoardController {
         );
         if(mfpUsers.length>0){
             for(const mfp of mfpUsers) {
-
                 mfpUserId.push(new ObjectID(mfp.user));
             }
         }
@@ -233,7 +234,7 @@ export class AdminDashBoardController {
                 {
                     $match:{
                         _id:{$in:mfpUserId},
-                        province: { $in: result['province'] }
+                        province: { $in: stack['province'] }
                     }
                 },
                 {
@@ -244,10 +245,73 @@ export class AdminDashBoardController {
                 }
             ]
         );
-        const mfpLabel = [{'Label':'MFP'}];
-        const mfpAggregate = findUsersMfpByProvince.concat(mfpLabel);
-        if (mfpAggregate.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', mfpAggregate);
+        
+        const followerPage = await this.pageService.aggregate(
+            [
+                {
+                    $match:{
+                        isOfficial:true,
+                        banned:false
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'UserFollow',
+                        let:{id:'$_id'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$id','$subjectId']
+                                    }
+                                }
+                            },
+                            {
+                                $match:{
+                                    subjectType:'PAGE'
+                                }
+                            },
+                            {
+                                $count:'total_follows'
+                            }
+                        ],
+                        as:'userFollow'
+                    }
+                },
+                {
+                    $project:{
+                        _id:1,
+                        name:1,
+                        imageURL:1,
+                        coverURL:1,
+                        isOfficial:1,
+                        banned:1,
+                        province:1,
+                        userFollow:'userFollow.total_follows'
+                    }
+                },
+                {
+                    $unwind:{
+                        path:'$userFollow'
+                    }
+                }
+            ]
+        );
+        const result:any = {
+            'mfpUsers':{},
+            'followerPage':{}
+        };
+        result['mfpUsers'] = {
+            'label':'MFP Users',
+            'data':findUsersMfpByProvince
+        };
+        result['followerPage'] = {
+            'label':'Follower Page',
+            'data':followerPage,
+        };
+        
+        if (result) {
+            const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
             return res.status(200).send(successResponse);
         } else {
             const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', []);
