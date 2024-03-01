@@ -280,7 +280,12 @@ export class AssetController {
                         isOfficial:1,
                         banned:1,
                         province:1,
-                        userFollow:'userFollow.total_follows'
+                        userFollow:1
+                    }
+                },
+                {
+                    $sort:{
+                        userFollow:-1
                     }
                 },
                 {
