@@ -326,6 +326,7 @@ export class AdminDashBoardController {
             'label': 'Follower Page',
             'data': followerPage,
         };
+        result['Total_MFP'] = findUsersMfpByProvince.length > 0 ? findUsersMfpByProvince[0].Total_MFP : [];
 
         if (result) {
             const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);

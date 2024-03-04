@@ -321,6 +321,9 @@ export class AssetController {
             'data': followerPage,
         };
 
+        result['Total_MFP'] = findUsersMfpByProvince.length > 0 ? findUsersMfpByProvince[0].Total_MFP : [];
+
+
         if (result) {
             const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
             return res.status(200).send(successResponse);
