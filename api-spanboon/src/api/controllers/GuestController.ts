@@ -937,6 +937,171 @@ export class GuestController {
     }
     // Login API
     /**
+     * @api {post} /api/login/admin Login
+     * @apiGroup Guest API
+     * @apiParam (Request body) {String} username User Username
+     * @apiParam (Request body) {String} password User Password
+     * @apiParamExample {json} Input
+     * {
+     *      "username" : "",
+     *      "password" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "data": {
+     *         "token": ""
+     *      },
+     *      "message": "Successfully login",
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/login
+     * @apiErrorExample {json} Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+
+    @Post('/login/admin')
+    public async loginAdmin(@Body({ validate: true }) loginParam: UserLoginRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const loginUsername = loginParam.username;
+        const loginPassword = loginParam.password;
+        let loginToken: any;
+        let loginUser: any;
+        const userName: string = loginUsername.toLocaleLowerCase();
+
+        const tokenFCMEm = req.body.tokenFCM;
+        const deviceNameEm = req.body.deviceName;
+        const userLogin: any = await this.userService.findOne({ where: { username: userName } });
+        
+        if (userLogin) {
+            if(userLogin.isAdmin !== true) {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot login You`re Admin.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+            const userObjId = new ObjectID(userLogin.id);
+            if (loginPassword === null && loginPassword === undefined && loginPassword === '') {
+                const errorResponse = ResponseUtil.getErrorResponse('Invalid password', undefined);
+                return res.status(400).send(errorResponse);
+            }
+            if (await User.comparePassword(userLogin, loginPassword)) {
+                // create a token
+                const token = jwt.sign({ id: userObjId }, env.SECRET_KEY);
+                if (userLogin.banned === true) {
+                    const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                    return res.status(400).send(errorResponse);
+                } else if (token) {
+                    const currentDateTime = moment().toDate();
+                    // find user
+                    const userExrTime = await this.getUserLoginExpireTime();
+                    const checkAuthen: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: userLogin.id, providerName: PROVIDER.EMAIL } });
+                    const newToken = new AuthenticationId();
+                    newToken.user = userLogin.id;
+                    newToken.lastAuthenTime = currentDateTime;
+                    newToken.providerUserId = userObjId;
+                    newToken.providerName = PROVIDER.EMAIL;
+                    newToken.storedCredentials = token;
+                    newToken.expirationDate = moment().add(userExrTime, 'days').toDate();
+                    const checkExistTokenFcm = await this.deviceToken.findOne({ userId: userObjId, token: req.body.token });
+                    if (checkAuthen !== null && checkAuthen !== undefined) {
+                        const updateQuery = { user: userLogin.id, providerName: PROVIDER.EMAIL };
+                        const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: token, expirationDate: newToken.expirationDate } };
+                        await this.authenticationIdService.update(updateQuery, newValue);
+                    } else {
+                        await this.authenticationIdService.create(newToken);
+                    }
+                    if (checkExistTokenFcm !== 'undefiend' && checkExistTokenFcm !== null) {
+                        const findFcmToken = await this.deviceToken.findOne({ deviceName: deviceNameEm, userId: userObjId });
+                        if (findFcmToken) {
+                            const queryFcm = { deviceName: deviceNameEm, userId: userObjId };
+                            const newValuesFcm = { $set: { token: tokenFCMEm } };
+                            await this.deviceToken.updateToken(queryFcm, newValuesFcm);
+                        } else {
+                            await this.deviceToken.createDeviceToken({ deviceName: deviceNameEm, token: tokenFCMEm ? tokenFCMEm : null, userId: userObjId });
+                        }
+                    }
+                    loginToken = token;
+                }
+                loginUser = userLogin;
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Invalid Password', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse: any = { status: 0, message: 'Invalid username' };
+            return res.status(400).send(errorResponse);
+        }
+        const userAuthList: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: loginUser.id } });
+        const authProviderList: string[] = [];
+        let mfpProvider = undefined;
+        if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
+            for (const userAuth of userAuthList) {
+                if (userAuth.providerName !== undefined && userAuth.providerName === 'MFP') {
+                    mfpProvider = userAuth;
+                }
+                authProviderList.push(userAuth.providerName);
+            }
+        }
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
+
+        const responseMFP = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        const tokenCredential = responseMFP.data.access_token;
+        let getMembershipById = undefined;
+        if (mfpProvider !== undefined) {
+            getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + mfpProvider.providerUserId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
+                }
+            );
+        }
+        if (loginUser === undefined) {
+            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
+            return res.status(400).send(errorResponse);
+        }
+
+        if (loginUser.banned === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+
+        loginUser = await this.userService.cleanUserField(loginUser);
+        loginUser.followings = userFollowings.length;
+        loginUser.followers = userFollowers.length;
+        loginUser.authUser = authProviderList;
+        loginUser.mfpUser = {
+            // id: getMembershipById ? getMembershipById.data.data.id : undefined,
+            expiredAt: getMembershipById ? getMembershipById.data.data.expired_at : undefined,
+            firstName: getMembershipById ? getMembershipById.data.data.first_name : undefined,
+            lastName: getMembershipById ? getMembershipById.data.data.last_name : undefined,
+            email: getMembershipById ? getMembershipById.data.data.email : undefined,
+            state: getMembershipById ? getMembershipById.data.data.state : undefined,
+            identification: getMembershipById ? getMembershipById.data.data.identification_number.slice(0, getMembershipById.data.data.identification_number.length - 4) + 'XXXX' : undefined,
+            mobile: getMembershipById ? getMembershipById.data.data.mobile_number.slice(0, getMembershipById.data.data.mobile_number.length - 4) + 'XXXX' : undefined,
+        };
+        const result = { token: loginToken, user: loginUser };
+
+        const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
+        return res.status(200).send(successResponse);
+    }
+    // Login API
+    /**
      * @api {post} /api/login Login
      * @apiGroup Guest API
      * @apiParam (Request body) {String} username User Username
@@ -970,8 +1135,14 @@ export class GuestController {
         const loginPassword = loginParam.password;
         let loginToken: any;
         let loginUser: any;
+        const userName: string = loginUsername ? loginUsername.toLowerCase() : '';
+
+        const isAdmin = await this.userService.findOne({ where: { username: userName } });
+        if(isAdmin !== undefined && isAdmin.isAdmin === true) {
+            const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Admin cannot login.' };
+            return res.status(400).send(errorUserNameResponse);
+        }
         if (mode === PROVIDER.EMAIL) {
-            const userName: string = loginUsername.toLocaleLowerCase();
             const tokenFCMEm = req.body.tokenFCM;
             const deviceNameEm = req.body.deviceName;
             const userLogin: any = await this.userService.findOne({ where: { username: userName } });
@@ -1059,7 +1230,6 @@ export class GuestController {
                 }
             }
         } else if (mode === PROVIDER.MFP) {
-            const userName: string = loginUsername.toLocaleLowerCase();
             const userLogin: any = await this.userService.findOne({ where: { username: userName } });
 
             const token = await jwt.sign(
@@ -1292,12 +1462,13 @@ export class GuestController {
     public async checkEmail(@Body({ validate: true }) users: CheckUser, @Res() res: any, @Req() req: any): Promise<any> {
         // const ipAddress = req.clientIp;
         // IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+        const userEmail: string = users.email ? users.email.toLowerCase() : '';
+
         const mode = req.headers.mode;
         const modHeaders = req.headers.mod_headers;
         const loginPassword = users.password;
         let loginToken: any;
         let loginUser: any;
-        const userEmail: string = users.email ? users.email.toLowerCase() : '';
         let authen = undefined;
         if (mode === PROVIDER.EMAIL) {
 
@@ -1553,6 +1724,12 @@ export class GuestController {
                     const expirationDate = moment().add(userExrTime, 'days').toDate();
                     const token = jwt.sign({ id: mfpAuthenIdentification.user }, env.SECRET_KEY);
                     const user: User = await this.userService.findOne({ where: { username: userEmail } });
+
+                    if(user === undefined) {
+                        const errorResponse = ResponseUtil.getErrorResponse('User not found.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+
                     if(user.delete === true) {
                         const errorResponse = ResponseUtil.getErrorResponse('User have benn deleted.', undefined);
                         return res.status(400).send(errorResponse);
