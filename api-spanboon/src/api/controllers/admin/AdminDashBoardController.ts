@@ -315,6 +315,20 @@ export class AdminDashBoardController {
             ]
         );
 
+        const totalUser = await this.userService.aggregate(
+            [
+
+                {
+                    $match: {
+                        banned: false,
+                    }
+                },
+                {
+                    $count: 'Total_users'
+                }
+            ]
+        );
+
         const totalMFP = await this.authenticationIdService.aggregate(
             [
                 {
@@ -327,7 +341,7 @@ export class AdminDashBoardController {
                 }
             ]
         );
-        
+
         const result: any = {
             'mfpUsers': {},
             'followerPage': {}
@@ -344,6 +358,11 @@ export class AdminDashBoardController {
         result['Total_MFP'] = {
             'label': 'Total users MFP',
             'data': totalMFP.length > 0 ? totalMFP[0].Total_MFP : []
+        };
+
+        result['Total_USERS'] = {
+            'label': 'General users',
+            'data': totalUser.length > 0 ? totalUser[0].Total_users: []
         };
 
         if (result) {
