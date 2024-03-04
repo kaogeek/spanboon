@@ -24,7 +24,7 @@ import { ObjectID } from 'mongodb';
 export class AdminDashBoardController {
     constructor(
         private userService: UserService,
-        private pageService:PageService,
+        private pageService: PageService,
         private authenticationIdService: AuthenticationIdService
     ) { }
 
@@ -197,7 +197,14 @@ export class AdminDashBoardController {
 
     @Post('/users/mfp')
     @Authorized()
-    public async findUsersMFP(@Body({ validate: true }) search: DashBoardRequest, @Res() res: any, @Req() req: any): Promise<any>{
+    public async findUsersMFP(@Body({ validate: true }) search: DashBoardRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const startDate: any = new Date(search.createDate);
+        const endDate: any = new Date(search.endDate);
+
+        if (startDate.getTime() > endDate.getTime()) {
+            const errorResponse = ResponseUtil.getErrorResponse('StartDate > EndDate.', undefined);
+            return res.status(400).send(errorResponse);
+        }
         const provinces = await axios.get('https://raw.githubusercontent.com/earthchie/jquery.Thailand.js/master/jquery.Thailand.js/database/raw_database/raw_database.json');
         const stack: any = {
             'province': [],
@@ -217,14 +224,14 @@ export class AdminDashBoardController {
         const mfpUsers = await this.authenticationIdService.aggregate(
             [
                 {
-                    $match:{
-                        providerName:'MFP'
+                    $match: {
+                        providerName: 'MFP'
                     }
                 }
             ]
         );
-        if(mfpUsers.length>0){
-            for(const mfp of mfpUsers) {
+        if (mfpUsers.length > 0) {
+            for (const mfp of mfpUsers) {
                 mfpUserId.push(new ObjectID(mfp.user));
             }
         }
@@ -232,9 +239,11 @@ export class AdminDashBoardController {
         const findUsersMfpByProvince = await this.userService.aggregate(
             [
                 {
-                    $match:{
-                        _id:{$in:mfpUserId},
-                        province: { $in: stack['province'] }
+                    $match: {
+                        _id: { $in: mfpUserId },
+                        province: { $in: stack['province'] },
+                        banned: false,
+                        createdDate: { $gte: startDate, $lte: endDate }
                     }
                 },
                 {
@@ -245,76 +254,79 @@ export class AdminDashBoardController {
                 }
             ]
         );
-        
+
         const followerPage = await this.pageService.aggregate(
             [
                 {
-                    $match:{
-                        isOfficial:true,
-                        banned:false
+                    $match: {
+                        isOfficial: true,
+                        banned: false
                     }
                 },
                 {
-                    $lookup:{
-                        from:'UserFollow',
-                        let:{id:'$_id'},
-                        pipeline:[
+                    $lookup: {
+                        from: 'UserFollow',
+                        let: { id: '$_id' },
+                        pipeline: [
                             {
-                                $match:{
-                                    $expr:{
-                                        $eq:['$$id','$subjectId']
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$id', '$subjectId']
                                     }
                                 }
                             },
                             {
-                                $match:{
-                                    subjectType:'PAGE'
+                                $match: {
+                                    subjectType: 'PAGE'
                                 }
                             },
                             {
-                                $count:'total_follows'
+                                $count: 'total_follows'
                             }
                         ],
-                        as:'userFollow'
+                        as: 'userFollow'
                     }
                 },
                 {
-                    $project:{
-                        _id:1,
-                        name:1,
-                        imageURL:1,
-                        coverURL:1,
-                        isOfficial:1,
-                        banned:1,
-                        province:1,
-                        userFollow:1
+                    $project: {
+                        _id: 1,
+                        name: 1,
+                        imageURL: 1,
+                        coverURL: 1,
+                        isOfficial: 1,
+                        banned: 1,
+                        province: 1,
+                        userFollow: 1
                     }
                 },
                 {
-                    $sort:{
-                        userFollow:-1
+                    $sort: {
+                        userFollow: -1
                     }
                 },
                 {
-                    $unwind:{
-                        path:'$userFollow'
+                    $unwind: {
+                        path: '$userFollow'
                     }
+                },
+                {
+                    $limit: 50
                 }
             ]
         );
-        const result:any = {
-            'mfpUsers':{},
-            'followerPage':{}
+        const result: any = {
+            'mfpUsers': {},
+            'followerPage': {}
         };
         result['mfpUsers'] = {
-            'label':'MFP Users',
-            'data':findUsersMfpByProvince
+            'label': 'MFP Users',
+            'data': findUsersMfpByProvince
         };
         result['followerPage'] = {
-            'label':'Follower Page',
-            'data':followerPage,
+            'label': 'Follower Page',
+            'data': followerPage,
         };
-        
+
         if (result) {
             const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
             return res.status(200).send(successResponse);
