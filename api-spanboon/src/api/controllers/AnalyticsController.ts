@@ -308,6 +308,20 @@ export class AssetController {
                 }
             ]
         );
+
+        const totalMFP = await this.authenticationIdService.aggregate(
+            [
+                {
+                    $match: {
+                        providerName: 'MFP'
+                    }
+                },
+                {
+                    $count: 'Total_MFP'
+                }
+            ]
+        );
+
         const result: any = {
             'mfpUsers': {},
             'followerPage': {}
@@ -321,8 +335,10 @@ export class AssetController {
             'data': followerPage,
         };
 
-        result['Total_MFP'] = findUsersMfpByProvince.length > 0 ? findUsersMfpByProvince[0].Total_MFP : [];
-
+        result['Total_MFP'] = {
+            'label': 'Total users MFP',
+            'data': totalMFP.length > 0 ? totalMFP[0].Total_MFP : []
+        };
 
         if (result) {
             const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
