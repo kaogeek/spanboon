@@ -108,6 +108,7 @@ export class AdminPageController {
     }
 
     @Post('/edit/search')
+    @Authorized('')
     public async searchGet(@Body({ validate: true }) data: SearchRequest, @Res() res: any, @Req() req: any): Promise<any> {
         if (data.type === 'page' && data.field === 'id') {
             const bucketSAll = [];
