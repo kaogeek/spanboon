@@ -40,3 +40,4 @@ export * from './CheckMergeUserFacade.service';
 export * from './UserSubjectFacade.service';
 export * from './BindingMemberFacade.service';
 export * from './VoteEventFacade.service';
+export * from './StatisticsFacade.service';

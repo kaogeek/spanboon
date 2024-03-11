@@ -20,16 +20,15 @@ import {
   StandardItemReqRequestPage,
   HashtagPage,
   testPage,
-  StandardItemPage,
   LoginPage,
   ConfigPage,
   UserPage,
   AdminPage,
   PageCategoryPage,
-  TodayPage,
   PageGroup,
   NewsPaperPage,
-  VoteEventPage
+  VoteEventPage,
+  DashboardPage
 } from './components/components';
 import { TodayPageV2 } from './components/pages/main.internal/TodayPageV2.component';
 import { ManipulatePage } from './components/pages/main.internal/ManipulatePage.component';
@@ -54,6 +53,10 @@ const routes: Routes = [
       {
         path: PostPage.PAGE_NAME,
         component: PostPage
+      },
+      {
+        path: DashboardPage.PAGE_NAME,
+        component: DashboardPage
       },
       {
         path: EmergencyEventPage.PAGE_NAME,

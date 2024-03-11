@@ -1,0 +1,65 @@
+<!-- <style>
+    #container {
+        height: 500px;
+        min-width: 310px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+</style>
+<div id="container" style="height: 500px;"></div> -->
+<div class="dashboard-page">
+    <!-- <mat-progress-bar *ngIf="isLoading" class="mat-progress-bar" mode="indeterminate"></mat-progress-bar> -->
+    <div class="wrapper-statistic">
+        <div class="sorting">
+            <div class="header">
+                <span style="font-weight: bold;">MFP </span>
+                <span>Statistic</span>
+            </div>
+            <!-- <div class="date-picker">
+                <mat-form-field class="example-full-width">
+                    <input matInput [matDatepicker]="picker" placeholder="Choose a date"
+                        (dateChange)="changeDate($event)" [max]="maxDate">
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                <button mat-raised-button (click)="picker.open()">เลือกวันที่</button>
+            </div> -->
+            <datepicker-year (chooseDate)="chooseDate($event)"></datepicker-year>
+        </div>
+        <div class="wrapper-item">
+            <div class="item">
+                <span>ยอดสมาชิกพรรค</span>
+                <p>{{totalMFP | number}}</p>
+            </div>
+            <div class="item">
+                <span>ยอดผู้ใช้งาน</span>
+                <p>{{totalUser | number}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="wrapper-dashboard">
+        <div class="chart">
+            <span [attr.aria-label]="'สมาชิกแต่ละจังหวัดบนแพลตฟอร์ม'">สมาชิกแต่ละจังหวัดบนแพลตฟอร์มในปี {{!!data &&
+                !!data.Year ? data.Year : 2024}}</span>
+            <apx-chart [series]="chartPie.series" [chart]="chartPie.chart" [labels]="chartPie.labels"
+                [responsive]="chartPie.responsive" [legend]="chartPie.legend"></apx-chart>
+        </div>
+        <div class="chart">
+            <span
+                [attr.aria-label]="'สมาชิกพรรคก้าวไกลแต่ละจังหวัดบนแพลตฟอร์ม'">สมาชิกพรรคก้าวไกลแต่ละจังหวัดบนแพลตฟอร์มในปี
+                {{!!data && !!data.Year ? data.Year :
+                2024}}</span>
+            <apx-chart [series]="chartPieMFP.series" [chart]="chartPieMFP.chart" [labels]="chartPieMFP.labels"
+                [responsive]="chartPieMFP.responsive" [legend]="chartPieMFP.legend"></apx-chart>
+        </div>
+        <!-- <div class="chart" style="grid-column: 1 / span 2;">
+            <apx-chart [series]="chartBar.series" [chart]="chartBar.chart" [dataLabels]="chartBar.dataLabels"
+                [plotOptions]="chartBar.plotOptions" [responsive]="chartBar.responsive" [xaxis]="chartBar.xaxis"
+                [legend]="chartBar.legend" [fill]="chartBar.fill"></apx-chart>
+        </div> -->
+        <div class="chart" style="grid-column: 1 / span 2;">
+            <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
+                [dataLabels]="chartOptions.dataLabels" [grid]="chartOptions.grid" [stroke]="chartOptions.stroke"
+                [title]="chartOptions.title"></apx-chart>
+        </div>
+    </div>
+</div>

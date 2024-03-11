@@ -6,272 +6,273 @@
  */
 
 .preload-card {
-    .div-preload {
-        background: $bg-grey;
-        height: 8pt;
-        border-radius: 10pt;
-        display: inline-block;
-        animation: cardani 5s infinite;
+  // .div-preload {
+  //     background: $bg-grey;
+  //     height: 8pt;
+  //     border-radius: 10pt;
+  //     display: inline-block;
+  //     animation: cardani 5s infinite;
 
-        @keyframes cardani {
-            0% {
-                opacity: 1;
-            }
+  //     @keyframes cardani {
+  //         0% {
+  //             opacity: 1;
+  //         }
 
-            25% {
-                opacity: 0.3;
-            }
+  //         25% {
+  //             opacity: 0.3;
+  //         }
 
-            50% {
-                opacity: 1;
-            }
+  //         50% {
+  //             opacity: 1;
+  //         }
 
-            75% {
-                opacity: 0.3;
-            }
+  //         75% {
+  //             opacity: 0.3;
+  //         }
 
-            100% {
-                opacity: 1;
-            }
-        }
+  //         100% {
+  //             opacity: 1;
+  //         }
+  //     }
+  // }
+
+  // .div-preload {
+  //     -webkit-animation-duration: 1s;
+  //     animation-duration: 1s;
+  //     -webkit-animation-fill-mode: forwards;
+  //     animation-fill-mode: forwards;
+  //     -webkit-animation-iteration-count: infinite;
+  //     animation-iteration-count: infinite;
+  //     -webkit-animation-name: placeHolderShimmer;
+  //     animation-name: placeHolderShimmer;
+  //     -webkit-animation-timing-function: linear;
+  //     animation-timing-function: linear;
+  //     background: #f6f7f8;
+  //     background: #eeeeee;
+  //     background: -webkit-gradient(
+  //         linear,
+  //         left top,
+  //         right top,
+  //         color-stop(8%, #eeeeee),
+  //         color-stop(18%, #dddddd),
+  //         color-stop(33%, #eeeeee)
+  //     );
+  //     background: -webkit-linear-gradient(left, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  //     background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  //     -webkit-background-size: 800px 104px;
+  //     background-size: 800px 104px;
+  //     height: 8pt;
+  //     border-radius: 10pt;
+  //     display: inline-block;
+  //     position: relative;
+
+  //     @-webkit-keyframes placeHolderShimmer {
+  //         0% {
+  //             background-position: -468px 0;
+  //             opacity: 1;
+  //         }
+  //         25% {
+  //             opacity: 0.6;
+  //         }
+  //         50% {
+  //             opacity: 0.3;
+  //         }
+  //         75% {
+  //             opacity: 0.6;
+  //         }
+  //         100% {
+  //             background-position: 468px 0;
+  //             opacity: 1;
+  //         }
+  //     }
+
+  //     @keyframes placeHolderShimmer {
+  //         0% {
+  //             background-position: -468px 0;
+  //             opacity: 1;
+  //         }
+  //         25% {
+  //             opacity: 0.6;
+  //         }
+  //         50% {
+  //             opacity: 0.3;
+  //         }
+  //         75% {
+  //             opacity: 0.6;
+  //         }
+  //         100% {
+  //             background-position: 468px 0;
+  //             opacity: 1;
+  //         }
+  //     }
+  // }
+
+  > .postcard {
+    padding: 15pt 20pt;
+    border: $width-border solid $border-color;
+    background-color: $white;
+    margin-bottom: 5pt;
+    border-radius: $border-radius-4px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    @media (max-width: $medium) {
+      padding: 15pt 10pt;
     }
 
-    // .div-preload {
-    //     -webkit-animation-duration: 1s;
-    //     animation-duration: 1s;
-    //     -webkit-animation-fill-mode: forwards;
-    //     animation-fill-mode: forwards;
-    //     -webkit-animation-iteration-count: infinite;
-    //     animation-iteration-count: infinite;
-    //     -webkit-animation-name: placeHolderShimmer;
-    //     animation-name: placeHolderShimmer;
-    //     -webkit-animation-timing-function: linear;
-    //     animation-timing-function: linear;
-    //     background: #f6f7f8;
-    //     background: #eeeeee;
-    //     background: -webkit-gradient(
-    //         linear,
-    //         left top,
-    //         right top,
-    //         color-stop(8%, #eeeeee),
-    //         color-stop(18%, #dddddd),
-    //         color-stop(33%, #eeeeee)
-    //     );
-    //     background: -webkit-linear-gradient(left, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
-    //     background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
-    //     -webkit-background-size: 800px 104px;
-    //     background-size: 800px 104px;
-    //     height: 8pt;
-    //     border-radius: 10pt;
-    //     display: inline-block;
-    //     position: relative;
+    &.card-pad {
+      padding: 5pt 10pt;
+    }
 
-    //     @-webkit-keyframes placeHolderShimmer {
-    //         0% {
-    //             background-position: -468px 0;
-    //             opacity: 1;
-    //         }
-    //         25% {
-    //             opacity: 0.6;
-    //         }
-    //         50% {
-    //             opacity: 0.3;
-    //         }
-    //         75% {
-    //             opacity: 0.6;
-    //         }
-    //         100% {
-    //             background-position: 468px 0;
-    //             opacity: 1;
-    //         }
-    //     }
+    &.preload-fulfill {
+      border: unset;
+    }
 
-    //     @keyframes placeHolderShimmer {
-    //         0% {
-    //             background-position: -468px 0;
-    //             opacity: 1;
-    //         }
-    //         25% {
-    //             opacity: 0.6;
-    //         }
-    //         50% {
-    //             opacity: 0.3;
-    //         }
-    //         75% {
-    //             opacity: 0.6;
-    //         }
-    //         100% {
-    //             background-position: 468px 0;
-    //             opacity: 1;
-    //         }
-    //     }
-    // }
+    > .post-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-    >.postcard {
-        padding: 15pt 20pt;
-        border: $width-border solid $border-color;
-        background-color: $white;
-        margin-bottom: 5pt;
-        border-radius: $border-radius-4px;
-        overflow: hidden;
-        position: relative;
+      > .left {
+      }
+
+      > .right {
+      }
+    }
+
+    > .post-card-center {
+      margin: 20pt 0;
+    }
+
+    > .post-card-bottom {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    > .row-card {
+      // display: flex;
+      > .preload-left {
+        width: 100%;
+
+        preload-data {
+          .preload-data {
+            > .wrapper-preload {
+              padding: 15pt 0;
+            }
+          }
+        }
+
+        > .preload-body-left {
+          display: flex;
+        }
+      }
+
+      > .preload-right {
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
+        // border: 0.7pt solid $bg-grey;
+        width: calc(100% - 30pt);
+        // border-radius: 8pt;
+        padding: 16pt 15pt;
 
-        @media (max-width: $medium) {
-            padding: 15pt 10pt;
+        > .preload-top {
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+
+      > .preload-center {
+        display: flex;
+        justify-content: center;
+        margin-top: 15pt;
+      }
+    }
+  }
+
+  > .postcard-home {
+    width: 1280px;
+    padding: 15px;
+    margin-top: 85px;
+
+    > .post-card-top {
+      margin: 0 auto;
+
+      @media (max-width: $xxlarge) {
+        max-width: 1024px;
+      }
+
+      @media (max-width: $large) {
+        max-width: 768px;
+      }
+
+      @media (max-width: $medium) {
+        max-width: $small;
+      }
+
+      @media (max-width: $small) {
+        max-width: 320px;
+      }
+
+      > .post-wrapper {
+        display: flex;
+        align-items: flex-start;
+        gap: 30px;
+
+        > .post-left {
+          width: 100%;
         }
 
-        &.card-pad {
-            padding: 5pt 10pt;
-        }
+        > .post-right {
+          width: 100%;
 
-        &.preload-fulfill {
-            border: unset;
-        }
-
-        >.post-card-top {
+          > .post-wrapper-right {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            gap: 15px;
+            width: 100%;
 
-            >.left {}
-
-            >.right {}
-        }
-
-        >.post-card-center {
-            margin: 20pt 0;
-        }
-
-        >.post-card-bottom {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        >.row-card {
-
-            // display: flex;
-            >.preload-left {
-                width: 100%;
-
-                preload-data {
-                    .preload-data {
-                        >.wrapper-preload {
-                            padding: 15pt 0;
-                        }
-                    }
-                }
-
-                >.preload-body-left {
-                    display: flex;
-                }
+            > .wrapper-left {
+              display: grid;
+              width: 50%;
             }
 
-            >.preload-right {
-                display: flex;
-                flex-direction: column;
-                // border: 0.7pt solid $bg-grey;
-                width: calc(100% - 30pt);
-                // border-radius: 8pt;
-                padding: 16pt 15pt;
-
-                >.preload-top {
-                    display: flex;
-                    justify-content: space-between;
-                }
-
+            > .wrapper-right {
+              width: 50%;
             }
-
-            >.preload-center {
-                display: flex;
-                justify-content: center;
-                margin-top: 15pt
-            }
+          }
         }
+      }
     }
 
-    >.postcard-home {
-        width: 1280px;
-        padding: 15px;
-        margin-top: 85px;
+    > .post-card-bottom {
+      margin: 0 auto;
+      margin-top: 165px;
 
-        >.post-card-top {
-            margin: 0 auto;
+      > .box-bottom {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 10px;
+        margin: 0 auto;
 
-            @media (max-width: $xxlarge) {
-                max-width: 1024px;
-            }
-
-            @media (max-width: $large) {
-                max-width: 768px;
-            }
-
-            @media (max-width: $medium) {
-                max-width: $small;
-            }
-
-            @media (max-width: $small) {
-                max-width: 320px;
-            }
-
-            >.post-wrapper {
-                display: flex;
-                align-items: flex-start;
-                gap: 30px;
-
-                >.post-left {
-                    width: 100%;
-                }
-
-                >.post-right {
-                    width: 100%;
-
-                    >.post-wrapper-right {
-                        display: flex;
-                        gap: 15px;
-                        width: 100%;
-
-                        >.wrapper-left {
-                            display: grid;
-                            width: 50%;
-                        }
-
-                        >.wrapper-right {
-                            width: 50%;
-                        }
-                    }
-                }
-            }
+        @media (max-width: $xxlarge) {
+          max-width: 1024px;
         }
 
-        >.post-card-bottom {
-            margin: 0 auto;
-            margin-top: 165px;
-
-            >.box-bottom {
-                display: grid;
-                grid-template-columns: 1fr 1fr 1fr 1fr;
-                gap: 10px;
-                margin: 0 auto;
-
-                @media (max-width: $xxlarge) {
-                    max-width: 1024px;
-                }
-
-                @media (max-width: $large) {
-                    max-width: 768px;
-                }
-
-                >.box {}
-            }
+        @media (max-width: $large) {
+          max-width: 768px;
         }
+
+        > .box {
+        }
+      }
     }
+  }
 }
 
 .bottom-content {
-    margin: 0 auto;
-    margin-top: unset !important;
+  margin: 0 auto;
+  margin-top: unset !important;
 }

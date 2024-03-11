@@ -11,7 +11,8 @@
                 <div class="menu-left">
                     <ng-container *ngIf="isLogin()">
                         <ng-container *ngIf="!showLoading; else elseTemplateLoadMenu">
-                            <div class="setting" [routerLink]="checkUniqueId()" [routerLinkActive]="['active-link']">
+                            <div class="setting" role="button" [routerLink]="checkUniqueId()"
+                                [routerLinkActive]="['active-link']">
                                 <svg class="icon" id="social-media" xmlns="http://www.w3.org/2000/svg" width="19.257"
                                     height="19.257" viewBox="0 0 19.257 19.257">
                                     <g id="Group_403" data-name="Group 403" transform="translate(0 13.855)">
@@ -75,7 +76,7 @@
                                     การแจ้งเตือน
                                 </div>
                             </div> -->
-                            <div class="setting" (click)="logout()">
+                            <div class="setting" role="button" (click)="logout()">
                                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="17.437" height="15.257"
                                     viewBox="0 0 17.437 15.257">
                                     <g id="signs" transform="translate(0 -31.998)" opacity="0.34">
@@ -99,7 +100,7 @@
                                     ออกจากระบบ
                                 </div>
                             </div>
-                            <div class="icon-btn-post" (click)="sildeWindowToBoxPost()">
+                            <div class="icon-btn-post" role="button" (click)="sildeWindowToBoxPost()">
                                 <svg class="button-post" xmlns="http://www.w3.org/2000/svg" width="39.429"
                                     height="31.264" viewBox="0 0 39.429 31.264">
                                     <g id="Group_1210" data-name="Group 1210" transform="translate(-4642 -13042.372)">
@@ -322,7 +323,7 @@
                             </span>
                         </div>
                         <nav mat-tab-nav-bar [attr.mat-align-tabs]="(Tab) ? 'center' : 'left'">
-                            <a mat-tab-link *ngFor="let link of links" [disableRipple]="'true'"
+                            <a mat-tab-link role="button" *ngFor="let link of links" [disableRipple]="'true'"
                                 (click)="linkDataType(link); activeLink = link.label"
                                 [active]="activeLink == link.label">
                                 {{link.label}}

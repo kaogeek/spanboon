@@ -58,6 +58,41 @@ export class AuthenManager {
     });
   }
 
+  public loginAdmin(username: string, password: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/login/admin';
+      let body: any = {
+        "username": username,
+        "password": password,
+      };
+
+      let headers = new HttpHeaders({
+        "Access-Control-Allow-Origin": "http://localhost:4300",
+        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+        // "Access-Control-Request-Method": "GET,PUT,OPTIONS,POST",
+        "mode": "EMAIL"
+      });
+      let httpOptions = {
+        headers: headers
+      };
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+        let result: any = {
+          token: response.data.token,
+          user: response.data.user
+        };
+        // console.log('response.data.user', response.data.user)
+        sessionStorage.setItem("token", result.token);
+        sessionStorage.setItem("user", result.user);
+        this.token = result.token;
+        this.user = result.username;
+
+        resolve(result);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public logout(): Promise<any> {
     return new Promise((resolve, reject) => {
       // !implement logout from API

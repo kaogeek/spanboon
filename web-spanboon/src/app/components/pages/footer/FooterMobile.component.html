@@ -8,7 +8,7 @@
 <div class="footer-mobile" id="footerMobile">
     <!-- <div class="footer-mobile" [class.hide-nav]="hideNav" (scroll)="onScroll($event)" > -->
     <div class="wrapper-mobile-footer">
-        <div class="icon" [routerLink]="'/home'" [routerLinkActive]="['footer-active-link']">
+        <div class="icon" [routerLink]="'/home'" role="button" [routerLinkActive]="['footer-active-link']">
             <svg class="icon-menu-m icon-home-2" xmlns="http://www.w3.org/2000/svg" version="1.1"
                 xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="512" height="512"
                 x="0" y="0" viewBox="0 0 512 512">
@@ -26,7 +26,8 @@
             </div>
         </div>
 
-        <div class="icon" *ngIf="isLogin();" [routerLink]="checkUniqueId()" [routerLinkActive]="['footer-active-link']">
+        <div class="icon" *ngIf="isLogin();" role="button" [routerLink]="checkUniqueId()"
+            [routerLinkActive]="['footer-active-link']">
             <svg class="icon-menu-m" id="social-media" xmlns="http://www.w3.org/2000/svg" width="19.257" height="19.257"
                 viewBox="0 0 19.257 19.257">
                 <g id="Group_403" data-name="Group 403" transform="translate(0 13.855)">
@@ -53,7 +54,7 @@
             </div>
 
         </div>
-        <div class="icon" [routerLink]="'/recommended'" [routerLinkActive]="['footer-active-link']">
+        <div class="icon" [routerLink]="'/recommended'" role="button" [routerLinkActive]="['footer-active-link']">
             <svg class="icon-menu-m" xmlns="http://www.w3.org/2000/svg" width="31.551" height="22.29"
                 viewBox="0 0 31.551 22.29">
                 <g id="Group_711" data-name="Group 711" transform="translate(-1533.751 -2071.08)">

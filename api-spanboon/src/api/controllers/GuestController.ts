@@ -974,7 +974,7 @@ export class GuestController {
         
         if (userLogin) {
             if(userLogin.isAdmin !== true) {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot login You`re Admin.', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot login You`re not Admin.', undefined);
                 return res.status(400).send(errorResponse);
             }
             const userObjId = new ObjectID(userLogin.id);

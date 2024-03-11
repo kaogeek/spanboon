@@ -1,0 +1,383 @@
+.wrapper-statistic-page {
+  min-height: calc(100vh - 45pt);
+  display: flex;
+
+  > .wrapper-left {
+    height: 100%;
+    width: 270px;
+    flex: 0 0 auto;
+
+    @media (max-width: $medium) {
+      display: none;
+    }
+
+    > .menu-wrapper {
+      position: fixed;
+      width: 230px;
+      height: 100%;
+      margin: 25px 20px;
+      display: flex;
+      flex-direction: column;
+
+      > p {
+        margin-top: 10px;
+        color: #525252;
+        @include font-size-6($font-head-500);
+      }
+
+      > .menu-box {
+        background-color: unset;
+        padding: 12px 10px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+
+        &.active {
+          background-color: $brandcolor4;
+
+          > .icon {
+            background-color: $brandcolor2;
+          }
+
+          > span {
+            color: $brandcolor2;
+          }
+        }
+
+        > .icon {
+          background-color: #f3f3f3;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          > img {
+            width: 16px;
+            height: 16px;
+          }
+        }
+
+        > span {
+          color: #525252;
+          @include font-size-9($font-head-500);
+        }
+      }
+    }
+  }
+
+  > .wrapper-right {
+    width: 100%;
+    background-color: #f0f5f6;
+
+    > .menu-wrapper {
+      display: none;
+
+      @media (max-width: $medium) {
+        display: flex;
+        top: 0px;
+        padding: 10px;
+        justify-content: space-around;
+        box-shadow: 0px 0px 5px 0px rgba($black, 0.2);
+        background-color: #fff;
+        position: sticky;
+        z-index: 2;
+
+        > .menu-box {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          @include pointer;
+          @include font-size-11($font-head-500);
+
+          > span {
+            padding: 8px;
+            min-width: 85px;
+            flex: 1 1 0%;
+
+            &.active {
+              border: 1px solid #113154;
+              background-color: #113154;
+              border-radius: 20px;
+              color: $white;
+            }
+          }
+        }
+      }
+    }
+
+    > .wrapper-chart {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 25px;
+      gap: 14px;
+
+      &.mfp {
+        grid-template-columns: 1fr 400px;
+      }
+
+      @media (max-width: $large) {
+        grid-template-columns: 1fr !important;
+        margin-top: 10pt;
+        padding: 6px;
+      }
+
+      > .chart {
+        border: 1px solid rgba(0, 0, 0, 0.4);
+        // width: 400px;
+        // height: 400px;
+        box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.4);
+        -webkit-box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.4);
+
+        > span {
+          padding: 8px;
+          @include font-size-10($font-head-100);
+          line-height: 1.8;
+        }
+
+        @media (max-width: $large) {
+          grid-column: 1 !important;
+        }
+      }
+
+      > .container-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding-left: 10px;
+
+        @media (max-width: $large) {
+          grid-row: 1;
+          align-items: center;
+          padding-left: 0;
+
+          > datepicker-year {
+            width: 100%;
+
+            > .date-picker {
+              justify-content: center;
+            }
+          }
+        }
+
+        > .header {
+          font-size: 28pt;
+          margin-bottom: 40px;
+
+          > span {
+            @include font-size-3($font-head-500);
+          }
+
+          @media (max-width: $small) {
+            margin-bottom: 0;
+
+            > span {
+              @include font-size-5($font-head-500);
+            }
+          }
+        }
+
+        > datepicker-year {
+          > .date-picker {
+            display: flex;
+            gap: 20px;
+            font-size: 20px;
+            align-items: center;
+
+            > mat-form-field {
+              width: 30%;
+            }
+          }
+        }
+
+        > .wrapper-item {
+          display: flex;
+          gap: 20pt;
+          align-items: end;
+          pointer-events: none;
+
+          > .item {
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 185px;
+            border: 1px solid #8080801a;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            height: 100px;
+            background: rgba(128, 128, 128, 0.1);
+            box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.3);
+            -webkit-box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.3);
+            -moz-box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.3);
+
+            > span {
+              padding: 7px 7px 0 7px;
+              @include font-size-8($font-head-100);
+            }
+
+            > p {
+              text-align: center;
+              @include font-size-7($font-head-500);
+              margin-bottom: 5px;
+            }
+          }
+
+          @media (max-width: $small) {
+            > .item {
+              min-width: 150px;
+              height: 80px;
+              gap: 4px;
+            }
+          }
+        }
+      }
+    }
+
+    > .wrapper-leaderboard {
+      height: calc(100svh - (#{$height-header-top} + 20px));
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      @media (max-width: $medium) {
+        height: unset;
+        overflow: unset;
+      }
+
+      .container {
+        overflow-y: auto;
+        padding: 20px 20px 0 20px;
+
+        @media (max-width: $large) {
+          padding: 20px 20px 50px 20px;
+        }
+
+        @media (max-width: $medium) {
+          padding: 20px;
+        }
+
+        @media (max-width: $small) {
+          padding: 10px;
+        }
+
+        > .header {
+          height: 70px;
+          display: flex;
+          justify-content: center;
+          padding-left: 10px;
+          background-color: $brandcolor2;
+          border-radius: 8px;
+          flex-direction: column;
+
+          > span {
+            color: $white;
+            line-height: 1;
+            @include font-size-6($font-head-500);
+
+            &:last-child {
+              margin-top: 3px;
+              @include font-size-10($font-head-100);
+            }
+          }
+        }
+
+        > .wrapper-page {
+          display: grid;
+          margin-top: 8px;
+          gap: 8px;
+
+          @media (max-width: $large) {
+            grid-template-columns: 1fr !important;
+          }
+
+          > .page {
+            border-radius: 8px;
+            background-color: white;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            justify-content: space-between;
+            @include font-size-9($font-head-500);
+
+            @media (max-width: $large) {
+              grid-area: unset !important;
+              grid-column: unset !important;
+              grid-row: unset !important;
+            }
+
+            > .ranking {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+
+              > .image {
+                width: 33px;
+                height: 33px;
+                border-radius: 50%;
+
+                &.image-null {
+                  align-items: center;
+                  display: flex;
+                  justify-content: center;
+                  color: white;
+                  background-color: $brandcolor2;
+                }
+              }
+
+              > .ordering {
+                text-align: center;
+                width: 41px;
+                height: 31px;
+                color: $brandcolor2;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex: 0 0 auto;
+              }
+
+              > .name {
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                word-break: break-word;
+              }
+            }
+
+            > .count {
+              display: flex;
+              align-items: center;
+              flex: 0 0 auto;
+
+              > span {
+                padding: 0 10px;
+              }
+
+              > .icon-user {
+                width: $width-icon;
+                height: $height-icon;
+              }
+            }
+
+            @media (max-width: $small) {
+              @include font-size-10($font-head-500);
+
+              .count {
+                > span {
+                  padding: 0 5px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

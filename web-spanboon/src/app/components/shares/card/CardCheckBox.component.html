@@ -82,7 +82,7 @@
     </ng-template>
     <ng-container
         *ngIf="!isLoadMorePageCategory || !isLoadMorePageEmergency || !isLoadMoreObjective || !isLoadMoreHashTag">
-        <div class="follow-all" *ngIf="data && data.length > 4" (click)="loadMoreData($event)"
+        <div class="follow-all" *ngIf="data && data.length > 4" (click)="loadMoreData($event)" role="button"
             [ngStyle]="{'display': isHideMoreObjective ? 'none' : 'flex' }">
             เพิ่มเติม
         </div>

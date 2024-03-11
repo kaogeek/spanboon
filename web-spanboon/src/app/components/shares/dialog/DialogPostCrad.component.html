@@ -7,7 +7,8 @@
 <ng-container *ngIf="data.vote; else elseTemplate">
     <div *ngIf="!voteSuccess" class="dialog-vote-card">
         <div class="wrapper-card">
-            <img class="close-icon" src="../../../../assets/img/icons/votepage/close.svg" (click)="onClose(data.menu)">
+            <img class="close-icon" src="../../../../assets/img/icons/votepage/close.svg" role="button"
+                (click)="onClose(data.menu)">
             <div class="card-wrapper">
                 <div class="image">
                     <div class="wrapper-image">
@@ -210,7 +211,7 @@
                                 <span class="title">{{item.title}}</span>
                                 <ng-container *ngFor="let choice of item.voteChoice;let i = index">
                                     <ng-container *ngIf="item.type === 'single'; else elseMultiple">
-                                        <div class="wrapper-choice"
+                                        <div class="wrapper-choice" role="button"
                                             [ngClass]="{'active': (questions[index].voteChoice && questions[index].voteChoice[0].voteChoiceId === choice._id) || choice.isVote,'closed': data.post.closed || isVoteAlready}"
                                             (click)="chooseChoice(item,choice,index,i,item.type)">
                                             <div class="choice">
@@ -243,7 +244,7 @@
                                         </div>
                                     </ng-container>
                                     <ng-template #elseMultiple>
-                                        <div class="wrapper-choice"
+                                        <div class="wrapper-choice" role="button"
                                             [ngClass]="{'active': choice.active || choice.isVote,'closed': data.post.closed || isVoteAlready}"
                                             (click)="!choice.active ? chooseChoice(item,choice,index,i,item.type) : null;
                                             choice.active ? addOrRemoveActive(choice,'multi','remove',index,i) : addOrRemoveActive(choice,'multi','add',index,i)">
@@ -299,7 +300,7 @@
                                     </ng-template>
                                 </ng-container>
                                 <div class="next" *ngIf="!data.post.closed && index === posts.length - 1">
-                                    <span [ngClass]="{'voted': isVoteAlready}"
+                                    <span [ngClass]="{'voted': isVoteAlready}" role="button"
                                         (click)="isLogin() ? next() : checkLogin()">ถัดไป</span>
                                 </div>
                             </div>
@@ -308,11 +309,12 @@
                     <ng-template #elseApproved>
                         <div class="wrapper-button" *ngIf="data.post.status !== 'close'">
                             <ng-container *ngIf="data.post.userSupport; else elseSupport">
-                                <span class="button-vote close"
+                                <span class="button-vote close" role="button" [attr.aria-label]="'ยกเลิกสนับสนุน'"
                                     (click)="isLogin() ? unVoteSupport(data.post._id) : checkLogin()">ยกเลิกสนับสนุน</span>
                             </ng-container>
                             <ng-template #elseSupport>
-                                <span class="button-vote submit" [ngClass]="{'disabled': isCantVote}"
+                                <span class="button-vote submit" role="button" [ngClass]="{'disabled': isCantVote}"
+                                    [attr.aria-label]="'สนับสนุน'"
                                     (click)="isLogin() ? voteSupport(data.post._id) : checkLogin()">สนับสนุน</span>
                             </ng-template>
                         </div>
@@ -324,10 +326,11 @@
 
     <div *ngIf="voteSuccess" class="dialog-vote-card vote-success">
         <div class="wrapper-card vote-success">
-            <img class="close-icon" src="../../../../assets/img/icons/votepage/close.svg" (click)="onClose()">
+            <img class="close-icon" src="../../../../assets/img/icons/votepage/close.svg" role="button"
+                (click)="onClose()">
             <div class="card">
                 <span>{{data.post.service ? data.post.service : 'ขอขอบคุณสำหรับเวลาและการโหวตของท่าน'}}</span>
-                <div class="success-vote" (click)="onClose()">
+                <div class="success-vote" role="button" (click)="onClose()">
                     <span>เสร็จสิ้น</span>
                 </div>
             </div>
@@ -337,7 +340,7 @@
 <ng-template #elseTemplate>
     <div class="dialog_post_card">
 
-        <span mat-dialog-title class="onClose" (click)="onClose($event)">
+        <span mat-dialog-title class="onClose" role="button" (click)="onClose($event)">
             <svg version="1.1" width="20px" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 41.756 41.756"
                 style="enable-background:new 0 0 41.756 41.756;" xml:space="preserve">

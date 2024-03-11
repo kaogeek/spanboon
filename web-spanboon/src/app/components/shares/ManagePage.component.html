@@ -7,7 +7,7 @@
 
 <div class="manage-page">
     <!-- <div class="manage-page"(click)="searchAllPage()"> -->
-    <div class="listPage" (click)="drawer.toggle(); clickMenu();">
+    <div class="listPage" role="button" (click)="drawer.toggle(); clickMenu();">
         <svg class="btn-listPage" [class.active]="drawer.opened" xmlns="http://www.w3.org/2000/svg" width="22"
             height="18" viewBox="0 0 22 18">
             <g id="Group_226" data-name="Group 226" transform="translate(0.326 -0.341)">
@@ -27,7 +27,7 @@
                     <div class="page-name-div">
                         เพจของคุณ
                     </div>
-                    <div class="btn-create-page" (click)="createPage()">
+                    <div class="btn-create-page" role="button" (click)="createPage()">
                         <span class="material-icons add-page">
                             add
                         </span>
@@ -39,7 +39,7 @@
                         <ng-container *ngFor="let item of resListPage">
                             <div class="wrapper-list-page" *ngIf="item.page" (click)="drawer.close()">
                                 <ng-container>
-                                    <div class="list-page" (click)="nextPage(item)">
+                                    <div class="list-page" role="button" (click)="nextPage(item)">
                                         <ng-container *ngIf="!!item.page.signURL || !!item.page.imageURL; else elseImg">
                                             <div class="image-page">
                                                 <img class="img"
@@ -70,7 +70,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="wrapper-option" (click)="clickSetting(item)">
+                                    <div class="wrapper-option" role="button" (click)="clickSetting(item)">
                                         <svg id="filter" xmlns="http://www.w3.org/2000/svg" width="20.091"
                                             height="20.091" viewBox="0 0 20.091 20.091">
                                             <path id="filter-2" data-name="filter"
@@ -143,7 +143,7 @@
             </div>
         </mat-drawer>
         <mat-drawer-content>
-            <div class="wrapper-mat-backdrop" *ngIf="drawer.opened" (click)="drawer.toggle()">
+            <div class="wrapper-mat-backdrop" *ngIf="drawer.opened" role="button" (click)="drawer.toggle()">
                 <div class="mat-backdrop"></div>
             </div>
         </mat-drawer-content>

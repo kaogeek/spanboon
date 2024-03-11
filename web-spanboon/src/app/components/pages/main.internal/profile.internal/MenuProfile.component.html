@@ -52,7 +52,8 @@
                 </div>
             </div>
             <div class="list-setting">
-                <div class="setting" [class.active-link]="isActive1" (click)="getLinkProfile();clickMenu()">
+                <div class="setting" [class.active-link]="isActive1" role="button"
+                    (click)="getLinkProfile();clickMenu()">
                     <svg class="icon" id="social-media" xmlns="http://www.w3.org/2000/svg" width="19.257"
                         height="19.257" viewBox="0 0 19.257 19.257">
                         <g id="Group_403" data-name="Group 403" transform="translate(0 13.855)">
@@ -78,7 +79,8 @@
                         ไทมไลน์
                     </div>
                 </div>
-                <div class="setting" [class.active-link]="isActive2" (click)="settingProfile();clickMenu()">
+                <div class="setting" [class.active-link]="isActive2" role="button"
+                    (click)="settingProfile();clickMenu()">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16.334" height="16.773"
                         viewBox="0 0 16.334 16.773">
                         <g id="tools-and-utensils" transform="translate(-6.71)" opacity="0.34">
@@ -115,7 +117,7 @@
                         การแจ้งเตือน
                     </div>
                 </div> -->
-                <div class="setting" (click)="clickLogout();">
+                <div class="setting" role="button" (click)="clickLogout();">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="17.437" height="15.257"
                         viewBox="0 0 17.437 15.257">
                         <g id="signs" transform="translate(0 -31.998)" opacity="0.34">
@@ -146,8 +148,8 @@
 <ng-template #elseUser>
     <div class="not-log">
         <ng-container *ngIf="isShowButton; else elseTemplate">
-            <svg class="profile" [routerLink]="'/login'" [routerLinkActive]="['active-link']" (click)="clickMenu()"
-                [class.active-link-user]="isRegister()" id="user_3_" data-name="user (3)"
+            <svg class="profile" [routerLink]="'/login'" role="button" [routerLinkActive]="['active-link']"
+                (click)="clickMenu()" [class.active-link-user]="isRegister()" id="user_3_" data-name="user (3)"
                 xmlns="http://www.w3.org/2000/svg" width="30.332" height="36.356" viewBox="0 0 30.332 36.356">
                 <path id="Path_136" data-name="Path 136"
                     d="M95.788,17.513a8.472,8.472,0,0,0,6.191-2.565,8.473,8.473,0,0,0,2.565-6.191,8.474,8.474,0,0,0-2.565-6.191,8.754,8.754,0,0,0-12.382,0,8.473,8.473,0,0,0-2.565,6.191A8.473,8.473,0,0,0,89.6,14.948,8.474,8.474,0,0,0,95.788,17.513Zm0,0"

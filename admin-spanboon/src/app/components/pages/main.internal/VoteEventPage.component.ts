@@ -124,7 +124,6 @@ export class VoteEventPage extends AbstractPage implements OnInit {
             isPreview: true,
         };
         this._setFields();
-
     }
 
     public ngOnInit() {

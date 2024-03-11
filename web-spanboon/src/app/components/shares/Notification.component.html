@@ -4,7 +4,8 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-<div [class.active]="isActive()" class="btn-notfication" [matMenuTriggerFor]="beforeMenu" (menuOpened)="isNotiAll = 1">
+<div [class.active]="isActive()" role="button" class="btn-notfication" [matMenuTriggerFor]="beforeMenu"
+    (menuOpened)="isNotiAll = 1">
     <div class="notiAlert" [class.active-plus]="noti!.countUnread + (notiObj && notiObj.count) > 9"
         *ngIf="noti!.countUnread + (notiObj && notiObj.count) > 0">
         <ng-container *ngIf="noti!.countUnread + (notiObj && notiObj.count) > 9; else elseTemplateNoti">

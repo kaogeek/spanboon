@@ -34,7 +34,7 @@
                             <loading></loading>
                         </ng-container>
                         <ng-template #elseTemplate1>
-                            <div class="wrapper-body-trend" (click)="clickDataSearch($event,item)"
+                            <div class="wrapper-body-trend" role="button" (click)="clickDataSearch($event,item)"
                                 *ngFor="let item of dataTrend">
                                 <div class="trend-title">
                                     ได้รับความนิยม
@@ -46,7 +46,8 @@
                                     {{item.count}} โพสต์
                                 </div>
                             </div>
-                            <div class="read-more" *ngIf="dataTrend.length > 20" (click)="clickLoadmore()">
+                            <div class="read-more" *ngIf="dataTrend.length > 20" role="button"
+                                (click)="clickLoadmore()">
                                 แสดงเพิ่มเติม
                             </div>
                         </ng-template>

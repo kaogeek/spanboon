@@ -5,4 +5,15 @@
     Author: Americaso <treerayuth.o@absolute.co.th>
 -->
 
+<ng-container *ngIf="isLoading; else elseTemplate">
+    <div class="wrapper-loading-progress-bar">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+</ng-container>
+<ng-template #elseTemplate>
+    <div class="wrapper-loading-progress-bar" *ngIf="loadingService.isLoading | async">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+</ng-template>
+
 <router-outlet></router-outlet>
