@@ -5,7 +5,8 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="tag-event" [ngClass]="class" [class.active]="isShowEmergency === true || isShowObjective === true" [class.mobileActive]="onResize()" (window:resize)="onResize()">
+<div class="tag-event" [ngClass]="class" [class.active]="isShowEmergency === true || isShowObjective === true"
+    [class.mobileActive]="onResize()" (window:resize)="onResize()">
     <div class="tag-emergency" *ngIf="isShowEmergency">
         <svg class="img-emergency" [class.active]="isIconEmergency === true" height="21" viewBox="0 0 23 21" width="23"
             xmlns="http://www.w3.org/2000/svg">
@@ -33,7 +34,8 @@
                     transform="translate(692.701 427.463) rotate(-90)" width="1"></rect>
             </g>
         </svg>
-        <div class="tag-name-emergency" (click)="emergency($event)" [class.active]="isNameEmergency === true" matTooltip="{{nameEmergency}}">
+        <div class="tag-name-emergency" role="button" (click)="emergency($event)"
+            [class.active]="isNameEmergency === true" matTooltip="{{nameEmergency}}">
             {{'#'+nameEmergency}}
         </div>
     </div>
@@ -55,7 +57,8 @@
                     data-name="Path 3208" fill="#747474" id="Path_3208" transform="translate(-248.03 -228.703)"></path>
             </g>
         </svg>
-        <div class="tag-name-objective" [class.active]="isNameObjective === true" (click)="objective($event)"  matTooltip="{{nameObjective}}">
+        <div class="tag-name-objective" role="button" [class.active]="isNameObjective === true"
+            (click)="objective($event)" matTooltip="{{nameObjective}}">
             {{'#'+nameObjective}}
         </div>
     </div>

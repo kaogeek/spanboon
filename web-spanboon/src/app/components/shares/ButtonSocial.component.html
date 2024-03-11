@@ -6,7 +6,7 @@
 -->
 
 <ng-container *ngIf="link; else elseTemplate">
-    <a class="butt-social" [routerLink]="link"
+    <a class="butt-social" role="button" [routerLink]="link"
         [ngStyle]="{'background-color': bgColor, 'color': color, 'width': width, 'height' : height , 'font-size' : fontSize}"
         [ngClass]="class" matRipple [matRippleColor]="rippleColor" [matRippleDisabled]="'true'">
         <img src="{{iconSocial}}" alt="" class="img-social" [ngStyle]="{'height': imgsize, 'width': imgsize}">
@@ -14,7 +14,7 @@
     </a>
 </ng-container>
 <ng-template #elseTemplate>
-    <div class="butt-social"
+    <div class="butt-social" role="button"
         [ngStyle]="{'background-color': bgColor, 'color': color, 'width': width, 'height' : height , 'font-size' : fontSize}"
         [ngClass]="class" matRipple [matRippleColor]="rippleColor" [matRippleDisabled]="'true'">
         <img src="{{iconSocial}}" alt="" class="img-social" [ngStyle]="{'height': imgsize, 'width': imgsize}">

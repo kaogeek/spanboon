@@ -1,16 +1,16 @@
 <mat-menu #menu="matMenu" xPosition="before">
-    <button mat-menu-item
+    <button mat-menu-item role="button"
         *ngIf="model.status === 'support' && (model.endVoteDay >= 0 && model.endVoteHour >= 0 && model.endVoteMinute >= 0)"
         (click)="clickEditVote()">
         <mat-icon>edit</mat-icon>
         <span class="vote-remove">แก้ไข</span>
     </button>
-    <button mat-menu-item (click)="clickDeleteVote()">
+    <button mat-menu-item role="button" (click)="clickDeleteVote()">
         <mat-icon>delete</mat-icon>
         <span class="vote-remove">ลบโหวต</span>
     </button>
 </mat-menu>
-<div class="card-content-vote" (click)="clickDialog()">
+<div class="card-content-vote" role="button" (click)="clickDialog()">
     <div class="container-content">
         <button *ngIf="userId === model.userId" mat-icon-button [matMenuTriggerFor]="menu"
             (click)="$event.stopPropagation()">

@@ -7,6 +7,7 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "module": "esnext", // old value esnext | commonjs
     "moduleResolution": "node",
@@ -27,6 +28,7 @@
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
+    "strictInjectionParameters": true,
+    "strictTemplates": true
   }
 }

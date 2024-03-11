@@ -9,7 +9,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrModule } from 'ngx-toastr';
@@ -19,6 +19,11 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SwiperModule } from 'ngx-swiper-wrapper';
 import { SWIPER_CONFIG } from 'ngx-swiper-wrapper';
 import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import { HighchartsChartModule } from 'highcharts-angular';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
+
+
 
 // material ag
 import {
@@ -58,6 +63,7 @@ import {
   StandardItemCustomPage,
   PageObjectiveCategoryPage,
   EmergencyEventPage,
+  DashboardPage,
   DialogWarningComponent,
   DialogAlert,
   DialogImagePreview,
@@ -65,7 +71,8 @@ import {
   TodayPageV2,
   PageGroup,
   NewsPaperPage,
-  VoteEventPage
+  VoteEventPage,
+  DateYearPicker
 } from './components/components';
 import {
   AuthenManager,
@@ -88,6 +95,8 @@ import {
   ManipulateFacade,
   ManipulatePostFacade,
   VoteEventFacade,
+  DashboardFacade
+
 } from './services/services';
 import { UserFacade } from './services/facade/UserFacade.service';
 import {
@@ -98,6 +107,7 @@ import {
 } from './components/shares/pipes/pipes';
 import { ManipulatePage } from './components/pages/main.internal/ManipulatePage.component';
 import { ManipulatePost } from './components/pages/main.internal/ManipulatePost.component';
+import { InterceptorService } from './services/loading/interceptor.service';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -129,6 +139,7 @@ const COMPONENTS: any[] = [
   StandardItemCustomPage,
   PageObjectiveCategoryPage,
   EmergencyEventPage,
+  DashboardPage,
   TodayPage,
   TodayPageV2,
   PageGroup,
@@ -145,7 +156,8 @@ const COMPONENTS: any[] = [
   ManipulatePage,
   ManipulatePost,
   NewsPaperPage,
-  VoteEventPage
+  VoteEventPage,
+  DateYearPicker
 ];
 
 const PIPE_CLASSES: any[] = [
@@ -180,15 +192,11 @@ const SERVICE_CLASSES: any[] = [
   ManipulateFacade,
   ManipulatePostFacade,
   VoteEventFacade,
+  DashboardFacade,
   // other 
-  {
-    provide: SWIPER_CONFIG,
-    useValue: DEFAULT_SWIPER_CONFIG
-  },
-  {
-    provide: MAT_DATE_LOCALE,
-    useValue: 'en-GB'
-  }
+  { provide: SWIPER_CONFIG, useValue: DEFAULT_SWIPER_CONFIG },
+  { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
+  { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },
 ];
 
 @NgModule({
@@ -212,7 +220,10 @@ const SERVICE_CLASSES: any[] = [
     MatStepperModule, MatTabsModule, MatExpansionModule, MatButtonToggleModule,
     MatChipsModule, MatIconModule, MatProgressSpinnerModule, MatProgressBarModule, MatDialogModule,
     MatTooltipModule, MatSnackBarModule, MatTableModule, MatSortModule, MatPaginatorModule, MatNativeDateModule, MatCardModule,
-    MatRippleModule
+    MatRippleModule,
+    NgApexchartsModule,
+    HighchartsChartModule,
+    MatMomentDateModule
   ],
   providers: SERVICE_CLASSES,
   bootstrap: BOOSTRAP_CLASSES,

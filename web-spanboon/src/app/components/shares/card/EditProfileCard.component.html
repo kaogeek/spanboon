@@ -77,10 +77,10 @@
 
 </form>
 <div class="wrapper-footer">
-    <span (click)="deleteUser()">คลิกที่นี่เพื่อลบบัญชีผู้ใช้นี้</span>
+    <span (click)="deleteUser()" role="button">คลิกที่นี่เพื่อลบบัญชีผู้ใช้นี้</span>
     <!-- <button mat-button (click)="onNoClick()">No Thanks</button> -->
     <button mat-button [ngStyle]="{'opacity': formProfile.invalid ? '0.5' : '1'}" [disabled]="formProfile.invalid"
-        (click)="formProfile.valid ? editProfile() : null">ยืนยัน</button>
+        role="button" (click)="formProfile.valid ? editProfile() : null">ยืนยัน</button>
 </div>
 
 <loading *ngIf="isLoading"></loading>

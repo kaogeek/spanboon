@@ -36,6 +36,13 @@ export const ROUTES: Routes[] = [
   //   path: ""
   // },
   {
+    icon: '<img src="../../../assets/img/mfp.svg" width="25" height="20">',
+    title: "แผงควบคุม",
+    subRoutes: [
+    ],
+    path: "/main/dashboard"
+  },
+  {
     icon: '<svg height="21" style="margin-right: 10px;" viewBox="0 0 23 21" width="23" xmlns="http://www.w3.org/2000/svg"><g data-name="Group 1312" id="Group_1312" transform="translate(-672.701 -415.463)"> <path class="svg-icon-color-activate" style="fill: white;"d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"data-name="Subtraction 2" fill="#747474" id="Subtraction_2" stroke="rgba(0,0,0,0)" stroke-miterlimit="10"stroke-width="1" transform="translate(7129.611 -573.082)"></path><path class="svg-icon-color-activate" d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z" style="fill: white;"data-name="Rectangle 572" fill="#747474" id="Rectangle_572" transform="translate(674.701 434.463)"></path><rect class="svg-icon-color-activate" data-name="Rectangle 573" fill="#747474" height="3" id="Rectangle_573" style="fill: white;"rx="1" transform="translate(683.701 415.463)" width="2"></rect><rect class="svg-icon-color-activate" data-name="Rectangle 574" fill="#747474" height="3.962" id="Rectangle_574" style="fill: white;"rx="0.699" transform="translate(678.115 416.918) rotate(-30)" width="1.398"></rect><rect class="svg-icon-color-activate" data-name="Rectangle 575" fill="#747474" height="3.962" id="Rectangle_575" style="fill: white;"rx="0.699" transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)" width="1.398"></rect> <rect class="svg-icon-color-activate" data-name="Rectangle 576" fill="#747474" height="3.962" id="Rectangle_576" style="fill: white;"rx="0.699" transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)" width="1.398"></rect><rect class="svg-icon-color-activate" data-name="Rectangle 577" fill="#747474" height="3.962" id="Rectangle_577" style="fill: white;"rx="0.699" transform="translate(689.761 416.304) rotate(31.145)" width="1.398"></rect><rect class="svg-icon-color-activate" data-name="Rectangle 578" fill="#747474" height="3" id="Rectangle_578" style="fill: white;"rx="0.5" transform="translate(672.701 427.463) rotate(-90)" width="1"></rect><rect class="svg-icon-color-activate" data-name="Rectangle 579" fill="#747474" height="3" id="Rectangle_579" style="fill: white;"rx="0.5" transform="translate(692.701 427.463) rotate(-90)" width="1"></rect></g></svg>',
     title: "เหตุการณ์ด่วน",
     subRoutes: [
@@ -171,11 +178,8 @@ export class MainPage implements OnInit {
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.authenManager.logout().then(() => {
-          this.router.navigateByUrl("login");
-        }).catch((err) => {
-          this.dialogWarning(err.error.message);
-        });
+        this.authenManager.logout();
+        this.router.navigateByUrl("login");
       }
     })
   }

@@ -21,7 +21,9 @@ import {
   PageHashTag,
   PageRecommended,
   SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
-  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch, LoginMemberProcessing, MemberProcess, MobileProcessing, KnowledgeCenter, VotePage, ProcessingPage,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles,
+  SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch, LoginMemberProcessing,
+  MemberProcess, MobileProcessing, KnowledgeCenter, VotePage, ProcessingPage, TodayDashboardPage,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -264,6 +266,20 @@ export const APP_ROUTES: Routes = [
       {
         path: TermsOfServicePage.PAGE_NAME,
         component: TermsOfServicePage,
+      },
+      {
+        path: TodayDashboardPage.PAGE_NAME,
+        component: TodayDashboardPage,
+        children: [
+          {
+            path: '',
+            component: TodayDashboardPage,
+          },
+          {
+            path: ':name',
+            component: TodayDashboardPage,
+          }
+        ]
       },
       {
         path: KnowledgeCenter.PAGE_NAME,

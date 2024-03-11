@@ -110,7 +110,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public paramUserId: string;
   public paramMode: string;
 
-  maxDate = new Date();
+  public maxDate = new Date();
 
   constructor(
     private gallery: Gallery,
@@ -635,9 +635,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
   dateFilter: (dateFilt: Date | null) => boolean =
     (dateFilt: Date | null) => {
+      const year = (dateFilt.getFullYear());
       const day = (dateFilt || new Date()).getDate().toString().padStart(2, '0');
       const month = (dateFilt.getMonth() + 1).toString().padStart(2, '0');
-      const year = (dateFilt.getFullYear());
       const md = day + '-' + month + '-' + year;
       for (let d of this.filterDate) {
         if (md === d.toString()) {

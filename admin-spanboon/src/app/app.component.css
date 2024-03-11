@@ -8,3 +8,14 @@
 html {
     overflow: hidden;
 }
+
+.wrapper-loading-progress-bar {
+    position: fixed;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100svw;
+    height: 100svh;
+    background-color: #00000010;
+}

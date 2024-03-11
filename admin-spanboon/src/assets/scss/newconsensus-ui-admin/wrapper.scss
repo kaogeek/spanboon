@@ -955,14 +955,97 @@ html {
 }
 
 .dashboard-page {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding: 8px;
-  gap: 8px;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  background: $white;
+  flex-direction: column;
+  overflow-y: auto;
 
-  > .chart {
-    border: 1px solid black;
-    // width: 400px;
-    // height: 400px;
+  > .wrapper-dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 25px;
+    gap: 14px;
+    width: 100%;
+
+    > .chart {
+      border: 1px solid rgba(0, 0, 0, 0.4);
+      // width: 400px;
+      // height: 400px;
+      box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.4);
+      -webkit-box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.4);
+      -moz-box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.4);
+
+      > span {
+        padding: 8px;
+        font-weight: bold;
+        line-height: 1.8;
+        font-family: sans-serif;
+      }
+    }
+  }
+
+  > .wrapper-statistic {
+    display: grid;
+    gap: 60px;
+    grid-template-columns: 1fr 1fr;
+    padding: 20px 25px 0 25px;
+    width: 100%;
+
+    > .sorting {
+      display: flex;
+      flex-direction: column;
+
+      > .header {
+        font-size: 28pt;
+        margin-bottom: 5px;
+      }
+
+      > datepicker-year {
+        > .date-picker {
+          display: flex;
+          gap: 20px;
+          font-size: 20px;
+          align-items: center;
+
+          > mat-form-field {
+            width: 50%;
+          }
+        }
+      }
+    }
+
+    > .wrapper-item {
+      display: flex;
+      gap: 20pt;
+      align-items: end;
+      pointer-events: none;
+
+      > .item {
+        min-width: 150px;
+        border: 1px solid #8080801a;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        height: 80px;
+        background: rgba(128, 128, 128, 0.1);
+        box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.3);
+        -webkit-box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.3);
+        -moz-box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.3);
+
+        > span {
+          padding: 7px 7px 0 7px;
+          font-size: 16px;
+        }
+
+        > p {
+          text-align: center;
+          font-size: 20pt;
+          font-weight: bold;
+          margin-bottom: 5px;
+        }
+      }
+    }
   }
 }

@@ -5,13 +5,31 @@
  * Author: Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthenManager } from '../../services/AuthenManager.service';
 import { Router } from '@angular/router';
 import { DialogWarningComponent } from '../shares/DialogWarningComponent.component';
-
+// import {
+//     ApexAxisChartSeries,
+//     ApexChart,
+//     ChartComponent,
+//     ApexDataLabels,
+//     ApexXAxis,
+//     ApexPlotOptions,
+//     ApexFill,
+// } from 'ng-apexcharts';
 const PAGE_NAME: string = "login";
+
+// export type ChartOptions = {
+//     series: ApexAxisChartSeries;
+//     chart: ApexChart;
+//     fill: ApexFill;
+//     colors: String[];
+//     dataLabels: ApexDataLabels;
+//     plotOptions: ApexPlotOptions;
+//     xaxis: ApexXAxis;
+// };
 
 @Component({
     selector: 'admin-login-page',
@@ -29,10 +47,43 @@ export class LoginPage implements OnInit {
     public username: string = "";
     public password: string = "";
 
+    // @ViewChild("chart") public chart: ChartComponent;
+    // public chartOptions: Partial<ChartOptions>;
+
     constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog) {
         this.dialog = dialog;
         this.router = router;
         this.authenManager = authenManager;
+
+        // this.chartOptions = {
+        //     series: [
+        //         {
+        //             name: 'גוייס',
+        //             data: [12000],
+        //         },
+        //         {
+        //             name: 'התחייבויות',
+        //             data: [2465606],
+        //         },
+        //     ],
+        //     colors: ['rgb(0, 227, 150)', '#F6AD55'],
+        //     chart: {
+        //         type: 'bar',
+        //         stacked: true,
+        //         height: '150px',
+        //     },
+        //     plotOptions: {
+        //         bar: {
+        //             horizontal: true,
+        //         },
+        //     },
+        //     dataLabels: {
+        //         // enabled: true,
+        //     },
+        //     xaxis: {
+        //         categories: ['השלב השני'],
+        //     },
+        // };
     }
 
     public ngOnInit() {
@@ -52,9 +103,9 @@ export class LoginPage implements OnInit {
         }
         this.isLoading = true;
         setTimeout(() => {
-            this.authenManager.login(this.username, this.password).then((res) => {
+            this.authenManager.loginAdmin(this.username, this.password).then((res) => {
                 this.isLoading = false;
-                this.router.navigateByUrl("main/emergency")
+                this.router.navigateByUrl("main/dashboard")
             }).catch((err) => {
                 this.isLoading = false;
                 this.dialogWarning(err.error.message);

@@ -99,7 +99,7 @@ export class MainPage extends AbstractPage implements OnInit {
       }
     });
 
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(async (event: NavigationEnd) => {
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
         this.hidebar = this.authenManager.getHidebar();
         const url: string = decodeURI(this.router.url);
@@ -470,3 +470,4 @@ export * from './main.internal/KnowledgeCenter.component';
 export * from './main.internal/VotePage.component';
 export * from './main.internal/MenuList.component';
 export * from './main.internal/ProcessingPage.component';
+export * from './main.internal/TodayDashboardPage.component';

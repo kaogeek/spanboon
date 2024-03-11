@@ -93,7 +93,7 @@
             <div class="swiper-container" [swiper]="configSlider1" [(index)]="index">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide" *ngFor="let itemObjective of itemData; let index = index">
-                        <div class="wrapper-doing" (click)="clickObjective(itemObjective);">
+                        <div class="wrapper-doing" role="button" (click)="clickObjective(itemObjective);">
                             <display-image [isGlightbox]="false" [class]="'image-tag'" [isPreload]="'true'"
                                 [isLoaded]="itemObjective.isLoaded"
                                 [base64]="!!itemObjective?.iconSignURL ? itemObjective.iconSignURL : itemObjective.iconBase64">
