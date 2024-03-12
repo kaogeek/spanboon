@@ -663,10 +663,8 @@ export class MainPageController {
 
         const momentCurrently: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         const monthRange: Date[] = DateTimeUtil.generateInMonth(new Date(), 30);
-        console.log('monthRange',monthRange);
         let currentLy = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: momentCurrently[1] });
         if(currentLy === undefined) {
-            console.log('pass1');
             currentLy = await this.kaokaiTodaySnapShotService.aggregate(
                 [
                     {
@@ -703,25 +701,24 @@ export class MainPageController {
                 }
             ]
         );
-
+        const atMoment = await this.parseKaokaiTodayRangeDays(currentLy);
         // console.log('kaikaoSnapShot',kaikaoSnapShot);
         const result:any = {
-            'today':[],
+            'today':atMoment.shift(),
             'todayPast30days':[],
             'popularNews': []
         };
-        result['today'].push(currentLy);
 
         if(kaikaoSnapShot.length>0) {
             for(const content of kaikaoSnapShot) {
                 const today = await this.parseKaokaiTodayRangeDays(content);
-                result['todayPast30days'].push(today);
+                result['todayPast30days'].push(today.shift());
             }
         }
         if(popularNews.length>0){
             for(const content of popularNews){
                 const today = await this.parseKaokaiTodayRangeDays(content);
-                result['popularNews'].push(today);
+                result['popularNews'].push(today.shift());
             }
         }
         // console.log('checkCreate',checkCreate);
