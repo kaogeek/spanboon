@@ -375,7 +375,7 @@
                         <div class="footer-bar">
                             <div class="nav-bar-tab">
                                 <nav mat-tab-nav-bar [disableRipple]="true">
-                                    <a mat-tab-link *ngFor="let link of links"
+                                    <a mat-tab-link *ngFor="let link of links" role="button"
                                         (click)="getTypeSearch(link); activeLink = link.label"
                                         [active]="activeLink == link.label">
                                         {{link.label}}
@@ -510,7 +510,8 @@
                                                         </mat-option>
                                                     </ng-container>
                                                 </mat-autocomplete>
-                                                <span class="material-icons autocomp-close" (click)="resetAutocomp()">
+                                                <span class="material-icons autocomp-close" role="button"
+                                                    (click)="resetAutocomp()">
                                                     close
                                                 </span>
                                             </div>
@@ -548,7 +549,8 @@
 
                                                     </div>
                                                 </div>
-                                                <span class="material-icons" (click)="removeCard(item,index)">
+                                                <span class="material-icons" role="button"
+                                                    (click)="removeCard(item,index)">
                                                     close
                                                 </span>
                                             </div>

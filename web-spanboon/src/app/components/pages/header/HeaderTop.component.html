@@ -6,15 +6,15 @@
 -->
 
 <div class="header-top" #headerTop>
-    <a class="wrapper-logo" href="[routerLink]" [routerLink]="'/home'" #menuLeft (click)="clickMenu()">
+    <a class="wrapper-logo" role="banner" href="[routerLink]" [routerLink]="'/home'" #menuLeft (click)="clickMenu()">
         <img src="../../../../assets/img/logo/mfp.svg" alt="">
         <!-- <img src="../../../../assets/img/pgs.png" width="40"> -->
         <span class="name-spanboon">{{PLATFORM_NAME_TH}}</span>
     </a>
     <div class="middle" [ngStyle]="{'height': headerTop.offsetHeight + 'px'}">
         <div class="wrapper-home" id="menuCenter" #menuCenter>
-            <a class="icon" href="[routerLink]" [routerLink]="'/home'" [routerLinkActive]="['active-link']"
-                (click)="clickMenu()">
+            <a class="icon" href="[routerLink]" role="button" [routerLink]="'/home'"
+                [routerLinkActive]="['active-link']" (click)="clickMenu()">
                 <!-- <svg class="icon-home" height="512pt" viewBox="0 0 512 512" width="512pt"
                     xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -36,8 +36,8 @@
                     ก้าวไกลหน้าหนึ่ง
                 </div>
             </a>
-            <a class="icon" *ngIf="isLogin()" href="[routerLink]" [routerLink]="checkUniqueId()" (click)="clickMenu()"
-                [routerLinkActive]="['active-link']" #profile>
+            <a class="icon" *ngIf="isLogin()" href="[routerLink]" role="button" [routerLink]="checkUniqueId()"
+                (click)="clickMenu()" [routerLinkActive]="['active-link']" #profile>
                 <svg class="icon-home" id="social-media" xmlns="http://www.w3.org/2000/svg" width="19.257"
                     height="19.257" viewBox="0 0 19.257 19.257">
                     <g id="Group_403" data-name="Group 403" transform="translate(0 13.855)">
@@ -63,8 +63,8 @@
                     ไทมไลน์
                 </div>
             </a>
-            <a class="icon" href="[routerLink]" [routerLink]="'/recommended'" [routerLinkActive]="['active-link']"
-                (click)="clickMenu()">
+            <a class="icon" href="[routerLink]" [routerLink]="'/recommended'" role="button"
+                [routerLinkActive]="['active-link']" (click)="clickMenu()">
                 <svg class="icon-recommend" xmlns="http://www.w3.org/2000/svg" width="31.551" height="22.29"
                     viewBox="0 0 31.551 22.29">
                     <g id="Group_711" data-name="Group 711" transform="translate(-1533.751 -2071.08)">
@@ -110,7 +110,7 @@
                 </g>
             </svg>
         </div> -->
-        <header-search class="menu-search list-right-menu" (aboutUs)="clickShowSearch($event)"
+        <header-search class="menu-search list-right-menu" role="button" (aboutUs)="clickShowSearch($event)"
             [color]="'#f47732'"></header-search>
         <!-- <a class="menu-chat list-right-menu" (click)="showAlertDevelopDialog()" *ngIf="isLogin()">
             <svg xmlns="http://www.w3.org/2000/svg" width="68.545" height="69.657" viewBox="0 0 68.545 69.657">

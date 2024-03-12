@@ -262,7 +262,7 @@
                                 <div class="header-looking-for">
                                     ข้อมูลเพจ
                                 </div>
-                                <span class="material-icons" (click)="redirectSetting()"
+                                <span class="material-icons" role="button" (click)="redirectSetting()"
                                     *ngIf="isLogin() && isNotAccess"> edit </span>
                             </div>
                             <div class="wrapper-body-doing" style="height: auto;"
@@ -647,7 +647,7 @@
                         <div *ngIf="!showLoading" class="wrapper-feed-menu">
                             <ng-container *ngIf="CheckPost === true; else elseTemplateTabs">
                                 <nav *ngIf="!isPost" mat-tab-nav-bar [attr.mat-align-tabs]="(Tab) ? 'center' : 'left'">
-                                    <a mat-tab-link *ngFor="let link of links" [disableRipple]="'true'"
+                                    <a mat-tab-link *ngFor="let link of links" [disableRipple]="'true'" role="button"
                                         (click)="linkDataType(link);  activeLink = link.label"
                                         [active]="activeLink == link.label">{{link.label}}
                                     </a>

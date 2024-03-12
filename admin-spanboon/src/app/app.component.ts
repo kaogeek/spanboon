@@ -7,7 +7,10 @@
 
 import { Component } from '@angular/core';
 import { AuthenManager } from './services/AuthenManager.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { LoadingService } from './services/loading/loading.service';
+import { filter, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 
 @Component({
@@ -16,17 +19,34 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-
+  private destroy = new Subject<void>();
   private authenManager: AuthenManager;
   private router: Router;
-  constructor(authenManager: AuthenManager, router: Router) {
+
+  public isLoading: boolean = false;
+  constructor(authenManager: AuthenManager, router: Router,
+    public loadingService: LoadingService) {
     this.router = router;
     this.authenManager = authenManager;
-   }
+
+    this.router.events
+      .pipe(filter((event: any) => event instanceof NavigationEnd), takeUntil(this.destroy))
+      .subscribe((event: NavigationEnd) => {
+        this.isLoading = true;
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 1000);
+      });
+  }
 
   public ngOnInit(): void {
-    if(!this.authenManager.getUserToken()) {
+    if (!this.authenManager.getUserToken()) {
       this.router.navigateByUrl("login");
     }
+  }
+
+  public ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
   }
 }

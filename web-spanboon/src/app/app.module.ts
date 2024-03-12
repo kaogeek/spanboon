@@ -44,6 +44,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { CustomHeaderDatePicker, HeaderDate } from './components/shares/CustomHeaderDatePicker.component';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 initializeApp(environment.firebase);
 
@@ -124,6 +125,7 @@ import {
   PolicyV2,
   TermsOfServiceV1,
   TermsOfServiceV2,
+  TodayDashboardPage,
   KnowledgeCenter,
   // timeline 
   ObjectiveTimeline,
@@ -290,11 +292,14 @@ import {
   UserSubjectFacade,
   BindingMemberFacade,
   VoteEventFacade,
+  StatisticsFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
 import { SatDatepickerModule, SatNativeDateModule } from 'saturn-datepicker';
 import { LOCALE_ID } from '@angular/core';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { DateYearPicker } from './components/shares/DateYearPicker.component';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -350,6 +355,7 @@ const COMPONENTS: any[] = [
   PolicyV2,
   TermsOfServiceV1,
   TermsOfServiceV2,
+  TodayDashboardPage,
   KnowledgeCenter,
   SettingsInfo,
   SettingsAdminRoles,
@@ -367,6 +373,7 @@ const COMPONENTS: any[] = [
   Redirect,
   PolicyPage,
   TermsOfServicePage,
+  DateYearPicker,
   // timeline 
   ObjectiveTimeline,
   EmergencyEventTimeline,
@@ -558,6 +565,7 @@ const SERVICE_CLASSES: any[] = [
   BindingMemberFacade,
   UserEngagementFacade,
   VoteEventFacade,
+  StatisticsFacade,
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig
@@ -635,6 +643,9 @@ registerLocaleData(localeFr, 'th-TH', localeFrExtra);
     NgxMatDatetimePickerModule,
     NgxMatNativeDateModule,
     NgxMatTimepickerModule,
+    // HighchartsChartModule,
+    NgApexchartsModule,
+    MatMomentDateModule,
     DeviceDetectorModule.forRoot(),
     ToastrModule.forRoot({
       maxOpened: 10,

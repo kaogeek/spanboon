@@ -574,3 +574,33 @@ input:focus {
   width: 500pt !important;
   max-width: 500pt !important;
 }
+
+.div-preload {
+  background: $bg-grey;
+  height: 8pt;
+  border-radius: 10pt;
+  display: inline-block;
+  animation: cardani 5s infinite;
+
+  @keyframes cardani {
+    0% {
+      opacity: 1;
+    }
+
+    25% {
+      opacity: 0.3;
+    }
+
+    50% {
+      opacity: 1;
+    }
+
+    75% {
+      opacity: 0.3;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+}

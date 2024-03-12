@@ -3,7 +3,8 @@
         <div class="menu-wrapper">
             <p>Vote</p>
             <ng-container *ngFor="let item of menuList">
-                <div *ngIf="item.isLogin === isLogin()" class="menu-box" [class.active]="activeMenu === item.status"
+                <div *ngIf="item.isLogin === isLogin()" role="button" class="menu-box"
+                    [class.active]="activeMenu === item.status"
                     [routerLink]="!!item.status ? ['', 'vote', item.status] : ['','vote']"
                     (click)="activeMenu = item.status;changeMenu(activeMenu)">
                     <div class="icon">
@@ -19,7 +20,8 @@
         [alwaysCallback]="true" (scrolled)="onScrollDown($event)">
         <div class="menu-wrapper" *ngIf="!paramsKey" [ngStyle]="{'top': !isRes ? '59px' : '0'}">
             <ng-container *ngFor="let item of menuList">
-                <div *ngIf="item.isLogin === isLogin()" class="menu-box" [class.active]="activeMenu === item.status"
+                <div *ngIf="item.isLogin === isLogin()" role="button" class="menu-box"
+                    [class.active]="activeMenu === item.status"
                     [routerLink]="!!item.status ? ['', 'vote', item.status] : ['','vote']"
                     (click)="activeMenu = item.status;changeMenu(activeMenu)">
                     <span [class.active]="activeMenu === item.status">{{item.name}}</span>
@@ -28,7 +30,7 @@
         </div>
         <div class="content-wrapper">
             <div class="search-header">
-                <button mat-icon-button class="button-back" *ngIf="!!paramsKey" [routerLink]="'/vote'"
+                <button mat-icon-button class="button-back" *ngIf="!!paramsKey" role="button" [routerLink]="'/vote'"
                     (click)="setValueChangeMenu()">
                     <mat-icon>arrow_back</mat-icon>
                 </button>
@@ -39,7 +41,8 @@
                     <input #inputSearch id="inputSearch" type="search" [placeholder]="'ค้นหาโหวต'">
                     <!-- (keyup.enter)="searchValue($event.target.value)" -->
                 </div>
-                <div class="create-vote" *ngIf="(ranking === 1) || isAllowCreate" (click)="openDialogCreateVote()">
+                <div class="create-vote" *ngIf="(ranking === 1) || isAllowCreate" role="button"
+                    (click)="openDialogCreateVote()">
                     <img src="../../../../assets/img/icons/votepage/create.svg">
                     <span>สร้างโหวต</span>
                 </div>
@@ -49,7 +52,7 @@
                 <ng-container *ngIf="!!model && !!model.pin && model.pin.length > 0">
                     <div class="header-content">
                         <p>ปักหมุด</p>
-                        <span (click)="changeMenu('all',false,'ปักหมุด')">ดูทั้งหมด</span>
+                        <span (click)="changeMenu('all',false,'ปักหมุด')" role="button">ดูทั้งหมด</span>
                     </div>
                     <hr>
                     <div class="wrapper-content"
@@ -87,7 +90,7 @@
                 <ng-container *ngIf="!!model && !!model.closeDate && model.closeDate.length > 0">
                     <div class="header-content">
                         <p>ใกล้ปิดโหวต</p>
-                        <span (click)="changeMenu('all',false,'ใกล้ปิดโหวต')">ดูทั้งหมด</span>
+                        <span (click)="changeMenu('all',false,'ใกล้ปิดโหวต')" role="button">ดูทั้งหมด</span>
                     </div>
                     <hr>
                     <div class="wrapper-content"
@@ -106,7 +109,7 @@
                 <ng-container *ngIf="!!model && !!model.closetSupport && model.closetSupport.length > 0">
                     <div class="header-content">
                         <p>ใกล้ปิดล่ารายชื่อ</p>
-                        <span (click)="changeMenu('all',false,'ใกล้ปิดล่ารายชื่อ')">ดูทั้งหมด</span>
+                        <span (click)="changeMenu('all',false,'ใกล้ปิดล่ารายชื่อ')" role="button">ดูทั้งหมด</span>
                     </div>
                     <hr>
                     <div class="wrapper-content"
@@ -127,7 +130,7 @@
                         <ng-container *ngIf="item.votingEvent.length > 0">
                             <div class="header-content">
                                 <p>{{item._id}}</p>
-                                <span (click)="changeMenu('all',false,item._id)">ดูทั้งหมด</span>
+                                <span (click)="changeMenu('all',false,item._id)" role="button">ดูทั้งหมด</span>
                             </div>
                             <hr>
                             <div class="wrapper-content">
@@ -185,7 +188,7 @@
                     <ng-container *ngIf="!!voteData && !!voteData.myVote && voteData.myVote.length > 0">
                         <div class="header-content">
                             <p>โหวตที่ฉันสร้าง</p>
-                            <span (click)="changeMenu('own',false,'โหวตที่ฉันสร้าง')">ดูทั้งหมด</span>
+                            <span (click)="changeMenu('own',false,'โหวตที่ฉันสร้าง')" role="button">ดูทั้งหมด</span>
                         </div>
                         <hr>
                         <div class="wrapper-content">
@@ -201,8 +204,8 @@
                     <ng-container *ngIf="!!voteData && !!voteData.myVoterSupport && voteData.myVoterSupport.length > 0">
                         <div class="header-content">
                             <p>โหวตที่ฉันสร้างและเปิดล่ารายชื่ออยู่</p>
-                            <span
-                                (click)="changeMenu('own',false,'โหวตที่ฉันสร้างและเปิดล่ารายชื่ออยู่')">ดูทั้งหมด</span>
+                            <span (click)="changeMenu('own',false,'โหวตที่ฉันสร้างและเปิดล่ารายชื่ออยู่')"
+                                role="button">ดูทั้งหมด</span>
                         </div>
                         <hr>
                         <div class="wrapper-content">
@@ -218,7 +221,7 @@
                     <ng-container *ngIf="!!voteData && !!voteData.myVoted && voteData.myVoted.length > 0">
                         <div class="header-content">
                             <p>ที่ฉันเคยโหวต</p>
-                            <span (click)="changeMenu('own',false,'ที่ฉันเคยโหวต')">ดูทั้งหมด</span>
+                            <span (click)="changeMenu('own',false,'ที่ฉันเคยโหวต')" role="button">ดูทั้งหมด</span>
                         </div>
                         <hr>
                         <div class="wrapper-content">
@@ -236,7 +239,8 @@
                     <ng-container *ngIf="!!voteData && !!voteData.mySupported && voteData.mySupported.length > 0">
                         <div class="header-content">
                             <p>ที่ฉันลงชื่อให้การสนับสนุน</p>
-                            <span (click)="changeMenu('own',false,'ที่ฉันลงชื่อให้การสนับสนุน')">ดูทั้งหมด</span>
+                            <span (click)="changeMenu('own',false,'ที่ฉันลงชื่อให้การสนับสนุน')"
+                                role="button">ดูทั้งหมด</span>
                         </div>
                         <hr>
                         <div class="wrapper-content">
@@ -389,7 +393,7 @@
                         <ng-container *ngIf="item._id === paramsKey">
                             <div class="header-content">
                                 <p>{{item._id}}</p>
-                                <span (click)="changeMenu('all',false,item._id)">ดูทั้งหมด</span>
+                                <span (click)="changeMenu('all',false,item._id)" role="button">ดูทั้งหมด</span>
                             </div>
                             <hr>
                             <div class="wrapper-content">

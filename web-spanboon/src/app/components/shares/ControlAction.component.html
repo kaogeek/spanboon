@@ -7,7 +7,7 @@
 
 <div class="control-action" *ngIf="isAction">
     <div class="collis">
-        <div class="wrapper-action" *ngIf="isLike" (click)="postLike();"
+        <div class="wrapper-action" *ngIf="isLike" role="button" (click)="postLike();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count" [class.activate]="userLike"> {{like | shortNumber}} </span>
             <ng-container *ngIf="userLike; else elseNotLike">
@@ -40,7 +40,7 @@
             </svg> -->
             </ng-template>
         </div>
-        <div class="wrapper-action" *ngIf="isComment" (click)="postComment();"
+        <div class="wrapper-action" *ngIf="isComment" role="button" (click)="postComment();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count" [class.activate]="userComment"> {{comment | shortNumber }}</span>
             <ng-container *ngIf="userComment; else elseNotComment">
@@ -136,7 +136,7 @@
                 </mat-menu>
             </ng-template>
         </div> -->
-        <div class="wrapper-action" *ngIf="isShare" (click)="postShare()"
+        <div class="wrapper-action" *ngIf="isShare" role="button" (click)="postShare()"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count"> {{share | shortNumber }}</span>
 
