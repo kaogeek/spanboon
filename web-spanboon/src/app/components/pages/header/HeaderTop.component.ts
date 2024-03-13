@@ -80,6 +80,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   public isAbout: boolean = true;
   private activatedRoute: ActivatedRoute;
   public redirection: string;
+  public isBirthday: boolean = false;
   public accessTokenLink = '';
   //twitter
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
@@ -157,6 +158,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
     });
     this.checkLoginAndRedirection();
     this.reloadUserImage();
+    this._getBirthday();
     let doRunAccessToken = false;
     const fullURL = window.location.href;
     if (fullURL !== undefined && fullURL !== '') {
@@ -542,5 +544,28 @@ export class HeaderTop extends AbstractPage implements OnInit {
 
   public clickMenu(): void {
     this.dialog.closeAll();
+  }
+
+  public _getBirthday() {
+    let data = JSON.parse(localStorage.getItem('pageUser'));
+    const userBirthday = !!data.birthdate ? data.birthdate : null;
+    const dateToCheck = new Date();
+    if (this._isBirthday(userBirthday, dateToCheck)) {
+      this.isBirthday = true;
+    } else {
+      this.isBirthday = false;
+    }
+  }
+
+  private _isBirthday(userBirthday, dateToCheck) {
+    const birthday = new Date(userBirthday);
+    const date = new Date(dateToCheck);
+
+    const birthdayDay = birthday.getUTCDate();
+    const birthdayMonth = birthday.getUTCMonth() + 1;
+    const checkDay = date.getUTCDate();
+    const checkMonth = date.getUTCMonth() + 1;
+
+    return birthdayDay === checkDay && birthdayMonth === checkMonth;
   }
 }
