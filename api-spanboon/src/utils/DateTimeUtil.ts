@@ -40,6 +40,27 @@ export class DateTimeUtil {
         return result;
     }
 
+    public static generateInMonth(endDate: Date, days: number): Date[] {
+        const result = [];
+        if (endDate === undefined || endDate === null) {
+            return result;
+        }
+
+        if (days < 0) {
+            return result;
+        }
+
+        const subtractDay = (days !== undefined && days > 0) ? days - 1 : 0;
+
+        const startDateRange = moment(endDate).clone().utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(subtractDay, 'days').toDate();
+        const endDateRange = moment(endDate).clone().utcOffset(0).set({ hour: 24, minute: 0, second: 0, millisecond: 0 }).toDate();
+
+        result.push(DateTimeUtil.parseISOStringToDate(startDateRange.toISOString()));
+        result.push(DateTimeUtil.parseISOStringToDate(endDateRange.toISOString()));
+
+        return result;
+    }
+
     public static parseISOStringToDate(isoDateString: string): Date {
         const split: any = isoDateString.split(/\D+/);
         return new Date(split[0], --split[1], split[2], split[3], split[4], split[5], split[6]);

@@ -144,3 +144,6 @@ export const DEFAULT_MAX_VOTE_QUESTIONS = 10;
 export const MAX_VOTE_QUESTIONS = 'max.vote.questions';
 
 export const PRIVILEGES = 'privileges';
+
+export const DEFAULT_BIRTHDAY_NOTIFICATION_SYSTEM = 7;
+export const BIRTHDAY_NOTIFICATION_SYSTEM = 'birthday.notification.system';
