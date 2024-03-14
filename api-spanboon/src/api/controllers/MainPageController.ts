@@ -660,7 +660,7 @@ export class MainPageController {
         if (assetTodayDateGap) {
             assetTodayDate = parseInt(assetTodayDateGap.value, 10);
         }
-
+        const snapshotObjId = [];
         const momentCurrently: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         const monthRange: Date[] = DateTimeUtil.generateInMonth(new Date(), 30);
         let currentLy = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: momentCurrently[1] });
@@ -678,18 +678,38 @@ export class MainPageController {
                 ]
             );
             currentLy = currentLy.shift();
+            snapshotObjId.push(new ObjectID(currentLy._id));
         }
+        const atMoment = await this.parseKaokaiTodayRangeDays(currentLy);
+        snapshotObjId.push(new ObjectID(currentLy._id));
+
         const kaikaoSnapShot = await this.kaokaiTodaySnapShotService.aggregate(
             [
                 {
                     $match: {
+                        _id: {$nin:snapshotObjId},
                         endDateTime: { $gte: monthRange[0], $lte: monthRange[1] }
+                    }
+                },
+                {
+                    $sort:{
+                        endDateTime:-1
                     }
                 }
             ]
         );
+        if(kaikaoSnapShot.length >0){
+            for(const content of kaikaoSnapShot) {
+                snapshotObjId.push(new ObjectID(content._id));
+            }
+        }
         const popularNews = await this.kaokaiTodaySnapShotService.aggregate(
             [
+                {
+                    $match:{
+                        _id:{$nin:snapshotObjId}
+                    }
+                },
                 {
                     $sort:{
                         count:-1,
@@ -701,7 +721,7 @@ export class MainPageController {
                 }
             ]
         );
-        const atMoment = await this.parseKaokaiTodayRangeDays(currentLy);
+        
         // console.log('kaikaoSnapShot',kaikaoSnapShot);
         const result:any = {
             'today':atMoment.shift(),
@@ -4453,20 +4473,19 @@ export class MainPageController {
     private async parseKaokaiTodayRangeDays(data: any): Promise<any> {
         const result: any = [];
         let imageFilter = undefined;
-        const thaiDate = data.endDateTime.getTime();
+        // const thaiDate = data.endDateTime.getTime();
         const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
         const timeStamp = new Date(data.endDateTime.getTime() - oneDay).toLocaleDateString('th-TH', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
         });
-
+        // data: data.data,
         imageFilter = await this.parseKaokaiTodayPictureRange(data);
         const payload = {
             title: 'ก้าวไกลทูเดย์',
             image: imageFilter,
-            timeStamp: thaiDate,
-            data: data.data,
+            timeStamp: data.endDateTime,
             date: 'ฉบับวันที่ ' + '' + timeStamp,
         };
         result.push(payload);
