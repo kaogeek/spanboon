@@ -110,6 +110,7 @@
                 </g>
             </svg>
         </div> -->
+        <img *ngIf="isBirthday" style="width: 45px; margin-right: 5px;" src="../../../../assets/img/cake.gif" alt="">
         <header-search class="menu-search list-right-menu" role="button" (aboutUs)="clickShowSearch($event)"
             [color]="'#f47732'"></header-search>
         <!-- <a class="menu-chat list-right-menu" (click)="showAlertDevelopDialog()" *ngIf="isLogin()">
