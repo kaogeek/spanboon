@@ -4496,13 +4496,11 @@ export class MainPageController {
 
     private async parseKaokaiTodayPictureRange(data: any): Promise<any> {
         let image = undefined;
-        for (let i = 0; i < data.data.pageRoundRobin.contents.length; i++) {
-            image = data.data.pageRoundRobin.contents[i].coverPageSignUrl ? data.data.pageRoundRobin.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        if(data.data.pageRoundRobin.contents.length>0){
+            image = data.data.pageRoundRobin.contents[0].coverPageSignUrl ? data.data.pageRoundRobin.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
         }
         if (image === undefined) {
-            for (let i = 0; i < data.data.majorTrend.contents.length; i++) {
-                image = data.data.majorTrend.contents[i].coverPageSignUrl ? data.data.majorTrend.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
-            }
+            image = data.data.majorTrend.contents[0].coverPageSignUrl ? data.data.majorTrend.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
         }
         return image;
     }
