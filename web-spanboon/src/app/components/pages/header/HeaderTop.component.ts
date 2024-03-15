@@ -158,7 +158,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
     });
     this.checkLoginAndRedirection();
     this.reloadUserImage();
-    this._getBirthday();
+    if (this.isLogin()) this._getBirthday();
     let doRunAccessToken = false;
     const fullURL = window.location.href;
     if (fullURL !== undefined && fullURL !== '') {
