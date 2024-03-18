@@ -660,9 +660,10 @@ export class MainPageController {
         if (assetTodayDateGap) {
             assetTodayDate = parseInt(assetTodayDateGap.value, 10);
         }
+        const timeStamp:number = 24 * 60 * 60 * 1000;
         const snapshotObjId = [];
         const momentCurrently: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
-        const monthRange: Date[] = DateTimeUtil.generateInMonth(new Date(), 30);
+        const todayTimeStamp = new Date();
         let currentLy = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: momentCurrently[1] });
         if(currentLy === undefined) {
             currentLy = await this.kaokaiTodaySnapShotService.aggregate(
@@ -682,13 +683,34 @@ export class MainPageController {
         }
         const atMoment = await this.parseKaokaiTodayRangeDays(currentLy);
         snapshotObjId.push(new ObjectID(currentLy._id));
-
+        const kaikaoSnapShotSevenDays = await this.kaokaiTodaySnapShotService.aggregate(
+            [
+                {
+                    $match: {
+                        _id: {$nin:snapshotObjId},
+                        endDateTime: { 
+                            $gte: new Date(todayTimeStamp.getTime() - (timeStamp*7)), 
+                            $lte: new Date(todayTimeStamp.getTime() - timeStamp) }
+                    }
+                },
+                {
+                    $sort:{
+                        endDateTime:-1
+                    }
+                }
+            ]
+        );
+        if(kaikaoSnapShotSevenDays.length >0){
+            for(const content of kaikaoSnapShotSevenDays) {
+                snapshotObjId.push(new ObjectID(content._id));
+            }
+        }
         const kaikaoSnapShot = await this.kaokaiTodaySnapShotService.aggregate(
             [
                 {
                     $match: {
                         _id: {$nin:snapshotObjId},
-                        endDateTime: { $gte: monthRange[0], $lte: monthRange[1] }
+                        endDateTime: { $gte: new Date(todayTimeStamp.getTime() - (timeStamp*37)), $lte: new Date(todayTimeStamp.getTime() - (timeStamp*7)) }
                     }
                 },
                 {
@@ -725,9 +747,17 @@ export class MainPageController {
         // console.log('kaikaoSnapShot',kaikaoSnapShot);
         const result:any = {
             'today':atMoment.shift(),
+            'todayPost7Days': [],
             'todayPast30days':[],
             'popularNews': []
         };
+
+        if(kaikaoSnapShotSevenDays.length >0){
+            for(const content of kaikaoSnapShotSevenDays) {
+                const today = await this.parseKaokaiTodayRangeDays(content);
+                result['todayPost7Days'].push(today.shift());
+            }
+        }
 
         if(kaikaoSnapShot.length>0) {
             for(const content of kaikaoSnapShot) {

@@ -392,6 +392,20 @@ export class DashboardPage extends AbstractPage implements OnInit {
                 this.data = res;
                 this.totalMFP = res.Total_MFP && res.Total_MFP !== 0 ? res.Total_MFP : this.totalMFP;
                 this.totalUser = res.Total_users && res.Total_MFP !== 0 ? res.Total_users : this.totalUser;
+                if (!!res || res.length > 0) {
+                    if (res.province.length <= 6) {
+                        const sortedData = res.province.sort((a, b) => b.count - a.count);
+                        this.chartPie.series = sortedData.map((item) => item.count);
+                        this.chartPie.labels = sortedData.map((item) => item._id);
+                    } else {
+                        const sortedData = res.province.sort((a, b) => b.count - a.count);
+                        const result = sortedData.slice(0, 6);
+                        const sumCount = sortedData.slice(6).reduce((sum, item) => sum + item.count, 0);
+                        result.push({ "count": sortedData[6].count, "_id": "อื่นๆ" });
+                        this.chartPie.series = result.map((item) => item.count);
+                        this.chartPie.labels = result.map((item) => item._id);
+                    }
+                }
             }
         }).catch((err) => {
             if (err) { this.isLoading = false; }
@@ -408,26 +422,18 @@ export class DashboardPage extends AbstractPage implements OnInit {
                 this.dataMFP = res;
                 this.listPage = res.followerPage.data;
                 if (!!res || res.length > 0) {
-                    const sortedData = res.mfpUsers.data.sort((a, b) => b.count - a.count);
-                    const result = sortedData.slice(0, 6);
-                    const sumCount = sortedData.slice(6).reduce((sum, item) => sum + item.count, 0);
-                    result.push({ "count": sortedData[6].count, "_id": "อื่นๆ" });
-                    this.chartPieMFP.series = result.map((item) => item.count);
-                    this.chartPieMFP.labels = result.map((item) => item._id);
-                }
-                if (!!this.data || this.data.length > 0) {
-                    if (this.data.province.length <= 6) {
-                        const sortedData = this.data.province.sort((a, b) => b.count - a.count);
-                        this.chartPie.series = sortedData.map((item) => item.count);
-                        this.chartPie.labels = sortedData.map((item) => item._id);
+                    if (res.mfpUsers.data.length === 0) {
+                        this.chartPieMFP.series = [1];
+                        this.chartPieMFP.labels = ['ไม่มีข้อมูล'];
                     } else {
-                        const sortedData = this.data.province.sort((a, b) => b.count - a.count);
+                        const sortedData = res.mfpUsers.data.sort((a, b) => b.count - a.count);
                         const result = sortedData.slice(0, 6);
                         const sumCount = sortedData.slice(6).reduce((sum, item) => sum + item.count, 0);
                         result.push({ "count": sortedData[6].count, "_id": "อื่นๆ" });
-                        this.chartPie.series = result.map((item) => item.count);
-                        this.chartPie.labels = result.map((item) => item._id);
+                        this.chartPieMFP.series = result.map((item) => item.count);
+                        this.chartPieMFP.labels = result.map((item) => item._id);
                     }
+
                     this.chartOptions.series = [
                         {
                             name: "จำนวน",
