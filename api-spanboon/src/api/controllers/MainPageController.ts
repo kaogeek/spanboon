@@ -660,9 +660,10 @@ export class MainPageController {
         if (assetTodayDateGap) {
             assetTodayDate = parseInt(assetTodayDateGap.value, 10);
         }
-
+        const timeStamp:number = 24 * 60 * 60 * 1000;
+        const snapshotObjId = [];
         const momentCurrently: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
-        const monthRange: Date[] = DateTimeUtil.generateInMonth(new Date(), 30);
+        const todayTimeStamp = new Date();
         let currentLy = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: momentCurrently[1] });
         if(currentLy === undefined) {
             currentLy = await this.kaokaiTodaySnapShotService.aggregate(
@@ -678,18 +679,59 @@ export class MainPageController {
                 ]
             );
             currentLy = currentLy.shift();
+            snapshotObjId.push(new ObjectID(currentLy._id));
+        }
+        const atMoment = await this.parseKaokaiTodayRangeDays(currentLy);
+        snapshotObjId.push(new ObjectID(currentLy._id));
+        const kaikaoSnapShotSevenDays = await this.kaokaiTodaySnapShotService.aggregate(
+            [
+                {
+                    $match: {
+                        _id: {$nin:snapshotObjId},
+                        endDateTime: { 
+                            $gte: new Date(todayTimeStamp.getTime() - (timeStamp*7)), 
+                            $lte: new Date(todayTimeStamp.getTime() - timeStamp) }
+                    }
+                },
+                {
+                    $sort:{
+                        endDateTime:-1
+                    }
+                }
+            ]
+        );
+        if(kaikaoSnapShotSevenDays.length >0){
+            for(const content of kaikaoSnapShotSevenDays) {
+                snapshotObjId.push(new ObjectID(content._id));
+            }
         }
         const kaikaoSnapShot = await this.kaokaiTodaySnapShotService.aggregate(
             [
                 {
                     $match: {
-                        endDateTime: { $gte: monthRange[0], $lte: monthRange[1] }
+                        _id: {$nin:snapshotObjId},
+                        endDateTime: { $gte: new Date(todayTimeStamp.getTime() - (timeStamp*37)), $lte: new Date(todayTimeStamp.getTime() - (timeStamp*7)) }
+                    }
+                },
+                {
+                    $sort:{
+                        endDateTime:-1
                     }
                 }
             ]
         );
+        if(kaikaoSnapShot.length >0){
+            for(const content of kaikaoSnapShot) {
+                snapshotObjId.push(new ObjectID(content._id));
+            }
+        }
         const popularNews = await this.kaokaiTodaySnapShotService.aggregate(
             [
+                {
+                    $match:{
+                        _id:{$nin:snapshotObjId}
+                    }
+                },
                 {
                     $sort:{
                         count:-1,
@@ -701,13 +743,21 @@ export class MainPageController {
                 }
             ]
         );
-        const atMoment = await this.parseKaokaiTodayRangeDays(currentLy);
+        
         // console.log('kaikaoSnapShot',kaikaoSnapShot);
         const result:any = {
             'today':atMoment.shift(),
+            'todayPost7Days': [],
             'todayPast30days':[],
             'popularNews': []
         };
+
+        if(kaikaoSnapShotSevenDays.length >0){
+            for(const content of kaikaoSnapShotSevenDays) {
+                const today = await this.parseKaokaiTodayRangeDays(content);
+                result['todayPost7Days'].push(today.shift());
+            }
+        }
 
         if(kaikaoSnapShot.length>0) {
             for(const content of kaikaoSnapShot) {
@@ -4453,20 +4503,19 @@ export class MainPageController {
     private async parseKaokaiTodayRangeDays(data: any): Promise<any> {
         const result: any = [];
         let imageFilter = undefined;
-        const thaiDate = data.endDateTime.getTime();
+        // const thaiDate = data.endDateTime.getTime();
         const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
         const timeStamp = new Date(data.endDateTime.getTime() - oneDay).toLocaleDateString('th-TH', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
         });
-
+        // data: data.data,
         imageFilter = await this.parseKaokaiTodayPictureRange(data);
         const payload = {
             title: 'ก้าวไกลทูเดย์',
             image: imageFilter,
-            timeStamp: thaiDate,
-            data: data.data,
+            timeStamp: data.endDateTime,
             date: 'ฉบับวันที่ ' + '' + timeStamp,
         };
         result.push(payload);
@@ -4477,13 +4526,11 @@ export class MainPageController {
 
     private async parseKaokaiTodayPictureRange(data: any): Promise<any> {
         let image = undefined;
-        for (let i = 0; i < data.data.pageRoundRobin.contents.length; i++) {
-            image = data.data.pageRoundRobin.contents[i].coverPageSignUrl ? data.data.pageRoundRobin.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        if(data.data.pageRoundRobin.contents.length>0){
+            image = data.data.pageRoundRobin.contents[0].coverPageSignUrl ? data.data.pageRoundRobin.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
         }
         if (image === undefined) {
-            for (let i = 0; i < data.data.majorTrend.contents.length; i++) {
-                image = data.data.majorTrend.contents[i].coverPageSignUrl ? data.data.majorTrend.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
-            }
+            image = data.data.majorTrend.contents[0].coverPageSignUrl ? data.data.majorTrend.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
         }
         return image;
     }
