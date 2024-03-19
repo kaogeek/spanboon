@@ -84,6 +84,12 @@
                     <apx-chart [series]="chartPie.series" [chart]="chartPie.chart" [labels]="chartPie.labels"
                         [responsive]="chartPie.responsive" [legend]="chartPie.legend"></apx-chart>
                 </div>
+                <div class="chart" [ngStyle]="{'grid-row': '2'}">
+                    <apx-chart [series]="chartBar.series" [chart]="chartBar.chart" [dataLabels]="chartBar.dataLabels"
+                        [stroke]="chartBar.stroke" [colors]="chartBar.colors" [title]="chartBar.title"
+                        [subtitle]="chartBar.subtitle" [plotOptions]="chartBar.plotOptions" [yaxis]="chartBar.yaxis"
+                        [xaxis]="chartBar.xaxis" [tooltip]="chartBar.tooltip"></apx-chart>
+                </div>
             </div>
         </ng-container>
         <ng-container *ngIf="activeMenu === 'leaderboard'">

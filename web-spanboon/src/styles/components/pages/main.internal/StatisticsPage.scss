@@ -116,18 +116,14 @@
       padding: 25px;
       gap: 14px;
 
-      &.mfp {
-        grid-template-columns: 1fr 400px;
-      }
-
       @media (max-width: $large) {
         grid-template-columns: 1fr !important;
         margin-top: 10pt;
         padding: 6px;
+        gap: 40px;
       }
 
       > .chart {
-        border: 1px solid rgba(0, 0, 0, 0.4);
         // width: 400px;
         // height: 400px;
         box-shadow: 3px 5px 10px -1px rgba(0, 0, 0, 0.4);
@@ -141,7 +137,8 @@
         }
 
         @media (max-width: $large) {
-          grid-column: 1 !important;
+          grid-column: unset !important;
+          grid-row: unset !important;
         }
       }
 
