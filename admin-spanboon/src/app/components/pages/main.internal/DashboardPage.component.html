@@ -38,7 +38,8 @@
     </div>
     <div class="wrapper-dashboard">
         <div class="chart">
-            <span [attr.aria-label]="'สมาชิกแต่ละจังหวัดบนแพลตฟอร์ม'">สมาชิกแต่ละจังหวัดบนแพลตฟอร์มในปี {{!!data &&
+            <span [attr.aria-label]="'ผู้ใช้งานแต่ละจังหวัดบนแพลตฟอร์ม'">ผู้ใช้งานแต่ละจังหวัดบนแพลตฟอร์มในปี {{!!data
+                &&
                 !!data.Year ? data.Year : 2024}}</span>
             <apx-chart [series]="chartPie.series" [chart]="chartPie.chart" [labels]="chartPie.labels"
                 [responsive]="chartPie.responsive" [legend]="chartPie.legend"></apx-chart>

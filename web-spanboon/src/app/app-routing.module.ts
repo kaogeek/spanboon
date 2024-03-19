@@ -29,6 +29,7 @@ import {
 import { TestComponent } from './components/TestComponent.component';
 import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
 import { DirtyCheckGuard } from './dirty-check.guard';
+import { HomeSnapshotCategory } from './components/pages/main.internal/HomeSnapshotCategory.component';
 
 export const APP_ROUTES: Routes = [
   {
@@ -85,6 +86,10 @@ export const APP_ROUTES: Routes = [
       {
         path: HomePageV3.PAGE_NAME,
         component: HomePageV3,
+      },
+      {
+        path: HomePageV3.PAGE_NAME + "/" + HomeSnapshotCategory.PAGE_NAME,
+        component: HomeSnapshotCategory,
       },
       {
         path: ProfilePage.PAGE_NAME + "/:id",

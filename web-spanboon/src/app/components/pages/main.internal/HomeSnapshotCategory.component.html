@@ -1,0 +1,64 @@
+<div class="home-snapshot-category">
+    <div class="wrapper-content" *ngIf="!!data">
+        <section class="section-1">
+            <div class="content">
+                <span class="title">ก้าวไกลหน้าหนึ่ง</span>
+                <div class="wrapper-box">
+                    <div class="wrapper-image" (click)="clickToSnapshot(data.today.timeStamp)">
+                        <span>{{data.today.title}}</span>
+                        <img [src]="data.today.image" alt="">
+                        <span>{{data.today.date}}</span>
+                        <div class="background"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section-2">
+            <div class="content">
+                <span class="title">7 วันที่ผ่านมา</span>
+                <div class="wrapper-box past">
+                    <ng-container *ngFor="let item of data.todayPost7Days">
+                        <div class="wrapper-image" (click)="clickToSnapshot(item.timeStamp)">
+                            <span>{{item.title}}</span>
+                            <span>{{item.date}}</span>
+                            <img class="past-content" [src]="item.image" alt="">
+                            <div class="background"></div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </section>
+        <section class="section-3">
+            <div class="content">
+                <span class="title">30 วันที่ผ่านมา</span>
+                <div class="wrapper-box past">
+                    <ng-container *ngFor="let item of data.todayPast30days">
+                        <div class="wrapper-image" (click)="clickToSnapshot(item.timeStamp)">
+                            <span>{{item.title}}</span>
+                            <span>{{item.date}}</span>
+                            <img class="past-content" [src]="item.image" alt="">
+                            <div class="background"></div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </section>
+        <section class="section-4">
+            <div class="content">
+                <span class="title">ยอดฮิต</span>
+                <div class="wrapper-box past">
+                    <ng-container *ngFor="let item of data.popularNews">
+                        <div class="wrapper-image" (click)="clickToSnapshot(item.timeStamp)">
+                            <span>{{item.title}}</span>
+                            <span>{{item.date}}</span>
+                            <img class="past-content" [src]="item.image" alt="">
+                            <div class="background"></div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<loading *ngIf="isLoading"></loading>

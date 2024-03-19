@@ -151,6 +151,17 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
+  public getContentCategory(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/content/web';
+      this.http.get(url).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public readContent(userId: string, postId: any[], mode?: string, token?: string): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/is/read';
