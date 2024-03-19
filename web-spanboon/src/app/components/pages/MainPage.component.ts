@@ -471,3 +471,4 @@ export * from './main.internal/VotePage.component';
 export * from './main.internal/MenuList.component';
 export * from './main.internal/ProcessingPage.component';
 export * from './main.internal/TodayDashboardPage.component';
+export * from './main.internal/HomeSnapshotCategory.component';

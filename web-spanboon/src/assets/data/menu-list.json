@@ -12,6 +12,12 @@
     "active": true
   },
   {
+    "image": "../../assets/img/menu-list/vote.svg",
+    "title": "MFP Point",
+    "link": "/point",
+    "active": false
+  },
+  {
     "image": "../../assets/img/menu-list/survey.svg",
     "title": "แดชบอร์ด",
     "link": "/dashboard",

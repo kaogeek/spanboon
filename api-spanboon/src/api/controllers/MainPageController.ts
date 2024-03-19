@@ -660,21 +660,21 @@ export class MainPageController {
         if (assetTodayDateGap) {
             assetTodayDate = parseInt(assetTodayDateGap.value, 10);
         }
-        const timeStamp:number = 24 * 60 * 60 * 1000;
+        const timeStamp: number = 24 * 60 * 60 * 1000;
         const snapshotObjId = [];
         const momentCurrently: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         const todayTimeStamp = new Date();
         let currentLy = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: momentCurrently[1] });
-        if(currentLy === undefined) {
+        if (currentLy === undefined) {
             currentLy = await this.kaokaiTodaySnapShotService.aggregate(
                 [
                     {
-                        $sort:{
-                            endDateTime:-1
+                        $sort: {
+                            endDateTime: -1
                         }
                     },
                     {
-                        $limit:1
+                        $limit: 1
                     }
                 ]
             );
@@ -687,21 +687,22 @@ export class MainPageController {
             [
                 {
                     $match: {
-                        _id: {$nin:snapshotObjId},
-                        endDateTime: { 
-                            $gte: new Date(todayTimeStamp.getTime() - (timeStamp*7)), 
-                            $lte: new Date(todayTimeStamp.getTime() - timeStamp) }
+                        _id: { $nin: snapshotObjId },
+                        endDateTime: {
+                            $gte: new Date(todayTimeStamp.getTime() - (timeStamp * 7)),
+                            $lte: new Date(todayTimeStamp.getTime() - timeStamp)
+                        }
                     }
                 },
                 {
-                    $sort:{
-                        endDateTime:-1
+                    $sort: {
+                        endDateTime: -1
                     }
                 }
             ]
         );
-        if(kaikaoSnapShotSevenDays.length >0){
-            for(const content of kaikaoSnapShotSevenDays) {
+        if (kaikaoSnapShotSevenDays.length > 0) {
+            for (const content of kaikaoSnapShotSevenDays) {
                 snapshotObjId.push(new ObjectID(content._id));
             }
         }
@@ -709,33 +710,33 @@ export class MainPageController {
             [
                 {
                     $match: {
-                        _id: {$nin:snapshotObjId},
-                        endDateTime: { $gte: new Date(todayTimeStamp.getTime() - (timeStamp*37)), $lte: new Date(todayTimeStamp.getTime() - (timeStamp*7)) }
+                        _id: { $nin: snapshotObjId },
+                        endDateTime: { $gte: new Date(todayTimeStamp.getTime() - (timeStamp * 37)), $lte: new Date(todayTimeStamp.getTime() - (timeStamp * 7)) }
                     }
                 },
                 {
-                    $sort:{
-                        endDateTime:-1
+                    $sort: {
+                        endDateTime: -1
                     }
                 }
             ]
         );
-        if(kaikaoSnapShot.length >0){
-            for(const content of kaikaoSnapShot) {
+        if (kaikaoSnapShot.length > 0) {
+            for (const content of kaikaoSnapShot) {
                 snapshotObjId.push(new ObjectID(content._id));
             }
         }
         const popularNews = await this.kaokaiTodaySnapShotService.aggregate(
             [
                 {
-                    $match:{
-                        _id:{$nin:snapshotObjId}
+                    $match: {
+                        _id: { $nin: snapshotObjId }
                     }
                 },
                 {
-                    $sort:{
-                        count:-1,
-                        sumCount:-1
+                    $sort: {
+                        count: -1,
+                        sumCount: -1
                     }
                 },
                 {
@@ -743,30 +744,154 @@ export class MainPageController {
                 }
             ]
         );
-        
+
         // console.log('kaikaoSnapShot',kaikaoSnapShot);
-        const result:any = {
-            'today':atMoment.shift(),
+        const result: any = {
+            'today': atMoment.shift(),
             'todayPost7Days': [],
-            'todayPast30days':[],
+            'todayPast30days': [],
             'popularNews': []
         };
 
-        if(kaikaoSnapShotSevenDays.length >0){
-            for(const content of kaikaoSnapShotSevenDays) {
+        if (kaikaoSnapShotSevenDays.length > 0) {
+            for (const content of kaikaoSnapShotSevenDays) {
                 const today = await this.parseKaokaiTodayRangeDays(content);
                 result['todayPost7Days'].push(today.shift());
             }
         }
 
-        if(kaikaoSnapShot.length>0) {
-            for(const content of kaikaoSnapShot) {
+        if (kaikaoSnapShot.length > 0) {
+            for (const content of kaikaoSnapShot) {
                 const today = await this.parseKaokaiTodayRangeDays(content);
                 result['todayPast30days'].push(today.shift());
             }
         }
-        if(popularNews.length>0){
-            for(const content of popularNews){
+        if (popularNews.length > 0) {
+            for (const content of popularNews) {
+                const today = await this.parseKaokaiTodayRangeDays(content);
+                result['popularNews'].push(today.shift());
+            }
+        }
+        // console.log('checkCreate',checkCreate);
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data Mobile', result);
+        return res.status(200).send(successResponse);
+    }
+
+    @Get('/content/web')
+    public async getContentWeb(@QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+        let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
+        const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
+        if (assetTodayDateGap) {
+            assetTodayDate = parseInt(assetTodayDateGap.value, 10);
+        }
+        const timeStamp: number = 24 * 60 * 60 * 1000;
+        const snapshotObjId = [];
+        const momentCurrently: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
+        const todayTimeStamp = new Date();
+        let currentLy = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: momentCurrently[1] });
+        if (currentLy === undefined) {
+            currentLy = await this.kaokaiTodaySnapShotService.aggregate(
+                [
+                    {
+                        $sort: {
+                            endDateTime: -1
+                        }
+                    },
+                    {
+                        $limit: 1
+                    }
+                ]
+            );
+            currentLy = currentLy.shift();
+            snapshotObjId.push(new ObjectID(currentLy._id));
+        }
+        const atMoment = await this.parseKaokaiTodayRangeDays(currentLy);
+        snapshotObjId.push(new ObjectID(currentLy._id));
+        const kaikaoSnapShotSevenDays = await this.kaokaiTodaySnapShotService.aggregate(
+            [
+                {
+                    $match: {
+                        _id: { $nin: snapshotObjId },
+                        endDateTime: {
+                            $gte: new Date(todayTimeStamp.getTime() - (timeStamp * 7)),
+                            $lte: new Date(todayTimeStamp.getTime() - timeStamp)
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        endDateTime: -1
+                    }
+                }
+            ]
+        );
+        if (kaikaoSnapShotSevenDays.length > 0) {
+            for (const content of kaikaoSnapShotSevenDays) {
+                snapshotObjId.push(new ObjectID(content._id));
+            }
+        }
+        const kaikaoSnapShot = await this.kaokaiTodaySnapShotService.aggregate(
+            [
+                {
+                    $match: {
+                        _id: { $nin: snapshotObjId },
+                        endDateTime: { $gte: new Date(todayTimeStamp.getTime() - (timeStamp * 37)), $lte: new Date(todayTimeStamp.getTime() - (timeStamp * 7)) }
+                    }
+                },
+                {
+                    $sort: {
+                        endDateTime: -1
+                    }
+                }
+            ]
+        );
+        if (kaikaoSnapShot.length > 0) {
+            for (const content of kaikaoSnapShot) {
+                snapshotObjId.push(new ObjectID(content._id));
+            }
+        }
+        const popularNews = await this.kaokaiTodaySnapShotService.aggregate(
+            [
+                {
+                    $match: {
+                        _id: { $nin: snapshotObjId }
+                    }
+                },
+                {
+                    $sort: {
+                        count: -1,
+                        sumCount: -1
+                    }
+                },
+                {
+                    $limit: 7
+                }
+            ]
+        );
+
+        // console.log('kaikaoSnapShot',kaikaoSnapShot);
+        const result: any = {
+            'today': atMoment.shift(),
+            'todayPost7Days': [],
+            'todayPast30days': [],
+            'popularNews': []
+        };
+
+        if (kaikaoSnapShotSevenDays.length > 0) {
+            for (const content of kaikaoSnapShotSevenDays) {
+                const today = await this.parseKaokaiTodayRangeDays(content);
+                result['todayPost7Days'].push(today.shift());
+            }
+        }
+
+        if (kaikaoSnapShot.length > 0) {
+            for (const content of kaikaoSnapShot) {
+                const today = await this.parseKaokaiTodayRangeDays(content);
+                result['todayPast30days'].push(today.shift());
+            }
+        }
+        if (popularNews.length > 0) {
+            for (const content of popularNews) {
                 const today = await this.parseKaokaiTodayRangeDays(content);
                 result['popularNews'].push(today.shift());
             }
@@ -2965,7 +3090,7 @@ export class MainPageController {
                         }
                     }
                 }
-            // if config kaokaiToday.case.send.noti.available === false that means send noti the the people.
+                // if config kaokaiToday.case.send.noti.available === false that means send noti the the people.
             } else {
                 const deviceToken = await this.deviceTokenService.aggregate(
                     [
@@ -3033,7 +3158,7 @@ export class MainPageController {
                         }
                     }
                 }
-            } 
+            }
             return snapshot;
         } else {
             const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
@@ -4526,7 +4651,7 @@ export class MainPageController {
 
     private async parseKaokaiTodayPictureRange(data: any): Promise<any> {
         let image = undefined;
-        if(data.data.pageRoundRobin.contents.length>0){
+        if (data.data.pageRoundRobin.contents.length > 0) {
             image = data.data.pageRoundRobin.contents[0].coverPageSignUrl ? data.data.pageRoundRobin.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
         }
         if (image === undefined) {
