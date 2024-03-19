@@ -403,13 +403,11 @@ export class TodayDashboardPage extends AbstractPage implements OnInit {
         }
         this.statisticsFacade.getStatisticUserMFP(data).then((res: any) => {
             if (res) {
-                console.log("res", res)
                 this.dataMFP = res;
                 this.listPage = res.followerPage.data;
                 this.totalMFP = !!res.Total_MFP && res.Total_MFP !== 0 ? res.Total_MFP.data : this.totalMFP;
                 this.totalUser = !!res.Total_USERS && res.Total_USERS !== 0 ? res.Total_USERS.data : this.totalUser;
                 this.totalLogin = !!res.Total_Login && res.Total_Login.data !== 0 ? res.Total_Login.data : this.totalLogin;
-                console.log("totalLogi", this.totalLogin)
                 if (res.mfpUsers.data.length <= 6) {
                     const sortedData = res.mfpUsers.data.sort((a, b) => b.count - a.count);
                     this.chartPie.series = sortedData.map((item) => item.count);
@@ -426,9 +424,6 @@ export class TodayDashboardPage extends AbstractPage implements OnInit {
                     let facebook = ((this.totalLogin[0].count * 100) / max).toFixed(2);
                     let apple = ((this.totalLogin[1].count * 100) / max).toFixed(2);
                     let email = ((this.totalLogin[2].count * 100) / max).toFixed(2);
-                    console.log("facebook", facebook)
-                    console.log("apple", apple)
-                    console.log("email", email)
                     this.chartBar.series = [
                         {
                             name: "ผู้ใช้งาน",
