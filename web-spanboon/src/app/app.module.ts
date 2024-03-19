@@ -240,6 +240,7 @@ import {
   TagEvent,
   CardFulfillItem,
   HomePageV3,
+  HomeSnapshotCategory,
   AppleAppSite,
   MenuList,
 } from './components/components';
@@ -340,6 +341,7 @@ const COMPONENTS: any[] = [
   HomePage,
   OfficialPage,
   HomePageV3,
+  HomeSnapshotCategory,
   NotificationAllPage,
   LoginPage,
   RegisterPage,

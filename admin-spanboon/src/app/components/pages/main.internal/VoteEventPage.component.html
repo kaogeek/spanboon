@@ -178,15 +178,18 @@
                                 <div class="wrapper-title-vote">
                                     <div class="title-vote">
                                         <span>หัวข้อโหวต :</span>
-                                        <span>{{valueTitle}}</span>
+                                        <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueTitle"
+                                            [ngModelOptions]="{standalone: true}"></textarea>
                                     </div>
                                     <div class="detail-vote" *ngIf="!!valueDetail">
                                         <span>รายละเอียดโหวต :</span>
-                                        <span>{{valueDetail}}</span>
+                                        <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueDetail"
+                                            [ngModelOptions]="{standalone: true}"></textarea>
                                     </div>
                                     <div class="detail-vote" *ngIf="!!valueHashtag">
                                         <span>แฮชแท็ค :</span>
-                                        <span>{{valueHashtag}}</span>
+                                        <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueHashtag"
+                                            [ngModelOptions]="{standalone: true}"></textarea>
                                     </div>
                                     <img *ngIf="!!imageCover" class="image-preview"
                                         src="../../../../assets/img/icon-preview.svg" alt=""
@@ -204,7 +207,9 @@
                                     </div>
                                     <div class="choice-vote" *ngFor="let item of data.voteChoice;let i = index">
                                         <span>ตัวเลือกที่ {{i+1}}</span>
-                                        <span>หัวข้อ : {{item.title}}</span>
+                                        <span>หัวข้อ :</span>
+                                        <textarea name="" id="" cols="30" rows="3" [(ngModel)]="item.title"
+                                            [ngModelOptions]="{standalone: true}"></textarea>
                                         <img *ngIf="!!item.coverPageURL" class="image-preview"
                                             src="../../../../assets/img/icon-preview.svg" alt=""
                                             (click)="imagePreview(item.coverPageURL)">

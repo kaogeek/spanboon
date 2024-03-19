@@ -152,6 +152,11 @@
                 margin: 0 10px;
                 flex: 0 0 auto;
                 opacity: 0.4;
+                transition: transform 0.3s;
+
+                &:hover {
+                  transform: scale(1.1);
+                }
 
                 @media (max-width: 610px) {
                   display: none;
