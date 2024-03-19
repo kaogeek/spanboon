@@ -400,8 +400,8 @@ export class AssetController {
                     'data': totalUser.length > 0 ? totalUser[0].Total_users: []
                 };
                 result['Total_Login'] = {
-                    'label': 'Total page posts',
-                    'data': totalUsersLogin.length > 0 ? totalUsersLogin: []
+                    'label': 'Total Users Login',
+                    'data': totalUsersLogin.length > 0 ? totalUsersLogin[0].loginBy.data: []
                 };
 
                 analytics.mfpUsers = result['mfpUsers'];
@@ -433,7 +433,7 @@ export class AssetController {
 
                 result['Total_Login'] = {
                     'label': 'Total users loginBy',
-                    'data': create !== undefined ? create.loginBy : []
+                    'data': create !== undefined ? create.loginB.data : []
                 };
 
                 const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
@@ -462,7 +462,7 @@ export class AssetController {
 
             result['Total_Login'] = {
                 'label': 'Total users loginBy',
-                'data': memoryRec !== undefined ? memoryRec[0].loginBy : []
+                'data': memoryRec !== undefined ? memoryRec[0].loginBy.data : []
             };
 
             const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
@@ -635,7 +635,7 @@ export class AssetController {
         };
         result['Total_Login'] = {
             'label': 'Total users loginBy',
-            'data': totalUsersLogin.length > 0 ? totalUsersLogin: []
+            'data': totalUsersLogin.length > 0 ? totalUsersLogin[0].loginBy.data: []
         };
         analytics.mfpUsers = result['mfpUsers'];
         analytics.followerPage = result['followerPage'];
