@@ -14,6 +14,8 @@ import { DashBoardRequest } from './requests/DashBoardRequest';
 import axios from 'axios';
 import { ObjectID } from 'mongodb';
 import { PageService } from '../services/PageService';
+import { AnalyticsService } from '../services/AnalyticsService';
+import { AnalyticsModel } from '../models/AnalyticsModel';
 
 @JsonController('/dashboard')
 export class AssetController {
@@ -21,7 +23,8 @@ export class AssetController {
     constructor(
         private userService: UserService,
         private authenticationIdService: AuthenticationIdService,
-        private pageService: PageService
+        private pageService: PageService,
+        private analyticsService:AnalyticsService
     ) { }
 
     @Post('/')
@@ -166,7 +169,8 @@ export class AssetController {
             [
                 {
                     $match: {
-                        province: { $in: result['province'] }
+                        province: { $in: result['province'] },
+                        createdDate: { $gte: startDate, $lte: endDate }
                     }
                 },
                 {
@@ -198,11 +202,272 @@ export class AssetController {
             const errorResponse = ResponseUtil.getErrorResponse('StartDate > EndDate.', undefined);
             return res.status(400).send(errorResponse);
         }
+        const fourHours = 4 * 60 * 60 * 1000; // one day in milliseconds
+        const today = new Date();
 
+        const result: any = {
+            'mfpUsers': {},
+            'followerPage': {},
+            'Total_MFP': {},
+            'Total_USERS': {}
+        };
+        const providerName = ['APPLE','EMAIL','FACEBOOK'];
+        const memoryRec = await this.analyticsService.aggregate([]);
+        let create = undefined;
+        const analytics:any = new AnalyticsModel();
         const provinces = await axios.get('https://raw.githubusercontent.com/earthchie/jquery.Thailand.js/master/jquery.Thailand.js/database/raw_database/raw_database.json');
         const stack: any = {
             'province': [],
         };
+        const mfpUserId = [];
+        let mfpUsers = undefined;
+        let findUsersMfpByProvince = undefined;
+        let followerPage = undefined;
+        let totalUser = undefined;
+        let totalMFP = undefined;
+        let totalUsersLogin = undefined;
+
+        if(
+            memoryRec.length !== 0 &&
+            memoryRec !== undefined && 
+            today.getTime() >= memoryRec[0].expiredDate.getTime()
+        ){
+            const deleted = await this.analyticsService.delete({_id: new ObjectID(memoryRec[0]._id)});
+            if(deleted){
+
+                if (provinces.data.length > 0) {
+                    for (const province of provinces.data) {
+                        stack['province'].push(province.province);
+                    }
+                }
+                stack['province'] = stack['province'].filter((item,
+                    index) => stack['province'].indexOf(item) === index
+                );
+                
+                mfpUsers = await this.authenticationIdService.aggregate(
+                    [
+                        {
+                            $match: {
+                                providerName: 'MFP'
+                            }
+                        }
+                    ]
+                );
+                if (mfpUsers.length > 0) {
+                    for (const mfp of mfpUsers) {
+                        mfpUserId.push(new ObjectID(mfp.user));
+                    }
+                }
+        
+                findUsersMfpByProvince = await this.userService.aggregate(
+                    [
+                        {
+                            $match: {
+                                _id: { $in: mfpUserId },
+                                province: { $in: stack['province'] },
+                                banned: false,
+                                createdDate: { $gte: startDate, $lte: endDate }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: '$province',
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ]
+                );
+        
+                followerPage = await this.pageService.aggregate(
+                    [
+                        {
+                            $match: {
+                                isOfficial: true,
+                                banned: false
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'UserFollow',
+                                let: { id: '$_id' },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ['$$id', '$subjectId']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $match: {
+                                            subjectType: 'PAGE'
+                                        }
+                                    },
+                                    {
+                                        $count: 'total_follows'
+                                    }
+                                ],
+                                as: 'userFollow'
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                name: 1,
+                                imageURL: 1,
+                                coverURL: 1,
+                                isOfficial: 1,
+                                banned: 1,
+                                province: 1,
+                                userFollow: 1
+                            }
+                        },
+                        {
+                            $sort: {
+                                userFollow: -1
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$userFollow'
+                            }
+                        },
+                        {
+                            $limit: 50
+                        }
+                    ]
+                );
+        
+                totalUser = await this.userService.aggregate(
+                    [
+        
+                        {
+                            $match: {
+                                banned: false,
+                            }
+                        },
+                        {
+                            $count: 'Total_users'
+                        }
+                    ]
+                );
+        
+                totalMFP = await this.authenticationIdService.aggregate(
+                    [
+                        {
+                            $match: {
+                                providerName: 'MFP'
+                            }
+                        },
+                        {
+                            $count: 'Total_MFP'
+                        }
+                    ]
+                );
+
+                totalUsersLogin = await this.authenticationIdService.aggregate(
+                    [
+                        {
+                            $match:{
+                                providerName:{$in:providerName}
+                            }
+                        },
+                        {
+                            $group:{
+                                _id: '$providerName',
+                                count:{$sum:1}
+                            }
+                        }
+                    ]
+                );
+
+                result['mfpUsers'] = {
+                    'label': 'MFP Users',
+                    'data': findUsersMfpByProvince
+                };
+                result['followerPage'] = {
+                    'label': 'Follower Page',
+                    'data': followerPage,
+                };
+        
+                result['Total_MFP'] = {
+                    'label': 'Total users MFP',
+                    'data': totalMFP.length > 0 ? totalMFP[0].Total_MFP : []
+                };
+        
+                result['Total_USERS'] = {
+                    'label': 'General users',
+                    'data': totalUser.length > 0 ? totalUser[0].Total_users: []
+                };
+                result['Total_Login'] = {
+                    'label': 'Total page posts',
+                    'data': totalUsersLogin.length > 0 ? totalUsersLogin: []
+                };
+
+                analytics.mfpUsers = result['mfpUsers'];
+                analytics.followerPage = result['followerPage'];
+                analytics.totalMFP = result['Total_MFP'];
+                analytics.totalUSERS = result['Total_USERS'];
+                analytics.loginBy = result['TotalPage_Posts'];
+                analytics.expiredDate = new Date(today.getTime() + fourHours);
+                create = await this.analyticsService.create(analytics);
+
+                result['mfpUsers'] = {
+                    'label': 'MFP Users',
+                    'data': create.mfpUsers
+                };
+                result['followerPage'] = {
+                    'label': 'Follower Page',
+                    'data': create.followerPage,
+                };
+        
+                result['Total_MFP'] = {
+                    'label': 'Total users MFP',
+                    'data': create !== undefined ? create.totalMFP : []
+                };
+        
+                result['Total_USERS'] = {
+                    'label': 'General users',
+                    'data': create !== undefined ? create.totalUSERS : []
+                };
+
+                result['Total_Login'] = {
+                    'label': 'Total users loginBy',
+                    'data': create !== undefined ? create.loginBy : []
+                };
+
+                const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
+                return res.status(200).send(successResponse);
+            }   
+        }
+        if(memoryRec !== undefined && memoryRec.length >0){
+            result['mfpUsers'] = {
+                'label': 'MFP Users',
+                'data': memoryRec[0].mfpUsers.data
+            };
+            result['followerPage'] = {
+                'label': 'Follower Page',
+                'data': memoryRec[0].followerPage.data,
+            };
+    
+            result['Total_MFP'] = {
+                'label': 'Total users MFP',
+                'data': memoryRec !== undefined ? memoryRec[0].totalMFP.data : []
+            };
+    
+            result['Total_USERS'] = {
+                'label': 'General users',
+                'data': memoryRec !== undefined ? memoryRec[0].totalUSERS.data : []
+            };
+
+            result['Total_Login'] = {
+                'label': 'Total users loginBy',
+                'data': memoryRec !== undefined ? memoryRec[0].loginBy : []
+            };
+
+            const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
+            return res.status(200).send(successResponse);
+        }
 
         if (provinces.data.length > 0) {
             for (const province of provinces.data) {
@@ -213,9 +478,7 @@ export class AssetController {
             index) => stack['province'].indexOf(item) === index
         );
 
-        const mfpUserId = [];
-
-        const mfpUsers = await this.authenticationIdService.aggregate(
+        mfpUsers = await this.authenticationIdService.aggregate(
             [
                 {
                     $match: {
@@ -230,7 +493,7 @@ export class AssetController {
             }
         }
 
-        const findUsersMfpByProvince = await this.userService.aggregate(
+        findUsersMfpByProvince = await this.userService.aggregate(
             [
                 {
                     $match: {
@@ -249,7 +512,7 @@ export class AssetController {
             ]
         );
 
-        const followerPage = await this.pageService.aggregate(
+        followerPage = await this.pageService.aggregate(
             [
                 {
                     $match: {
@@ -309,7 +572,7 @@ export class AssetController {
             ]
         );
 
-        const totalUser = await this.userService.aggregate(
+        totalUser = await this.userService.aggregate(
             [
 
                 {
@@ -323,7 +586,7 @@ export class AssetController {
             ]
         );
 
-        const totalMFP = await this.authenticationIdService.aggregate(
+        totalMFP = await this.authenticationIdService.aggregate(
             [
                 {
                     $match: {
@@ -336,10 +599,22 @@ export class AssetController {
             ]
         );
 
-        const result: any = {
-            'mfpUsers': {},
-            'followerPage': {}
-        };
+        totalUsersLogin = await this.authenticationIdService.aggregate(
+            [
+                {
+                    $match:{
+                        providerName:{$in:providerName}
+                    }
+                },
+                {
+                    $group:{
+                        _id: '$providerName',
+                        count:{$sum:1}
+                    }
+                }
+            ]
+        );
+
         result['mfpUsers'] = {
             'label': 'MFP Users',
             'data': findUsersMfpByProvince
@@ -358,10 +633,22 @@ export class AssetController {
             'label': 'General users',
             'data': totalUser.length > 0 ? totalUser[0].Total_users: []
         };
-
-        if (result) {
-            const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
-            return res.status(200).send(successResponse);
+        result['Total_Login'] = {
+            'label': 'Total users loginBy',
+            'data': totalUsersLogin.length > 0 ? totalUsersLogin: []
+        };
+        analytics.mfpUsers = result['mfpUsers'];
+        analytics.followerPage = result['followerPage'];
+        analytics.totalMFP = result['Total_MFP'];
+        analytics.totalUSERS = result['Total_USERS'];
+        analytics.loginBy = result['Total_Login'];
+        analytics.expiredDate = new Date(today.getTime() + fourHours);
+        create = await this.analyticsService.create(analytics);
+        if(create){
+            if (result) {
+                const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
+                return res.status(200).send(successResponse);
+            } 
         } else {
             const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', []);
             return res.status(200).send(successResponse);
