@@ -13,6 +13,7 @@ import { UserService } from '../../services/UserService';
 import { PointEventModel } from '../../models/PointEventModel';
 import { ProductCategoryModel } from '../../models/ProductCategoryModel';
 import { ProductCategoryService } from '../../services/ProductCategoryService';
+import { S3Service } from '../../services/S3Service';
 import { ProductModel } from '../../models/ProductModel';
 import { ProductService } from '../../services/ProductService';
 // import { UserCouponService } from '../../services/UserCouponService';
@@ -29,6 +30,7 @@ export class AdminUserController {
         private userService:UserService,
         private productCategoryService:ProductCategoryService,
         private productService:ProductService,
+        private s3Service:S3Service
        //  private userCouponService:UserCouponService
     ) { }
 
@@ -64,6 +66,9 @@ export class AdminUserController {
     public async createPointEvent(@Body({ validate: true }) pointEventRequest: PointEventRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const user = await this.userService.findOne({_id:userId});
+
+        const signUrl = pointEventRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(pointEventRequest.s3CoverPageURL): undefined;
+
         const pointEventModel = new PointEventModel();
         pointEventModel.title = pointEventRequest.title;
         pointEventModel.detail = pointEventRequest.detail;
@@ -75,7 +80,7 @@ export class AdminUserController {
         pointEventModel.coverPageURL = pointEventRequest.coverPageURL;
         pointEventModel.username = user.username;
         pointEventModel.link = pointEventRequest.link;
-        pointEventModel.s3CoverPageURL = pointEventRequest.s3CoverPageURL;
+        pointEventModel.s3CoverPageURL = signUrl;
         pointEventModel.receiver = 0;
         const create = await this.pointEventService.create(pointEventModel);
         if(create){
@@ -99,6 +104,7 @@ export class AdminUserController {
             const errorResponse = ResponseUtil.getErrorResponse('The category have had one.', undefined);
             return res.status(400).send(errorResponse);
         }
+        const signUrl = categoryPointRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(categoryPointRequest.s3CoverPageURL): undefined;
 
         const userId = new ObjectID(req.user.id);
         const user = await this.userService.findOne({_id:userId});
@@ -108,7 +114,7 @@ export class AdminUserController {
         productCategoryModel.userId = userId;
         productCategoryModel.assetId = categoryPointRequest.assetId;
         productCategoryModel.coverPageURL = categoryPointRequest.coverPageURL;
-        productCategoryModel.s3CoverPageURL = categoryPointRequest.s3CoverPageURL;
+        productCategoryModel.s3CoverPageURL = signUrl;
         const create = await this.productCategoryService.create(productCategoryModel);
         if(create){
             const successResponse = ResponseUtil.getSuccessResponse('Create Product Category is success.', create);
@@ -125,11 +131,11 @@ export class AdminUserController {
         @Body({validate: true}) productRequest:ProductRequest,  
         @Res() res: any, 
         @Req() req: any): Promise<any> {
-        console.log('typeof(productRequest.couponExpire)',typeof(productRequest.couponExpire));
         if(typeof(productRequest.couponExpire) === 'string'){
             const errorResponse = ResponseUtil.getErrorResponse('couponExpire is string.', undefined);
             return res.status(400).send(errorResponse);
         }
+        const signUrl = productRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(productRequest.s3CoverPageURL): undefined;
 
         const userId = new ObjectID(req.user.id);
         const user = await this.userService.findOne({_id:userId});
@@ -144,7 +150,7 @@ export class AdminUserController {
         productModel.userId = userId;
         productModel.assetId = productRequest.assetId;
         productModel.coverPageURL = productRequest.coverPageURL;
-        productModel.s3CoverPageURL = productRequest.s3CoverPageURL;
+        productModel.s3CoverPageURL = signUrl;
         productModel.categoryName = productRequest.categoryName;
         productModel.expiringDate = new Date(productRequest.expiringDate);
         productModel.activeDate = new Date(productRequest.activeDate);
