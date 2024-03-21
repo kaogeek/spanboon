@@ -290,6 +290,19 @@ export class NotificationController {
             ]
         );
 
+        const userCouponCount = await this.userCouponService.aggregate(
+            [
+                {
+                    $match:{
+                        userId:userObjId
+                    }
+                },
+                {
+                    $count:'count'
+                }
+            ]
+        );
+
         const pointEventsAggr = await this.pointEventService.aggregate(
             [
                 {
@@ -379,7 +392,10 @@ export class NotificationController {
         );
         const result = {
             'accumulatePoint':accumulateAggr,
-            'userCoupon':userCoupon,
+            'userCoupon':{
+                'data':userCoupon,
+                'count':userCouponCount[0].count
+            },
             'pointEvent':pointEventsAggr,
             'categoryProduct':categoryProductAggr,
             'productAggr':productAggr
