@@ -266,6 +266,64 @@ export class NotificationController {
                         accumulatePoint:1,
                         usedPoint:1
                     }
+                },
+                {
+                    $lookup:{
+                        from:'PointStatement',
+                        let:{'userId':'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$userId','$userId']
+                                    }
+                                }
+                            }
+                        ],
+                        as:'totalPointStatement'
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'PointStatement',
+                        let:{'userId':'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$userId','$userId']
+                                    }
+                                }
+                            },
+                            {
+                                $match:{
+                                    type:'RECEIVE_POINT'
+                                }
+                            }
+                        ],
+                        as:'receivePointStatement'
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'PointStatement',
+                        let:{'userId':'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$userId','$userId']
+                                    }
+                                }
+                            },
+                            {
+                                $match:{
+                                    type:'REDEEM'
+                                }
+                            }
+                        ],
+                        as:'redeemPointStatement'
+                    }
                 }
             ]
         );
