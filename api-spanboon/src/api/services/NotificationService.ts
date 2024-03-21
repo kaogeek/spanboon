@@ -155,17 +155,17 @@ export class NotificationService {
 
     public async manualMultiPushNotificationMessage(tokenId: any): Promise<any> {
         const title = 'พบกับฟีเจอร์ก้าวไกลหน้าหนึ่งได้แล้ววันนี้';
-        const detail = 'อัพเดทแอปเป็นเวอร์ชั่นใหม่เลย';
+        const body = 'อัพเดทแอปเป็นเวอร์ชั่นใหม่เลย';
         const image = 'https://today-api.moveforwardparty.org/api/file/65fb943fa521ac67854f81e8/image';
         const token = tokenId;
-        const notificationType = '';
-        const link = '';
+        const notificationType = 'TODAY_NEWS';
+        const link = 'https://today.moveforwardparty.org/home?date=2024-03-20';
         const payload =
         {
             tokens: token,
             notification: {
                 title,
-                detail,
+                body,
                 image,
 
             },
@@ -183,15 +183,15 @@ export class NotificationService {
 
     public async testManualMultiPushNotificationMessage(): Promise<any> {
         const title = 'พบกับฟีเจอร์ก้าวไกลหน้าหนึ่งได้แล้ววันนี้';
-        const detail = 'อัพเดทแอปเป็นเวอร์ชั่นใหม่เลย';
+        const body = 'อัพเดทแอปเป็นเวอร์ชั่นใหม่เลย';
         const image = 'https://today-api.moveforwardparty.org/api/file/65fb943fa521ac67854f81e8/image';
-        const notificationType = '';
-        const link = '';
+        const notificationType = 'TODAY_NEWS';
+        const link = 'https://today.moveforwardparty.org/home?date=2024-03-20';
         const payload =
         {
             notification: {
                 title,
-                detail,
+                body,
                 image,
 
             },
