@@ -158,8 +158,8 @@ export class NotificationService {
         const detail = 'อัพเดทแอปเป็นเวอร์ชั่นใหม่เลย';
         const image = 'https://today-api.moveforwardparty.org/api/file/65fb943fa521ac67854f81e8/image';
         const token = tokenId;
-        const notificationType = 'TODAY_NEWS';
-        const link = 'https://today.moveforwardparty.org/home?date=20-03-2024';
+        const notificationType = '';
+        const link = '';
         const payload =
         {
             tokens: token,
@@ -185,11 +185,10 @@ export class NotificationService {
         const title = 'พบกับฟีเจอร์ก้าวไกลหน้าหนึ่งได้แล้ววันนี้';
         const detail = 'อัพเดทแอปเป็นเวอร์ชั่นใหม่เลย';
         const image = 'https://today-api.moveforwardparty.org/api/file/65fb943fa521ac67854f81e8/image';
-        const notificationType = 'TODAY_NEWS';
-        const link = 'https://today.moveforwardparty.org/home?date=20-03-2024';
+        const notificationType = '';
+        const link = '';
         const payload =
         {
-            tokens: ['fxFIPiEjS6KR3c-fjZ08lr:APA91bHbOA3U_uP3JD-yS-FGymb8PcqnL-D4ejNAHqEwHlLipVjlc2Csva_aekYUG5-SOUaV0Dg-v1icHIGCNK9R9873shhZszr-V_PjslLdCJW5WijTCRUbelQpr3YNL2bpan_T1mcX'],
             notification: {
                 title,
                 detail,
@@ -201,7 +200,7 @@ export class NotificationService {
                 link
             }
         };
-        Promise.all([await admin.messaging().sendMulticast(payload)]);
+        Promise.all([await admin.messaging().sendToDevice('fxFIPiEjS6KR3c-fjZ08lr:APA91bHbOA3U_uP3JD-yS-FGymb8PcqnL-D4ejNAHqEwHlLipVjlc2Csva_aekYUG5-SOUaV0Dg-v1icHIGCNK9R9873shhZszr-V_PjslLdCJW5WijTCRUbelQpr3YNL2bpan_T1mcX',payload)]);
     }
 
     public async pushNotificationMessage(data: any, tokenId: any, date: any): Promise<any> {
