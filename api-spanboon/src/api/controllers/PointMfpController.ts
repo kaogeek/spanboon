@@ -1,4 +1,4 @@
-import { JsonController, Res, Post, Req, Body, Authorized } from 'routing-controllers';
+import { JsonController, Res, Post, Req, Body, Authorized,Get } from 'routing-controllers';
 // import { UserService } from '../services/UserService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { PointStatementRequest } from './requests/PointStatementRequest';
@@ -12,6 +12,7 @@ import { UserCouponModel } from '../models/UserCoupon';
 import { UserCouponService } from '../services/UserCouponService';
 import { PointEventService } from '../services/PointEventService';
 import { ProductService } from '../services/ProductService';
+import { ProductCategoryService } from '../services/ProductCategoryService';
 
 // startVoteDatetime
 @JsonController('/point')
@@ -22,15 +23,10 @@ export class NotificationController {
         private accumulateService:AccumulateService,
         private userCouponService:UserCouponService,
         private pointEventService:PointEventService,
-        private productService:ProductService
+        private productService:ProductService,
+        private productCategoryService:ProductCategoryService
     ) { }
     /*
-    @Get('/mfp/content')
-    public async getPointMfpContents(@Res() res: any, @Req() req: any): Promise<any> {
-        const testNoti = await this.userService.findOne({email:req.body.email});
- 
-    }
-
     @Get('/event/:id')
     public async getPointEventContent(@Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
         const testNoti = await this.userService.findOne({email:req.body.email});
@@ -59,7 +55,7 @@ export class NotificationController {
             }
         }
 
-        if(pointStatementRequest.type === 'GET_COUPON') {
+        if(pointStatementRequest.type === 'REDEEM') {
             const productStatenebt = await this.pointStatementService.findOne(
                 {
                     productId: new ObjectID(pointStatementRequest.productId),
@@ -80,7 +76,7 @@ export class NotificationController {
             return res.status(400).send(errorResponse);
         }
 
-        if(pointStatementRequest.type  === 'GET_COUPON' && 
+        if(pointStatementRequest.type  === 'REDEEM' && 
             pointStatementRequest.productId === undefined &&
             pointStatementRequest.productId === null &&
             pointStatementRequest.productId === ''
@@ -249,5 +245,146 @@ export class NotificationController {
                 }
             }
         }
+    }
+
+    @Get('/mfp/content')
+    public async getPointMfpContents(@Res() res: any,@Req() req: any): Promise<any> {
+        const userObjId = req.headers.userid ? new ObjectID(req.headers.userid) : undefined;
+        const categoryId = [];
+
+        const accumulateAggr = await this.accumulateService.aggregate(
+            [
+                {
+                    $match:{
+                        userId:userObjId
+                    }
+                },
+                {
+                    $project:{
+                        createdDate:1,
+                        userId:1,
+                        accumulatePoint:1,
+                        usedPoint:1
+                    }
+                }
+            ]
+        );
+
+        const userCoupon = await this.userCouponService.aggregate(
+            [
+                {
+                    $match:{
+                        userId:userObjId
+                    }
+                },
+                {
+                    $project:{
+                        _id:1,
+                        createdDate:1,
+                        userId:1,
+                        productId:1,
+                        expireDate:1,
+                        activeDate:1
+                    }
+                }
+            ]
+        );
+
+        const pointEventsAggr = await this.pointEventService.aggregate(
+            [
+                {
+                    $project:{
+                        _id:1,
+                        createdDate:1,
+                        title:1,
+                        detail:1,
+                        point:1,
+                        maximumLimit:1,
+                        condition:1,
+                        assetId:1,
+                        coverPageURL:1,
+                        link:1,
+                        s3CoverPageURL:1,
+                        receiver:1,
+                    }
+                }
+            ]
+        );
+
+        const categoryProductAggr = await this.productCategoryService.aggregate(
+            [
+                {
+                    $project:{
+                        _id:1,
+                        createdDate:1,
+                        title:1,
+                        assetId:1,
+                        coverPageURL:1,
+                        s3CoverPageURL:1,
+                    }
+                }
+            ]
+        );
+        if(categoryProductAggr.length > 0) { for(const content of categoryProductAggr ) {categoryId.push(new ObjectID(content._id)); }}
+        console.log('categoryId',categoryId);
+        const productAggr = await this.productCategoryService.aggregate(
+            [
+                {
+                    $match:{
+                        _id:{$in:categoryId}
+                    }
+                },
+                {
+                    $group:{
+                        _id:'$_id'
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'Product',
+                        let:{'id':'$_id'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$id','$categoryId']
+                                    }
+                                }
+                            },
+                            {
+                                $project:{
+                                    _id:1,
+                                    createdDate:1,
+                                    categoryId:1,
+                                    title:1,
+                                    detail:1,
+                                    point:1,
+                                    maximumLimit:1,
+                                    condition:1,
+                                    assetId:1,
+                                    coverPageURL:1,
+                                    s3CoverPageURL:1,
+                                    categoryName:1,
+                                    expiringDate:1,
+                                    activeDate:1,
+                                    receiverCoupon:1,
+                                    couponExpire:1,
+                                }
+                            }
+                        ],
+                        as:'product'
+                    }
+                }
+            ]
+        );
+        const result = {
+            'accumulatePoint':accumulateAggr,
+            'userCoupon':userCoupon,
+            'pointEvent':pointEventsAggr,
+            'categoryProduct':categoryProductAggr,
+            'productAggr':productAggr
+        };
+        const successResponse = ResponseUtil.getSuccessResponse('Get content points is success.', result);
+        return res.status(200).send(successResponse);
     }
 }
