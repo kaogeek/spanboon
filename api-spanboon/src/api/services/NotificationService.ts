@@ -16,11 +16,13 @@ import { Service } from 'typedi';
 import * as serviceAccount from '../../../firebase.json';
 import { ServiceAccount } from 'firebase-admin';
 import * as admin from 'firebase-admin';
+import { S3Service } from './S3Service';
 @Service()
 export class NotificationService {
 
     constructor(
         @OrmRepository() private notificationRepository: NotificationRepository,
+        private s3Service:S3Service
     ) {
         console.log('constructor called()');
         admin.initializeApp({
@@ -151,6 +153,57 @@ export class NotificationService {
         }
     }
 
+    public async manualMultiPushNotificationMessage(tokenId: any): Promise<any> {
+        const title = 'พบกับฟีเจอร์ก้าวไกลหน้าหนึ่งได้แล้ววันนี้';
+        const detail = 'อัพเดทแอปเป็นเวอร์ชั่นใหม่เลย';
+        const image = 'https://today-api.moveforwardparty.org/api/file/65fb943fa521ac67854f81e8/image';
+        const token = tokenId;
+        const notificationType = 'TODAY_NEWS';
+        const link = 'https://today.moveforwardparty.org/home?date=20-03-2024';
+        const payload =
+        {
+            tokens: token,
+            notification: {
+                title,
+                detail,
+                image,
+
+            },
+            data: {
+                notificationType,
+                link
+            }
+        };
+        if (String(token) !== undefined) {
+            Promise.all([await admin.messaging().sendMulticast(payload)]);
+        } else {
+            return;
+        }
+    }
+
+    public async testManualMultiPushNotificationMessage(): Promise<any> {
+        const title = 'พบกับฟีเจอร์ก้าวไกลหน้าหนึ่งได้แล้ววันนี้';
+        const detail = 'อัพเดทแอปเป็นเวอร์ชั่นใหม่เลย';
+        const image = 'https://today-api.moveforwardparty.org/api/file/65fb943fa521ac67854f81e8/image';
+        const notificationType = 'TODAY_NEWS';
+        const link = 'https://today.moveforwardparty.org/home?date=20-03-2024';
+        const payload =
+        {
+            tokens: ['fxFIPiEjS6KR3c-fjZ08lr:APA91bHbOA3U_uP3JD-yS-FGymb8PcqnL-D4ejNAHqEwHlLipVjlc2Csva_aekYUG5-SOUaV0Dg-v1icHIGCNK9R9873shhZszr-V_PjslLdCJW5WijTCRUbelQpr3YNL2bpan_T1mcX'],
+            notification: {
+                title,
+                detail,
+                image,
+
+            },
+            data: {
+                notificationType,
+                link
+            }
+        };
+        Promise.all([await admin.messaging().sendMulticast(payload)]);
+    }
+
     public async pushNotificationMessage(data: any, tokenId: any, date: any): Promise<any> {
         const title = 'ก้าวไกลหน้าหนึ่ง';
         let body = data.majorTrend.contents[0].post.title ? String(data.majorTrend.contents[0].post.title) : 'ก้าวไกลหน้าหนึ่ง';
@@ -172,6 +225,61 @@ export class NotificationService {
             data: {
                 notificationType,
                 link
+            }
+        };
+        if (String(token) !== undefined) {
+            Promise.all([await admin.messaging().sendToDevice(token, payload)]);
+        } else {
+            return;
+        }
+    }
+
+    public async pushNotificationMessageBirthDay(data: any, tokenId: string): Promise<any> {
+        const title = 'Birthday';
+        const image = data.s3ImageURL !== undefined ||  data.s3ImageURL !== null ? await this.s3Service.s3signCloudFront(data.s3ImageURL) : data.imageURL;
+        const body = `${data.firstName} ${data.lastName}`;
+        const token = String(tokenId);
+        const notificationType = 'BIRTHDAY_EVENT';
+        const payload =
+        {
+            notification: {
+                title,
+                body,
+                image,
+            },
+            data: {
+                notificationType,
+                
+            }
+        };
+        if (String(token) !== undefined && String(token) !== '') {
+            Promise.all([await admin.messaging().sendToDevice(token, payload)]);
+        } else {
+            return;
+        }
+    }
+
+    public async pushNotificationMessageExpiredMemberShip(data: any, tokenId: any): Promise<any> {
+        const title = 'Expire MemberShip';
+        const date = new Date(data.expirationDate);
+        const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
+        const timeStamp = new Date(date.getTime() - oneDay).toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+        // const image = data.s3ImageURL !== undefined ||  data.s3ImageURL !== null ? await this.s3Service.s3signCloudFront(data.s3ImageURL) : data.imageURL;
+        const body = `วันหมดอายุการเป็นสมาชิกพรรค วันที่ ${timeStamp}`;
+        const token = String(tokenId);
+        const notificationType = 'BIRTHDAY_EVENT';
+        const payload =
+        {
+            notification: {
+                title,
+                body,
+            },
+            data: {
+                notificationType,
             }
         };
         if (String(token) !== undefined) {

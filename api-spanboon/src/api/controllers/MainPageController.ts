@@ -901,6 +901,72 @@ export class MainPageController {
         return res.status(200).send(successResponse);
     }
 
+    @Post('/manual/noti')
+    public async manualNoti(@Res() res: any, @Req() req: any): Promise<any>{
+        const fireBaseToken = [];
+        const deviceToken = await this.deviceTokenService.aggregate(
+            [
+                {
+                    $match: {
+                        token: { $ne: null }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'User',
+                        localField: 'userId',
+                        foreignField: '_id',
+                        as: 'User'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$User',
+                        preserveNullAndEmptyArrays: true
+                    }
+                }
+            ]
+        );
+        if (deviceToken.length > 0) {
+            for (let j = 0; j < deviceToken.length; j++) {
+                if (deviceToken[0].User.subscribeNoti === true && deviceToken[0].User !== undefined && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
+                    fireBaseToken.push(deviceToken[j].token);
+                } else {
+                    continue;
+                }
+            }
+        }
+        if (fireBaseToken.length > 0) {
+            const token = fireBaseToken.filter((element, index) => {
+                return fireBaseToken.indexOf(element) === index;
+            });
+            const originalArray = Array.from({ length: token.length }, (_, i) => i + 1); // Create the original array [1, 2, 3, ..., 50000]
+            const slicedArrays = [];
+            const batchSize = 499;
+            let sendMulticast = undefined;
+            for (let i = 0; i < originalArray.length; i += batchSize) {
+                const slicedArray = token.slice(i, i + batchSize);
+                slicedArrays.push(slicedArray);
+            }
+            if (slicedArrays.length > 0) {
+                for (let j = 0; j < slicedArrays.length; j++) {
+                    sendMulticast = await this.notificationService.manualMultiPushNotificationMessage(slicedArrays[j]);
+                }
+            }
+            const successResponse = ResponseUtil.getSuccessResponse('Noti is success.', undefined);
+            return res.status(200).send(successResponse);
+        }
+        
+    }
+
+    @Post('/test/manual/noti')
+    public async testManualNoti(@Res() res: any, @Req() req: any): Promise<any>{
+        const sendMulticast = await this.notificationService.testManualMultiPushNotificationMessage();
+
+        const successResponse = ResponseUtil.getSuccessResponse('Noti is success.', sendMulticast);
+        return res.status(200).send(successResponse);
+    }
+
     @Post('/hot')
     public async hotnews(@Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers['userid'];
