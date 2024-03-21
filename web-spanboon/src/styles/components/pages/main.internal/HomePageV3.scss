@@ -149,7 +149,7 @@
               > svg {
                 width: 30pt;
                 height: 30pt;
-                margin: 0 10px;
+                margin: 0 20px;
                 flex: 0 0 auto;
                 opacity: 0.4;
                 transition: transform 0.3s;
@@ -158,29 +158,8 @@
                   transform: scale(1.1);
                 }
 
-                @media (max-width: 610px) {
-                  display: none;
-                }
-              }
-
-              > .newspaper_title {
-                text-align: center;
-                @include font-size-8($font-head-400);
-                color: $brandcolor2;
-                margin: 0 10px;
-                flex: 0 0 auto;
-                user-select: none;
-
-                @media (max-width: $large) {
-                  @include font-size-9($font-head-400);
-                }
-
-                @media (max-width: 350px) {
-                  @include font-size-10($font-head-400);
-                }
-
-                @media (max-width: 340px) {
-                  display: none;
+                @media (max-width: $small) {
+                  margin: 0 10px;
                 }
               }
 
@@ -206,6 +185,7 @@
 
                         > input {
                           cursor: pointer;
+                          color: $brandcolor2 !important;
                         }
                       }
 

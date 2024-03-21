@@ -7,7 +7,7 @@
 
 import { Component, OnInit, EventEmitter, ViewChild, HostListener } from '@angular/core';
 import { AuthenManager, SeoService, StatisticsFacade } from '../../../services/services';
-import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexGrid, ApexLegend, ApexNoData, ApexNonAxisChartSeries, ApexPlotOptions, ApexResponsive, ApexStroke, ApexTitleSubtitle, ApexXAxis, ChartComponent } from 'ng-apexcharts';
+import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexGrid, ApexLegend, ApexNoData, ApexNonAxisChartSeries, ApexPlotOptions, ApexResponsive, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent } from 'ng-apexcharts';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { environment } from "../../../../environments/environment";
@@ -40,6 +40,20 @@ export type ChartOptions = {
     noData: ApexNoData;
 };
 
+export type ChartBar = {
+    series: ApexAxisChartSeries;
+    chart: ApexChart;
+    xaxis: ApexXAxis;
+    stroke: ApexStroke;
+    dataLabels: ApexDataLabels;
+    plotOptions: ApexPlotOptions;
+    yaxis: ApexYAxis;
+    tooltip: ApexTooltip;
+    colors: string[];
+    title: ApexTitleSubtitle;
+    subtitle: ApexTitleSubtitle;
+};
+
 @Component({
     selector: 'dashboard-page',
     templateUrl: './TodayDashboardPage.component.html',
@@ -55,6 +69,7 @@ export class TodayDashboardPage extends AbstractPage implements OnInit {
     public dataMFP: any = undefined;
     public totalMFP: number = 0;
     public totalUser: number = 0;
+    public totalLogin: any;
     public isLoading: boolean = false;
     public isLoadingDate: boolean = false;
     public windowWidth: any;
@@ -101,6 +116,76 @@ export class TodayDashboardPage extends AbstractPage implements OnInit {
     public listPage: any[] = [];
 
     @ViewChild("chart", { static: false }) chart: ChartComponent;
+    public chartBar: Partial<ChartBar> = {
+        series: [],
+        chart: {
+            type: "bar",
+            height: 380,
+            toolbar: {
+                show: false
+            }
+        },
+        plotOptions: {
+            bar: {
+                barHeight: "100%",
+                distributed: true,
+                horizontal: true,
+                dataLabels: {
+                    position: "bottom"
+                }
+            }
+        },
+        colors: [
+            "#2851a3",
+            "#546E7A",
+            "#ee7623",
+        ],
+        dataLabels: {
+            enabled: true,
+            textAnchor: "start",
+            style: {
+                colors: ["#fff"]
+            },
+            formatter: function (val, opt) {
+                return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val + "%";
+            },
+            offsetX: 0,
+            dropShadow: {
+                enabled: true
+            }
+        },
+        stroke: {
+            width: 1,
+        },
+        xaxis: {
+            categories: [
+                "Facebook",
+                "Apple",
+                "Email",
+            ]
+        },
+        yaxis: {
+            labels: {
+                show: false
+            }
+        },
+        title: {
+            text: "ผู้ใช้งานที่ Login ด้วยแพลตฟอร์มต่างๆ",
+            align: "center",
+        },
+        tooltip: {
+            theme: "dark",
+            x: {
+                show: false
+            },
+            y: {
+                formatter: function (val) {
+                    return val + "%";
+                }
+            }
+        }
+    };
+
     public chartPie: Partial<ChartPie> = {
         series: [],
         chart: {
@@ -322,6 +407,7 @@ export class TodayDashboardPage extends AbstractPage implements OnInit {
                 this.listPage = res.followerPage.data;
                 this.totalMFP = !!res.Total_MFP && res.Total_MFP !== 0 ? res.Total_MFP.data : this.totalMFP;
                 this.totalUser = !!res.Total_USERS && res.Total_USERS !== 0 ? res.Total_USERS.data : this.totalUser;
+                this.totalLogin = !!res.Total_Login && res.Total_Login.data !== 0 ? res.Total_Login.data : this.totalLogin;
                 if (res.mfpUsers.data.length <= 6) {
                     const sortedData = res.mfpUsers.data.sort((a, b) => b.count - a.count);
                     this.chartPie.series = sortedData.map((item) => item.count);
@@ -329,10 +415,21 @@ export class TodayDashboardPage extends AbstractPage implements OnInit {
                 } else {
                     const sortedData = res.mfpUsers.data.sort((a, b) => b.count - a.count);
                     const result = sortedData.slice(0, 6);
-                    const sumCount = sortedData.slice(6).reduce((sum, item) => sum + item.count, 0);
                     result.push({ "count": sortedData[6].count, "_id": "อื่นๆ" });
                     this.chartPie.series = result.map((item) => item.count);
                     this.chartPie.labels = result.map((item) => item._id);
+                }
+                if (!!this.totalLogin) {
+                    let max = this.totalLogin[0].count + this.totalLogin[1].count + this.totalLogin[2].count;
+                    let facebook = ((this.totalLogin[0].count * 100) / max).toFixed(2);
+                    let apple = ((this.totalLogin[1].count * 100) / max).toFixed(2);
+                    let email = ((this.totalLogin[2].count * 100) / max).toFixed(2);
+                    this.chartBar.series = [
+                        {
+                            name: "ผู้ใช้งาน",
+                            data: [Number(facebook), Number(apple), Number(email)]
+                        }
+                    ];
                 }
                 this.isLoading = false;
             }
@@ -358,6 +455,9 @@ export class TodayDashboardPage extends AbstractPage implements OnInit {
                         const sortedData = res.province.sort((a, b) => b.count - a.count);
                         this.chartPie.series = sortedData.map((item) => item.count);
                         this.chartPie.labels = sortedData.map((item) => item._id);
+                    } else if (res.province.length === 0) {
+                        this.chartPie.series = [1];
+                        this.chartPie.labels = ['ไม่มีข้อมูล'];
                     } else {
                         const sortedData = res.province.sort((a, b) => b.count - a.count);
                         const result = sortedData.slice(0, 6);

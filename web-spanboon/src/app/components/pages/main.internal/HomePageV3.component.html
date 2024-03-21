@@ -54,9 +54,10 @@
                     [ngClass]="{'label-date-2': isAnnounce}">
                     <span *ngIf="isKaokai">ก้าวไกลหน้าหนึ่ง</span>
                     <div class="label-date-right">
-                        <svg [routerLink]="'category'" xmlns="http://www.w3.org/2000/svg" version="1.1"
-                            xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="512"
-                            height="512" x="0" y="0" viewBox="0 0 455.005 455.005" xml:space="preserve" class="">
+                        <svg [routerLink]="'category'" matTooltip="ดูฉบับเก่าๆที่นี่" xmlns="http://www.w3.org/2000/svg"
+                            version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
+                            xmlns:svgjs="http://svgjs.com/svgjs" width="512" height="512" x="0" y="0"
+                            viewBox="0 0 455.005 455.005" xml:space="preserve" class="">
                             <g>
                                 <path
                                     d="M446.158 267.615c-5.622-3.103-12.756-2.421-19.574 1.871l-125.947 79.309a7.5 7.5 0 0 0 7.993 12.693l125.947-79.309c2.66-1.675 4.116-1.552 4.331-1.432.218.12 1.096 1.285 1.096 4.428 0 8.449-6.271 19.809-13.42 24.311l-122.099 76.885c-6.492 4.088-12.427 5.212-16.284 3.084-3.856-2.129-6.067-7.75-6.067-15.423 0-19.438 13.896-44.61 30.345-54.967l139.023-87.542a7.5 7.5 0 0 0 0-12.694L184.368 50.615a7.5 7.5 0 0 0-7.993 0L35.66 139.223C15.664 151.815 0 180.188 0 203.818v4c0 23.63 15.664 52.004 35.66 64.595l209.292 131.791a7.501 7.501 0 0 0 7.993-12.693L43.653 259.72C28.121 249.941 15 226.172 15 207.818v-4c0-18.354 13.121-42.122 28.653-51.902l136.718-86.091 253.059 159.35-128.944 81.196c-20.945 13.189-37.352 42.909-37.352 67.661 0 13.495 4.907 23.636 13.818 28.555 3.579 1.976 7.526 2.956 11.709 2.956 6.231 0 12.985-2.176 19.817-6.479l122.099-76.885c11.455-7.213 20.427-23.467 20.427-37.004 0-8.056-3.224-14.456-8.846-17.56z"
@@ -66,7 +67,6 @@
                                     fill="#000000" data-original="#000000" class=""></path>
                             </g>
                         </svg>
-                        <h2 class="newspaper_title">ฉบับวันที่ </h2>
                         <span class="Newspaper_SelectDate">
                             <loading *ngIf="isLoading"></loading>
                             <mat-form-field class="custom-class">
