@@ -16,7 +16,7 @@
         <section class="section-2">
             <div class="content">
                 <span class="title">7 วันที่ผ่านมา</span>
-                <div class="wrapper-box past">
+                <div appHorizontalScroll class="wrapper-box past">
                     <ng-container *ngFor="let item of data.todayPost7Days">
                         <div class="wrapper-image" (click)="clickToSnapshot(item.timeStamp)">
                             <span>{{item.title}}</span>
@@ -31,7 +31,7 @@
         <section class="section-3">
             <div class="content">
                 <span class="title">30 วันที่ผ่านมา</span>
-                <div class="wrapper-box past">
+                <div appHorizontalScroll class="wrapper-box past">
                     <ng-container *ngFor="let item of data.todayPast30days">
                         <div class="wrapper-image" (click)="clickToSnapshot(item.timeStamp)">
                             <span>{{item.title}}</span>
@@ -46,7 +46,7 @@
         <section class="section-4">
             <div class="content">
                 <span class="title">ยอดฮิต</span>
-                <div class="wrapper-box past">
+                <div appHorizontalScroll class="wrapper-box past">
                     <ng-container *ngFor="let item of data.popularNews">
                         <div class="wrapper-image" (click)="clickToSnapshot(item.timeStamp)">
                             <span>{{item.title}}</span>
