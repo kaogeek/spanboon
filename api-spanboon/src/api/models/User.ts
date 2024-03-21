@@ -87,6 +87,12 @@ export class User extends BaseModel {
     @Column({ name: 'birthdate' })
     public birthdate: Date;
 
+    @Column({ name: 'monthDate'})
+    public monthDate: string;
+
+    @Column({ name: 'dayDate'})
+    public dayDate: string;
+
     @Column({ name: 'imageURL' })
     public imageURL: string;
 

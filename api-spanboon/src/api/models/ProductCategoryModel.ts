@@ -6,48 +6,36 @@
  */
 
 import { IsNotEmpty, IsMongoId } from 'class-validator';
-import { BeforeInsert, BeforeUpdate, Column, Entity, ObjectIdColumn } from 'typeorm';
 import { ObjectID } from 'mongodb';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ObjectIdColumn } from 'typeorm';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
 
-@Entity('UserEngagement')
-export class UserEngagement extends BaseModel {
+@Entity('ProductCategory')
+export class ProductCategoryModel extends BaseModel {
 
     @ObjectIdColumn({ name: '_id' })
     @IsNotEmpty()
     @IsMongoId()
     public id: ObjectID;
 
-    @Column({ name: 'contentId' })
-    public contentId: string;
+    @Column({ name: 'title' })
+    public title: string;
 
-    @Column({ name: 'contentType' })
-    public contentType: string;
-
-    @Column({ name: 'ip' })
-    public ip: string;
+    @Column({ name: 'username' })
+    public username: string;
 
     @Column({ name: 'userId' })
-    public userId: string;
+    public userId: ObjectID;
 
-    @Column({ name: 'clientId' })
-    public clientId: string;
+    @Column({ name: 'assetId' })
+    public assetId: ObjectID;
 
-    @Column({ name: 'isFirst' })
-    public isFirst: boolean;
+    @Column({ name: 'coverPageURL' })
+    public coverPageURL: string;
 
-    @Column({ name: 'action' })
-    public action: string;
-
-    @Column({ name: 'reference' })
-    public reference: string;
-
-    @Column({ name: 'likeAsPage' })
-    public likeAsPage: ObjectID;
-
-    @Column({ name: 'point' })
-    public point: number;
+    @Column({ name: 's3CoverPageURL'})
+    public s3CoverPageURL: string;
 
     @BeforeInsert()
     public createDetails(): any {
