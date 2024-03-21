@@ -128,10 +128,13 @@ export class NotificationService {
         if (body.length > 60) {
             body = body.substring(0, 60) + '...';
         }
-        const thaiDate = String(date);
+        let dd:any = date.getDate() - 1;
+        let mm = date.getMonth() + 1;
+        if(dd<10) { dd='0'+dd;}
+        if(mm<10) { mm='0'+mm;}
         const token = tokenId;
         const notificationType = 'TODAY_NEWS';
-        const link = process.env.APP_HOME + `?date=${thaiDate}`;
+        const link = process.env.APP_HOME + `?date=${date.getFullYear()}-${mm}-${dd}`;
         const payload =
         {
             tokens: token,
@@ -152,14 +155,69 @@ export class NotificationService {
             return;
         }
     }
+/*
+    public async multiPushNotificationMessageTest(data: any, tokenId: any, date: any, filterNews: boolean): Promise<any> {
+        const title = 'ก้าวไกลหน้าหนึ่ง';
+        let body = undefined;
+        let image = undefined;
+        if (String(filterNews) === 'true') {
+            for (let i = 0; i < data.pageRoundRobin.contents.length; i++) {
+                body = data.pageRoundRobin.contents[i].post.title ? String(data.pageRoundRobin.contents[i].post.title) : undefined;
+                image = data.pageRoundRobin.contents[i].coverPageSignUrl ? data.pageRoundRobin.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+                if (body && image !== undefined) {
+                    break;
+                } else {
+                    continue;
+                }
+            }
+            if (body === undefined) {
+                body = data.majorTrend.contents[0].post.title ? String(data.majorTrend.contents[0].post.title) : 'ก้าวไกลหน้าหนึ่ง';
+                image = data.majorTrend.contents[0].coverPageSignUrl ? data.majorTrend.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+            }
+        } else {
+            body = data.majorTrend.contents[0].post.title ? String(data.majorTrend.contents[0].post.title) : 'ก้าวไกลหน้าหนึ่ง';
+            image = data.majorTrend.contents[0].coverPageSignUrl ? data.majorTrend.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        }
+        if (body.length > 60) {
+            body = body.substring(0, 60) + '...';
+        }
 
+        const token = tokenId;
+        const notificationType = 'TODAY_NEWS';
+        let dd:any = date.getDate() - 1;
+        let mm = date.getMonth() + 1;
+        if(dd<10) { dd='0'+dd;}
+        if(mm<10) { mm='0'+mm;}
+        const link = process.env.APP_HOME + `?date=${date.getFullYear()}-${mm}-${dd}`;
+        console.log('link',link);
+        const payload =
+        {
+            tokens: token,
+            notification: {
+                title,
+                body,
+                image,
+            },
+            data: {
+                notificationType,
+                link
+            }
+        };
+
+        if (String(token) !== undefined) {
+            // Promise.all([await admin.messaging().sendMulticast(payload)]);
+        } else {
+            return;
+        }
+    }
+*/
     public async manualMultiPushNotificationMessage(tokenId: any): Promise<any> {
-        const title = 'พบกับฟีเจอร์ก้าวไกลหน้าหนึ่งได้แล้ววันนี้';
+        const title = 'พบกับก้าวไกลหน้าหนึ่งได้แล้ววันนี้';
         const body = 'อัพเดทแอปเป็นเวอร์ชั่นใหม่เลย';
         const image = 'https://today-api.moveforwardparty.org/api/file/65fb943fa521ac67854f81e8/image';
         const token = tokenId;
-        const notificationType = 'TODAY_NEWS';
-        const link = 'https://today.moveforwardparty.org/home?date=2024-03-20';
+        const notificationType = '';
+        const link = '';
         const payload =
         {
             tokens: token,
@@ -182,11 +240,12 @@ export class NotificationService {
     }
 
     public async testManualMultiPushNotificationMessage(): Promise<any> {
-        const title = 'พบกับฟีเจอร์ก้าวไกลหน้าหนึ่งได้แล้ววันนี้';
+        const title = 'พบกับก้าวไกลหน้าหนึ่งได้แล้ววันนี้';
         const body = 'อัพเดทแอปเป็นเวอร์ชั่นใหม่เลย';
         const image = 'https://today-api.moveforwardparty.org/api/file/65fb943fa521ac67854f81e8/image';
-        const notificationType = 'TODAY_NEWS';
-        const link = 'https://today.moveforwardparty.org/home?date=2024-03-20';
+        const notificationType = '';
+        // 20-03-2024
+        const link = '';
         const payload =
         {
             notification: {
@@ -200,7 +259,9 @@ export class NotificationService {
                 link
             }
         };
-        Promise.all([await admin.messaging().sendToDevice('fxFIPiEjS6KR3c-fjZ08lr:APA91bHbOA3U_uP3JD-yS-FGymb8PcqnL-D4ejNAHqEwHlLipVjlc2Csva_aekYUG5-SOUaV0Dg-v1icHIGCNK9R9873shhZszr-V_PjslLdCJW5WijTCRUbelQpr3YNL2bpan_T1mcX',payload)]);
+        Promise.all([await admin.messaging().sendToDevice(
+            'fW637KbRTQmCgGiaZQWepe:APA91bF_ZEI9MRlsfrb2jTBYXgROhKbcPCaSDmfYlJbkWVXhVYpYtyb_-slzeAL4GXI6-Z40U_2z4fqVLblMFsrMw_vHvN4uDJQzboUT3h1DMqHs4vWNds5vWd-g65kpuy6Ywn_XH7ug'
+            ,payload)]);
     }
 
     public async pushNotificationMessage(data: any, tokenId: any, date: any): Promise<any> {
