@@ -172,7 +172,7 @@ export class AdminUserController {
     @Post('/event/search')
     @Authorized()
     public async searchPointEvent(@Res() res: any, @Req() req: any): Promise<any> {
-        const pointEvent = await this.productService.find();
+        const pointEvent = await this.pointEventService.find();
         if(pointEvent.length >0){
             const successResponse = ResponseUtil.getSuccessResponse('Search PointEvent is success.', pointEvent);
             return res.status(200).send(successResponse);
