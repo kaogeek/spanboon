@@ -943,14 +943,13 @@ export class MainPageController {
             const originalArray = Array.from({ length: token.length }, (_, i) => i + 1); // Create the original array [1, 2, 3, ..., 50000]
             const slicedArrays = [];
             const batchSize = 499;
-            let sendMulticast = undefined;
             for (let i = 0; i < originalArray.length; i += batchSize) {
                 const slicedArray = token.slice(i, i + batchSize);
                 slicedArrays.push(slicedArray);
             }
             if (slicedArrays.length > 0) {
                 for (let j = 0; j < slicedArrays.length; j++) {
-                    sendMulticast = await this.notificationService.manualMultiPushNotificationMessage(slicedArrays[j]);
+                    await this.notificationService.manualMultiPushNotificationMessage(slicedArrays[j]);
                 }
             }
             const successResponse = ResponseUtil.getSuccessResponse('Noti is success.', undefined);
