@@ -42,6 +42,10 @@ import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { PROVIDER } from '../../constants/LoginProvider';
 import axios from 'axios';
 import qs from 'qs';
+import { PointStatementModel } from '../models/PointStatementModel';
+import { PointStatementService } from '../services/PointStatementService';
+import { AccumulateService } from '../services/AccumulateService';
+import { AccumulateModel } from '../models/AccumulatePointModel';
 @JsonController('/post')
 export class PostsCommentController {
     constructor(
@@ -57,7 +61,9 @@ export class PostsCommentController {
         private deviceTokenService: DeviceTokenService,
         private pageService: PageService,
         private userService: UserService,
-        private authenticationIdService: AuthenticationIdService
+        private authenticationIdService: AuthenticationIdService,
+        private pointStatementService:PointStatementService,
+        private accumulateService:AccumulateService
     ) { }
 
     // PostsComment List API
@@ -219,6 +225,76 @@ export class PostsCommentController {
                 const postWho = await this.postsService.findOne({ _id: comment.post });
                 const ownerPosts = await this.postsService.findOne({ _id: comment.post });
                 const userDisplayName = await this.userService.findOne({ _id: ownerPosts.ownerUser });
+                const nameUser:any = commentAsPage !== undefined && commentAsPage !== null ? await this.pageService.findOne({_id:new ObjectID(commentAsPage)}) : await this.userService.findOne({_id:userObjId});
+                const productModel = new PointStatementModel();
+                const checkSpam = await this.pointStatementService.findOne({userId:userObjId,postId:postObjId});
+                if(
+                    commentAsPage !== undefined && 
+                    commentAsPage !== null &&
+                    commentAsPage !== '' &&
+                    checkSpam === undefined
+                    )
+                {
+                    productModel.title = `คุณคอมเม้นโพสต์`;
+                    productModel.detail = `${nameUser.name}`;
+                    productModel.point = 50;
+                    productModel.type = 'PAGE_COMMENT_POINT';
+                    productModel.userId = userObjId;
+                    productModel.postId = postObjId;
+                    productModel.commentId = comment.id;
+                    productModel.pointEventId = null;
+                    productModel.productId = null;
+                    const createStatementPoint = await this.pointStatementService.create(productModel);
+                    if(createStatementPoint){
+                        const accumulateCreate = await this.accumulateService.findOne({userId:userObjId});
+                        if(accumulateCreate === undefined) {
+                            const accumulateModel = new AccumulateModel();
+                            accumulateModel.userId = userObjId;
+                            accumulateModel.accumulatePoint = createStatementPoint.point;
+                            accumulateModel.usedPoint = 0;
+                            await this.accumulateService.create(accumulateModel);
+                        } else {
+                            await this.accumulateService.update(
+                                {userId:userObjId},
+                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                            );
+                        }
+                    }
+                }
+
+                if(
+                    checkSpam === undefined &&
+                    commentAsPage === undefined || 
+                    commentAsPage === null ||
+                    commentAsPage === '' 
+                    )
+                {
+                    productModel.title = `คุณคอมเม้นโพสต์`;
+                    productModel.detail = `${nameUser.displayName}`;
+                    productModel.point = 50;
+                    productModel.type = 'USER_COMMENT_POINT';
+                    productModel.userId = userObjId;
+                    productModel.postId = postObjId;
+                    productModel.commentId = comment.id;
+                    productModel.pointEventId = null;
+                    productModel.productId = null;
+                    const createStatementPoint = await this.pointStatementService.create(productModel);
+                    if(createStatementPoint){
+                        const accumulateCreate = await this.accumulateService.findOne({userId:userObjId});
+                        if(accumulateCreate === undefined) {
+                            const accumulateModel = new AccumulateModel();
+                            accumulateModel.userId = userObjId;
+                            accumulateModel.accumulatePoint = createStatementPoint.point;
+                            accumulateModel.usedPoint = 0;
+                            await this.accumulateService.create(accumulateModel);
+                        } else {
+                            await this.accumulateService.update(
+                                {userId:userObjId},
+                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                            );
+                        }
+                    }
+                }
                 let notificationComment = undefined;
                 let link = undefined;
                 let firstPerson = undefined;

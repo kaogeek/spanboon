@@ -66,6 +66,10 @@ import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { PROVIDER } from '../../constants/LoginProvider';
 import axios from 'axios';
 import qs from 'qs';
+import { PointStatementModel } from '../models/PointStatementModel';
+import { PointStatementService } from '../services/PointStatementService';
+import { AccumulateService } from '../services/AccumulateService';
+import { AccumulateModel } from '../models/AccumulatePointModel';
 @JsonController('/page')
 export class PagePostController {
     constructor(
@@ -93,7 +97,9 @@ export class PagePostController {
         // private deviceToken: DeviceTokenService,
         // private userFollowService: UserFollowService,
         private hidePostService: HidePostService,
-        private authenticationIdService: AuthenticationIdService
+        private authenticationIdService: AuthenticationIdService,
+        private pointStatementService:PointStatementService,
+        private accumulateService:AccumulateService
     ) { }
     // @Get('/test/post')
     // public async test(@Req() req:any):Promise<any>{
@@ -686,6 +692,75 @@ export class PagePostController {
                 engagement.action = ENGAGEMENT_ACTION.CREATE;
                 engagement.isFirst = true;
                 await this.userEngagementService.create(engagement);
+                const userObj = await this.userService.findOne({_id:userObjId});
+                const nameUser:any = pageIds !== undefined && pageIds !== null && pageIds !== '' ? await this.pageService.findOne({_id:pageObjId}) : userObj.displayName;
+                const productModel = new PointStatementModel();
+                if(
+                    pageId !== undefined && 
+                    pageId !== null && 
+                    pageId !== '')
+                {
+
+                    if(pagePost.title.length > 20 && postDetail.length > 100) {
+                        productModel.title = `${pagePost.title}`;
+                        productModel.detail = `${nameUser.name}`;
+                        productModel.point = 50;
+                        productModel.type = 'PAGE_POST_POINT';
+                        productModel.userId = userObjId;
+                        productModel.postId = createPostPageData.id;
+                        productModel.pointEventId = null;
+                        productModel.productId = null;
+                        const createPointStatement = await this.pointStatementService.create(productModel);
+                        if(createPointStatement) {
+                            const accumulateCreate = await this.accumulateService.findOne({userId:userObjId});
+                            if(accumulateCreate === undefined) {
+                                const accumulateModel = new AccumulateModel();
+                                accumulateModel.userId = userObjId;
+                                accumulateModel.accumulatePoint = 50;
+                                accumulateModel.usedPoint = 0;
+                                await this.accumulateService.create(accumulateModel);
+                            } else {
+                                await this.accumulateService.update(
+                                    {userId:userObjId},
+                                    {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                                );
+                            }
+                        }
+                    }
+                }
+
+                if(
+                    pageId === undefined && 
+                    pageId === null && 
+                    pageId === '')
+                {
+                    if(pagePost.title.length > 20 && postDetail.length > 100) {
+                        productModel.title = `${pagePost.title}`;
+                        productModel.detail = `${nameUser}`;
+                        productModel.point = 50;
+                        productModel.type = 'USER_POST_POINT';
+                        productModel.userId = userObjId;
+                        productModel.postId = createPostPageData.id;
+                        productModel.pointEventId = null;
+                        productModel.productId = null;
+                        const createPointStatement = await this.pointStatementService.create(productModel);
+                        if(createPointStatement) {
+                            const accumulateCreate = await this.accumulateService.findOne({userId:userObjId});
+                            if(accumulateCreate === undefined) {
+                                const accumulateModel = new AccumulateModel();
+                                accumulateModel.userId = userObjId;
+                                accumulateModel.accumulatePoint = 50;
+                                accumulateModel.usedPoint = 0;
+                                await this.accumulateService.create(accumulateModel);
+                            } else {
+                                await this.accumulateService.update(
+                                    {userId:userObjId},
+                                    {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                                );
+                            }
+                        }
+                    }
+                }
                 // page to user /// 
                 // let tokenFCMId = undefined;
                 // let notificationTextPOST = undefined;
@@ -903,6 +978,7 @@ export class PagePostController {
                     }
                     */
                 }
+                
                 let needsCreate: Needs;
                 const needsCreated: Needs[] = [];
                 if (postNeeds !== null && postNeeds !== undefined && postNeeds.length > 0) {
