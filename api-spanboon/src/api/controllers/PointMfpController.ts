@@ -361,6 +361,118 @@ export class NotificationController {
             ]
         );
 
+        const selfPoint = await this.accumulateService.aggregate(
+            [
+                {
+                    $match:{
+                        userId:userObjId
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'User',
+                        let:{'userId':'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$userId','$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $project:{
+                                    firstName:1,
+                                    lastName:1,
+                                    displayName:1,
+                                    uniqueId:1,
+                                    imageURL:1,
+                                    s3ImageURL:1,
+                                    province:1,
+                                    membership:1
+
+                                }
+                            }
+                            
+                        ],
+                        as:'user'
+                    }
+                },
+                {
+                    '$addFields':{
+                        'accumulatePoint':{
+                            '$add':['$accumulatePoint','$usedPoint']
+                        }
+                    }
+                },
+                {
+                    $project:{
+                        createdDate:1,
+                        userId:1,
+                        user:1,
+                        accumulatePoint:1
+                    }
+                }
+            ]
+        );
+        
+        const sortUserPoint = await this.accumulateService.aggregate(
+            [
+                {
+                    $match:{
+                        userId:{$ne: new ObjectID(selfPoint[0].userId)}
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'User',
+                        let:{'userId':'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$userId','$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $project:{
+                                    firstName:1,
+                                    lastName:1,
+                                    displayName:1,
+                                    uniqueId:1,
+                                    imageURL:1,
+                                    s3ImageURL:1,
+                                    province:1,
+                                    membership:1
+
+                                }
+                            }
+                            
+                        ],
+                        as:'user'
+                    }
+                },
+                {
+                    '$addFields':{
+                        'accumulatePoint':{
+                            '$add':['$accumulatePoint','$usedPoint']
+                        }
+                    }
+                },
+                {
+                    $project:{
+                        createdDate:1,
+                        userId:1,
+                        user:1,
+                        accumulatePoint:1
+                    }
+                }
+            ]
+        );
+
+        console.log('sortUserPoint',sortUserPoint[0]);
+
         const pointEventsAggr = await this.pointEventService.aggregate(
             [
                 {
@@ -397,7 +509,6 @@ export class NotificationController {
             ]
         );
         if(categoryProductAggr.length > 0) { for(const content of categoryProductAggr ) {categoryId.push(new ObjectID(content._id)); }}
-        console.log('categoryId',categoryId);
         const productAggr = await this.productCategoryService.aggregate(
             [
                 {
@@ -453,6 +564,10 @@ export class NotificationController {
             'userCoupon':{
                 'data':userCoupon,
                 'count':userCouponCount[0].count
+            },
+            'sortAccumulatePoint':{
+                'self':selfPoint,
+                'rankingPoint':sortUserPoint
             },
             'pointEvent':pointEventsAggr,
             'categoryProduct':categoryProductAggr,
