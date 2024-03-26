@@ -38,7 +38,10 @@ import { PROVIDER } from '../../constants/LoginProvider';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
 import qs from 'qs';
+import { PointStatementModel } from '../models/PointStatementModel';
+import { PointStatementService } from '../services/PointStatementService';
 import { AccumulateService } from '../services/AccumulateService';
+import { AccumulateModel } from '../models/AccumulatePointModel';
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
@@ -51,6 +54,7 @@ export class UserProfileController {
         private assetService: AssetService,
         private hidePostService: HidePostService,
         private accumulateService:AccumulateService,
+        private pointStatementService:PointStatementService
     ) { }
 
     // Get UserProfile API
@@ -649,7 +653,7 @@ export class UserProfileController {
             const newValue = { $set: { membership: false } };
             const update = await this.userService.update(query, newValue);
             if (update) {
-                const deleteAuthen = await this.authenIdService.delete({ user: userObj, providerName: PROVIDER.MFP });
+                const deleteAuthen = await this.authenIdService.aggregate({ user: userObj, providerName: PROVIDER.MFP });
                 if (deleteAuthen) {
                     const successResponseMFP = ResponseUtil.getSuccessResponse('Binding MFP is successful.', undefined);
                     return res.status(200).send(successResponseMFP);
@@ -695,7 +699,7 @@ export class UserProfileController {
                 const encryptIdentification = await bcrypt.hash(userObject.membership.identification_number, 10);
                 const checkAuthentication = await this.authenIdService.findOne({ providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
                 if (checkAuthentication !== undefined && checkAuthentication !== null) {
-                    return res.status(400).send(ResponseUtil.getSuccessResponse('You have ever binded this user.', undefined));
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('You have binded this user.', undefined));
 
                 }
                 // import * as bcrypt from 'bcrypt';
@@ -715,6 +719,17 @@ export class UserProfileController {
                 authenId.membership = true;
                 authIdCreate = await this.authenIdService.create(authenId);
                 if (authIdCreate) {
+                    // pointFunction
+                    const checkSpam = await this.pointStatementService.findOne(
+                        {
+                            title: 'REGISTER_MEMBERSHIP_MFP',
+                            userId:userObjId,
+                            type:'BINDING_MEMBERSHIP'
+                        }
+                    );
+                    if(checkSpam === undefined) {
+                        await this.getPointFunction(userObjId);
+                    }
                     // update status user membership = true
                     const query = { _id: userObjId };
                     const newValues = { $set: { membership: true } };
@@ -844,6 +859,34 @@ export class UserProfileController {
             }
         } catch (error) {
             return res.status(400).send(error);
+        }
+    }
+
+    private async getPointFunction(userObjId:string): Promise<any>{
+        const productModel = new PointStatementModel();
+        productModel.title = `REGISTER_MEMBERSHIP_MFP`;
+        productModel.detail = null;
+        productModel.point = 100;
+        productModel.type = 'BINDING_MEMBERSHIP';
+        productModel.userId = new ObjectID(userObjId);
+        productModel.postId = null;
+        productModel.pointEventId = null;
+        productModel.productId = null;
+        productModel.todayNewsId = null;
+        const createPointStatement = await this.pointStatementService.create(productModel);
+        if(createPointStatement) {
+            const accumulateCreate = await this.accumulateService.findOne({userId:new ObjectID(userObjId)});
+            if(accumulateCreate === undefined) {
+                const accumulateModel = new AccumulateModel();
+                accumulateModel.userId = new ObjectID(userObjId);
+                accumulateModel.accumulatePoint = createPointStatement.point;
+                accumulateModel.usedPoint = 0;
+                await this.accumulateService.create(accumulateModel);
+            } 
+            await this.accumulateService.update(
+                {userId:new ObjectID(userObjId)},
+                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 20}}
+            );
         }
     }
 }

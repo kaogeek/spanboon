@@ -162,24 +162,6 @@ export class User extends BaseModel {
     @Column({ name: 'membership'})
     public membership: boolean;
 
-    // @Column(type => AuthenticationId)
-    // public authenticationId: AuthenticationId;
-
-    // @Column(type => PageAccessLevel)
-    // public pageAccessLevel: PageAccessLevel;
-
-    // @Column(type => Posts)
-    // public posts: Posts[];
-
-    // @Column(type => Page)
-    // public pages: Page[];
-
-    // @Column(type => PageFollower)
-    // public pageFollowers: PageFollower[];
-
-    // @Column(type => Fulfillment)
-    // public Fulfillments: Fulfillment[];
-
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

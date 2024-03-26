@@ -297,7 +297,7 @@ export class NotificationService {
     public async pushNotificationMessageBirthDay(data: any, tokenId: string): Promise<any> {
         const title = 'Birthday';
         const image = data.s3ImageURL !== undefined ||  data.s3ImageURL !== null ? await this.s3Service.s3signCloudFront(data.s3ImageURL) : data.imageURL;
-        const body = `${data.firstName} ${data.lastName}`;
+        const body = 'สุขสันต์วันเกิด! MFP Today ขออวยพรให้คุณมีความสุขในทุกๆวัน 🎂';
         const token = String(tokenId);
         const notificationType = 'BIRTHDAY_EVENT';
         const payload =
@@ -320,7 +320,7 @@ export class NotificationService {
     }
 
     public async pushNotificationMessageExpiredMemberShip(data: any, tokenId: any): Promise<any> {
-        const title = 'Expire MemberShip';
+        const title = 'ใกล้หมดอายุสมาชิกพรรค';
         const date = new Date(data.expirationDate);
         const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
         const timeStamp = new Date(date.getTime() - oneDay).toLocaleDateString('th-TH', {
@@ -329,9 +329,9 @@ export class NotificationService {
             day: 'numeric',
         });
         // const image = data.s3ImageURL !== undefined ||  data.s3ImageURL !== null ? await this.s3Service.s3signCloudFront(data.s3ImageURL) : data.imageURL;
-        const body = `วันหมดอายุการเป็นสมาชิกพรรค วันที่ ${timeStamp}`;
+        const body = `ใกล้หมดอายุสมาชิกพรรค วันที่ ${timeStamp}`;
         const token = String(tokenId);
-        const notificationType = 'BIRTHDAY_EVENT';
+        const notificationType = 'EXPIRE_MEMBERSHIP';
         const payload =
         {
             notification: {

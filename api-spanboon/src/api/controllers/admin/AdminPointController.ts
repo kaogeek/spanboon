@@ -24,7 +24,7 @@ import { ObjectID } from 'mongodb';
 // import { AssetService } from '../../../api/services/AssetService';
 
 @JsonController('/admin/point')
-export class AdminUserController {
+export class AdminPointController {
     constructor(
         private pointEventService:PointEventService,
         private userService:UserService,
@@ -220,8 +220,7 @@ export class AdminUserController {
     @Authorized()
     public async deleteCategoryProduct(
         @Param('id') categoryId: string, 
-        @Res() res: any, 
-        @Req() req: any 
+        @Res() res: any
     ): Promise<any> {
         const categoryObjId = new ObjectID(categoryId);
 
