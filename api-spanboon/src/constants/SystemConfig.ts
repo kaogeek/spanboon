@@ -147,3 +147,6 @@ export const PRIVILEGES = 'privileges';
 
 export const DEFAULT_BIRTHDAY_NOTIFICATION_SYSTEM = 7;
 export const BIRTHDAY_NOTIFICATION_SYSTEM = 'birthday.notification.system';
+
+export const DEFAULT_PUSH_NOTI_EXPIRATION_MEMBERSHIP = 7;
+export const PUSH_NOTI_EXPIRATION_MEMBERSHIP ='push.noti.expiration.membership';

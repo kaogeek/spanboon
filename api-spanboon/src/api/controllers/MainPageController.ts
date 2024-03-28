@@ -109,7 +109,10 @@ import { ASSET_SCOPE } from '../../constants/AssetScope';
 import { Asset } from '../models/Asset';
 import * as AWS from 'aws-sdk'; // Load the SDK for JavaScript
 import { S3 } from '@aws-sdk/client-s3';
-
+import { PointStatementModel } from '../models/PointStatementModel';
+import { PointStatementService } from '../services/PointStatementService';
+import { AccumulateService } from '../services/AccumulateService';
+import { AccumulateModel } from '../models/AccumulatePointModel';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -135,6 +138,8 @@ export class MainPageController {
         private notificationNewsService: NotificationNewsService,
         private hidePostService: HidePostService,
         private newsClickService: NewsClickService,
+        private pointStatementService:PointStatementService,
+        private accumulateService:AccumulateService
         // private postsGalleryService: PostsGalleryService
     ) { }
     // Home page content V2
@@ -184,8 +189,51 @@ export class MainPageController {
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
             if (checkSnapshot !== undefined && checkSnapshot !== null) {
-                const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot);
-                return res.status(200).send(successResponseS);
+                if(userId !== undefined && userId !== null && userId !== ''){
+                    const checkSpam = await this.pointStatementService.findOne({userId:new ObjectID(userId),todayNewsId:new ObjectID(checkSnapshot.id)});
+                    if(checkSpam === undefined){
+                        const productModel = new PointStatementModel();
+                        let dd:any = checkSnapshot.endDateTime.getDate() - 1;
+                        let mm = checkSnapshot.endDateTime.getMonth() + 1;
+                        if(dd<10) { dd='0'+dd;}
+                        if(mm<10) { mm='0'+mm;}
+                        productModel.title = `หน้าหนึ่งฉบับวันที่ ${checkSnapshot.endDateTime.getFullYear()}-${mm}-${dd}`;
+                        productModel.detail = null;
+                        productModel.point = 20;
+                        productModel.type = 'TODAY_NEWS_POINT';
+                        productModel.userId = new ObjectID(userId);
+                        productModel.postId = null;
+                        productModel.pointEventId = null;
+                        productModel.productId = null;
+                        productModel.todayNewsId = new ObjectID(checkSnapshot.id);
+                        const createPointStatement = await this.pointStatementService.create(productModel);
+                        if(createPointStatement) {
+                            const accumulateCreate = await this.accumulateService.findOne({userId:new ObjectID(userId)});
+                            if(accumulateCreate === undefined) {
+                                const accumulateModel = new AccumulateModel();
+                                accumulateModel.userId = new ObjectID(userId);
+                                accumulateModel.accumulatePoint = 20;
+                                accumulateModel.usedPoint = 0;
+                                await this.accumulateService.create(accumulateModel);
+                            } 
+                            const updateAccumulate = await this.accumulateService.update(
+                                {userId:new ObjectID(userId)},
+                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 20}}
+                            );
+                            if(updateAccumulate){
+                                const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot);
+                                return res.status(200).send(successResponseS);
+                            }
+                        }
+                    } else {
+                        const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot);
+                        return res.status(200).send(successResponseS);
+                    }
+                } else {
+                    const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot);
+                    return res.status(200).send(successResponseS);
+                }
+
             }
         }
         // convert object to string then json !!!!

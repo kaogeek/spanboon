@@ -1029,45 +1029,6 @@ export class GuestController {
             const errorResponse: any = { status: 0, message: 'Invalid username' };
             return res.status(400).send(errorResponse);
         }
-        const userAuthList: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: loginUser.id } });
-        const authProviderList: string[] = [];
-        let mfpProvider = undefined;
-        if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
-            for (const userAuth of userAuthList) {
-                if (userAuth.providerName !== undefined && userAuth.providerName === 'MFP') {
-                    mfpProvider = userAuth;
-                }
-                authProviderList.push(userAuth.providerName);
-            }
-        }
-        const requestBody = {
-            'grant_type': process.env.GRANT_TYPE,
-            'client_id': process.env.CLIENT_ID,
-            'client_secret': process.env.CLIENT_SECRET,
-            'scope': process.env.SCOPE
-        };
-        const formattedData = qs.stringify(requestBody);
-
-        const responseMFP = await axios.post(
-            process.env.APP_MFP_API_OAUTH,
-            formattedData, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Accept: 'application/json'
-            }
-        });
-        const tokenCredential = responseMFP.data.access_token;
-        let getMembershipById = undefined;
-        if (mfpProvider !== undefined) {
-            getMembershipById = await axios.get(
-                process.env.API_MFP_GET_ID + mfpProvider.providerUserId,
-                {
-                    headers: {
-                        Authorization: `Bearer ${tokenCredential}`
-                    }
-                }
-            );
-        }
         if (loginUser === undefined) {
             const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
             return res.status(400).send(errorResponse);
@@ -1084,17 +1045,7 @@ export class GuestController {
         loginUser = await this.userService.cleanUserField(loginUser);
         loginUser.followings = userFollowings.length;
         loginUser.followers = userFollowers.length;
-        loginUser.authUser = authProviderList;
-        loginUser.mfpUser = {
-            // id: getMembershipById ? getMembershipById.data.data.id : undefined,
-            expiredAt: getMembershipById ? getMembershipById.data.data.expired_at : undefined,
-            firstName: getMembershipById ? getMembershipById.data.data.first_name : undefined,
-            lastName: getMembershipById ? getMembershipById.data.data.last_name : undefined,
-            email: getMembershipById ? getMembershipById.data.data.email : undefined,
-            state: getMembershipById ? getMembershipById.data.data.state : undefined,
-            identification: getMembershipById ? getMembershipById.data.data.identification_number.slice(0, getMembershipById.data.data.identification_number.length - 4) + 'XXXX' : undefined,
-            mobile: getMembershipById ? getMembershipById.data.data.mobile_number.slice(0, getMembershipById.data.data.mobile_number.length - 4) + 'XXXX' : undefined,
-        };
+
         const result = { token: loginToken, user: loginUser };
 
         const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
@@ -1403,7 +1354,6 @@ export class GuestController {
             'scope': process.env.SCOPE
         };
         const formattedData = qs.stringify(requestBody);
-
         const responseMFP = await axios.post(
             process.env.APP_MFP_API_OAUTH,
             formattedData, {
@@ -1423,6 +1373,7 @@ export class GuestController {
                     }
                 }
             );
+            console.log('getMembershipById',getMembershipById);
         }
         if (loginUser === undefined) {
             const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
@@ -3268,6 +3219,41 @@ export class GuestController {
                 // await this.deviceToken.delete({ userId: user.id });
                 return response.status(400).send(errorUserNameResponse);
             }
+        }
+        if(getMembershipById !== undefined) {
+            await this.authenticationIdService.update(
+                {
+                    providerName:'MFP',
+                    user: user.id,
+                    providerUserId:getMembershipById.data.data.id
+                },
+                {
+                    $set:{
+                        'properties.state':getMembershipById.data.data.state,
+                        'properties.membership_type':getMembershipById.data.data.membership_type,
+                        'properties.serial':getMembershipById.data.data.serial,
+                        'properties.title': getMembershipById.data.data.title,
+                        'properties.first_name':getMembershipById.data.data.first_name,
+                        'properties.last_name':getMembershipById.data.data.last_name,
+                        'properties.identification_number':getMembershipById.data.data.identification_number,
+                        'properties.mobile_number':getMembershipById.data.data.mobile_number,
+                        'properties.email':getMembershipById.data.data.email,
+                        'properties.expired_at':getMembershipById.data.data.expired_at,
+                        'properties.law_expired_at':getMembershipById.data.data.law_expired_at,
+                        'properties.compact_name':getMembershipById.data.data.compact_name,
+                        'properties.full_name':getMembershipById.data.data.full_name,
+                        'properties.is_renewable':getMembershipById.data.data.is_renewable,
+                        'properties.register_home_address':getMembershipById.data.data.register_home_address,
+                        'properties.current_address':getMembershipById.data.data.current_address,
+                        'properties.membership_title':getMembershipById.data.data.membership_title,
+                        expirationDate:getMembershipById.data.data.expired_at,
+                        expirationDate_law_expired:getMembershipById.data.data.law_expired_at,
+                        membershipState:getMembershipById.data.data.state,
+                        membershipType:getMembershipById.data.data.membershipType,
+                        mobileNumber:getMembershipById.data.data.mobile_number
+                    }
+                }
+            );
         }
 
         const userFollowings = await this.userFollowService.find({ where: { userId: user.id, subjectType: SUBJECT_TYPE.USER } });

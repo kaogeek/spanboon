@@ -54,6 +54,10 @@ import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { PROVIDER } from '../../constants/LoginProvider';
 import axios from 'axios';
 import qs from 'qs';
+import { PointStatementModel } from '../models/PointStatementModel';
+import { PointStatementService } from '../services/PointStatementService';
+import { AccumulateService } from '../services/AccumulateService';
+import { AccumulateModel } from '../models/AccumulatePointModel';
 @JsonController('/post')
 export class PostsController {
     constructor(
@@ -76,7 +80,9 @@ export class PostsController {
         private userService: UserService,
         private manipulateService: ManipulateService,
         private hidePostService: HidePostService,
-        private authenticationIdService: AuthenticationIdService
+        private authenticationIdService: AuthenticationIdService,
+        private pointStatementService:PointStatementService,
+        private accumulateService:AccumulateService
 
     ) { }
 
@@ -1057,6 +1063,76 @@ export class PostsController {
 
                 const post_who = await this.postsService.findOne({ _id: likeCreate.subjectId });
                 const page = await this.pageService.findOne({ ownerUser: post_who.ownerUser });
+                const nameUser:any = likeAsPage !== undefined && likeAsPage !== null ? await this.pageService.findOne({_id:new ObjectID(likeAsPage)}) : await this.userService.findOne({_id:userObjId});
+                const productModel = new PointStatementModel();
+                const checkSpam = await this.pointStatementService.findOne({userId:userObjId,postId:postObjId});
+                if(
+                    likeAsPage !== undefined && 
+                    likeAsPage !== null &&
+                    likeAsPage !== '' &&
+                    checkSpam === undefined
+                    )
+                {
+                    productModel.title = `คุณกดถูกใจโพสต์`;
+                    productModel.detail = `${nameUser.name}`;
+                    productModel.point = 50;
+                    productModel.type = 'PAGE_LIKE_POINT';
+                    productModel.userId = userObjId;
+                    productModel.postId = postObjId;
+                    productModel.likeId = likeCreate.id;
+                    productModel.pointEventId = null;
+                    productModel.productId = null;
+                    const createStatementPoint = await this.pointStatementService.create(productModel);
+                    if(createStatementPoint){
+                        const accumulateCreate = await this.accumulateService.findOne({userId:userObjId});
+                        if(accumulateCreate === undefined) {
+                            const accumulateModel = new AccumulateModel();
+                            accumulateModel.userId = userObjId;
+                            accumulateModel.accumulatePoint = createStatementPoint.point;
+                            accumulateModel.usedPoint = 0;
+                            await this.accumulateService.create(accumulateModel);
+                        } else {
+                            await this.accumulateService.update(
+                                {userId:userObjId},
+                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                            );
+                        }
+                    }
+                }
+
+                if(
+                    checkSpam === undefined &&
+                    likeAsPage === undefined || 
+                    likeAsPage === null ||
+                    likeAsPage === '' 
+                    )
+                {
+                    productModel.title = `คุณกดถูกใจโพสต์`;
+                    productModel.detail = `${nameUser.displayName}`;
+                    productModel.point = 50;
+                    productModel.type = 'USER_LIKE_POINT';
+                    productModel.userId = userObjId;
+                    productModel.postId = postObjId;
+                    productModel.likeId = likeCreate.id;
+                    productModel.pointEventId = null;
+                    productModel.productId = null;
+                    const createStatementPoint = await this.pointStatementService.create(productModel);
+                    if(createStatementPoint){
+                        const accumulateCreate = await this.accumulateService.findOne({userId:userObjId});
+                        if(accumulateCreate === undefined) {
+                            const accumulateModel = new AccumulateModel();
+                            accumulateModel.userId = userObjId;
+                            accumulateModel.accumulatePoint = createStatementPoint.point;
+                            accumulateModel.usedPoint = 0;
+                            await this.accumulateService.create(accumulateModel);
+                        } else {
+                            await this.accumulateService.update(
+                                {userId:userObjId},
+                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                            );
+                        }
+                    }
+                }
                 if (likeCreate.likeAsPage !== null) {
                     // like post page
                     // page to page
