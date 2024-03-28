@@ -37,6 +37,12 @@ export class UserCouponModel extends BaseModel {
     @Column({ name: 'activeDate' })
     public activeDate: Date;
 
+    @Column({ name: 'flag' })
+    public flag: boolean;
+
+    @Column({ name: 'username' })
+    public username: string;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();
