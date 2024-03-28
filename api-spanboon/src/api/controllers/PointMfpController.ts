@@ -1,7 +1,8 @@
-import { JsonController, Res, Post, Req, Body, Authorized,Get } from 'routing-controllers';
+import { JsonController, Res, Post, Req, Body, Authorized,Get,QueryParam, Param } from 'routing-controllers';
 // import { UserService } from '../services/UserService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { PointStatementRequest } from './requests/PointStatementRequest';
+import { PointLimitOffsetRequest } from './requests/PointLimitOffsetRequest';
 import { UsedCouponRequest } from './requests/UsedCouponRequest';
 import { ObjectID } from 'mongodb';
 import { PointStatementModel } from '../models/PointStatementModel';
@@ -35,7 +36,10 @@ export class NotificationController {
     // accumulatePoint
     @Post('/statement')
     @Authorized('user')
-    public async pointStatement(@Body({ validate: true }) pointStatementRequest: PointStatementRequest,@Res() res: any, @Req() req: any): Promise<any>{
+    public async pointStatement(
+        @Body({ validate: true }) pointStatementRequest: PointStatementRequest,
+        @Res() res: any, 
+        @Req() req: any): Promise<any>{
         const userObjId = new ObjectID(req.user.id);
 
         if(userObjId === undefined || userObjId === null) {
@@ -174,10 +178,14 @@ export class NotificationController {
             return res.status(400).send(errorResponse);
         }
     }
+    // create get product
     
     @Post('/used/coupon')
     @Authorized('user')
-    public async usedCoupon(@Body({ validate: true }) usedCouponRequest: UsedCouponRequest,@Res() res: any, @Req() req: any): Promise<any>{
+    public async usedCoupon(
+        @Body({ validate: true }) usedCouponRequest: UsedCouponRequest,
+        @Res() res: any, 
+        @Req() req: any): Promise<any>{
         const userObjId = new ObjectID(req.user.id);
         const today = new Date();
         const productObj = await this.productService.findOne({_id: new ObjectID(usedCouponRequest.productId)});
@@ -247,13 +255,73 @@ export class NotificationController {
         }
     }
 
-    @Get('/mfp/content')
-    public async getPointMfpContents(@Res() res: any,@Req() req: any): Promise<any> {
-        const userObjId = req.headers.userid ? new ObjectID(req.headers.userid) : undefined;
-        const categoryId = [];
-        let sortUserPoint = undefined;
-        let userCouponCount = undefined;
-        let selfPoint = undefined;
+    @Get('/event/:id')
+    public async getEventObj(@Param('id') id: string,@Res() res: any,@Req() req: any): Promise<any> {
+        const eventObjId = new ObjectID(id);
+        const pointEventObj = await this.pointEventService.findOne({_id: eventObjId});
+        const result:any = {};
+        result.id = pointEventObj.id;
+        result.createdDate = pointEventObj.createdDate;
+        result.title = pointEventObj.title;
+        result.detail = pointEventObj.detail;
+        result.point = pointEventObj.point;
+        result.maximumLimit = pointEventObj.maximumLimit;
+        result.condition = pointEventObj.condition;
+        result.userId = pointEventObj.userId;
+        result.assetId = pointEventObj.assetId;
+        result.coverPageURL = pointEventObj.coverPageURL;
+        result.link = pointEventObj.link;
+        result.s3CoverPageURL = pointEventObj.s3CoverPageURL;
+        result.receiver = pointEventObj.receiver;
+        if(result){
+            const successResponse = ResponseUtil.getSuccessResponse('Get PointEventObj is success.', pointEventObj);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Not found PointEvent.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Get('/product/:id')
+    public async getProductObj(@Param('id') id: string,@Res() res: any,@Req() req: any): Promise<any> {
+        const productObjId = new ObjectID(id);
+        const productObj = await this.productService.findOne({_id: productObjId});
+        const result:any = {};
+        result.id = productObj.id;
+        result.createdDate = productObj.createdDate;
+        result.categoryId = productObj.categoryId;
+        result.title = productObj.title;
+        result.detail = productObj.detail;
+        result.point = productObj.point;
+        result.maximumLimit = productObj.maximumLimit;
+        result.condition = productObj.condition;
+        result.userId = productObj.userId;
+        result.assetId = productObj.assetId;
+        result.coverPageURL = productObj.coverPageURL;
+        result.s3CoverPageURL = productObj.s3CoverPageURL;
+        result.categoryName = productObj.categoryName;
+        result.expiringDate = productObj.expirationDate;
+        result.activeDate = productObj.activeDate;
+        result.receiverCoupon = productObj.receiverCoupon;
+        result.couponExpire = productObj.couponExpire;
+        if(result){
+            const successResponse = ResponseUtil.getSuccessResponse('Get Product is success.', result);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Not found Product.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/accumulate/search')
+    @Authorized('user')
+    public async getAccumulate(
+        @Body({ validate: true }) pointLimitOffsetRequest: PointLimitOffsetRequest,
+        @Res() res: any,
+        @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        const take = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.limit : 10;
+        const skips = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.offset : 0;
         const accumulateAggr = await this.accumulateService.aggregate(
             [
                 {
@@ -262,11 +330,19 @@ export class NotificationController {
                     }
                 },
                 {
+                    '$addFields':{
+                        'totalPoint':{
+                            '$add':['$accumulatePoint','$usedPoint']
+                        }
+                    }
+                },
+                {
                     $project:{
                         createdDate:1,
                         userId:1,
                         accumulatePoint:1,
-                        usedPoint:1
+                        usedPoint:1,
+                        totalPoint:1
                     }
                 },
                 {
@@ -280,6 +356,12 @@ export class NotificationController {
                                         $eq:['$$userId','$userId']
                                     }
                                 }
+                            },
+                            {
+                                $skip: skips
+                            },
+                            {
+                                $limit: take
                             }
                         ],
                         as:'totalPointStatement'
@@ -301,6 +383,12 @@ export class NotificationController {
                                 $match:{
                                     type:'RECEIVE_POINT'
                                 }
+                            },
+                            {
+                                $skip: skips
+                            },
+                            {
+                                $limit: take
                             }
                         ],
                         as:'receivePointStatement'
@@ -322,6 +410,12 @@ export class NotificationController {
                                 $match:{
                                     type:'REDEEM'
                                 }
+                            },
+                            {
+                                $skip: skips
+                            },
+                            {
+                                $limit: take
                             }
                         ],
                         as:'redeemPointStatement'
@@ -329,13 +423,35 @@ export class NotificationController {
                 }
             ]
         );
+        const result = {
+            'accumulatePoint':accumulateAggr !== undefined ? accumulateAggr[0] : [],
+        };
+        const successResponse = ResponseUtil.getSuccessResponse('Get content points is success.', result);
+        return res.status(200).send(successResponse);
+    }
 
+    @Post('/coupon/search')
+    @Authorized('user')
+    public async getUserCoupon(
+        @Body({ validate: true }) pointLimitOffsetRequest: PointLimitOffsetRequest,
+        @Res() res: any,
+        @Req() req: any
+        ): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        const take = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.limit : 10;
+        const skips = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.offset : 0;
         const userCoupon = await this.userCouponService.aggregate(
             [
                 {
                     $match:{
                         userId:userObjId
                     }
+                },
+                {
+                    $skip: skips
+                },
+                {
+                    $limit: take
                 },
                 {
                     $lookup:{
@@ -364,6 +480,12 @@ export class NotificationController {
                                 }
                             },
                             {
+                                $skip: skips
+                            },
+                            {
+                                $limit: take
+                            },
+                            {
                                 $lookup:{
                                     from:'Product',
                                     let:{'productId':'$productId'},
@@ -374,6 +496,12 @@ export class NotificationController {
                                                     $eq:['$$productId','$_id']
                                                 }
                                             }
+                                        },
+                                        {
+                                            $skip: skips
+                                        },
+                                        {
+                                            $limit: take
                                         },
                                         {
                                             $project:{
@@ -420,6 +548,23 @@ export class NotificationController {
                 }
             ]
         );
+        const result = {
+            'userCoupon':userCoupon
+        };
+        const successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+        return res.status(200).send(successResponse);
+    }
+
+    @Post('/sort/accumulate/search')
+    @Authorized('user')
+    public async getAccumulatePoint(
+        @Res() res: any,
+        @Req() req: any
+    ): Promise<any>{
+        const userObjId = new ObjectID(req.user.id);
+        let userCouponCount = undefined;
+        let selfPoint = undefined;
+        let sortUserPoint = undefined;
 
         userCouponCount = await this.userCouponService.aggregate(
             [
@@ -473,6 +618,9 @@ export class NotificationController {
                         }
                     },
                     {
+                        $unwind:'$user'
+                    },
+                    {
                         '$addFields':{
                             'accumulatePoint':{
                                 '$add':['$accumulatePoint','$usedPoint']
@@ -490,6 +638,7 @@ export class NotificationController {
                 ]
             );
         }
+
         if(selfPoint !== undefined && selfPoint.length>0){
             sortUserPoint = await this.accumulateService.aggregate(
                 [
@@ -529,6 +678,9 @@ export class NotificationController {
                         }
                     },
                     {
+                        $unwind:'$user'
+                    },
+                    {
                         $limit:50
                     },
                     {
@@ -549,6 +701,62 @@ export class NotificationController {
                 ]
             );
         }
+        const result = {
+            'sortAccumulatePoint':{
+                'self':selfPoint[0],
+                'rankingPoint':sortUserPoint
+            },
+        };
+        const successResponse = ResponseUtil.getSuccessResponse('Get content AcumulatePoint is success.', result);
+        return res.status(200).send(successResponse);
+    }
+
+    @Get('/mfp/content')
+    public async getPointMfpContents(
+        @QueryParam('offset') offset: number, 
+        @QueryParam('limit') limt: number,
+        @Res() res: any,
+        @Req() req: any): Promise<any> {
+        const userObjId = req.headers.userid ? new ObjectID(req.headers.userid) : undefined;
+        const categoryId = [];
+        const accumulateAggr = await this.accumulateService.aggregate(
+            [
+                {
+                    $match:{
+                        userId:userObjId
+                    }
+                },
+                {
+                    '$addFields':{
+                        'totalPoint':{
+                            '$add':['$accumulatePoint','$usedPoint']
+                        }
+                    }
+                },
+                {
+                    $project:{
+                        createdDate:1,
+                        userId:1,
+                        accumulatePoint:1,
+                        usedPoint:1,
+                        totalPoint:1
+                    }
+                }
+            ]
+        );
+        const userCouponCount = await this.userCouponService.aggregate(
+            [
+                {
+                    $match:{
+                        userId:userObjId
+                    }
+                },
+                {
+                    $count:'count'
+                }
+            ]
+        );
+
         const pointEventsAggr = await this.pointEventService.aggregate(
             [
                 {
@@ -636,17 +844,9 @@ export class NotificationController {
                 }
             ]
         );
-
         const result = {
-            'accumulatePoint':accumulateAggr,
-            'userCoupon':{
-                'data':userCoupon,
-                'count': userCouponCount.length > 0 ? userCouponCount[0].count : 0
-            },
-            'sortAccumulatePoint':{
-                'self':selfPoint[0],
-                'rankingPoint':sortUserPoint
-            },
+            'accumulatePoint':accumulateAggr.length > 0 ? accumulateAggr[0] : [],
+            'userCoupon':userCouponCount.length > 0 ? userCouponCount[0].count : 0,
             'pointEvent':pointEventsAggr,
             'categoryProduct':categoryProductAggr,
             'productAggr':productAggr
