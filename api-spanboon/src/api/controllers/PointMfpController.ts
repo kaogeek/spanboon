@@ -164,6 +164,7 @@ export class NotificationController {
                 const userCouponModel = new UserCouponModel();
                 userCouponModel.userId = userObjId;
                 userCouponModel.active = false;
+                userCouponModel.flag = false;
                 userCouponModel.productId = productPoint.id;
                 userCouponModel.expireDate = productPoint.expiringDate;
                 userCouponModel.activeDate = null;
@@ -178,7 +179,6 @@ export class NotificationController {
             return res.status(400).send(errorResponse);
         }
     }
-    // create get product
     
     @Post('/used/coupon')
     @Authorized('user')
@@ -203,6 +203,33 @@ export class NotificationController {
 
         if(today.getTime() > minute){
             const errorResponse = ResponseUtil.getErrorResponse('The coupon was expire.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const couponObj = await this.userCouponService.findOne(
+            {
+                _id:new ObjectID(usedCouponRequest.couponId),
+                userId:userObjId ,
+                productId: productObj.id
+            }
+        );
+        if(couponObj === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Coupon not found.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(couponObj !== undefined && couponObj.productId === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Product id is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(today.getTime() >  couponObj.activeDate.getTime()) {
+            const errorResponse = ResponseUtil.getErrorResponse('Coupon ActiveDate have been expiring.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(today.getTime() >  couponObj.expireDate.getTime()) {
+            const errorResponse = ResponseUtil.getErrorResponse('Coupon ExpireDate have been expiring.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -852,6 +879,73 @@ export class NotificationController {
             'productAggr':productAggr
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get content points is success.', result);
+        return res.status(200).send(successResponse);
+    }
+
+    @Get('/category/product/:id')
+    public async getCategoryProductContent(
+        @Param('id') id: string,
+        @QueryParam('offset') offset: number, 
+        @QueryParam('limit') limt: number,
+        @Res() res: any,
+        @Req() req: any
+    ): Promise<any> {
+        const categoryId = new ObjectID(id);
+        const productAggr = await this.productCategoryService.aggregate(
+            [
+                {
+                    $match:{
+                        _id:categoryId
+                    }
+                },
+                {
+                    $group:{
+                        _id:'$_id',
+                        title:{$first:'$title'}
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'Product',
+                        let:{'id':'$_id'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$id','$categoryId']
+                                    }
+                                }
+                            },
+                            {
+                                $project:{
+                                    _id:1,
+                                    createdDate:1,
+                                    categoryId:1,
+                                    title:1,
+                                    detail:1,
+                                    point:1,
+                                    maximumLimit:1,
+                                    condition:1,
+                                    assetId:1,
+                                    coverPageURL:1,
+                                    s3CoverPageURL:1,
+                                    categoryName:1,
+                                    expiringDate:1,
+                                    activeDate:1,
+                                    receiverCoupon:1,
+                                    couponExpire:1,
+                                }
+                            }
+                        ],
+                        as:'product'
+                    }
+                }
+            ]
+        );
+        const result = {
+            'categoryProduct':productAggr[0]
+        };
+        const successResponse = ResponseUtil.getSuccessResponse('Get category product is success.', result);
         return res.status(200).send(successResponse);
     }
 }

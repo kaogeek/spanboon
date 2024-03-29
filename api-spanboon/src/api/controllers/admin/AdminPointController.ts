@@ -13,14 +13,22 @@ import { UserService } from '../../services/UserService';
 import { PointEventModel } from '../../models/PointEventModel';
 import { ProductCategoryModel } from '../../models/ProductCategoryModel';
 import { ProductCategoryService } from '../../services/ProductCategoryService';
+import { PointStatementService } from '../../services/PointStatementService';
 import { S3Service } from '../../services/S3Service';
 import { ProductModel } from '../../models/ProductModel';
 import { ProductService } from '../../services/ProductService';
+import { AccumulateService } from '../../services/AccumulateService';
+import { UserCouponService } from '../../services/UserCouponService';
 // import { UserCouponService } from '../../services/UserCouponService';
 import { CategoryPointRequest } from '../requests/CategoryPointRequest';
+import { AdminPointStatementRequest } from './requests/AdminPointStatementRequest';
 import { ProductRequest } from '../requests/ProductRequest';
 import { PointEventRequest } from '../requests/PointEventRequest';
+import { AdminActiveCouponRequest } from './requests/AdminActiveCouponRequest';
+import { AdminAccumulatePointRequest } from './requests/AdminAccumulatePointRequest';
 import { ObjectID } from 'mongodb';
+import { PointStatementModel } from '../../models/PointStatementModel';
+import { AccumulateModel } from '../../models/AccumulatePointModel';
 // import { AssetService } from '../../../api/services/AssetService';
 
 @JsonController('/admin/point')
@@ -30,8 +38,10 @@ export class AdminPointController {
         private userService:UserService,
         private productCategoryService:ProductCategoryService,
         private productService:ProductService,
-        private s3Service:S3Service
-       //  private userCouponService:UserCouponService
+        private s3Service:S3Service,
+        private userCouponService:UserCouponService,
+        private pointStatementService:PointStatementService,
+        private accumulateService:AccumulateService
     ) { }
 
     /**
@@ -127,6 +137,76 @@ export class AdminPointController {
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', undefined);
             return res.status(400).send(errorResponse);
+        }
+    }
+    @Post('/active')
+    @Authorized()
+    public async activeCoupon(
+        @Body({ validate: true }) adminActiveCouponRequest: AdminActiveCouponRequest, 
+        @Res() res: any, 
+        @Req() req: any): 
+    Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        const user = await this.userService.findOne({_id:userObjId});
+        const userCouponId = new ObjectID(adminActiveCouponRequest.id);
+        const reqUserId = new ObjectID(adminActiveCouponRequest.userId);
+
+        const query = {
+            _id:userCouponId,
+            userId: reqUserId
+        };
+        const newValues = {
+            $set:{
+                username: user.username,
+                active:adminActiveCouponRequest.active,
+                expireDate:adminActiveCouponRequest.expireDate,
+                activeDate:adminActiveCouponRequest.activeDate
+            }
+        };
+        const update = await this.userCouponService.update(query,newValues);
+        if(update) {
+            const successResponse = ResponseUtil.getSuccessResponse('Admin Update UserCoup is success.', update);
+            return res.status(200).send(successResponse);
+        }
+    }
+
+    @Post('/accumulate')
+    @Authorized()
+    public async adminAccumulate(
+        @Body({ validate: true }) adminAccumulatePointRequest: AdminAccumulatePointRequest,
+        @Res() res: any, 
+        @Req() req: any
+    ): Promise<any>{
+        const userObjId = new ObjectID(req.user.id);
+        const user = await this.userService.findOne({_id:userObjId});
+        const productModel = new PointStatementModel();
+        productModel.title = 'Admin เพิ่ม Point.';
+        productModel.detail = `ได้รับ Point จาก Point ${adminAccumulatePointRequest.point}`;
+        productModel.point = adminAccumulatePointRequest.point;
+        productModel.type = 'ADMIN_ADD_POINT';
+        productModel.userId = new ObjectID(adminAccumulatePointRequest.userId);
+        productModel.adminName = user.displayName;
+        const create = await this.pointStatementService.create(productModel);
+        if(create) {
+            const accumulateObj = await this.accumulateService.findOne(
+                {
+                    _id:new ObjectID(adminAccumulatePointRequest.id),
+                    userId: new ObjectID(adminAccumulatePointRequest.userId)
+                });
+            if(accumulateObj === undefined) {
+                const accumulateModel = new AccumulateModel();
+                accumulateModel.userId = new ObjectID(adminAccumulatePointRequest.userId);
+                accumulateModel.accumulatePoint = create.point;
+                accumulateModel.usedPoint = 0;
+                await this.accumulateService.create(accumulateModel);
+            }
+            const query = {_id: accumulateObj.id,userId: new ObjectID(adminAccumulatePointRequest.userId)};
+            const newValues = {$set:{accumulatePoint: accumulateObj.accumulatePoint + adminAccumulatePointRequest.point}};
+            const update = await this.accumulateService.update(query, newValues);
+            if(update) {
+                const successResponse = ResponseUtil.getSuccessResponse('Admin Update Accumulate is success.', update);
+                return res.status(200).send(successResponse);
+            }
         }
     }
 

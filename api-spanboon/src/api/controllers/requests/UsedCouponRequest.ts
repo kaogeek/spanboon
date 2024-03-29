@@ -3,6 +3,10 @@ import { IsNotEmpty, IsBoolean, IsString } from 'class-validator';
 
 export class UsedCouponRequest {
 
+    @IsNotEmpty({ message: 'string is required' })
+    @IsString()
+    public couponId: string;
+
     @IsNotEmpty({ message: 'boolean is required' })
     @IsBoolean()
     public active: boolean;
