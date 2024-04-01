@@ -13,6 +13,7 @@ import { UserCouponModel } from '../models/UserCoupon';
 import { UserCouponService } from '../services/UserCouponService';
 import { PointEventService } from '../services/PointEventService';
 import { ProductService } from '../services/ProductService';
+import { UserService } from '../services/UserService';
 import { ProductCategoryService } from '../services/ProductCategoryService';
 
 // startVoteDatetime
@@ -25,7 +26,8 @@ export class NotificationController {
         private userCouponService:UserCouponService,
         private pointEventService:PointEventService,
         private productService:ProductService,
-        private productCategoryService:ProductCategoryService
+        private productCategoryService:ProductCategoryService,
+        private userService:UserService
     ) { }
     /*
     @Get('/event/:id')
@@ -200,10 +202,11 @@ export class NotificationController {
             const errorResponse = ResponseUtil.getErrorResponse('The product is out of store.', undefined);
             return res.status(400).send(errorResponse);
         }
-
-        if(today.getTime() > minute){
-            const errorResponse = ResponseUtil.getErrorResponse('The coupon was expire.', undefined);
-            return res.status(400).send(errorResponse);
+        if(productObj.couponExpire !== -1) {
+            if(today.getTime() > minute){
+                const errorResponse = ResponseUtil.getErrorResponse('The coupon was expire.', undefined);
+                return res.status(400).send(errorResponse);
+            }
         }
 
         const couponObj = await this.userCouponService.findOne(
@@ -213,6 +216,7 @@ export class NotificationController {
                 productId: productObj.id
             }
         );
+        console.log('couponObj',couponObj);
         if(couponObj === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Coupon not found.', undefined);
             return res.status(400).send(errorResponse);
@@ -223,8 +227,13 @@ export class NotificationController {
             return res.status(400).send(errorResponse);
         }
 
-        if(today.getTime() >  couponObj.activeDate.getTime()) {
-            const errorResponse = ResponseUtil.getErrorResponse('Coupon ActiveDate have been expiring.', undefined);
+        if(couponObj.active !== true) {
+            const errorResponse = ResponseUtil.getErrorResponse('Counpon is not active.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(couponObj.activeDate !== null) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been used coupon.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -239,8 +248,7 @@ export class NotificationController {
         };
         const newValues = {$set:
             {
-                active:usedCouponRequest.active,
-                activeDate:new Date(usedCouponRequest.activeDate)
+                activeDate: today
             }
         };
 
@@ -251,6 +259,7 @@ export class NotificationController {
             productModel.detail = null;
             productModel.point = productObj.point;
             productModel.type = 'USE_COUPON';
+            productModel.productId = productObj.id;
             productModel.userId = userObjId;
             productModel.pointEventId = null;
             const create = await this.pointStatementService.create(productModel);
@@ -450,7 +459,97 @@ export class NotificationController {
                 }
             ]
         );
+
+        const userObj = await this.userService.aggregate(
+            [
+                {
+                    $match:{
+                        _id:userObjId
+                    }
+                },
+                {
+                    $project:{
+                        _id:1,
+                        firstName:1,
+                        lastName:1,
+                        displayName:1,
+                        uniqueId:1,
+                        birthdate:1,
+                        imageURL:1,
+                        s3ImageURL:1,
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'AuthenticationId',
+                        let:{id:'$_id'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$id','$user']
+                                    }
+                                }
+                            },
+                            {
+                                $match:{
+                                    providerName:'MFP'
+                                }
+                            },
+                            {
+                                $project:{
+                                    user:1,
+                                    providerName:1,
+                                    properties:1
+                                }
+                            }
+                        ],
+                        as:'authenticationId'
+                    }
+                },
+                {
+                    $unwind:'$authenticationId'
+                },
+                {
+                    '$addFields':{
+                        'userId':'$authenticationId.user',
+                        'providerName':'$authenticationId.providerName',
+                        'identificationNumber':'$authenticationId.properties.identification_number'
+                    }
+                },
+                {
+                    $project:{
+                        _id:1,
+                        firstName:1,
+                        lastName:1,
+                        displayName:1,
+                        uniqueId:1,
+                        birthdate:1,
+                        imageURL:1,
+                        s3ImageURL:1,
+                        userId:1,
+                        providerName:1,
+                        identificationNumber:1
+                    }
+                }
+            ]
+        );
+        const decorateUser:any = {
+            '_id': userObj !== undefined && userObj.length >0 ? userObj[0]._id : undefined,
+            'firstName': userObj !== undefined && userObj.length >0? userObj[0].firstName : undefined,
+            'lastName': userObj !== undefined && userObj.length >0? userObj[0].lastName : undefined,
+            'displayName': userObj !== undefined && userObj.length >0? userObj[0].displayName : undefined,
+            'uniqueId': userObj !== undefined && userObj.length >0? userObj[0].uniqueId : undefined,
+            'birthdate': userObj !== undefined && userObj.length >0? userObj[0].birthdate : undefined,
+            'imageURL': userObj !== undefined && userObj.length >0? userObj[0].imageURL : undefined,
+            's3ImageURL': userObj !== undefined && userObj.length >0? userObj[0].s3ImageURL : undefined,
+            'userId': userObj !== undefined && userObj.length >0? userObj[0].userId : undefined,
+            'providerName': userObj !== undefined && userObj.length >0? userObj[0].providerName : undefined,
+            'identificationNumber': userObj !== undefined && userObj.length >0? 'XXXX-'+userObj[0].identificationNumber.slice(4,userObj[0].identificationNumber.length) : undefined,
+        };
+
         const result = {
+            'user': decorateUser!== undefined ? decorateUser: {},
             'accumulatePoint':accumulateAggr !== undefined ? accumulateAggr[0] : [],
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get content points is success.', result);
@@ -670,11 +769,6 @@ export class NotificationController {
             sortUserPoint = await this.accumulateService.aggregate(
                 [
                     {
-                        $match:{
-                            userId:{$ne: new ObjectID(selfPoint[0].userId)}
-                        }
-                    },
-                    {
                         $lookup:{
                             from:'User',
                             let:{'userId':'$userId'},
@@ -723,6 +817,11 @@ export class NotificationController {
                             userId:1,
                             user:1,
                             accumulatePoint:1
+                        }
+                    },
+                    {
+                        $sort:{
+                            accumulatePoint:-1
                         }
                     }
                 ]

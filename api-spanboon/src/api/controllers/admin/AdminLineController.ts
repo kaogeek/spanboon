@@ -224,12 +224,22 @@ export class AdminPointController {
                 if(content.birthdate !== undefined ) {
                     const dateTimeStamp = Date.parse(content.birthdate);
                     const date = new Date(dateTimeStamp);
+                    // const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
                     if(typeof(content.birthdate) === 'object'){
-                        console.log('date',date);
+                        /*
                         // year-month-days
                         // 2023-03-11
-                        let monthObj:any = date.getMonth() + 1;
-                        let dayObj:any = date.getDate(); 
+                        const timeStampMonth = new Date(date.getTime()).toLocaleDateString('th-TH', {
+                            month: 'numeric',
+                        });
+
+                        // console.log('date.getDate()',date.getDate());
+                        let monthObj:any = timeStampMonth;
+                        // console.log('monthObj',monthObj);
+                        const timeStampDay = new Date(date.getTime() - oneDay).toLocaleDateString('th-TH', {
+                            day: 'numeric'
+                        });
+                        let dayObj:any = timeStampDay; 
                         
                         if(dayObj<10) { dayObj='0'+dayObj;}
                         if(monthObj<10) { monthObj='0'+monthObj;}
@@ -238,7 +248,7 @@ export class AdminPointController {
                             _id: new ObjectID(content._id)
                         };
                         // console.log(' _id: new ObjectID(content._id)', new ObjectID(content._id));
-                        
+
                         const update = {
                         $set:{
                             dayDate:dayObj.toString(),
@@ -247,6 +257,8 @@ export class AdminPointController {
                         };
                         
                         await this.userService.update(query,update);
+                        */
+                       continue;
                     } else {
                         let month:any = date.getMonth() + 1;
                         let day:any = date.getDate(); 
@@ -274,7 +286,6 @@ export class AdminPointController {
         }
 
         return res.status(200).send(ResponseUtil.getSuccessResponse('Migrate BirthDay Event is success.', undefined));
-
     }
 
     private async pushNotificationExpiredMembership(data:any, token:any): Promise<any>{

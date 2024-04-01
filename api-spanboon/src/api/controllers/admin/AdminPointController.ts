@@ -21,7 +21,7 @@ import { AccumulateService } from '../../services/AccumulateService';
 import { UserCouponService } from '../../services/UserCouponService';
 // import { UserCouponService } from '../../services/UserCouponService';
 import { CategoryPointRequest } from '../requests/CategoryPointRequest';
-import { AdminPointStatementRequest } from './requests/AdminPointStatementRequest';
+// import { AdminPointStatementRequest } from './requests/AdminPointStatementRequest';
 import { ProductRequest } from '../requests/ProductRequest';
 import { PointEventRequest } from '../requests/PointEventRequest';
 import { AdminActiveCouponRequest } from './requests/AdminActiveCouponRequest';

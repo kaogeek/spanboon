@@ -17,7 +17,5 @@ export class AdminAccumulatePointRequest {
     @IsString()
     public userId: string;
 
-    @IsNotEmpty()
-    @IsString()
     public id: string;
 }
