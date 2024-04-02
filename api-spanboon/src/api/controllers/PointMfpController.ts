@@ -827,8 +827,22 @@ export class NotificationController {
                 ]
             );
         }
+        let count = 1;
+        if(sortUserPoint.length >0) {
+            for(const content of sortUserPoint) {
+                const userString = String(content.userId);
+                if(userString === String(req.user.id)){
+                    break;
+                } else {
+                    count += 1;
+                    continue;
+                }
+            }
+        }
+
         const result = {
             'sortAccumulatePoint':{
+                'selfOrder':count,
                 'self':selfPoint[0],
                 'rankingPoint':sortUserPoint
             },

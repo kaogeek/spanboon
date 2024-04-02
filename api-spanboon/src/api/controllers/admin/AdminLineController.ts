@@ -202,7 +202,7 @@ export class AdminPointController {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', []));
         }
     }
-
+    
     @Post('/migrate/birthday')
     @Authorized()
     public async migrateBirthDay(
