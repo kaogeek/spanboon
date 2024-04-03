@@ -12,8 +12,8 @@ export class LineNewMoveParty extends BaseModel {
     @IsMongoId()
     public id: ObjectID;
 
-    @Column({ name: 'data'})
-    public data: any;
+    @Column({ name: 'objIds'})
+    public objIds: [];
     
     @BeforeInsert()
     public createDetails(): any {

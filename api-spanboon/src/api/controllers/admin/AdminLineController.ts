@@ -18,8 +18,12 @@ import {
     PUSH_NOTI_EXPIRATION_MEMBERSHIP
 } from '../../../constants/SystemConfig';
 import { ConfigService } from '../../services/ConfigService';
+import { KaokaiTodaySnapShotService } from '../../services/KaokaiTodaySnapShot';
+import { LineNewMovePartyService } from '../../services/LineNewMovePartyService';
+import { LineNewMoveParty } from '../../models/LineNewMoveParty';
 import { LineRequest } from './requests/LineRequest';
 import axios from 'axios';
+// import { Model } from 'firebase-admin/lib/machine-learning/machine-learning';
 
 @JsonController('/admin/line')
 export class AdminPointController {
@@ -28,7 +32,9 @@ export class AdminPointController {
         private deviceTokenService:DeviceTokenService,
         private notificationService: NotificationService,
         private authenticationIdService:AuthenticationIdService,
-        private configService:ConfigService
+        private configService:ConfigService,
+        private kaokaiTodaySnapShotService:KaokaiTodaySnapShotService,
+        private lineNewMovePartyService:LineNewMovePartyService
     ) { }
 
     /**
@@ -41,10 +47,10 @@ export class AdminPointController {
      * @apiParam (Request body) {number} gender gender
      * @apiParamExample {json} Input
      * {
-     *      "firstname" : "",
-     *      "lastname" : "",
-     *      "email" : "",
-     *      "citizenId" : "",
+     *      'firstname' : '',
+     *      'lastname' : '',
+     *      'email' : '',
+     *      'citizenId" : "",
      *      "gender" : ""
      * }
      * @apiSuccessExample {json} Success
@@ -59,10 +65,15 @@ export class AdminPointController {
      */
     
     @Post('/birthday')
-    @Authorized()
     public async birthDayNotificaition(
         @Res() res: any, 
         @Req() req: any): Promise<any>{
+        const headerAdmin = req.headers.admin;
+        const adminUser = await this.userService.findOne({email:headerAdmin});
+        if(adminUser === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
+            return res.status(400).send(errorResponse);
+        }
         const dateFormat = new Date();
         let month:any = dateFormat.getMonth() + 1;
         let day:any = dateFormat.getDate(); 
@@ -93,10 +104,16 @@ export class AdminPointController {
     }
 
     @Post('/expired')
-    @Authorized()
     public async expiredMembershipNotification(
         @Res() res:any, 
         @Req() req: any): Promise<any>{
+        const headerAdmin = req.headers.admin;
+        const adminUser = await this.userService.findOne({email:headerAdmin});
+        if(adminUser === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        
         let expireMemberShip = DEFAULT_PUSH_NOTI_EXPIRATION_MEMBERSHIP;
         const expireMemberShipConfig = await this.configService.getConfig(PUSH_NOTI_EXPIRATION_MEMBERSHIP);
         if(expireMemberShipConfig){
@@ -131,13 +148,17 @@ export class AdminPointController {
     }
 
     @Post('/vote')
-    @Authorized()
     public async voteLine(
         @Body({ validate: true }) lineRequest: LineRequest,
         @Res() res: any, 
         @Req() req: any): Promise<any>{
         const tokenLine = process.env.LINE_AUTHORIZATION;
-
+        const headerAdmin = req.headers.admin;
+        const adminUser = await this.userService.findOne({email:headerAdmin});
+        if(adminUser === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
+            return res.status(400).send(errorResponse);
+        }
         // api.line.me/v2/bot/message/push
         const lineUsers = await axios.get(
             'https://api.line.me/v2/bot/followers/ids',{
@@ -202,12 +223,773 @@ export class AdminPointController {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', []));
         }
     }
+
+    @Post('/content/oa')
+    public async lineOaKaokaiContent(
+        @Res() res: any, 
+        @Req() req:any
+    ): Promise<any>{
+        const headerAdmin = req.headers.admin;
+        const adminUser = await this.userService.findOne({email:headerAdmin});
+        if(adminUser === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const objStackIds:any = [];
+        const lineOaStack = await this.lineNewMovePartyService.aggregate([]);
+        if(lineOaStack.length > 0) {
+            for(const line of lineOaStack) {
+                line.objIds.map((ids) => objStackIds.push(new ObjectID(ids)));
+            }
+        }
+        const today = new Date();
+        const twoWeeksAgo = new Date(today.getTime() - 24 * 60 * 60 * 1000 * 14);
+        const kaokaiSnapshot = await this.kaokaiTodaySnapShotService.aggregate(
+            [
+                {
+                    $match:{
+                        _id: {$nin:objStackIds},
+                        endDateTime: {$lte: today, $gte:twoWeeksAgo}
+                    }
+                },
+                {
+                    $sort:{
+                        count:-1,
+                        sumCount:-1
+                    }
+                },
+                {
+                    $limit:4
+                }
+            ]
+        );
+        const content:any = {
+            'messages': [
+                {
+                    'type': 'flex',
+                    'altText': 'This is a Flex Message',
+                    'contents': {
+                        'type': 'bubble',
+                        'size': 'mega',
+                        'body': {
+                            'type': 'box',
+                            'layout': 'vertical',
+                            'contents': [],
+                            'paddingAll': '0px',
+                            'width': '100%',
+                            'height': '100%'
+                        }
+                    }
+                }
+            ]
+        };
+
+        if(kaokaiSnapshot.length > 0){
+            const stackIds:any = [];
+            for(const [key,kaokai] of Object.entries(kaokaiSnapshot)) {
+                stackIds.push(new ObjectID(kaokai._id));
+                let kaokaiToday = undefined;
+                if(parseInt(key,10) === 0 && kaokaiSnapshot.length > 0){
+                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                    let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
+                    if(dd<10) { dd='0'+dd;}
+                    if(mm<10) { mm='0'+mm;}
+                    kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    content['messages'][0].contents.body.contents.push(
+                        {
+                            'type': 'image',
+                            'url': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].coverPageSignUrl : kaokai.data.majorTrend.contents[0].coverPageSignUrl,
+                            'size': 'full',
+                            'aspectMode': 'cover',
+                            'aspectRatio': '1:1',
+                            'gravity': 'center'
+                        },
+                        {
+                            'type': 'box',
+                            'layout': 'vertical',
+                            'contents': [
+                                {
+                                    'type': 'text',
+                                    'text': 'ก้าวไกลทูเดย์',
+                                    'color': '#ffffff',
+                                    'weight': 'bold',
+                                    'size': '34px'
+                                }
+                            ],
+                            'position': 'absolute',
+                            'alignItems': 'center',
+                            'justifyContent': 'center',
+                            'width': '100%',
+                            'offsetTop': '30px'
+                        },
+                        {
+                            'type': 'box',
+                            'layout': 'vertical',
+                            'contents': [
+                                {
+                                    'type': 'box',
+                                    'layout': 'vertical',
+                                    'contents': [
+                                        {
+                                            'type': 'text',
+                                            'text': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].post.title : kaokai.data.majorTrend.contents[0].post.title,
+                                            'maxLines': 3,
+                                            'wrap': true
+                                        },
+                                        {
+                                            'type': 'box',
+                                            'layout': 'vertical',
+                                            'contents': [
+                                                {
+                                                    'type': 'button',
+                                                    'action': {
+                                                        'type': 'uri',
+                                                        'label': 'อ่านเพิ่มเติม',
+                                                        'uri': `${kaokaiToday}`
+                                                    },
+                                                    'color': '#F18805',
+                                                    'scaling': false,
+                                                    'style': 'primary',
+                                                    'height': 'sm',
+                                                    'adjustMode': 'shrink-to-fit',
+                                                    'gravity': 'center',
+                                                    'margin': '10px'
+                                                }
+                                            ],
+                                            'position': 'relative'
+                                        }
+                                    ],
+                                    'height': '130px',
+                                    'backgroundColor': '#F0F0F0',
+                                    'paddingAll': '10px',
+                                    'width': '100%'
+                                },
+                                {
+                                    'type': 'box',
+                                    'layout':'vertical',
+                                    'contents':[]
+                                }
+                            ],
+                            'width': '100%',
+                            'height': '100%'
+                        }
+                    );
+                }
+                
+                if(
+                    parseInt(key,10) === 1 && 
+                    kaokaiSnapshot.length > 0 && 
+                    content['messages'][0].contents.body.contents.length >0
+                    )
+                {
+                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                    let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
+                    if(dd<10) { dd='0'+dd;}
+                    if(mm<10) { mm='0'+mm;}
+                    kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    content['messages'][0].contents.body.contents[2].contents[1].contents.push(
+                        {
+                            'type': 'box',
+                            'layout': 'horizontal',
+                            'contents': [
+                                {
+                                    'type': 'box',
+                                    'layout': 'horizontal',
+                                    'contents': [
+                                        {
+                                            'type': 'image',
+                                            'url': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].coverPageSignUrl : kaokai.data.majorTrend.contents[0].coverPageSignUrl,
+                                            'size': '80px',
+                                            'align': 'start',
+                                            'aspectMode': 'cover'
+                                        }
+                                    ],
+                                    'paddingAll': '5px',
+                                    'cornerRadius': '8px',
+                                    'width': '30%'
+                                },
+                                {
+                                    'type': 'box',
+                                    'layout': 'vertical',
+                                    'contents': [
+                                        {
+                                            'type': 'text',
+                                            'text': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].post.title : kaokai.data.majorTrend.contents[0].post.title,
+                                            'wrap': true,
+                                            'size': '14px',
+                                            'align': 'start',
+                                            'gravity': 'center',
+                                            'maxLines': 3,
+                                            'margin': '5px'
+                                        }
+                                    ]
+                                }
+                            ],
+                            'backgroundColor': '#FFFFFF',
+                            'width': '100%',
+                            'height': '70px',
+                            'cornerRadius': '8px',
+                            'action': {
+                                'type': 'uri',
+                                'label': 'action',
+                                'uri':kaokaiToday,
+                            }
+                        },
+                    );
+                }
+                if(
+                    parseInt(key,10) === 2 && 
+                    kaokaiSnapshot.length > 0 && 
+                    content['messages'][0].contents.body.contents.length >0                
+                )
+                {
+                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                    let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
+                    if(dd<10) { dd='0'+dd;}
+                    if(mm<10) { mm='0'+mm;}
+                    kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    content['messages'][0].contents.body.contents[2].contents[1].contents.push(
+                        {
+                            'type': 'box',
+                            'layout': 'horizontal',
+                            'contents': [
+                                {
+                                    'type': 'box',
+                                    'layout': 'horizontal',
+                                    'contents': [
+                                        {
+                                            'type': 'image',
+                                            'url': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].coverPageSignUrl : kaokai.data.majorTrend.contents[0].coverPageSignUrl,
+                                            'size': '80px',
+                                            'align': 'start',
+                                            'aspectMode': 'cover'
+                                        }
+                                    ],
+                                    'paddingAll': '5px',
+                                    'cornerRadius': '8px',
+                                    'width': '30%'
+                                },
+                                {
+                                    'type': 'box',
+                                    'layout': 'vertical',
+                                    'contents': [
+                                        {
+                                            'type': 'text',
+                                            'text': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].post.title : kaokai.data.majorTrend.contents[0].post.title,
+                                            'wrap': true,
+                                            'size': '14px',
+                                            'align': 'start',
+                                            'gravity': 'center',
+                                            'maxLines': 3,
+                                            'margin': '5px'
+                                        }
+                                    ]
+                                }
+                            ],
+                            'backgroundColor': '#FFFFFF',
+                            'width': '100%',
+                            'height': '70px',
+                            'cornerRadius': '8px',
+                            'action': {
+                                'type': 'uri',
+                                'label': 'action',
+                                'uri':kaokaiToday,
+                            }
+                        },
+                    );
+                }
+                if(
+                    parseInt(key,10) === 3 &&
+                    kaokaiSnapshot.length > 0 && 
+                    content['messages'][0].contents.body.contents.length >0
+                    )
+                {
+                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                    let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
+                    if(dd<10) { dd='0'+dd;}
+                    if(mm<10) { mm='0'+mm;}
+                    kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    content['messages'][0].contents.body.contents[2].contents[1].contents.push(
+                        {
+                            'type': 'box',
+                            'layout': 'horizontal',
+                            'contents': [
+                                {
+                                    'type': 'box',
+                                    'layout': 'horizontal',
+                                    'contents': [
+                                        {
+                                            'type': 'image',
+                                            'url': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].coverPageSignUrl : kaokai.data.majorTrend.contents[0].coverPageSignUrl,
+                                            'size': '80px',
+                                            'align': 'start',
+                                            'aspectMode': 'cover'
+                                        }
+                                    ],
+                                    'paddingAll': '5px',
+                                    'cornerRadius': '8px',
+                                    'width': '30%'
+                                },
+                                {
+                                    'type': 'box',
+                                    'layout': 'vertical',
+                                    'contents': [
+                                        {
+                                            'type': 'text',
+                                            'text': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].post.title : kaokai.data.majorTrend.contents[0].post.title,
+                                            'wrap': true,
+                                            'size': '14px',
+                                            'align': 'start',
+                                            'gravity': 'center',
+                                            'maxLines': 3,
+                                            'margin': '5px'
+                                        }
+                                    ]
+                                }
+                            ],
+                            'backgroundColor': '#FFFFFF',
+                            'width': '100%',
+                            'height': '70px',
+                            'cornerRadius': '8px',
+                            'action': {
+                                'type': 'uri',
+                                'label': 'action',
+                                'uri': kaokaiToday,
+                            }
+                        },
+                    );
+                }
+            }
+
+            const lineNewMoveParty = new LineNewMoveParty();
+            lineNewMoveParty.objIds = stackIds;
+            const tokenLine = process.env.LINE_AUTHORIZATION;
+
+            const create = await this.lineNewMovePartyService.create(lineNewMoveParty);
+            // api.line.me/v2/bot/message/push
+            if(create) {
+                const lineUsers = await axios.get(
+                    'https://api.line.me/v2/bot/followers/ids',{
+                    headers:{
+                        Authorization: 'Bearer ' + tokenLine
+                    }
+                });
+                // console.log('content',content['messages'][0].contents.body.contents);
+                if(lineUsers.data.userIds.length > 0 && content['messages'][0].contents.body.contents.length > 0) {
+                    for(const user of lineUsers.data.userIds) {
+                        const requestBody = {
+                            'to': String(user),
+                            'messages':content['messages']
+                        };
+                        
+                        await axios.post(
+                            'https://api.line.me/v2/bot/message/push',
+                            requestBody, {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Accept: 'application/json, text/plain, */*',
+                                Authorization: 'Bearer ' +  tokenLine
+                            }
+                        });
+                    }
+                    return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', undefined));
+                }
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', undefined));
+            } else {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', []));
+            }
+        } else {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('Not found the contents.', []));
+        }
+    }
+
+    @Post('/test/content/oa')
+    public async testLineOaKaokaiContent(
+        @Res() res: any, 
+        @Req() req:any
+    ): Promise<any>{
+        const headerAdmin = req.headers.admin;
+        const adminUser = await this.userService.findOne({email:headerAdmin});
+        if(adminUser === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const objStackIds:any = [];
+        const lineOaStack = await this.lineNewMovePartyService.aggregate([]);
+        if(lineOaStack.length > 0) {
+            for(const line of lineOaStack) {
+                line.objIds.map((ids) => objStackIds.push(new ObjectID(ids)));
+            }
+        }
+        const today = new Date();
+        const twoWeeksAgo = new Date(today.getTime() - 24 * 60 * 60 * 1000 * 14);
+        const kaokaiSnapshot = await this.kaokaiTodaySnapShotService.aggregate(
+            [
+                {
+                    $match:{
+                        _id: {$nin:objStackIds},
+                        endDateTime: {$lte: today, $gte:twoWeeksAgo}
+                    }
+                },
+                {
+                    $sort:{
+                        count:-1,
+                        sumCount:-1
+                    }
+                },
+                {
+                    $limit:4
+                }
+            ]
+        );
+        const content:any = {
+            'messages': [
+                {
+                    'type': 'flex',
+                    'altText': 'ข่าวก้าวไกล ที่น่าสนใจในช่วง 2 สัปดาห์ที่ผ่านมา',
+                    'contents': {
+                        'type': 'bubble',
+                        'size': 'mega',
+                        'body': {
+                            'type': 'box',
+                            'layout': 'vertical',
+                            'contents': [],
+                            'paddingAll': '0px',
+                            'width': '100%',
+                            'height': '100%'
+                        }
+                    }
+                }
+            ]
+        };
+
+        if(kaokaiSnapshot.length > 0){
+            const stackIds:any = [];
+            for(const [key,kaokai] of Object.entries(kaokaiSnapshot)) {
+                stackIds.push(new ObjectID(kaokai._id));
+                let kaokaiToday = undefined;
+                if(parseInt(key,10) === 0 && kaokaiSnapshot.length > 0){
+                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                    let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
+                    if(dd<10) { dd='0'+dd;}
+                    if(mm<10) { mm='0'+mm;}
+                    kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    content['messages'][0].contents.body.contents.push(
+                        {
+                            'type': 'image',
+                            'url': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].coverPageSignUrl : kaokai.data.majorTrend.contents[0].coverPageSignUrl,
+                            'size': 'full',
+                            'aspectMode': 'cover',
+                            'aspectRatio': '1:1',
+                            'gravity': 'center'
+                        },
+                        {
+                            'type': 'box',
+                            'layout': 'vertical',
+                            'contents': [
+                                {
+                                    'type': 'text',
+                                    'text': 'ก้าวไกลทูเดย์',
+                                    'color': '#ffffff',
+                                    'weight': 'bold',
+                                    'size': '34px'
+                                }
+                            ],
+                            'position': 'absolute',
+                            'alignItems': 'center',
+                            'justifyContent': 'center',
+                            'width': '100%',
+                            'offsetTop': '30px'
+                        },
+                        {
+                            'type': 'box',
+                            'layout': 'vertical',
+                            'contents': [
+                                {
+                                    'type': 'box',
+                                    'layout': 'vertical',
+                                    'contents': [
+                                        {
+                                            'type': 'text',
+                                            'text': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].post.title : kaokai.data.majorTrend.contents[0].post.title,
+                                            'maxLines': 3,
+                                            'wrap': true
+                                        },
+                                        {
+                                            'type': 'box',
+                                            'layout': 'vertical',
+                                            'contents': [
+                                                {
+                                                    'type': 'button',
+                                                    'action': {
+                                                        'type': 'uri',
+                                                        'label': 'อ่านเพิ่มเติม',
+                                                        'uri': `${kaokaiToday}`
+                                                    },
+                                                    'color': '#F18805',
+                                                    'scaling': false,
+                                                    'style': 'primary',
+                                                    'height': 'sm',
+                                                    'adjustMode': 'shrink-to-fit',
+                                                    'gravity': 'center',
+                                                    'margin': '10px'
+                                                }
+                                            ],
+                                            'position': 'relative'
+                                        }
+                                    ],
+                                    'height': '130px',
+                                    'backgroundColor': '#F0F0F0',
+                                    'paddingAll': '10px',
+                                    'width': '100%'
+                                },
+                                {
+                                    'type': 'box',
+                                    'layout':'vertical',
+                                    'contents':[]
+                                }
+                            ],
+                            'width': '100%',
+                            'height': '100%'
+                        }
+                    );
+                }
+                
+                if(
+                    parseInt(key,10) === 1 && 
+                    kaokaiSnapshot.length > 0 && 
+                    content['messages'][0].contents.body.contents.length >0
+                    )
+                {
+                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                    let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
+                    if(dd<10) { dd='0'+dd;}
+                    if(mm<10) { mm='0'+mm;}
+                    kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    content['messages'][0].contents.body.contents[2].contents[1].contents.push(
+                        {
+                            'type': 'box',
+                            'layout': 'horizontal',
+                            'contents': [
+                                {
+                                    'type': 'box',
+                                    'layout': 'horizontal',
+                                    'contents': [
+                                        {
+                                            'type': 'image',
+                                            'url': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].coverPageSignUrl : kaokai.data.majorTrend.contents[0].coverPageSignUrl,
+                                            'size': '80px',
+                                            'align': 'start',
+                                            'aspectMode': 'cover'
+                                        }
+                                    ],
+                                    'paddingAll': '5px',
+                                    'cornerRadius': '8px',
+                                    'width': '30%'
+                                },
+                                {
+                                    'type': 'box',
+                                    'layout': 'vertical',
+                                    'contents': [
+                                        {
+                                            'type': 'text',
+                                            'text': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].post.title : kaokai.data.majorTrend.contents[0].post.title,
+                                            'wrap': true,
+                                            'size': '14px',
+                                            'align': 'start',
+                                            'gravity': 'center',
+                                            'maxLines': 3,
+                                            'margin': '5px'
+                                        }
+                                    ]
+                                }
+                            ],
+                            'backgroundColor': '#FFFFFF',
+                            'width': '100%',
+                            'height': '70px',
+                            'cornerRadius': '8px',
+                            'action': {
+                                'type':'uri',
+                                'label':'action',
+                                'uri':kaokaiToday
+                            }
+                        },
+                    );
+                }
+                if(
+                    parseInt(key,10) === 2 && 
+                    kaokaiSnapshot.length > 0 && 
+                    content['messages'][0].contents.body.contents.length >0                
+                )
+                {
+                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                    let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
+                    if(dd<10) { dd='0'+dd;}
+                    if(mm<10) { mm='0'+mm;}
+                    kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    content['messages'][0].contents.body.contents[2].contents[1].contents.push(
+                        {
+                            'type': 'box',
+                            'layout': 'horizontal',
+                            'contents': [
+                                {
+                                    'type': 'box',
+                                    'layout': 'horizontal',
+                                    'contents': [
+                                        {
+                                            'type': 'image',
+                                            'url': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].coverPageSignUrl : kaokai.data.majorTrend.contents[0].coverPageSignUrl,
+                                            'size': '80px',
+                                            'align': 'start',
+                                            'aspectMode': 'cover'
+                                        }
+                                    ],
+                                    'paddingAll': '5px',
+                                    'cornerRadius': '8px',
+                                    'width': '30%'
+                                },
+                                {
+                                    'type': 'box',
+                                    'layout': 'vertical',
+                                    'contents': [
+                                        {
+                                            'type': 'text',
+                                            'text': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].post.title : kaokai.data.majorTrend.contents[0].post.title,
+                                            'wrap': true,
+                                            'size': '14px',
+                                            'align': 'start',
+                                            'gravity': 'center',
+                                            'maxLines': 3,
+                                            'margin': '5px'
+                                        }
+                                    ]
+                                }
+                            ],
+                            'backgroundColor': '#FFFFFF',
+                            'width': '100%',
+                            'height': '70px',
+                            'cornerRadius': '8px',
+                            'action': {
+                                'type': 'uri',
+                                'label': 'action',
+                                'uri':kaokaiToday,
+                            }
+                        },
+                    );
+                }
+                if(
+                    parseInt(key,10) === 3 &&
+                    kaokaiSnapshot.length > 0 && 
+                    content['messages'][0].contents.body.contents.length >0
+                    )
+                {
+                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                    let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
+                    if(dd<10) { dd='0'+dd;}
+                    if(mm<10) { mm='0'+mm;}
+                    kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    content['messages'][0].contents.body.contents[2].contents[1].contents.push(
+                        {
+                            'type': 'box',
+                            'layout': 'horizontal',
+                            'contents': [
+                                {
+                                    'type': 'box',
+                                    'layout': 'horizontal',
+                                    'contents': [
+                                        {
+                                            'type': 'image',
+                                            'url': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].coverPageSignUrl : kaokai.data.majorTrend.contents[0].coverPageSignUrl,
+                                            'size': '80px',
+                                            'align': 'start',
+                                            'aspectMode': 'cover'
+                                        }
+                                    ],
+                                    'paddingAll': '5px',
+                                    'cornerRadius': '8px',
+                                    'width': '30%'
+                                },
+                                {
+                                    'type': 'box',
+                                    'layout': 'vertical',
+                                    'contents': [
+                                        {
+                                            'type': 'text',
+                                            'text': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].post.title : kaokai.data.majorTrend.contents[0].post.title,
+                                            'wrap': true,
+                                            'size': '14px',
+                                            'align': 'start',
+                                            'gravity': 'center',
+                                            'maxLines': 3,
+                                            'margin': '5px'
+                                        }
+                                    ]
+                                }
+                            ],
+                            'backgroundColor': '#FFFFFF',
+                            'width': '100%',
+                            'height': '70px',
+                            'cornerRadius': '8px',
+                            'action': {
+                                'type': 'uri',
+                                'label': 'action',
+                                'uri': kaokaiToday
+                            }
+                        },
+                    );
+                }
+            }
+
+            const lineNewMoveParty = new LineNewMoveParty();
+            lineNewMoveParty.objIds = stackIds;
+            const tokenLine = process.env.LINE_AUTHORIZATION;
+
+            const create = await this.lineNewMovePartyService.create(lineNewMoveParty);
+            // api.line.me/v2/bot/message/push
+            if(create) {
+                const lineUsers = await axios.get(
+                    'https://api.line.me/v2/bot/followers/ids',{
+                    headers:{
+                        Authorization: 'Bearer ' + tokenLine
+                    }
+                });
+                // console.log('content',content['messages'][0].contents.body.contents);
+                if(lineUsers.data.userIds.length > 0 && content['messages'][0].contents.body.contents.length > 0) {
+                    const requestBody = {
+                        'to': 'U589f12b01e4f66d84ac302bb1cbbfb78',
+                        'messages':content['messages']
+                    };
+                    
+                    await axios.post(
+                        'https://api.line.me/v2/bot/message/push',
+                        requestBody, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json, text/plain, */*',
+                            Authorization: 'Bearer ' +  tokenLine
+                        }
+                    });
+                    return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', undefined));
+                }
+            } else {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', []));
+            }
+        } else {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Not found the contents.', []));
+        }
+    }
     
     @Post('/migrate/birthday')
-    @Authorized()
     public async migrateBirthDay(
         @Res() res: any, 
         @Req() req:any): Promise<any>{
+        const headerAdmin = req.headers.admin;
+        const adminUser = await this.userService.findOne({email:headerAdmin});
+        if(adminUser === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         const users:any = await this.userService.aggregate([
             {
                 $match:{

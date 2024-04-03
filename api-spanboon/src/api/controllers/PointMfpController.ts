@@ -216,7 +216,6 @@ export class NotificationController {
                 productId: productObj.id
             }
         );
-        console.log('couponObj',couponObj);
         if(couponObj === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Coupon not found.', undefined);
             return res.status(400).send(errorResponse);
@@ -310,7 +309,7 @@ export class NotificationController {
         result.s3CoverPageURL = pointEventObj.s3CoverPageURL;
         result.receiver = pointEventObj.receiver;
         if(result){
-            const successResponse = ResponseUtil.getSuccessResponse('Get PointEventObj is success.', pointEventObj);
+            const successResponse = ResponseUtil.getSuccessResponse('Get PointEventObj is success.', {'pointEventDetail':result});
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Not found PointEvent.', undefined);
@@ -341,7 +340,7 @@ export class NotificationController {
         result.receiverCoupon = productObj.receiverCoupon;
         result.couponExpire = productObj.couponExpire;
         if(result){
-            const successResponse = ResponseUtil.getSuccessResponse('Get Product is success.', result);
+            const successResponse = ResponseUtil.getSuccessResponse('Get Product is success.', {'productDetail':result});
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Not found Product.', undefined);
@@ -550,7 +549,7 @@ export class NotificationController {
 
         const result = {
             'user': decorateUser!== undefined ? decorateUser: {},
-            'accumulatePoint':accumulateAggr !== undefined ? accumulateAggr[0] : [],
+            'accumulatePoint':accumulateAggr !== undefined ? accumulateAggr[0] : {},
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get content points is success.', result);
         return res.status(200).send(successResponse);
@@ -675,7 +674,7 @@ export class NotificationController {
             ]
         );
         const result = {
-            'userCoupon':userCoupon
+            'userCoupon':userCoupon !== undefined ? userCoupon : null
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
         return res.status(200).send(successResponse);
@@ -842,9 +841,9 @@ export class NotificationController {
 
         const result = {
             'sortAccumulatePoint':{
-                'selfOrder':count,
-                'self':selfPoint[0],
-                'rankingPoint':sortUserPoint
+                'selfOrder':count !== undefined ? count : null,
+                'self':selfPoint[0] !== undefined ? selfPoint[0] : null,
+                'rankingPoint':sortUserPoint !== undefined ? sortUserPoint : null
             },
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get content AcumulatePoint is success.', result);
@@ -985,7 +984,7 @@ export class NotificationController {
             ]
         );
         const result = {
-            'accumulatePoint':accumulateAggr.length > 0 ? accumulateAggr[0] : [],
+            'accumulatePoint':accumulateAggr.length > 0 ? accumulateAggr[0] : null,
             'userCoupon':userCouponCount.length > 0 ? userCouponCount[0].count : 0,
             'pointEvent':pointEventsAggr,
             'categoryProduct':categoryProductAggr,
@@ -1056,7 +1055,7 @@ export class NotificationController {
             ]
         );
         const result = {
-            'categoryProduct':productAggr[0]
+            'categoryProducts':productAggr[0] !== undefined ? productAggr[0] : null
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get category product is success.', result);
         return res.status(200).send(successResponse);
