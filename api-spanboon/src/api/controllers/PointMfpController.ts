@@ -573,26 +573,21 @@ export class NotificationController {
                     }
                 },
                 {
-                    $skip: skips
-                },
-                {
-                    $limit: take
-                },
-                {
                     $lookup:{
                         from:'PointStatement',
-                        let:{'id':'$userId'},
+                        let:{'productId':'$productId'},
                         pipeline:[
                             {
                                 $match:{
                                     $expr:{
-                                        $eq:['$$id','$userId']
+                                        $eq:['$$productId','$productId']
                                     }
                                 }
                             },
                             {
                                 $match:{
-                                    productId:{$ne:null}
+                                    productId:{$ne:null},
+                                    userId:userObjId
                                 }
                             },
                             {
@@ -670,11 +665,17 @@ export class NotificationController {
                         expireDate:1,
                         activeDate:1
                     }
-                }
+                },
+                {
+                    $skip: skips
+                },
+                {
+                    $limit: take
+                },
             ]
         );
         const result = {
-            'userCoupon':userCoupon !== undefined ? userCoupon : null
+            'userCoupon':userCoupon.length > 0 ? userCoupon : null
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
         return res.status(200).send(successResponse);
