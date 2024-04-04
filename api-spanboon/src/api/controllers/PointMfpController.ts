@@ -393,6 +393,11 @@ export class NotificationController {
                                 }
                             },
                             {
+                                $sort:{
+                                    createdDate:-1
+                                }
+                            },
+                            {
                                 $skip: skips
                             },
                             {
@@ -420,6 +425,11 @@ export class NotificationController {
                                 }
                             },
                             {
+                                $sort:{
+                                    createdDate:-1
+                                }
+                            },
+                            {
                                 $skip: skips
                             },
                             {
@@ -444,6 +454,11 @@ export class NotificationController {
                             {
                                 $match:{
                                     type:'REDEEM'
+                                }
+                            },
+                            {
+                                $sort:{
+                                    createdDate:-1
                                 }
                             },
                             {
