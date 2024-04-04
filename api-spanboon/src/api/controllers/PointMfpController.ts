@@ -689,7 +689,6 @@ export class NotificationController {
         const userObjId = new ObjectID(req.headers.userid);
         let userCouponCount = undefined;
         let selfPoint = undefined;
-        let sortUserPoint = undefined;
 
         userCouponCount = await this.userCouponService.aggregate(
             [
@@ -764,68 +763,66 @@ export class NotificationController {
             );
         }
 
-        if(selfPoint !== undefined && selfPoint.length>0){
-            sortUserPoint = await this.accumulateService.aggregate(
-                [
-                    {
-                        $lookup:{
-                            from:'User',
-                            let:{'userId':'$userId'},
-                            pipeline:[
-                                {
-                                    $match:{
-                                        $expr:{
-                                            $eq:['$$userId','$_id']
-                                        }
-                                    }
-                                },
-                                {
-                                    $project:{
-                                        firstName:1,
-                                        lastName:1,
-                                        displayName:1,
-                                        uniqueId:1,
-                                        imageURL:1,
-                                        s3ImageURL:1,
-                                        province:1,
-                                        membership:1
-
+        const sortUserPoint = await this.accumulateService.aggregate(
+            [
+                {
+                    $lookup:{
+                        from:'User',
+                        let:{'userId':'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$userId','$_id']
                                     }
                                 }
-                                
-                            ],
-                            as:'user'
-                        }
-                    },
-                    {
-                        $unwind:'$user'
-                    },
-                    {
-                        $limit:50
-                    },
-                    {
-                        '$addFields':{
-                            'accumulatePoint':{
-                                '$add':['$accumulatePoint','$usedPoint']
+                            },
+                            {
+                                $project:{
+                                    firstName:1,
+                                    lastName:1,
+                                    displayName:1,
+                                    uniqueId:1,
+                                    imageURL:1,
+                                    s3ImageURL:1,
+                                    province:1,
+                                    membership:1
+
+                                }
                             }
-                        }
-                    },
-                    {
-                        $project:{
-                            createdDate:1,
-                            userId:1,
-                            user:1,
-                            accumulatePoint:1
-                        }
-                    },
-                    {
-                        $sort:{
-                            accumulatePoint:-1
+                            
+                        ],
+                        as:'user'
+                    }
+                },
+                {
+                    $unwind:'$user'
+                },
+                {
+                    $limit:50
+                },
+                {
+                    '$addFields':{
+                        'accumulatePoint':{
+                            '$add':['$accumulatePoint','$usedPoint']
                         }
                     }
-                ]
-            );
-        }
+                },
+                {
+                    $project:{
+                        createdDate:1,
+                        userId:1,
+                        user:1,
+                        accumulatePoint:1
+                    }
+                },
+                {
+                    $sort:{
+                        accumulatePoint:-1
+                    }
+                }
+            ]
+        );
         let count = 1;
         if(sortUserPoint !== undefined && sortUserPoint.length >0) {
             for(const content of sortUserPoint) {
@@ -841,7 +838,7 @@ export class NotificationController {
 
         const result = {
             'sortAccumulatePoint':{
-                'selfOrder':count !== undefined ? count : null,
+                'selfOrder': selfPoint !== undefined && count !== undefined ? count : null,
                 'self': selfPoint !== undefined && selfPoint.length > 0  ? selfPoint[0] : null,
                 'rankingPoint':sortUserPoint !== undefined ? sortUserPoint : null
             },
