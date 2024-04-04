@@ -380,7 +380,6 @@ export class AssetController {
                         }
                     ]
                 );
-
                 result['mfpUsers'] = {
                     'label': 'MFP Users',
                     'data': findUsersMfpByProvince
@@ -635,7 +634,7 @@ export class AssetController {
         };
         result['Total_Login'] = {
             'label': 'Total users loginBy',
-            'data': totalUsersLogin.length > 0 ? totalUsersLogin[0].loginBy.data: []
+            'data': totalUsersLogin.length > 0 ? totalUsersLogin[0]: []
         };
         analytics.mfpUsers = result['mfpUsers'];
         analytics.followerPage = result['followerPage'];
