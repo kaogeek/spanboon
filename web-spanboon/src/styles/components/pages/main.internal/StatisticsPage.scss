@@ -301,12 +301,27 @@
             align-items: center;
             padding: 0 10px;
             justify-content: space-between;
+            cursor: pointer;
             @include font-size-9($font-head-500);
 
             @media (max-width: $large) {
               grid-area: unset !important;
               grid-column: unset !important;
               grid-row: unset !important;
+            }
+
+            &:hover {
+              > .ranking {
+                > .name {
+                  color: $brandcolor2;
+                }
+              }
+
+              > .count {
+                > span {
+                  color: $brandcolor2;
+                }
+              }
             }
 
             > .ranking {

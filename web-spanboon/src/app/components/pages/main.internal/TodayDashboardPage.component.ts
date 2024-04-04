@@ -97,20 +97,6 @@ export class TodayDashboardPage extends AbstractPage implements OnInit {
             icon2: '../../../../assets/img/icons/votepage/openvote-active.svg',
             isLogin: false,
         },
-        // {
-        //     name: 'ล่ารายชื่อ',
-        //     status: 'support',
-        //     icon: '../../../../assets/img/icons/votepage/like.svg',
-        //     icon2: '../../../../assets/img/icons/votepage/like-active.svg',
-        //     isLogin: false,
-        // },
-        // {
-        //     name: 'ดูผลโหวต',
-        //     status: 'result',
-        //     icon: '../../../../assets/img/icons/votepage/statistic.svg',
-        //     icon2: '../../../../assets/img/icons/votepage/statistic-active.svg',
-        //     isLogin: false,
-        // },
     ];
 
     public listPage: any[] = [];
@@ -498,6 +484,10 @@ export class TodayDashboardPage extends AbstractPage implements OnInit {
     public getGridRow(index: number): number {
         index = index - 24;
         return index;
+    }
+
+    public clickToPage(page) {
+        this.router.navigate(['', 'page', page._id]);
     }
 
     private _checkRouting(id: any): boolean {
