@@ -842,7 +842,7 @@ export class NotificationController {
         const result = {
             'sortAccumulatePoint':{
                 'selfOrder':count !== undefined ? count : null,
-                'self':selfPoint[0] !== undefined ? selfPoint[0] : null,
+                'self':selfPoint.length > 0  ? selfPoint[0] : null,
                 'rankingPoint':sortUserPoint !== undefined ? sortUserPoint : null
             },
         };
