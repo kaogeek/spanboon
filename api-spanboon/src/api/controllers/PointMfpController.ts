@@ -827,7 +827,7 @@ export class NotificationController {
         if(sortUserPoint !== undefined && sortUserPoint.length >0) {
             for(const content of sortUserPoint) {
                 const userString = String(content.userId);
-                if(userString === String(req.headers.id)){
+                if(userString === String(userObjId)){
                     break;
                 } else {
                     count += 1;
