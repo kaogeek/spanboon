@@ -827,7 +827,7 @@ export class NotificationController {
             );
         }
         let count = 1;
-        if(sortUserPoint.length >0) {
+        if(sortUserPoint !== undefined && sortUserPoint.length >0) {
             for(const content of sortUserPoint) {
                 const userString = String(content.userId);
                 if(userString === String(req.headers.id)){
