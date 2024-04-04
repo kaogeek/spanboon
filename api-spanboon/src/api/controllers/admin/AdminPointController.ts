@@ -394,8 +394,8 @@ export class AdminPointController {
                     assetId: productRequest.assetId,
                     coverPageURL: productRequest.coverPageURL,
                     s3CoverPageURL: signUrl,
-                    expiringDate: productRequest.expiringDate,
-                    activeDate: productRequest.activeDate,
+                    expiringDate: new Date(productRequest.expiringDate),
+                    activeDate: new Date(productRequest.activeDate),
                     couponExpire: productRequest.couponExpire,
                     updateDate: new Date()
                 }
