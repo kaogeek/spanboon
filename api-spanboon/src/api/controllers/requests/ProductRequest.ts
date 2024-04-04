@@ -11,11 +11,11 @@ export class ProductRequest {
     @IsString()
     public title: string;
     @IsNotEmpty({ message: 'point is required' })
-    @IsPositive({ message: 'value is not Positive number'})
-    public point:number;
+    @IsPositive({ message: 'value is not Positive number' })
+    public point: number;
 
     @IsNotEmpty({ message: 'maximumLimit is required' })
-    @IsPositive({ message: 'value is not Positive number'})
+    @IsPositive({ message: 'value is not Positive number' })
     public maximumLimit: number;
 
     @IsNotEmpty({ message: 'detail is required' })
@@ -31,22 +31,20 @@ export class ProductRequest {
 
     @IsNotEmpty({ message: 'coverPageURL is required' })
     @IsString()
-    public coverPageURL:string;
+    public coverPageURL: string;
 
     @IsNotEmpty({ message: 'link is required' })
     @IsString()
-    public categoryName:string;
+    public categoryName: string;
 
-    public s3CoverPageURL:string;
-
-    @IsNotEmpty({ message: 'categoryId is required' })
-    @IsString()
-    public expiringDate:string;
+    public s3CoverPageURL: string;
 
     @IsNotEmpty({ message: 'categoryId is required' })
     @IsString()
-    public activeDate:string;
+    public expiringDate: string;
+
+    public activeDate: string;
 
     @IsNotEmpty({ message: 'couponExpire is required' })
-    public couponExpire:number;
+    public couponExpire: number;
 }
