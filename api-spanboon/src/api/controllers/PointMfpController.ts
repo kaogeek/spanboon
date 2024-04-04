@@ -682,12 +682,11 @@ export class NotificationController {
     }
 
     @Post('/sort/accumulate/search')
-    @Authorized('user')
     public async getAccumulatePoint(
         @Res() res: any,
         @Req() req: any
     ): Promise<any>{
-        const userObjId = new ObjectID(req.user.id);
+        const userObjId = new ObjectID(req.headers.userid);
         let userCouponCount = undefined;
         let selfPoint = undefined;
         let sortUserPoint = undefined;
@@ -831,7 +830,7 @@ export class NotificationController {
         if(sortUserPoint.length >0) {
             for(const content of sortUserPoint) {
                 const userString = String(content.userId);
-                if(userString === String(req.user.id)){
+                if(userString === String(req.headers.id)){
                     break;
                 } else {
                     count += 1;
