@@ -463,6 +463,7 @@ export class AssetController {
                 'label': 'Total users loginBy',
                 'data': memoryRec !== undefined ? memoryRec[0].loginBy.data : []
             };
+            console.log('memoryRec',memoryRec[0].loginBy.data);
 
             const successResponse = ResponseUtil.getSuccessResponse('DashBoard.', result);
             return res.status(200).send(successResponse);
@@ -634,7 +635,7 @@ export class AssetController {
         };
         result['Total_Login'] = {
             'label': 'Total users loginBy',
-            'data': totalUsersLogin.length > 0 ? totalUsersLogin[0]: []
+            'data': totalUsersLogin.length > 0 ? totalUsersLogin: []
         };
         analytics.mfpUsers = result['mfpUsers'];
         analytics.followerPage = result['followerPage'];
