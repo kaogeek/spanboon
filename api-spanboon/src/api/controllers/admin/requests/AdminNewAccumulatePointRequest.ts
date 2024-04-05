@@ -7,14 +7,9 @@
 
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class AdminAccumulatePointRequest {
-
-    @IsNotEmpty({ message: 'point is required' })
-    public point: number;
+export class AdminNewAccumulatePointRequest {
 
     @IsNotEmpty()
     @IsString()
     public userId: string;
-
-    public id: string;
 }

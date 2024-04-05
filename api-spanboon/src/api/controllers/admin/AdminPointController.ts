@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Post, Body, Req, Authorized,Put,Param, Delete } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Authorized, Put, Param, Delete, Get } from 'routing-controllers';
 import { ResponseUtil } from '../../../utils/ResponseUtil';
 import { PointEventService } from '../../services/PointEventService';
 import { UserService } from '../../services/UserService';
@@ -26,6 +26,7 @@ import { ProductRequest } from '../requests/ProductRequest';
 import { PointEventRequest } from '../requests/PointEventRequest';
 import { AdminActiveCouponRequest } from './requests/AdminActiveCouponRequest';
 import { AdminAccumulatePointRequest } from './requests/AdminAccumulatePointRequest';
+import { AdminNewAccumulatePointRequest } from './requests/AdminNewAccumulatePointRequest';
 import { ObjectID } from 'mongodb';
 import { PointStatementModel } from '../../models/PointStatementModel';
 import { AccumulateModel } from '../../models/AccumulatePointModel';
@@ -34,14 +35,14 @@ import { AccumulateModel } from '../../models/AccumulatePointModel';
 @JsonController('/admin/point')
 export class AdminPointController {
     constructor(
-        private pointEventService:PointEventService,
-        private userService:UserService,
-        private productCategoryService:ProductCategoryService,
-        private productService:ProductService,
-        private s3Service:S3Service,
-        private userCouponService:UserCouponService,
-        private pointStatementService:PointStatementService,
-        private accumulateService:AccumulateService
+        private pointEventService: PointEventService,
+        private userService: UserService,
+        private productCategoryService: ProductCategoryService,
+        private productService: ProductService,
+        private s3Service: S3Service,
+        private userCouponService: UserCouponService,
+        private pointStatementService: PointStatementService,
+        private accumulateService: AccumulateService
     ) { }
 
     /**
@@ -70,14 +71,14 @@ export class AdminPointController {
      * @apiErrorExample {json} Error
      * HTTP/1.1 500 Internal Server Error
      */
-    
+
     @Post('/event')
     @Authorized()
     public async createPointEvent(@Body({ validate: true }) pointEventRequest: PointEventRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
-        const user = await this.userService.findOne({_id:userId});
+        const user = await this.userService.findOne({ _id: userId });
 
-        const signUrl = pointEventRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(pointEventRequest.s3CoverPageURL): undefined;
+        const signUrl = pointEventRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(pointEventRequest.s3CoverPageURL) : undefined;
 
         const pointEventModel = new PointEventModel();
         pointEventModel.title = pointEventRequest.title;
@@ -93,7 +94,7 @@ export class AdminPointController {
         pointEventModel.s3CoverPageURL = signUrl;
         pointEventModel.receiver = 0;
         const create = await this.pointEventService.create(pointEventModel);
-        if(create){
+        if (create) {
             const successResponse = ResponseUtil.getSuccessResponse('Create PointEvent is success.', create);
             return res.status(200).send(successResponse);
         } else {
@@ -104,18 +105,18 @@ export class AdminPointController {
 
     @Put('/event/:id')
     @Authorized()
-    public async updatePointEvent(@Body({ validate: true }) pointEventRequest: PointEventRequest,@Param('id') eventId: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async updatePointEvent(@Body({ validate: true }) pointEventRequest: PointEventRequest, @Param('id') eventId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const eventObjId = new ObjectID(eventId);
-        const user = await this.userService.findOne({_id:userObjId});
+        const user = await this.userService.findOne({ _id: userObjId });
 
-        const signUrl = pointEventRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(pointEventRequest.s3CoverPageURL): undefined;
+        const signUrl = pointEventRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(pointEventRequest.s3CoverPageURL) : undefined;
 
         const update = await this.pointEventService.update(
-            {_id:eventObjId}
+            { _id: eventObjId }
             ,
             {
-                $set:{
+                $set: {
                     title: pointEventRequest.title,
                     detail: pointEventRequest.detail,
                     point: pointEventRequest.point,
@@ -131,7 +132,7 @@ export class AdminPointController {
                 }
             }
         );
-        if(update){
+        if (update) {
             const successResponse = ResponseUtil.getSuccessResponse('Update PointEvent is success.', update);
             return res.status(200).send(successResponse);
         } else {
@@ -142,72 +143,150 @@ export class AdminPointController {
     @Post('/active')
     @Authorized()
     public async activeCoupon(
-        @Body({ validate: true }) adminActiveCouponRequest: AdminActiveCouponRequest, 
-        @Res() res: any, 
-        @Req() req: any): 
-    Promise<any> {
+        @Body({ validate: true }) adminActiveCouponRequest: AdminActiveCouponRequest,
+        @Res() res: any,
+        @Req() req: any):
+        Promise<any> {
         const userObjId = new ObjectID(req.user.id);
-        const user = await this.userService.findOne({_id:userObjId});
+        const user = await this.userService.findOne({ _id: userObjId });
         const userCouponId = new ObjectID(adminActiveCouponRequest.id);
         const reqUserId = new ObjectID(adminActiveCouponRequest.userId);
 
         const query = {
-            _id:userCouponId,
+            _id: userCouponId,
             userId: reqUserId
         };
         const newValues = {
-            $set:{
+            $set: {
                 username: user.username,
-                active:adminActiveCouponRequest.active,
-                expireDate:adminActiveCouponRequest.expireDate,
-                activeDate:adminActiveCouponRequest.activeDate
+                active: adminActiveCouponRequest.active,
+                expireDate: adminActiveCouponRequest.expireDate,
+                activeDate: adminActiveCouponRequest.activeDate
             }
         };
-        const update = await this.userCouponService.update(query,newValues);
-        if(update) {
+        const update = await this.userCouponService.update(query, newValues);
+        if (update) {
             const successResponse = ResponseUtil.getSuccessResponse('Admin Update UserCoup is success.', update);
             return res.status(200).send(successResponse);
         }
     }
 
-    @Post('/accumulate')
+    @Post('/accumulate/')
     @Authorized()
     public async adminAccumulate(
         @Body({ validate: true }) adminAccumulatePointRequest: AdminAccumulatePointRequest,
-        @Res() res: any, 
+        @Res() res: any,
         @Req() req: any
-    ): Promise<any>{
+    ): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
-        const user = await this.userService.findOne({_id:userObjId});
+        const user = await this.userService.findOne({ _id: userObjId });
         const productModel = new PointStatementModel();
-        productModel.title = 'Admin เพิ่ม Point.';
-        productModel.detail = `ได้รับ Point จาก Point ${adminAccumulatePointRequest.point}`;
+        const point = adminAccumulatePointRequest.point;
+        if (!point) {
+            const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        productModel.title = point < 0 ? 'Admin ลด Point.' : 'Admin เพิ่ม Point.';
+        productModel.detail = point < 0 ? `ลด Point จาก Admin จำนวน ${adminAccumulatePointRequest.point}` : `ได้รับ Point จาก Admin จำนวน ${adminAccumulatePointRequest.point}`;
+        productModel.type = point < 0 ? 'ADMIN_REDUCE_POINT' : 'ADMIN_ADD_POINT';
         productModel.point = adminAccumulatePointRequest.point;
-        productModel.type = 'ADMIN_ADD_POINT';
         productModel.userId = new ObjectID(adminAccumulatePointRequest.userId);
         productModel.adminName = user.displayName;
         const create = await this.pointStatementService.create(productModel);
-        if(create) {
+        if (create) {
             const accumulateObj = await this.accumulateService.findOne(
                 {
-                    _id:new ObjectID(adminAccumulatePointRequest.id),
+                    _id: new ObjectID(adminAccumulatePointRequest.id),
                     userId: new ObjectID(adminAccumulatePointRequest.userId)
                 });
-            if(accumulateObj === undefined) {
+            if (accumulateObj === undefined) {
                 const accumulateModel = new AccumulateModel();
                 accumulateModel.userId = new ObjectID(adminAccumulatePointRequest.userId);
                 accumulateModel.accumulatePoint = create.point;
                 accumulateModel.usedPoint = 0;
                 await this.accumulateService.create(accumulateModel);
             }
-            const query = {_id: accumulateObj.id,userId: new ObjectID(adminAccumulatePointRequest.userId)};
-            const newValues = {$set:{accumulatePoint: accumulateObj.accumulatePoint + adminAccumulatePointRequest.point}};
+            const query = { _id: accumulateObj.id, userId: new ObjectID(adminAccumulatePointRequest.userId) };
+            const newValues = { $set: { accumulatePoint: accumulateObj.accumulatePoint + adminAccumulatePointRequest.point } };
             const update = await this.accumulateService.update(query, newValues);
-            if(update) {
+            if (update) {
                 const successResponse = ResponseUtil.getSuccessResponse('Admin Update Accumulate is success.', update);
                 return res.status(200).send(successResponse);
             }
         }
+    }
+
+    @Post('/accumulate/new')
+    @Authorized()
+    public async adminAccumulateNew(
+        @Body({ validate: true }) adminNewAccumulatePointRequest: AdminNewAccumulatePointRequest,
+        @Res() res: any,
+        @Req() req: any
+    ): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        const accumulateObj = await this.accumulateService.findOne(
+            {
+                userId: new ObjectID(adminNewAccumulatePointRequest.userId)
+            });
+        if (accumulateObj !== undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const user = await this.userService.findOne({ _id: userObjId });
+        const productModel = new PointStatementModel();
+        productModel.userId = new ObjectID(adminNewAccumulatePointRequest.userId);
+        productModel.adminName = user.displayName;
+        const create = await this.pointStatementService.create(productModel);
+        if (create) {
+            const accumulateModel = new AccumulateModel();
+            accumulateModel.userId = new ObjectID(adminNewAccumulatePointRequest.userId);
+            accumulateModel.accumulatePoint = create.point;
+            accumulateModel.usedPoint = 0;
+            const createAccumulate = await this.accumulateService.create(accumulateModel);
+            if (createAccumulate) {
+                const successResponse = ResponseUtil.getSuccessResponse('Admin create Accumulate is success.', createAccumulate);
+                return res.status(200).send(successResponse);
+            }
+        }
+    }
+
+    @Post('/accumulate/users')
+    @Authorized()
+    public async adminGetAccumulateUsers(
+        @Res() res: any,
+        @Req() req: any
+    ): Promise<any> {
+        const user = new ObjectID(req.body.user);
+        const users = await this.userService.aggregate([
+            {
+                $match: {
+                    _id: user
+                }
+            },
+            {
+                $lookup: {
+                    from: 'Accumulate',
+                    let: { id: '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: ['$$id', '$userId']
+                                }
+                            }
+                        }
+                    ],
+                    as: 'accumulate'
+                }
+            },
+            {
+                $project: {
+                    accumulate: 1,
+                }
+            }
+        ]);
+        const successResponse = ResponseUtil.getSuccessResponse('Admin create Accumulate is success.', users[0].accumulate);
+        return res.status(200).send(successResponse);
     }
 
     @Delete('/event/:id')
@@ -215,9 +294,9 @@ export class AdminPointController {
     public async deletePointEvent(
         @Param('id') eventId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const eventObjId = new ObjectID(eventId);
-        const deletePointEvent = await this.pointEventService.delete({_id:eventObjId});
+        const deletePointEvent = await this.pointEventService.delete({ _id: eventObjId });
 
-        if(deletePointEvent){
+        if (deletePointEvent) {
             const successResponse = ResponseUtil.getSuccessResponse('Delete PointEvent is success.', undefined);
             return res.status(200).send(successResponse);
         } else {
@@ -229,19 +308,19 @@ export class AdminPointController {
     @Post('/category')
     @Authorized()
     public async createCategory(
-        @Body({validate: true}) categoryPointRequest:CategoryPointRequest,
-        @Res() res: any, 
+        @Body({ validate: true }) categoryPointRequest: CategoryPointRequest,
+        @Res() res: any,
         @Req() req: any): Promise<any> {
 
-        const categoryObj = await this.productCategoryService.findOne({title:categoryPointRequest.title});
-        if(categoryObj !== undefined) {
+        const categoryObj = await this.productCategoryService.findOne({ title: categoryPointRequest.title });
+        if (categoryObj !== undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('The category have had one.', undefined);
             return res.status(400).send(errorResponse);
         }
-        const signUrl = categoryPointRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(categoryPointRequest.s3CoverPageURL): undefined;
+        const signUrl = categoryPointRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(categoryPointRequest.s3CoverPageURL) : undefined;
 
         const userId = new ObjectID(req.user.id);
-        const user = await this.userService.findOne({_id:userId});
+        const user = await this.userService.findOne({ _id: userId });
         const productCategoryModel = new ProductCategoryModel();
         productCategoryModel.title = categoryPointRequest.title;
         productCategoryModel.username = user.username;
@@ -250,7 +329,7 @@ export class AdminPointController {
         productCategoryModel.coverPageURL = categoryPointRequest.coverPageURL;
         productCategoryModel.s3CoverPageURL = signUrl;
         const create = await this.productCategoryService.create(productCategoryModel);
-        if(create){
+        if (create) {
             const successResponse = ResponseUtil.getSuccessResponse('Create Product Category is success.', create);
             return res.status(200).send(successResponse);
         } else {
@@ -261,22 +340,22 @@ export class AdminPointController {
 
     @Put('/category/:id')
     @Authorized()
-    public async updateCategory(@Body({validate: true}) categoryPointRequest:CategoryPointRequest,
-        @Param('id') categoryId: string, 
-        @Res() res: any, 
-        @Req() req: any 
+    public async updateCategory(@Body({ validate: true }) categoryPointRequest: CategoryPointRequest,
+        @Param('id') categoryId: string,
+        @Res() res: any,
+        @Req() req: any
     ): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const categoryObjId = new ObjectID(categoryId);
-        const user = await this.userService.findOne({_id:userObjId});
+        const user = await this.userService.findOne({ _id: userObjId });
 
-        const signUrl = categoryPointRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(categoryPointRequest.s3CoverPageURL): undefined;
+        const signUrl = categoryPointRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(categoryPointRequest.s3CoverPageURL) : undefined;
 
         const update = await this.productCategoryService.update(
-            {_id:categoryObjId}
+            { _id: categoryObjId }
             ,
             {
-                $set:{
+                $set: {
                     title: categoryPointRequest.title,
                     username: user.username,
                     userId: userObjId,
@@ -287,7 +366,7 @@ export class AdminPointController {
                 }
             }
         );
-        if(update){
+        if (update) {
             const successResponse = ResponseUtil.getSuccessResponse('Update ProductCategory is success.', update);
             return res.status(200).send(successResponse);
         } else {
@@ -299,20 +378,20 @@ export class AdminPointController {
     @Delete('/category/:id')
     @Authorized()
     public async deleteCategoryProduct(
-        @Param('id') categoryId: string, 
+        @Param('id') categoryId: string,
         @Res() res: any
     ): Promise<any> {
         const categoryObjId = new ObjectID(categoryId);
 
-        const productCategoryObj = await this.productService.find({categoryId:categoryObjId});
-        if(productCategoryObj.length >0) {
+        const productCategoryObj = await this.productService.find({ categoryId: categoryObjId });
+        if (productCategoryObj.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot delete category the product have had existed.', undefined);
             return res.status(400).send(errorResponse);
         }
 
-        const deleteCategoryProduct = await this.productCategoryService.delete({_id:categoryObjId});
+        const deleteCategoryProduct = await this.productCategoryService.delete({ _id: categoryObjId });
 
-        if(deleteCategoryProduct){
+        if (deleteCategoryProduct) {
             const successResponse = ResponseUtil.getSuccessResponse('Delete ProductCategory is success.', undefined);
             return res.status(200).send(successResponse);
         } else {
@@ -324,17 +403,17 @@ export class AdminPointController {
     @Post('/product')
     @Authorized()
     public async createProductPoint(
-        @Body({validate: true}) productRequest:ProductRequest,  
-        @Res() res: any, 
+        @Body({ validate: true }) productRequest: ProductRequest,
+        @Res() res: any,
         @Req() req: any): Promise<any> {
-        if(typeof(productRequest.couponExpire) === 'string'){
+        if (typeof (productRequest.couponExpire) === 'string') {
             const errorResponse = ResponseUtil.getErrorResponse('couponExpire is string.', undefined);
             return res.status(400).send(errorResponse);
         }
-        const signUrl = productRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(productRequest.s3CoverPageURL): undefined;
+        const signUrl = productRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(productRequest.s3CoverPageURL) : undefined;
 
         const userId = new ObjectID(req.user.id);
-        const user = await this.userService.findOne({_id:userId});
+        const user = await this.userService.findOne({ _id: userId });
         const productModel = new ProductModel();
         productModel.categoryId = new ObjectID(productRequest.categoryId);
         productModel.title = productRequest.title;
@@ -353,12 +432,12 @@ export class AdminPointController {
         productModel.receiverCoupon = 0;
         productModel.couponExpire = productRequest.couponExpire;
         const create = await this.productService.create(productModel);
-        if(create){
+        if (create) {
             const successResponse = ResponseUtil.getSuccessResponse('Create Product is success.', create);
             return res.status(200).send(successResponse);
         } else {
-            const deleteProduct = await this.productService.delete({_id:create.id});
-            if(deleteProduct){
+            const deleteProduct = await this.productService.delete({ _id: create.id });
+            if (deleteProduct) {
                 const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', undefined);
                 return res.status(400).send(errorResponse);
             }
@@ -367,22 +446,22 @@ export class AdminPointController {
 
     @Put('/product/:id')
     @Authorized()
-    public async updateProduct(@Body({validate: true}) productRequest:ProductRequest,
-        @Param('id') product: string, 
-        @Res() res: any, 
-        @Req() req: any 
+    public async updateProduct(@Body({ validate: true }) productRequest: ProductRequest,
+        @Param('id') product: string,
+        @Res() res: any,
+        @Req() req: any
     ): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const productObjId = new ObjectID(product);
-        const user = await this.userService.findOne({_id:userObjId});
+        const user = await this.userService.findOne({ _id: userObjId });
 
-        const signUrl = productRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(productRequest.s3CoverPageURL): undefined;
+        const signUrl = productRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(productRequest.s3CoverPageURL) : undefined;
 
         const update = await this.productService.update(
-            {_id:productObjId}
+            { _id: productObjId }
             ,
             {
-                $set:{
+                $set: {
                     title: productRequest.title,
                     detail: productRequest.detail,
                     point: productRequest.point,
@@ -401,7 +480,7 @@ export class AdminPointController {
                 }
             }
         );
-        if(update){
+        if (update) {
             const successResponse = ResponseUtil.getSuccessResponse('Update Product is success.', update);
             return res.status(200).send(successResponse);
         } else {
@@ -413,20 +492,20 @@ export class AdminPointController {
     @Delete('/product/:id')
     @Authorized()
     public async deleteProduct(
-        @Param('id') product: string, 
-        @Res() res: any, 
-        @Req() req: any 
+        @Param('id') product: string,
+        @Res() res: any,
+        @Req() req: any
     ): Promise<any> {
         const productObjId = new ObjectID(product);
 
-        const productEventObj = await this.pointEventService.find({productId:productObjId});
-        if(productEventObj.length > 0) {
+        const productEventObj = await this.pointEventService.find({ productId: productObjId });
+        if (productEventObj.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot delete product users had reversed this product.', undefined);
             return res.status(400).send(errorResponse);
         }
 
-        const deleteProduct = await this.productService.delete({_id:productObjId});
-        if(deleteProduct){
+        const deleteProduct = await this.productService.delete({ _id: productObjId });
+        if (deleteProduct) {
             const successResponse = ResponseUtil.getSuccessResponse('Delete Product is success.', undefined);
             return res.status(200).send(successResponse);
         } else {
@@ -439,7 +518,7 @@ export class AdminPointController {
     @Authorized()
     public async searchPointEvent(@Res() res: any, @Req() req: any): Promise<any> {
         const pointEvent = await this.pointEventService.find();
-        if(pointEvent.length >0){
+        if (pointEvent.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Search PointEvent is success.', pointEvent);
             return res.status(200).send(successResponse);
         } else {
@@ -452,7 +531,7 @@ export class AdminPointController {
     @Authorized()
     public async searchCategory(@Res() res: any, @Req() req: any): Promise<any> {
         const Category = await this.productCategoryService.find();
-        if(Category.length >0){
+        if (Category.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Search Category is success.', Category);
             return res.status(200).send(successResponse);
         } else {
@@ -465,7 +544,7 @@ export class AdminPointController {
     @Authorized()
     public async searchProduct(@Res() res: any, @Req() req: any): Promise<any> {
         const product = await this.productService.find();
-        if(product.length >0){
+        if (product.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Search Product is success.', product);
             return res.status(200).send(successResponse);
         } else {
