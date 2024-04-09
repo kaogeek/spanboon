@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Post, Body, Req, Authorized, Put, Param, Delete, Get } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Authorized, Put, Param, Delete } from 'routing-controllers';
 import { ResponseUtil } from '../../../utils/ResponseUtil';
 import { PointEventService } from '../../services/PointEventService';
 import { UserService } from '../../services/UserService';
@@ -83,7 +83,7 @@ export class AdminPointController {
         const pointEventModel = new PointEventModel();
         pointEventModel.title = pointEventRequest.title;
         pointEventModel.detail = pointEventRequest.detail;
-        pointEventModel.point = pointEventRequest.point;
+        pointEventModel.point = Math.ceil(pointEventRequest.point);
         pointEventModel.maximumLimit = pointEventRequest.maximumLimit;
         pointEventModel.condition = pointEventRequest.condition;
         pointEventModel.userId = userId;
@@ -119,7 +119,7 @@ export class AdminPointController {
                 $set: {
                     title: pointEventRequest.title,
                     detail: pointEventRequest.detail,
-                    point: pointEventRequest.point,
+                    point: Math.ceil(pointEventRequest.point),
                     maximumLimit: pointEventRequest.maximumLimit,
                     condition: pointEventRequest.condition,
                     userId: userObjId,
@@ -189,7 +189,7 @@ export class AdminPointController {
         productModel.title = point < 0 ? 'Admin ลด Point.' : 'Admin เพิ่ม Point.';
         productModel.detail = point < 0 ? `ลด Point จาก Admin จำนวน ${adminAccumulatePointRequest.point}` : `ได้รับ Point จาก Admin จำนวน ${adminAccumulatePointRequest.point}`;
         productModel.type = point < 0 ? 'ADMIN_REDUCE_POINT' : 'ADMIN_ADD_POINT';
-        productModel.point = adminAccumulatePointRequest.point;
+        productModel.point = Math.ceil(adminAccumulatePointRequest.point);
         productModel.userId = new ObjectID(adminAccumulatePointRequest.userId);
         productModel.adminName = user.displayName;
         const create = await this.pointStatementService.create(productModel);
@@ -410,6 +410,9 @@ export class AdminPointController {
             const errorResponse = ResponseUtil.getErrorResponse('couponExpire is string.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        const convertPoint = Math.ceil(productRequest.point);
+
         const signUrl = productRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(productRequest.s3CoverPageURL) : undefined;
 
         const userId = new ObjectID(req.user.id);
@@ -418,7 +421,7 @@ export class AdminPointController {
         productModel.categoryId = new ObjectID(productRequest.categoryId);
         productModel.title = productRequest.title;
         productModel.detail = productRequest.detail;
-        productModel.point = productRequest.point;
+        productModel.point = convertPoint;
         productModel.maximumLimit = productRequest.maximumLimit;
         productModel.condition = productRequest.condition;
         productModel.username = user.username;
@@ -464,7 +467,7 @@ export class AdminPointController {
                 $set: {
                     title: productRequest.title,
                     detail: productRequest.detail,
-                    point: productRequest.point,
+                    point: Math.ceil(productRequest.point),
                     maximumLimit: productRequest.maximumLimit,
                     condition: productRequest.condition,
                     categoryName: productRequest.categoryName,
