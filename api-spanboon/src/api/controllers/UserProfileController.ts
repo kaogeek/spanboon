@@ -181,6 +181,7 @@ export class UserProfileController {
                     }
                 );
             }
+
             result.authUser = authProviderList;
             result.following = userFollowing.length;
             result.followers = userFollower.length;
@@ -653,7 +654,7 @@ export class UserProfileController {
             const newValue = { $set: { membership: false } };
             const update = await this.userService.update(query, newValue);
             if (update) {
-                const deleteAuthen = await this.authenIdService.aggregate({ user: userObj, providerName: PROVIDER.MFP });
+                const deleteAuthen = await this.authenIdService.delete({ user: userObj, providerName: PROVIDER.MFP });
                 if (deleteAuthen) {
                     const successResponseMFP = ResponseUtil.getSuccessResponse('Binding MFP is successful.', undefined);
                     return res.status(200).send(successResponseMFP);
