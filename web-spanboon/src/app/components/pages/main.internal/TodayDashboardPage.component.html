@@ -105,7 +105,8 @@
                         [ngStyle]="{'grid-template-columns': listPage.length <= 24 ? '1fr' : 'repeat(2, 1fr)'}">
                         <ng-container *ngFor="let item of listPage;let index = index">
                             <div class="page"
-                                [ngStyle]="{'grid-column': index <= 24 ? '1' : '2', 'grid-row': index > 24 ? getGridRow(index) : ''}">
+                                [ngStyle]="{'grid-column': index <= 24 ? '1' : '2', 'grid-row': index > 24 ? getGridRow(index) : ''}"
+                                (click)="clickToPage(item)">
                                 <div class="ranking">
                                     <img *ngIf="index === 0" src="../../../../assets/img/ranking-1.png" alt="อันดับ1">
                                     <img *ngIf="index === 1" src="../../../../assets/img/ranking-2.png" alt="อันดับ2">
