@@ -43,6 +43,13 @@ export class MenuItem implements OnInit {
     }
   }
 
+  public isActiveSub(item): boolean {
+    if (item.path === this.router.url) {
+      return true;
+    }
+    return false;
+  }
+
   public isShowItem(): boolean {
     if (this.isOpen || this.isActive()) {
       return true;

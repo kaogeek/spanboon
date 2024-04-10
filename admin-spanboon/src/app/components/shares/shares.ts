@@ -17,3 +17,5 @@ export * from './DialogWarningComponent.component';
 export * from './DialogAlert.component';
 export * from './DialogImagePreview.component';
 export * from './DateYearPicker.component';
+export * from './DialogAddNoti.component';
+export * from './DialogInput.component';

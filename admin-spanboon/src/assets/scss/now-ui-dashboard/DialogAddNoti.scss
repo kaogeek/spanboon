@@ -1,0 +1,73 @@
+.header-add-noti {
+  height: 45px;
+  border-bottom: 1px solid #00000040;
+  position: fixed;
+  background: white;
+  width: 600px;
+  z-index: 1;
+  top: 96pt;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: red;
+
+  > .wrapper-button-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    > span {
+      color: $black;
+    }
+    > button {
+      background-color: #59b2cc;
+      color: #fff;
+    }
+  }
+}
+.dialog-add-noti {
+  height: 500pt;
+
+  > .container {
+    width: 600px;
+    padding: unset;
+    padding-top: 40px;
+    padding-bottom: 10px;
+
+    > .wrapper-item {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      border: 1px solid #00000060;
+      padding: 10px 20px 10px 10px;
+      border-radius: 8px;
+
+      > .wrapper-left {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        flex: 1 1 0%;
+
+        > img {
+          width: 60px;
+          height: 60px;
+          object-fit: cover;
+          aspect-ratio: 16 / 9;
+        }
+
+        > span {
+          font-size: 14px;
+          word-break: break-word;
+        }
+      }
+
+      > .wrapper-checkbox {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+      }
+    }
+  }
+}

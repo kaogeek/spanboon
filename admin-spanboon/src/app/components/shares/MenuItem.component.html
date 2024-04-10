@@ -7,15 +7,17 @@
 
 <div class="wrapper-menu-item">
     <ng-container *ngIf="menu.subRoutes.length > 0; else elseTemplate">
-        <span class="menu-title" [class.activeRoute]="isActive()" [class.active]="isActive() || isOpen" (click)="openItems()">
+        <span class="menu-title" [class.activeRoute]="isActive()" [class.active]="isActive() || isOpen"
+            (click)="openItems()">
             <div class="wrapper-icon">
                 <span class="now-ui-icons icon" [innerHTML]="menu.icon | safe: 'html'">{{menu.icon}}</span>
                 {{menu.title}}
             </div>
             <span class="now-ui-icons icon-arrow arrows-1_minimal-down" [class.up]="isShowItem()"></span>
         </span>
-        <div class="wrapper-iems" [ngStyle]="{'display': !isShowItem() ? 'none' : 'block'}">
-            <span *ngFor="let route of menu.subRoutes" [routerLink]="route.path" [class.active]="routeLink.isActive || (route.title === 'หน้าแรก' && (router.url === '/main/home_content/pageslide' || router.url === '/main/home_content/pagevideo'))"
+        <div class="wrapper-items" [ngStyle]="{'display': !isShowItem() ? 'none' : 'block'}">
+            <span *ngFor="let route of menu.subRoutes" [routerLink]="route.path"
+                [class.active]="isActiveSub(route) || routeLink.isActive || (route.title === 'หน้าแรก' && (router.url === '/main/home_content/pageslide' || router.url === '/main/home_content/pagevideo'))"
                 routerLinkActive #routeLink="routerLinkActive">
                 {{route.title}}
             </span>

@@ -28,11 +28,14 @@ import {
   PageGroup,
   NewsPaperPage,
   VoteEventPage,
-  DashboardPage
+  DashboardPage,
+  TodayPageV2,
+  ManipulatePage,
+  ManipulatePost,
+  PointBannerPage,
+  PointCategoryPage,
+  PointProductPage,
 } from './components/components';
-import { TodayPageV2 } from './components/pages/main.internal/TodayPageV2.component';
-import { ManipulatePage } from './components/pages/main.internal/ManipulatePage.component';
-import { ManipulatePost } from './components/pages/main.internal/ManipulatePost.component';
 const routes: Routes = [
   {
     path: '',
@@ -105,6 +108,18 @@ const routes: Routes = [
       {
         path: ManipulatePost.PAGE_NAME,
         component: ManipulatePost
+      },
+      {
+        path: PointBannerPage.PAGE_NAME,
+        component: PointBannerPage
+      },
+      {
+        path: PointCategoryPage.PAGE_NAME,
+        component: PointCategoryPage
+      },
+      {
+        path: PointProductPage.PAGE_NAME,
+        component: PointProductPage
       },
       // {
       //   path: StandardItemPage.PAGE_NAME,

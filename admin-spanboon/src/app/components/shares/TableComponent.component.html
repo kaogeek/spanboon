@@ -12,6 +12,9 @@
                 (click)="clickBack()">กลับ</button>
             <h4 class="card-title"> {{title}}</h4>
         </div>
+        <div *ngIf="isVote">
+            <button class="btn-top-table" mat-raised-button (click)="clickVoteNotification()">ส่งแจ้งเตือน</button>
+        </div>
         <button class="btn-top-table" *ngIf="actions.isSelect && arr.length > 0 " mat-raised-button
             (click)="clickCreateForm()">{{title ===
             "กระทู้พูดคุย" || title === "กระทู้รับรอง" ? "ตั้งกระทู้แนะนำ" : "เพิ่มข้อมูล"}}</button>
@@ -172,6 +175,12 @@
                                     </button>
                                 </ng-template>
                             </ng-template>
+
+                            <ng-container *ngIf="actions.isAddPoint">
+                                <button mat-raised-button class="btn-point" (click)="clickPoint(element)">
+                                    <img src="../../../assets/img/Point_mini_logo.svg" alt="">
+                                </button>
+                            </ng-container>
 
                             <ng-container *ngIf="actions.isBan">
                                 <button mat-raised-button class="btn-user"

@@ -1,0 +1,68 @@
+<div class="admin-config-page">
+    <mat-drawer-container class="example-container" [hasBackdrop]="true">
+        <mat-drawer #drawer [mode]="'over'" [position]="'end'" [disableClose]="true">
+            <div class="form-admin">
+                <div class="wrapper">
+                    <div class="form-header">
+                        <ng-container *ngIf="!edit; else elseTitle">
+                            <h5 class="title">สร้าง{{title | titlecase}}</h5>
+                        </ng-container>
+                        <ng-template #elseTitle>
+                            <h5 class="title">แก้ไข{{title | titlecase}}</h5>
+                        </ng-template>
+                    </div>
+                    <div class="form-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>รูปภาพ</label>
+                                        <div class="image"
+                                            [ngStyle]="{'border': !!image.coverPageURL ? 'unset' : '1px solid','border-style': !!image.coverPageURL ? 'unset' : 'dashed'}">
+                                            <ng-container *ngIf="!!image.coverPageURL; else elseTemplate">
+                                                <img class="image" [src]="baseURL + image.coverPageURL + '/image'">
+                                                <div class="image-upload">
+                                                    <input #fileInput style="cursor: pointer;" type="file"
+                                                        (change)="onFileSelect($event)" accept="image/*" />
+                                                </div>
+                                            </ng-container>
+                                            <ng-template #elseTemplate>
+                                                <img class="none-image" src="../../../../assets/img/add-photo.svg">
+                                                <span>อัพโหลดรูปหน้าปก</span>
+                                                <div class="image-upload">
+                                                    <input #fileInput style="cursor: pointer;" type="file"
+                                                        (change)="onFileSelect($event)" accept="image/*" />
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <mat-form-field>
+                                            <mat-label>หัวเรื่อง</mat-label>
+                                            <input matInput type="text" name="title" id="title"
+                                                placeholder="หัวเรื่อง *" [(ngModel)]="dataForm.title" required>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="wrapper-action">
+                        <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
+                        <button mat-raised-button class="btn-save" (click)="clickSave()">บันทึก</button>
+                    </div>
+                </div>
+            </div>
+        </mat-drawer>
+        <mat-drawer-content>
+            <div class="main-content">
+                <admin-table-component #table [orderBy]="orderBy" [facade]="pointCategoryFacade"
+                    [isApprovePage]="'true'" [title]="'Point Category'" [fieldTable]="fieldTable" [actions]="actions"
+                    [isOfficialPage]="isOfficialPage" (edit)="clickEditForm($event)" (delete)="clickDelete($event)"
+                    (create)="clickCreateForm()"></admin-table-component>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>

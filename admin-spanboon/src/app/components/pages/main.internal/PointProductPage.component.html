@@ -1,0 +1,194 @@
+<div class="admin-config-page">
+    <mat-drawer-container class="example-container" [hasBackdrop]="true">
+        <mat-drawer #drawer [mode]="'over'" [position]="'end'" [disableClose]="true">
+            <div class="form-admin">
+                <div class="wrapper">
+                    <div class="form-header">
+                        <ng-container *ngIf="!edit; else elseTitle">
+                            <h5 class="title">สร้าง{{title | titlecase}}</h5>
+                        </ng-container>
+                        <ng-template #elseTitle>
+                            <h5 class="title">แก้ไข{{title | titlecase}}</h5>
+                        </ng-template>
+                    </div>
+                    <div class="form-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>รูปภาพ</label>
+                                        <div class="image"
+                                            [ngStyle]="{'border': !!image.coverPageURL ? 'unset' : '1px solid','border-style': !!image.coverPageURL ? 'unset' : 'dashed'}">
+                                            <ng-container *ngIf="!!image.coverPageURL; else elseTemplate">
+                                                <img class="image" [src]="baseURL + image.coverPageURL + '/image'">
+                                                <div class="image-upload">
+                                                    <input #fileInput style="cursor: pointer;" type="file"
+                                                        (change)="onFileSelect($event)" accept="image/*" />
+                                                </div>
+                                            </ng-container>
+                                            <ng-template #elseTemplate>
+                                                <img class="none-image" src="../../../../assets/img/add-photo.svg">
+                                                <span>อัพโหลดรูปหน้าปก</span>
+                                                <div class="image-upload">
+                                                    <input #fileInput style="cursor: pointer;" type="file"
+                                                        (change)="onFileSelect($event)" accept="image/*" />
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <mat-form-field>
+                                            <mat-label>หัวเรื่อง</mat-label>
+                                            <input matInput type="text" name="title" id="title"
+                                                placeholder="หัวเรื่อง *" [(ngModel)]="dataForm.title" required>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <mat-form-field>
+                                            <mat-label>รายละเอียด</mat-label>
+                                            <input matInput type="text" name="detail" id="detail"
+                                                placeholder="รายละเอียด *" [(ngModel)]="dataForm.detail" required>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <form [formGroup]="categoryGroup">
+                                            <mat-form-field>
+                                                <mat-label>หมวดหมู่</mat-label>
+                                                <mat-select placeholder="กรุณาเลือกหมวดหมู่" formControlName="category">
+                                                    <mat-option *ngFor="let item of dataCategory" [value]="item">
+                                                        {{item.title}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <button mat-raised-button class="btn-save"
+                                            (click)="dataForm.activeDate = null">ยกเลิกวันเปิดใช้งาน</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <mat-form-field>
+                                            <mat-label>วันที่เปิดใช้งาน</mat-label>
+                                            <input matInput [matDatepicker]="pickerActive"
+                                                [(ngModel)]="dataForm.activeDate"
+                                                (dateChange)="saveDate($event,'active')"
+                                                [ngModelOptions]="{standalone: true}">
+                                            <mat-datepicker-toggle matSuffix
+                                                [for]="pickerActive"></mat-datepicker-toggle>
+                                            <mat-datepicker #pickerActive></mat-datepicker>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <mat-form-field>
+                                            <mat-label>วันสิ้นสุดการแลกคูปอง</mat-label>
+                                            <input matInput [matDatepicker]="pickerExpired"
+                                                [(ngModel)]="dataForm.expiredDate"
+                                                (dateChange)="saveDate($event,'expired')"
+                                                [ngModelOptions]="{standalone: true}">
+                                            <mat-datepicker-toggle matSuffix
+                                                [for]="pickerExpired"></mat-datepicker-toggle>
+                                            <mat-datepicker #pickerExpired></mat-datepicker>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <mat-form-field>
+                                            <mat-label>จำนวนพ้อย</mat-label>
+                                            <input matInput type="number" name="point" id="point"
+                                                placeholder="จำนวนพ้อย *" [(ngModel)]="dataForm.point" required>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <mat-form-field>
+                                            <mat-label>ลิมิตการแลก</mat-label>
+                                            <input matInput type="number" name="limit" id="limit"
+                                                placeholder="ลิมิตการแลก *" [(ngModel)]="dataForm.limit" required>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="wrapper-point-condition">
+                                            <form [formGroup]="form">
+                                                <div formArrayName="conditions">
+                                                    <span>เงื่อนไข</span>
+                                                    <svg width="200px" height="200px" style="cursor: pointer;"
+                                                        viewBox="0 0 24 24" fill="none" (click)="addCondition()"
+                                                        style="width: 18px;height: 18px;margin-left: 5px;"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                            stroke-linejoin="round"></g>
+                                                        <g id="SVGRepo_iconCarrier">
+                                                            <path
+                                                                d="M12 6C12.5523 6 13 6.44772 13 7V11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H13V17C13 17.5523 12.5523 18 12 18C11.4477 18 11 17.5523 11 17V13H7C6.44772 13 6 12.5523 6 12C6 11.4477 6.44772 11 7 11H11V7C11 6.44772 11.4477 6 12 6Z"
+                                                                fill="#000000"></path>
+                                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                d="M2 4.5C2 3.11929 3.11929 2 4.5 2H19.5C20.8807 2 22 3.11929 22 4.5V19.5C22 20.8807 20.8807 22 19.5 22H4.5C3.11929 22 2 20.8807 2 19.5V4.5ZM4.5 4C4.22386 4 4 4.22386 4 4.5V19.5C4 19.7761 4.22386 20 4.5 20H19.5C19.7761 20 20 19.7761 20 19.5V4.5C20 4.22386 19.7761 4 19.5 4H4.5Z"
+                                                                fill="#000000"></path>
+                                                        </g>
+                                                    </svg>
+                                                    <div class="wrapper-condition">
+                                                        <div *ngFor="let value of conditions().controls; let i = index"
+                                                            class="field-data">
+                                                            <div [formGroupName]="i">
+                                                                <div class="box-name">
+                                                                    {{i+1}} :
+                                                                    <input class="text" type="text" style="margin-left: 5px;
+                                                                            border: 1px solid black;
+                                                                            border-radius: 5px;
+                                                                            padding: 3px 8px;
+                                                                            flex: 1 1 0%;" formControlName="value" />
+
+                                                                    <button mat-raised-button
+                                                                        (click)="removeCondition(i)">
+                                                                        <img src="../../../assets/img/delete.png"
+                                                                            alt="">
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="no-data" *ngIf="conditions().controls.length === 0">
+                                                            โปรดเพิ่มและระบุเงื่อนไข
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="wrapper-action">
+                        <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
+                        <button mat-raised-button class="btn-save" (click)="clickSave()">บันทึก</button>
+                    </div>
+                </div>
+            </div>
+        </mat-drawer>
+        <mat-drawer-content>
+            <div class="main-content">
+                <admin-table-component #table [orderBy]="orderBy" [facade]="pointProductFacade" [isApprovePage]="'true'"
+                    [title]="'Point Product'" [fieldTable]="fieldTable" [actions]="actions"
+                    [isOfficialPage]="isOfficialPage" (edit)="clickEditForm($event)" (create)="clickCreateForm()"
+                    (delete)="clickDelete($event)"></admin-table-component>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>

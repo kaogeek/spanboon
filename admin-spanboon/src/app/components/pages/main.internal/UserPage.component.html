@@ -11,15 +11,17 @@
             <div class="wrapper">
                 <div class="form-header">
                     <ng-container *ngIf="orinalDataForm.email === ''; else elseTitle">
-                        <h5 class="title">สร้าง{{title | titlecase}}</h5>
+                        <h5 class="title">{{isAddPoint ? (dataForm.point <= 0 ? 'ลดพ้อยท์' : 'เพิ่มพ้อยท์' ) : 'สร้าง' +
+                                (title | titlecase)}}</h5>
                     </ng-container>
                     <ng-template #elseTitle>
-                        <h5 class="title">แก้ไข{{title | titlecase}}</h5>
+                        <h5 class="title">{{isAddPoint ? (dataForm.point <= 0 ? 'ลดพ้อยท์' : 'เพิ่มพ้อยท์' ) : 'แก้ไข' +
+                                (title | titlecase)}}</h5>
                     </ng-template>
                 </div>
                 <div class="form-body">
                     <form>
-                        <div class="row">
+                        <div class="row" *ngIf="!isAddPoint">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <img *ngIf="url" [src]="url" style="max-width: 100%;
@@ -95,11 +97,46 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row" *ngIf="isAddPoint">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="wrapper-user">
+                                        <div class="user">
+                                            <ng-container
+                                                *ngIf="pointMember.image === undefined || pointMember.imageURL === ''; else elseImage">
+                                                <span class="image-null">{{(pointMember.firstName | slice:0:1) |
+                                                    uppercase}}</span>
+                                            </ng-container>
+                                            <ng-template #elseImage>
+                                                <img [src]="pointMember.image" alt="">
+                                            </ng-template>
+                                            <div class="name">
+                                                <span>{{pointMember.firstName}}</span>
+                                                <span>{{pointMember.lastName}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="detail">
+                                            <span>email: {{pointMember.email}}</span>
+                                            <span>พ้อยทั้งหมด: {{pointMember.point.accumulatePoint === null ? 0 :
+                                                (pointMember.point.accumulatePoint | number)}}</span>
+                                            <span>พ้อยที่ใช้ไป: {{pointMember.point.usedPoint | number}}</span>
+                                        </div>
+                                    </div>
+                                    <label>จำนวนพ้อยท์ที่ต้องการเพิ่ม / ลด</label>
+                                    <input type="number" class="form-control" [(ngModel)]="dataForm.point"
+                                        [ngModelOptions]="{standalone: true}">
+                                    <label style="font-size: 12px; opacity: 0.5;margin: 5px 0 0 5px;">* ใส่เครื่องหมาย -
+                                        เพื่อลบพ้อยท์</label>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="wrapper-action">
                     <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
-                    <button mat-raised-button class="btn-save" (click)="clickSave()">บันทึก</button>
+                    <button mat-raised-button class="btn-save" [ngClass]="{'disable': !dataForm.point}"
+                        [disabled]="!dataForm.point" (click)="isAddPoint ? addPoint() : clickSave()">{{isAddPoint ?
+                        (dataForm.point <= 0 ? 'ลดพ้อยท์' : 'เพิ่มพ้อยท์' ) : 'บันทึก' }}</button>
                 </div>
             </div>
         </div>
@@ -109,7 +146,7 @@
             <admin-table-component [isUser]="true" #table [fieldSearch]="fieldSearch" [user]="'true'"
                 [orderBy]="orderBy" [facade]="pageUserFacade" [title]="'ผู้ใช้งาน'" (create)="clickCreateForm()"
                 [manipulate]="true" [fieldTable]="fieldTable" [actions]="actions" (ban)="clickBan($event)"
-                (delete)="clickDelete($event)"></admin-table-component>
+                (delete)="clickDelete($event)" (point)="clickPoint($event)"></admin-table-component>
         </div>
     </mat-drawer-content>
 </mat-drawer-container>

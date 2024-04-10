@@ -67,12 +67,19 @@ import {
   DialogWarningComponent,
   DialogAlert,
   DialogImagePreview,
+  DialogAddNoti,
+  DialogInput,
   TodayPage,
   TodayPageV2,
   PageGroup,
   NewsPaperPage,
   VoteEventPage,
-  DateYearPicker
+  DateYearPicker,
+  ManipulatePage,
+  ManipulatePost,
+  PointBannerPage,
+  PointCategoryPage,
+  PointProductPage,
 } from './components/components';
 import {
   AuthenManager,
@@ -95,7 +102,10 @@ import {
   ManipulateFacade,
   ManipulatePostFacade,
   VoteEventFacade,
-  DashboardFacade
+  DashboardFacade,
+  PointFacade,
+  PointCategoryFacade,
+  PointProductFacade
 
 } from './services/services';
 import { UserFacade } from './services/facade/UserFacade.service';
@@ -105,8 +115,6 @@ import {
   PrefixNumberPipe,
   PipeThDatetimePipe
 } from './components/shares/pipes/pipes';
-import { ManipulatePage } from './components/pages/main.internal/ManipulatePage.component';
-import { ManipulatePost } from './components/pages/main.internal/ManipulatePost.component';
 import { InterceptorService } from './services/loading/interceptor.service';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
@@ -151,10 +159,15 @@ const COMPONENTS: any[] = [
   DialogWarningComponent,
   DialogAlert,
   DialogImagePreview,
+  DialogAddNoti,
+  DialogInput,
   TableComponent,
   PageGroup,
   ManipulatePage,
   ManipulatePost,
+  PointBannerPage,
+  PointCategoryPage,
+  PointProductPage,
   NewsPaperPage,
   VoteEventPage,
   DateYearPicker
@@ -193,6 +206,9 @@ const SERVICE_CLASSES: any[] = [
   ManipulatePostFacade,
   VoteEventFacade,
   DashboardFacade,
+  PointFacade,
+  PointCategoryFacade,
+  PointProductFacade,
   // other 
   { provide: SWIPER_CONFIG, useValue: DEFAULT_SWIPER_CONFIG },
   { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
