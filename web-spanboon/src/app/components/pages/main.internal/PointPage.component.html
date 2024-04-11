@@ -1,0 +1,157 @@
+<div class="wrapper-point-page" *ngIf="!!content">
+    <div class="header">
+        <span>ก้าวไกล Point</span>
+        <div class="wrapper-menu-point">
+            <div class="menu statistic"
+                (click)="isLogin() ? (isMemberShip ? clickToSetting('ranking') : clickRanking()) : clickRanking()">
+                <img src="../../../../assets/img/icons/pointpage/statistic.svg" alt="">
+                <span>จัดอันดับ</span>
+            </div>
+            <div class="menu" *ngIf="isLogin() && isMemberShip" (click)="clickToSetting('coupon')">
+                <img src="../../../../assets/img/icons/pointpage/ticket.svg" alt="">
+                <span>{{content.userCoupon | shortNumber}}</span>
+            </div>
+            <div class="menu" *ngIf="isLogin() && isMemberShip" (click)="clickToSetting('myPoint')">
+                <img src="../../../../assets/img/icons/pointpage/Point_mini_logo.svg" alt="">
+                <span>{{content.accumulatePoint !== null ? (content.accumulatePoint.accumulatePoint |
+                    number:'1.0-0':'en-US') : '0'}}</span>
+            </div>
+        </div>
+    </div>
+    <button mat-icon-button aria-label="ย้อนกลับ" *ngIf="isCategory || isRank" (click)="clickBack()">
+        <mat-icon>arrow_back_ios_new</mat-icon>
+    </button>
+    <div class="wrapper-content" *ngIf="!isCategory && !isRank">
+        <div class="banner">
+            <!-- <img src="https://cdn1.epicgames.com/offer/916bd3319edc4e0bbb57ed7e04ad851d/EGS_GodotEngine_TheGodotEngine_S1_2560x1440-44362dbc2924336fe280c96a8c1e2342"
+                alt=""> -->
+            <img [src]="apiBaseURL + content.pointEvent[0].coverPageURL + '/image'"
+                (click)="clickDialogPoint(content.pointEvent[0])">
+        </div>
+        <div class="container" *ngIf="content.categoryProduct.length > 0">
+            <div appHorizontalScroll class="wrapper-category">
+                <ng-container *ngFor="let item of content.categoryProduct">
+                    <div class="category" (click)="clickDialogPoint(item,true)">
+                        <img [src]="apiBaseURL + item.coverPageURL + '/image'" alt="">
+                        <!-- <img [src]="!!item.s3CoverPageURL ? item.s3CoverPageURL : apiBaseURL + item.coverPageURL + '/image'"
+                            alt=""> -->
+                        <span>{{item.title}}</span>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+        <div class="container" *ngIf="content.productAggr.length > 0">
+            <ng-container *ngFor="let data of content.productAggr">
+                <div class="box-product" *ngIf="data.product.length > 0">
+                    <span>{{data.title}}</span>
+                    <div appHorizontalScroll class="wrapper-product">
+                        <ng-container *ngFor="let item of data.product">
+                            <div class="card-content-product" (click)="clickDialogPoint(item)">
+                                <div class="image-product">
+                                    <img class="image" [src]="apiBaseURL + item.coverPageURL + '/image'">
+                                </div>
+                                <div class="title-product">
+                                    <span>{{item.title}}</span>
+                                </div>
+                                <div class="bottom">
+                                    <div class="point">
+                                        <img src="../../../../assets/img/icons/pointpage/Point_mini_logo.svg" alt="">
+                                        <span>{{item.point}}</span>
+                                    </div>
+                                    <div class="progress">
+                                        <mat-progress-bar mode="determinate"
+                                            [value]="calculatePercentage(item.maximumLimit,item.receiverCoupon)">
+                                        </mat-progress-bar>
+                                        <div class="text">เหลือ {{item.maximumLimit - item.receiverCoupon}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    <div class="wrapper-content product" *ngIf="isCategory && !isRank">
+        <div class="container">
+            <ng-container *ngIf="product.data.product.length > 0; else elseCagtegory">
+                <div class="box-product">
+                    <div class="category-title">
+                        <img class="category-img" [src]="apiBaseURL + product.category.coverPageURL + '/image'" alt="">
+                        <span>{{product.category.title}}</span>
+                    </div>
+                    <div class="wrapper-product">
+                        <ng-container *ngFor="let item of product.data.product">
+                            <div class="card-content-product" (click)="clickDialogPoint(item)">
+                                <div class="image-product">
+                                    <img class="image" [src]="apiBaseURL + item.coverPageURL + '/image'">
+                                </div>
+                                <div class="title-product">
+                                    <span>{{item.title}}</span>
+                                </div>
+                                <div class="bottom">
+                                    <div class="point">
+                                        <img src="../../../../assets/img/icons/pointpage/Point_mini_logo.svg" alt="">
+                                        <span>{{item.point}}</span>
+                                    </div>
+                                    <div class="progress">
+                                        <mat-progress-bar mode="determinate"
+                                            [value]="calculatePercentage(item.maximumLimit,item.receiverCoupon)">
+                                        </mat-progress-bar>
+                                        <div class="text">เหลือ {{item.maximumLimit - item.receiverCoupon}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-template #elseCagtegory>
+                <div class="box-product">
+                    <div class="category-title">
+                        <img class="category-img" [src]="apiBaseURL + product.category.coverPageURL + '/image'" alt="">
+                        <span>{{product.category.title}}</span>
+                    </div>
+                    <div class="product-not-found">
+                        <span>ไม่มีสินค้าให้แลก</span>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+    <div class="wrapper-content product" *ngIf="isRank && !isCategory">
+        <div class="container">
+            <div class="box-product">
+                <div class="category-title">
+                    <span>อันดับพอยท์สูงสุด 50 อันดับ</span>
+                </div>
+                <div class="ranking">
+                    <div class="wrapper-page">
+                        <ng-container *ngFor="let item of ranking.rankingPoint;let index = index">
+                            <div class="page">
+                                <div class="ranking">
+                                    <img *ngIf="index === 0" src="../../../../assets/img/ranking-1.png" alt="อันดับ1">
+                                    <img *ngIf="index === 1" src="../../../../assets/img/ranking-2.png" alt="อันดับ2">
+                                    <img *ngIf="index === 2" src="../../../../assets/img/ranking-3.png" alt="อันดับ3">
+                                    <span *ngIf="index > 2" [attr.aria-label]="'อันดับ ' + index + 1"
+                                        class="ordering">{{index + 1}}</span>
+                                    <ng-container *ngIf="!!item.user.imageURL; else elseImage">
+                                        <img class="image" [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
+                                    </ng-container>
+                                    <ng-template #elseImage>
+                                        <span class="image image-null">{{item.user.displayName |
+                                            slice:0:1}}</span>
+                                    </ng-template>
+                                    <span class="name">{{item.user.displayName}}</span>
+                                </div>
+                                <div class="count">
+                                    <span>{{ item.accumulatePoint | number: '1.0-0':'en-US' }}</span>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

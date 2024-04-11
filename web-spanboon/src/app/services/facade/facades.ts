@@ -41,3 +41,4 @@ export * from './UserSubjectFacade.service';
 export * from './BindingMemberFacade.service';
 export * from './VoteEventFacade.service';
 export * from './StatisticsFacade.service';
+export * from './PointEventFacade.service';

@@ -60,13 +60,13 @@ $shwdow-cards: #c2c2cc;
 
 $blur: #00000070;
 
-$background-hover: rgb(241 ,241 ,241 , 0.4);
+$background-hover: rgb(241, 241, 241, 0.4);
 $shadow-vote-vard-hover: #adadb0;
 
 $padding-page-side: 45pt;
 
 //background page
-$background-page : #f5f5f5;
+$background-page: #f5f5f5;
 
 // 3.font size
 
@@ -133,3 +133,14 @@ $height-wrapper-tool-post: 45pt;
 $padding-side-wrapper-tool-post: 15pt;
 
 $border-radius-4px: 4px;
+
+// limit line text
+@each $count in 1, 2, 3, 4, 5, 6, 7, 8, 9, unset {
+  .line-clamp-#{$count} {
+    display: -webkit-box;
+    -webkit-line-clamp: $count;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+  }
+}

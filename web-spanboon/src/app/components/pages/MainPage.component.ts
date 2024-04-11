@@ -472,3 +472,4 @@ export * from './main.internal/MenuList.component';
 export * from './main.internal/ProcessingPage.component';
 export * from './main.internal/TodayDashboardPage.component';
 export * from './main.internal/HomeSnapshotCategory.component';
+export * from './main.internal/PointPage.component';

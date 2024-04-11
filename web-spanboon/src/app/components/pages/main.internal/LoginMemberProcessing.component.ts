@@ -95,6 +95,8 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
             message = 'ไม่สามารถผูกสมาชิกได้';
           } else if (err.error.message === 'User Not Found') {
             message = 'ไม่พบบัญชีผู้ใช้';
+          } else {
+            message = 'เกิดข้อผิดพลาด';
           }
           let navigationExtras: NavigationExtras = {
             state: {

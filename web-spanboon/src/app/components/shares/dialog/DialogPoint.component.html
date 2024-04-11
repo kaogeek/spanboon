@@ -1,0 +1,46 @@
+<div class="dialog-point">
+    <div class="wrapper-card">
+        <img class="close-icon" src="../../../../assets/img/icons/votepage/close.svg" role="button"
+            (click)="onClose('')">
+        <div class="card-wrapper">
+            <img [src]="apiBaseURL + data.point.coverPageURL + '/image'" alt="">
+            <div class="wrapper-content">
+                <span class="title">{{data.point.title}}</span>
+                <mat-tab-group mat-stretch-tabs animationDuration="0ms" [selectedIndex]="countTab"
+                    (selectedIndexChange)="countTab = $event">
+                    <mat-tab label="รายละเอียด"></mat-tab>
+                    <mat-tab label="เงื่อนไข"></mat-tab>
+                </mat-tab-group>
+                <div class="wrapper-point">
+                    <div class="point">
+                        <span>คะแนนที่ต้องใช้</span>
+                        <div>
+                            <img src="../../../../assets/img/icons/pointpage/Point_mini_logo.svg" alt="">
+                            <span>{{data.point.point}}</span>
+                        </div>
+                    </div>
+                    <div class="border"></div>
+                    <div class="progress">
+                        <mat-progress-bar mode="determinate"
+                            [value]="
+                            calculatePercentage(data.point.maximumLimit,(data.point.receiver || data.point.receiverCoupon))"></mat-progress-bar>
+                        <span>เหลือ {{data.point.maximumLimit - (data.point.receiver ||
+                            data.point.receiverCoupon)}}</span>
+                    </div>
+                </div>
+                <ng-container [ngSwitch]="countTab">
+                    <ng-container *ngSwitchDefault>
+                        <span class="detail">{{data.point.detail}}</span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="1">
+                        <div class="condition">
+                            <ng-container *ngFor="let item of data.point.condition">
+                                <span>- {{item}}</span>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>

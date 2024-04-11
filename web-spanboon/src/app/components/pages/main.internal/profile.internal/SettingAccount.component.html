@@ -14,9 +14,14 @@
             <div class="settings-left">
                 <div class="settings-list">
                     <div class="list-item-menu" matRipple role="button" matTooltip="{{link.label}}"
-                        [matTooltipPosition]="'right'" *ngFor="let link of links" (click)="selecedInformation(link)"
-                        [class.active]="selected === link.label">
-                        <mat-icon class="settings-icon">{{link.icon}}</mat-icon>
+                        [matTooltipPosition]="'right'" *ngFor="let link of (isMemberShip ? links : links.slice(0, 2))"
+                        (click)="selecedInformation(link)" [class.active]="selected === link.label">
+                        <ng-container *ngIf="!!link.icon; else elseIconImage">
+                            <mat-icon class="settings-icon">{{link.icon}}</mat-icon>
+                        </ng-container>
+                        <ng-template #elseIconImage>
+                            <img class="settings-icon" [src]="link.image" alt="">
+                        </ng-template>
                         <span class="settings-title">{{link.label}}</span>
                     </div>
                 </div>
@@ -24,7 +29,7 @@
             <div class="settings-right" *ngIf="selected === 'ทั่วไป'">
                 <edit-profile-card [dataProfile]="data"></edit-profile-card>
             </div>
-            <div class="settings-right" style="align-items: center; display: flex;" *ngIf="selected === 'การเชื่อมต่อ'">
+            <div class="settings-right" style="display: flex;" *ngIf="selected === 'การเชื่อมต่อ'">
                 <div class="wrapper-right">
                     <div class="mfp-binding">
                         <img src="../../../../assets/img/logo/mfp.svg" alt="">
@@ -39,6 +44,302 @@
                     </div>
                 </div>
             </div>
+            <ng-container *ngIf="isMemberShip">
+                <div class="settings-right point" *ngIf="selected === 'คะแนนของฉัน'">
+                    <div class="container-point" *ngIf="!!accumulate">
+                        <div class="box-content">
+                            <span>{{selected}}</span>
+                            <div class="menu-setting my-point">
+                                <div class="wrapper-user">
+                                    <div class="user">
+                                        <img class="profile" [src]="apiBaseURL + accumulate.user.imageURL + '/image'"
+                                            alt="">
+                                        <div class="name">
+                                            <span>{{accumulate.user.displayName}}</span>
+                                            <span>{{accumulate.user.identificationNumber}}</span>
+                                        </div>
+                                    </div>
+                                    <!-- <img class="qrcode" src="../../../../../assets/img/icons/pointpage/Point_mini_logo.svg"
+                                        alt=""> -->
+                                </div>
+                                <div class="border"></div>
+                                <div class="wrapper-point">
+                                    <div class="point used">
+                                        <span>คะแนนที่ใช้ได้</span>
+                                        <span>{{accumulate.accumulatePoint.accumulatePoint | number: '1.0-0':
+                                            'en'}}</span>
+                                    </div>
+                                    <div class="point">
+                                        <span>คะแนนที่ใช้ไป</span>
+                                        <span>{{accumulate.accumulatePoint.usedPoint | number: '1.0-0': 'en'}}</span>
+                                    </div>
+                                    <div class="point">
+                                        <span>คะแนนสะสม</span>
+                                        <span>{{accumulate.accumulatePoint.totalPoint | number: '1.0-0': 'en'}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="menu-setting point-history">
+                                <span>ประวัติการใช้คะแนน</span>
+                                <div>
+                                    <mat-tab-group mat-stretch-tabs>
+                                        <mat-tab label="ทั้งหมด">
+                                            <div class="wrapper-history">
+                                                <ng-container
+                                                    *ngIf="accumulate.accumulatePoint.totalPointStatement.length > 0; else elseTotalPoint">
+                                                    <ng-container
+                                                        *ngFor="let item of accumulate.accumulatePoint.totalPointStatement">
+                                                        <div class="history"
+                                                            [ngClass]="{'active': (item.type === 'REDEEM' || item.type === 'ADMIN_REDUCE_POINT')}">
+                                                            <div class="title">
+                                                                <span class="line-clamp-2">{{item.title}}</span>
+                                                                <div class="point">
+                                                                    <img [src]="pointLogo">
+                                                                    <span
+                                                                        [ngStyle]="{'color': (item.type === 'REDEEM' || item.type === 'ADMIN_REDUCE_POINT') ? '#F94343' : '#72D8A7'}">{{item.type
+                                                                        === 'REDEEM' ? '-' : ''}}{{item.point | number:
+                                                                        '1.0-0': 'en'}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="date">
+                                                                <span>{{(item.type === 'REDEEM' || item.type ===
+                                                                    'ADMIN_REDUCE_POINT') ? 'ใช้คะแนน' :
+                                                                    'ได้รับคะแนน'}}</span>
+                                                                <span>{{item.createdDate | minimizeThDate}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </ng-container>
+                                                </ng-container>
+                                                <ng-template #elseTotalPoint>
+                                                    <div class="history">
+                                                        <div class="title no-data">
+                                                            <span>ไม่มีประวัติของคะแนน</span>
+                                                        </div>
+                                                    </div>
+                                                </ng-template>
+                                            </div>
+                                        </mat-tab>
+                                        <mat-tab label="ได้คะแนน">
+                                            <div class="wrapper-history">
+                                                <ng-container
+                                                    *ngIf="accumulate.accumulatePoint.receivePointStatement.length > 0; else elseReceive">
+                                                    <ng-container
+                                                        *ngFor="let item of accumulate.accumulatePoint.receivePointStatement">
+                                                        <div class="history"
+                                                            [ngClass]="{'active': (item.type === 'REDEEM' || item.type === 'ADMIN_REDUCE_POINT')}">
+                                                            <div class="title">
+                                                                <span class="line-clamp-2">{{item.title}}</span>
+                                                                <div class="point">
+                                                                    <img [src]="pointLogo">
+                                                                    <span
+                                                                        [ngStyle]="{'color': (item.type === 'REDEEM' || item.type === 'ADMIN_REDUCE_POINT') ? '#F94343' : '#72D8A7'}">{{item.type
+                                                                        === 'REDEEM' ? '-' : ''}}{{item.point | number:
+                                                                        '1.0-0': 'en'}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="date">
+                                                                <span>{{(item.type === 'REDEEM' || item.type ===
+                                                                    'ADMIN_REDUCE_POINT') ? 'ใช้คะแนน' :
+                                                                    'ได้รับคะแนน'}}</span>
+                                                                <span>{{item.createdDate | minimizeThDate}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </ng-container>
+                                                </ng-container>
+                                                <ng-template #elseReceive>
+                                                    <div class="history">
+                                                        <div class="title no-data">
+                                                            <span>ไม่มีประวัติได้รับคะแนน</span>
+                                                        </div>
+                                                    </div>
+                                                </ng-template>
+                                            </div>
+                                        </mat-tab>
+                                        <mat-tab label="ใช้คะแนน">
+                                            <div class="wrapper-history">
+                                                <ng-container
+                                                    *ngIf="accumulate.accumulatePoint.redeemPointStatement.length > 0; else elseRedeemPoint">
+                                                    <ng-container
+                                                        *ngFor="let item of accumulate.accumulatePoint.redeemPointStatement">
+                                                        <div class="history"
+                                                            [ngClass]="{'active': (item.type === 'REDEEM' || item.type === 'ADMIN_REDUCE_POINT')}">
+                                                            <div class="title">
+                                                                <span class="line-clamp-2">{{item.title}}</span>
+                                                                <div class="point">
+                                                                    <img [src]="pointLogo">
+                                                                    <span
+                                                                        [ngStyle]="{'color': (item.type === 'REDEEM' || item.type === 'ADMIN_REDUCE_POINT') ? '#F94343' : '#72D8A7'}">{{item.type
+                                                                        === 'REDEEM' ? '-' : ''}}{{item.point | number:
+                                                                        '1.0-0': 'en'}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="date">
+                                                                <span>{{(item.type === 'REDEEM' || item.type ===
+                                                                    'ADMIN_REDUCE_POINT') ? 'ใช้คะแนน' :
+                                                                    'ได้รับคะแนน'}}</span>
+                                                                <span>{{item.createdDate | minimizeThDate}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </ng-container>
+                                                </ng-container>
+                                                <ng-template #elseRedeemPoint>
+                                                    <div class="history">
+                                                        <div class="title no-data">
+                                                            <span>ไม่มีประวัติการใช้คะแนน</span>
+                                                        </div>
+                                                    </div>
+                                                </ng-template>
+                                            </div>
+                                        </mat-tab>
+                                    </mat-tab-group>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-right point" *ngIf="selected === 'โค้ดของฉัน'">
+                    <div class="container-point" *ngIf="!!coupon">
+                        <div class="box-content">
+                            <span>{{selected}}</span>
+                            <div class="menu-setting coupon">
+                                <mat-tab-group mat-stretch-tabs>
+                                    <mat-tab label="พร้อมใช้งาน">
+                                        <div class="wrapper-coupon">
+                                            <ng-container *ngFor="let item of coupon">
+                                                <ng-container *ngIf="!item.activeDate">
+                                                    <div class="coupon">
+                                                        <div class="image-with-clipper">
+                                                            <img [src]="apiBaseURL + item.pointStatement.product.coverPageURL + '/image'"
+                                                                alt="">
+                                                            <div class="clipper">
+                                                                <div *ngFor="let item of [0,1,2,3,4]"
+                                                                    class="semi-circle">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="wrapper-title">
+                                                            <div class="title">
+                                                                <span
+                                                                    class="line-clamp-2">{{item.pointStatement.product.title}}</span>
+                                                                <ng-container
+                                                                    *ngIf="checkActiveCoupon(item.pointStatement.product.activeDate); else elseActive">
+                                                                    <span>{{'ใช้งานได้เมื่อ ' +
+                                                                        (item.pointStatement.product.activeDate |
+                                                                        minimizeThDate)}}</span>
+                                                                </ng-container>
+                                                                <ng-template #elseActive>
+                                                                    <span>{{item.pointStatement.product.couponExpire ===
+                                                                        -1
+                                                                        &&
+                                                                        item.pointStatement.product.expiringDate ===
+                                                                        null ?
+                                                                        'คูปองนี้ไม่มีวันหมดอายุ' :
+                                                                        'ใช้งานได้ถึง ' +
+                                                                        (item.pointStatement.product.expiringDate |
+                                                                        minimizeThDate)}}</span>
+                                                                </ng-template>
+                                                            </div>
+                                                            <button mat-flat-button
+                                                                [disabled]="checkActiveCoupon(item.pointStatement.product.activeDate)"
+                                                                [ngClass]="{'disable': checkActiveCoupon(item.pointStatement.product.activeDate)}"
+                                                                (click)="clickDialog()">ใช้งาน</button>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                    </mat-tab>
+                                    <mat-tab label="ใช้งานแล้ว">
+                                        <div class="wrapper-coupon">
+                                            <ng-container *ngFor="let item of coupon">
+                                                <ng-container *ngIf="!!item.activeDate">
+                                                    <div class="coupon">
+                                                        <div class="image-with-clipper">
+                                                            <img [src]="apiBaseURL + item.pointStatement.product.coverPageURL + '/image'"
+                                                                alt="">
+                                                            <div class="clipper">
+                                                                <div *ngFor="let item of [0,1,2,3,4]"
+                                                                    class="semi-circle">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="wrapper-title">
+                                                            <div class="title">
+                                                                <span
+                                                                    class="line-clamp-2">{{item.pointStatement.product.title}}</span>
+                                                                <span>{{'ใช้งานเมื่อ ' + (item.activeDate |
+                                                                    minimizeThDate)}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                    </mat-tab>
+                                </mat-tab-group>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-right point" *ngIf="selected === 'อันดับของฉัน'">
+                    <div class="container-point" *ngIf="!!ranking">
+                        <div class="box-content">
+                            <span>จัดอันดับ</span>
+                            <div class="menu-setting ranking">
+                                <span>อันดับของคุณ</span>
+                                <div class="wrapper-user">
+                                    <div class="name">
+                                        <div>{{ranking.selfOrder | number: '1.0-0':'en-US'}}</div>
+                                        <ng-container *ngIf="!!ranking!.self!.user!.imageURL; else elseImageUser">
+                                            <img class="image"
+                                                [src]="apiBaseURL + ranking.self.user.imageURL + '/image'" alt="">
+                                        </ng-container>
+                                        <ng-template #elseImageUser>
+                                            <span class="image image-null">{{ranking.self.user.displayName |
+                                                slice:0:1}}</span>
+                                        </ng-template>
+                                        <span>{{ranking.self.user.displayName}}</span>
+                                    </div>
+                                    <div class="rank">
+                                        <span>{{ranking.self.accumulatePoint | number: '1.0-0':'en-US'}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="menu-setting ranking-leader">
+                                <div class="wrapper-page">
+                                    <ng-container *ngFor="let item of ranking.rankingPoint;let index = index">
+                                        <div class="page" *ngIf="!!item.accumulatePoint">
+                                            <div class="ranking">
+                                                <img *ngIf="index === 0" src="../../../../assets/img/ranking-1.png"
+                                                    alt="อันดับ1">
+                                                <img *ngIf="index === 1" src="../../../../assets/img/ranking-2.png"
+                                                    alt="อันดับ2">
+                                                <img *ngIf="index === 2" src="../../../../assets/img/ranking-3.png"
+                                                    alt="อันดับ3">
+                                                <span *ngIf="index > 2" [attr.aria-label]="'อันดับ ' + index + 1"
+                                                    class="ordering">{{index + 1}}</span>
+                                                <ng-container *ngIf="!!item.user.imageURL; else elseImage">
+                                                    <img class="image"
+                                                        [src]="apiBaseURL + item.user.imageURL + '/image'" alt="">
+                                                </ng-container>
+                                                <ng-template #elseImage>
+                                                    <span class="image image-null">{{item.user.displayName |
+                                                        slice:0:1}}</span>
+                                                </ng-template>
+                                                <span class="name">{{item.user.displayName}}</span>
+                                            </div>
+                                            <div class="count">
+                                                <span>{{ item.accumulatePoint | number: '1.0-0':'en-US' }}</span>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="index !== ranking.rankingPoint.length - 1" class="border"></div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
         </div>
     </div>
 </div>
