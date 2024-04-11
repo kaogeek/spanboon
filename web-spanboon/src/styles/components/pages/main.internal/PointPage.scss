@@ -201,7 +201,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             opacity: 0.8;
-            @include font-size-9($font-head-100);
+            @include font-size-10($font-head-100);
 
             @media (max-width: $small) {
               display: none;
