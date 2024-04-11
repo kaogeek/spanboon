@@ -353,7 +353,7 @@ export class UserPage extends AbstractPage implements OnInit {
                 this.isAddPoint = false;
                 this.dataForm.point = null;
                 this.pointMember = {};
-                this.dialogWarning("เพิ่มพ้อยท์แล้ว");
+                this.dialogWarning("เพิ่มพอยท์แล้ว");
                 this.drawer.toggle();
             }
         }).catch((err) => {

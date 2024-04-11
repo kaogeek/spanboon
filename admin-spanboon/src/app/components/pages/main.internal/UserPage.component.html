@@ -11,11 +11,11 @@
             <div class="wrapper">
                 <div class="form-header">
                     <ng-container *ngIf="orinalDataForm.email === ''; else elseTitle">
-                        <h5 class="title">{{isAddPoint ? (dataForm.point <= 0 ? 'ลดพ้อยท์' : 'เพิ่มพ้อยท์' ) : 'สร้าง' +
+                        <h5 class="title">{{isAddPoint ? (dataForm.point <= 0 ? 'ลดพอยท์' : 'เพิ่มพอยท์' ) : 'สร้าง' +
                                 (title | titlecase)}}</h5>
                     </ng-container>
                     <ng-template #elseTitle>
-                        <h5 class="title">{{isAddPoint ? (dataForm.point <= 0 ? 'ลดพ้อยท์' : 'เพิ่มพ้อยท์' ) : 'แก้ไข' +
+                        <h5 class="title">{{isAddPoint ? (dataForm.point <= 0 ? 'ลดพอยท์' : 'เพิ่มพอยท์' ) : 'แก้ไข' +
                                 (title | titlecase)}}</h5>
                     </ng-template>
                 </div>
@@ -117,16 +117,16 @@
                                         </div>
                                         <div class="detail">
                                             <span>email: {{pointMember.email}}</span>
-                                            <span>พ้อยทั้งหมด: {{pointMember.point.accumulatePoint === null ? 0 :
+                                            <span>พอยท์ทั้งหมด: {{pointMember.point.accumulatePoint === null ? 0 :
                                                 (pointMember.point.accumulatePoint | number)}}</span>
-                                            <span>พ้อยที่ใช้ไป: {{pointMember.point.usedPoint | number}}</span>
+                                            <span>พอยท์ที่ใช้ไป: {{pointMember.point.usedPoint | number}}</span>
                                         </div>
                                     </div>
-                                    <label>จำนวนพ้อยท์ที่ต้องการเพิ่ม / ลด</label>
+                                    <label>จำนวนพอยท์ที่ต้องการเพิ่ม / ลด</label>
                                     <input type="number" class="form-control" [(ngModel)]="dataForm.point"
                                         [ngModelOptions]="{standalone: true}">
                                     <label style="font-size: 12px; opacity: 0.5;margin: 5px 0 0 5px;">* ใส่เครื่องหมาย -
-                                        เพื่อลบพ้อยท์</label>
+                                        เพื่อลบพอยท์</label>
                                 </div>
                             </div>
                         </div>
@@ -136,7 +136,7 @@
                     <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
                     <button mat-raised-button class="btn-save" [ngClass]="{'disable': !dataForm.point}"
                         [disabled]="!dataForm.point" (click)="isAddPoint ? addPoint() : clickSave()">{{isAddPoint ?
-                        (dataForm.point <= 0 ? 'ลดพ้อยท์' : 'เพิ่มพ้อยท์' ) : 'บันทึก' }}</button>
+                        (dataForm.point <= 0 ? 'ลดพอยท์' : 'เพิ่มพอยท์' ) : 'บันทึก' }}</button>
                 </div>
             </div>
         </div>

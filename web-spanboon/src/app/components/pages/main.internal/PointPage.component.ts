@@ -8,7 +8,7 @@ import { Subject } from 'rxjs';
 import { DialogPoint } from '../../components';
 
 const PAGE_NAME: string = 'point';
-const PAGE_TITLE: string = 'ก้าวไกลพ้อยท์';
+const PAGE_TITLE: string = 'ก้าวไกลพอยท์';
 
 @Component({
     selector: 'point-page',

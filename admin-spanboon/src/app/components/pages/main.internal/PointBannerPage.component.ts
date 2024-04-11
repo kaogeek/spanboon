@@ -89,7 +89,7 @@ export class PointBannerPage extends AbstractPage implements OnInit {
             },
             {
                 name: "point",
-                label: "จำนวนพ้อย",
+                label: "จำนวนพอยท์",
                 width: "60pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
@@ -267,7 +267,7 @@ export class PointBannerPage extends AbstractPage implements OnInit {
             return this.dialogWarning('กรุณาใส่รายละเอียด');
         }
         if (!this.dataForm.point) {
-            return this.dialogWarning('กรุณาใส่จำนวนพ้อย');
+            return this.dialogWarning('กรุณาใส่จำนวนพอยท์');
         }
         if (!this.dataForm.limit) {
             return this.dialogWarning('กรุณาใส่ลิมิตการแลก');
