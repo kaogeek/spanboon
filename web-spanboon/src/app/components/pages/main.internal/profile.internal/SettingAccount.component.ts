@@ -9,10 +9,13 @@ import { Component, OnInit, ViewChild, ElementRef, EventEmitter, Inject } from '
 import { MatDialog, DateAdapter, MAT_DIALOG_DATA } from '@angular/material';
 import { Router } from '@angular/router';
 import { DialogProfile } from 'src/app/components/shares/dialog/DialogProfile.component';
-import { AuthenManager, ObservableManager, AssetFacade, ProfileFacade, SeoService } from '../../../../services/services';
+import { AuthenManager, ObservableManager, AssetFacade, ProfileFacade, SeoService, PointEventFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
 import { environment } from '../../../../../environments/environment';
+
 const PAGE_NAME: string = 'account';
+const SEARCH_LIMIT: number = 10;
+const SEARCH_OFFSET: number = 0;
 
 @Component({
     selector: 'setting-account',
@@ -24,18 +27,26 @@ export class SettingAccount extends AbstractPage implements OnInit {
 
     public static readonly PAGE_NAME: string = PAGE_NAME;
 
+    public apiBaseURL = environment.apiBaseURL;
     public router: Router;
     private observManager: ObservableManager;
     private assetFacade: AssetFacade;
     private profileFacade: ProfileFacade;
+    private pointFacade: PointEventFacade;
     private seoService: SeoService;
     public selected: any = 'ทั่วไป';
     public isSend: boolean;
     public isCheck: boolean;
     public dataUser: any;
     public user: any;
+    public pointEvent: any;
+    public accumulate: any = undefined;
+    public coupon: any = undefined;
+    public ranking: any = undefined;
     public bindingMember: boolean;
     public isMember: boolean = false;
+    public isMemberShip: boolean = false;
+    public pointLogo: string = '../../../../../assets/img/icons/pointpage/Point_mini_logo.svg';
 
     minDate = new Date(1800, 0, 1);
     maxDate = new Date();
@@ -46,55 +57,85 @@ export class SettingAccount extends AbstractPage implements OnInit {
             link: "",
             icon: "settings",
             label: "ทั่วไป",
+            id: "settings"
         },
         {
             link: "",
             icon: "security",
             label: "การเชื่อมต่อ",
+            id: "connect"
         },
-        // {
-        //     link: "",
-        //     icon: "security",
-        //     label: "ความปลอดภัยและล็อคอิน",
-        // },
-        // {
-        //     link: "",
-        //     icon: "notifications_none",
-        //     label: "การแจ้งเตือน",
-        // },
-        // {
-        //     link: "",
-        //     icon: "public",
-        //     label: "โพสต์",
-        // },
+        {
+            link: "",
+            icon: "",
+            image: "../../../../../assets/img/icons/pointpage/Point_mini_logo.svg",
+            label: "คะแนนของฉัน",
+            id: "myPoint"
+        },
+        {
+            link: "",
+            icon: "",
+            image: "../../../../../assets/img/icons/pointpage/ticket.svg",
+            label: "โค้ดของฉัน",
+            id: "coupon"
+        },
+        {
+            link: "",
+            icon: "",
+            image: "../../../../../assets/img/icons/pointpage/statistic-mfp.svg",
+            label: "อันดับของฉัน",
+            id: "ranking"
+        },
     ];
 
     constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager, assetFacade: AssetFacade,
         dialog: MatDialog, profileFacade: ProfileFacade, @Inject(MAT_DIALOG_DATA) public data: any, dateAdapter: DateAdapter<Date>,
-        seoService: SeoService) {
+        seoService: SeoService, pointFacade: PointEventFacade, private dialogRef: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.profileFacade = profileFacade;
         this.router = router;
         this.authenManager = authenManager;
+        this.pointFacade = pointFacade;
         this.assetFacade = assetFacade;
         this.seoService = seoService;
 
+        this.isMemberShip = this.isLogin() ? this.authenManager.getUserMember() : false;
+
         const navigation = this.router.getCurrentNavigation();
         const state = navigation.extras.state;
+
         if (state) {
             this.selected = state.focus;
             this.isMember = true;
         } else {
             this.isMember = this.authenManager.getUserMember();
         }
+
+        this._checkParam();
     }
 
     public ngOnInit(): void {
         this.seoService.updateTitle("จัดการบัญชี - " + this.getUser());
         this.dataUser = localStorage.getItem('pageUser');
     }
+
     public ngOnDestroy(): void {
         super.ngOnDestroy();
+    }
+
+    private _checkParam() {
+        let url = this.router.url.split('/');
+        let param = url[url.length - 1].split('=')[1];
+        if (!!param) {
+            let label;
+            if (param === 'ranking') label = 'อันดับของฉัน';
+            if (param === 'coupon') label = 'โค้ดของฉัน';
+            if (param === 'myPoint') label = 'คะแนนของฉัน';
+            if (param === 'settings') label = 'ทั่วไป';
+            if (param === 'connect') label = 'การเชื่อมต่อ';
+            this.selecedInformation(param, label);
+            this.dialogRef.closeAll();
+        }
     }
 
     public getUser() {
@@ -115,8 +156,21 @@ export class SettingAccount extends AbstractPage implements OnInit {
         return;
     }
 
-    public selecedInformation(link: any) {
-        this.selected = link.label;
+    public selecedInformation(link: any, label?: string) {
+        if (!!label) {
+            if (!this.isMemberShip) {
+                this.selected = "ทั่วไป";
+                this.router.navigate(['', 'account', 'settings'], { queryParams: { menu: 'settings' } });
+            } else {
+                this.selected = label;
+            }
+        } else {
+            this.selected = link.label;
+            this.router.navigate(['', 'account', 'settings'], { queryParams: { menu: link['id'] } });
+        }
+        if (link === "myPoint" || link.id === "myPoint") this._getAccumulate();
+        if (link === "coupon" || link.id === "coupon") this._getCoupon();
+        if (link === "ranking" || link.id === "ranking") this._getRanking();
     }
 
     public binding() {
@@ -151,5 +205,48 @@ export class SettingAccount extends AbstractPage implements OnInit {
                 this.isMember = false;
             }
         });
+    }
+
+    private _getCoupon() {
+        if (this.coupon === undefined && this.isMemberShip) {
+            this.pointFacade.coupon(SEARCH_LIMIT, SEARCH_OFFSET).then((res) => {
+                if (res) {
+                    this.coupon = res.userCoupon;
+                }
+            });
+        }
+    }
+
+    private _getAccumulate() {
+        if (this.accumulate === undefined && this.isMemberShip) {
+            this.pointFacade.accumulate(SEARCH_LIMIT, SEARCH_OFFSET).then((res) => {
+                if (res) {
+                    this.accumulate = res;
+                }
+            });
+        }
+    }
+
+    private _getRanking() {
+        if (this.ranking === undefined && this.isMemberShip) {
+            this.pointFacade.sortAccumulate(SEARCH_LIMIT, SEARCH_OFFSET).then((res) => {
+                if (res) {
+                    this.ranking = res.sortAccumulatePoint;
+                }
+            });
+        }
+    }
+
+    public clickDialog() {
+        this.showAlertDialog('ท่านสามารถใช้งานคูปองบนแอปพลิเคชั่นทูเดย์เท่านั้น');
+    }
+
+    public checkActiveCoupon(date: string): boolean {
+        if (!date) {
+            return true;
+        }
+        const todayDate = new Date();
+        const activeDate = new Date(date);
+        return todayDate <= activeDate ? true : false;
     }
 }

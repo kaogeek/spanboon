@@ -396,6 +396,91 @@
       }
     }
   }
+
+  > .image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 8px;
+    padding: 0 0 16px 0;
+    max-height: 256px;
+
+    > .image {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      border-radius: 8px;
+      min-height: 260px;
+      border: 1px solid;
+      border-style: dashed;
+    }
+
+    > .none-image {
+      width: 200px;
+    }
+
+    > span {
+      font-size: 16pt;
+    }
+  }
+
+  > .wrapper-user {
+    border: 1px solid;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 10px;
+
+    > .user {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+
+      > .image-null {
+        width: 60px;
+        height: 60px;
+        background-color: $brand-primary;
+        color: $white;
+        border-radius: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20pt;
+        font-weight: bold;
+      }
+
+      > img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        aspect-ratio: 16 / 9;
+        border-radius: 100%;
+      }
+
+      > .name {
+        display: flex;
+        gap: 10px;
+
+        > span {
+          font-size: 16pt;
+          font-weight: bold;
+        }
+      }
+    }
+
+    > .detail {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 10px;
+      font-size: 16px;
+
+      > span {
+        &:last-child {
+          color: red;
+        }
+      }
+    }
+  }
 }
 
 .hashtag {

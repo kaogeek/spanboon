@@ -1,0 +1,12 @@
+.dialog-input {
+  > .input {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+
+    > input {
+      width: 100%;
+    }
+  }
+}

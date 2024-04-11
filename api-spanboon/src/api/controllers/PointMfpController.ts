@@ -1,4 +1,4 @@
-import { JsonController, Res, Post, Req, Body, Authorized,Get,QueryParam, Param } from 'routing-controllers';
+import { JsonController, Res, Post, Req, Body, Authorized, Get, QueryParam, Param } from 'routing-controllers';
 // import { UserService } from '../services/UserService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { PointStatementRequest } from './requests/PointStatementRequest';
@@ -21,13 +21,13 @@ import { ProductCategoryService } from '../services/ProductCategoryService';
 export class NotificationController {
     constructor(
         // private userService: UserService,
-        private pointStatementService:PointStatementService,
-        private accumulateService:AccumulateService,
-        private userCouponService:UserCouponService,
-        private pointEventService:PointEventService,
-        private productService:ProductService,
-        private productCategoryService:ProductCategoryService,
-        private userService:UserService
+        private pointStatementService: PointStatementService,
+        private accumulateService: AccumulateService,
+        private userCouponService: UserCouponService,
+        private pointEventService: PointEventService,
+        private productService: ProductService,
+        private productCategoryService: ProductCategoryService,
+        private userService: UserService
     ) { }
     /*
     @Get('/event/:id')
@@ -40,40 +40,40 @@ export class NotificationController {
     @Authorized('user')
     public async pointStatement(
         @Body({ validate: true }) pointStatementRequest: PointStatementRequest,
-        @Res() res: any, 
-        @Req() req: any): Promise<any>{
+        @Res() res: any,
+        @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
 
-        if(userObjId === undefined || userObjId === null) {
+        if (userObjId === undefined || userObjId === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Not found the user.', undefined);
             return res.status(400).send(errorResponse);
         }
-        if(pointStatementRequest.type ==='RECEIVE_POINT') {
+        if (pointStatementRequest.type === 'RECEIVE_POINT') {
             const pointStateMentuser = await this.pointStatementService.findOne(
-            {
-                pointEventId: new ObjectID(pointStatementRequest.pointEventId),
-                userId:userObjId
-            });
-            if(pointStateMentuser !== undefined) {
+                {
+                    pointEventId: new ObjectID(pointStatementRequest.pointEventId),
+                    userId: userObjId
+                });
+            if (pointStateMentuser !== undefined) {
                 const errorResponse = ResponseUtil.getErrorResponse('You have had this point statement.', undefined);
                 return res.status(400).send(errorResponse);
 
             }
         }
 
-        if(pointStatementRequest.type === 'REDEEM') {
+        if (pointStatementRequest.type === 'REDEEM') {
             const productStatenebt = await this.pointStatementService.findOne(
                 {
                     productId: new ObjectID(pointStatementRequest.productId),
-                    userId:userObjId
+                    userId: userObjId
                 });
-            if(productStatenebt !== undefined) {
+            if (productStatenebt !== undefined) {
                 const errorResponse = ResponseUtil.getErrorResponse('You have had this point statement.', undefined);
                 return res.status(400).send(errorResponse);
             }
         }
-        
-        if(pointStatementRequest.type  === 'RECEIVE_POINT' && 
+
+        if (pointStatementRequest.type === 'RECEIVE_POINT' &&
             pointStatementRequest.pointEventId === undefined &&
             pointStatementRequest.pointEventId === null &&
             pointStatementRequest.pointEventId === ''
@@ -82,7 +82,7 @@ export class NotificationController {
             return res.status(400).send(errorResponse);
         }
 
-        if(pointStatementRequest.type  === 'REDEEM' && 
+        if (pointStatementRequest.type === 'REDEEM' &&
             pointStatementRequest.productId === undefined &&
             pointStatementRequest.productId === null &&
             pointStatementRequest.productId === ''
@@ -93,7 +93,7 @@ export class NotificationController {
 
         const productModel = new PointStatementModel();
 
-        if(pointStatementRequest.type === 'REDEEM'){
+        if (pointStatementRequest.type === 'REDEEM') {
             productModel.title = pointStatementRequest.title;
             productModel.detail = pointStatementRequest.detail;
             productModel.point = pointStatementRequest.point;
@@ -102,7 +102,7 @@ export class NotificationController {
             productModel.productId = new ObjectID(pointStatementRequest.productId);
         }
 
-        if(pointStatementRequest.type === 'RECEIVE_POINT') {
+        if (pointStatementRequest.type === 'RECEIVE_POINT') {
             productModel.title = pointStatementRequest.title;
             productModel.detail = pointStatementRequest.detail;
             productModel.point = pointStatementRequest.point;
@@ -112,56 +112,57 @@ export class NotificationController {
         }
 
         const create = await this.pointStatementService.create(productModel);
-        if(create){
-            const accumulateCreate = await this.accumulateService.findOne({userId:userObjId});
-            if(accumulateCreate === undefined) {
+        if (create) {
+            const accumulateCreate = await this.accumulateService.findOne({ userId: userObjId });
+            if (accumulateCreate === undefined) {
                 const accumulateModel = new AccumulateModel();
                 accumulateModel.userId = userObjId;
                 accumulateModel.accumulatePoint = pointStatementRequest.point;
                 accumulateModel.usedPoint = 0;
                 const createAccumulate = await this.accumulateService.create(accumulateModel);
-                if(createAccumulate){
+                if (createAccumulate) {
                     const successResponse = ResponseUtil.getSuccessResponse('Point Statement is success.', create);
                     return res.status(200).send(successResponse);
                 }
-            } 
+            }
 
-            if(accumulateCreate !== undefined && pointStatementRequest.type === 'RECEIVE_POINT') {
+            if (accumulateCreate !== undefined && pointStatementRequest.type === 'RECEIVE_POINT') {
                 const pointEventObjId = new ObjectID(pointStatementRequest.pointEventId);
-                const pointEvent = await this.pointEventService.findOne({_id:pointEventObjId});
+                const pointEvent = await this.pointEventService.findOne({ _id: pointEventObjId });
 
-                if(pointEvent.maximumLimit === pointEvent.receiver) {
+                if (pointEvent.maximumLimit === pointEvent.receiver) {
                     const errorResponse = ResponseUtil.getErrorResponse('ProductEvent is out of store.', undefined);
-                    const deletePointStatement = await this.pointStatementService.delete({_id:create.id,userId:userObjId});
-                    if(deletePointStatement){
+                    const deletePointStatement = await this.pointStatementService.delete({ _id: create.id, userId: userObjId });
+                    if (deletePointStatement) {
                         return res.status(400).send(errorResponse);
                     }
                 }
 
-                const updatePointEvent = await this.pointEventService.update({_id:pointEvent.id},{$set:{receiver: pointEvent.receiver + 1}});
-                if(updatePointEvent){
-                    const query = {userId:userObjId};
-                    const newValues = {$set:
+                const updatePointEvent = await this.pointEventService.update({ _id: pointEvent.id }, { $set: { receiver: pointEvent.receiver + 1 } });
+                if (updatePointEvent) {
+                    const query = { userId: userObjId };
+                    const newValues = {
+                        $set:
                         {
                             accumulatePoint: accumulateCreate.accumulatePoint + pointStatementRequest.point
                         }
                     };
-                    const update = await this.accumulateService.update(query,newValues);
-                    if(update) {
+                    const update = await this.accumulateService.update(query, newValues);
+                    if (update) {
                         const successResponse = ResponseUtil.getSuccessResponse('Creact Point Statement and Receiver point is success.', create);
                         return res.status(200).send(successResponse);
                     }
                 }
             }
-            if(accumulateCreate !== undefined && pointStatementRequest.type === 'REDEEM'){
-                if(accumulateCreate.accumulatePoint < pointStatementRequest.point){
+            if (accumulateCreate !== undefined && pointStatementRequest.type === 'REDEEM') {
+                if (accumulateCreate.accumulatePoint < pointStatementRequest.point) {
                     const errorResponse = ResponseUtil.getErrorResponse('The point you have got is not enough.', undefined);
-                    const deletePointStatement = await this.pointStatementService.delete({_id:create.id,userId:userObjId});
-                    if(deletePointStatement){
+                    const deletePointStatement = await this.pointStatementService.delete({ _id: create.id, userId: userObjId });
+                    if (deletePointStatement) {
                         return res.status(400).send(errorResponse);
                     }
-                } 
-                const productPoint = await this.productService.findOne({_id: new ObjectID(pointStatementRequest.productId)});
+                }
+                const productPoint = await this.productService.findOne({ _id: new ObjectID(pointStatementRequest.productId) });
 
                 const userCouponModel = new UserCouponModel();
                 userCouponModel.userId = userObjId;
@@ -171,7 +172,7 @@ export class NotificationController {
                 userCouponModel.expireDate = productPoint.expiringDate;
                 userCouponModel.activeDate = null;
                 const createUserCoupon = await this.userCouponService.create(userCouponModel);
-                if(createUserCoupon){
+                if (createUserCoupon) {
                     const successResponse = ResponseUtil.getSuccessResponse('Redeem coupon is success.', create);
                     return res.status(200).send(successResponse);
                 }
@@ -181,29 +182,29 @@ export class NotificationController {
             return res.status(400).send(errorResponse);
         }
     }
-    
+
     @Post('/used/coupon')
     @Authorized('user')
     public async usedCoupon(
         @Body({ validate: true }) usedCouponRequest: UsedCouponRequest,
-        @Res() res: any, 
-        @Req() req: any): Promise<any>{
+        @Res() res: any,
+        @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const today = new Date();
-        const productObj = await this.productService.findOne({_id: new ObjectID(usedCouponRequest.productId)});
+        const productObj = await this.productService.findOne({ _id: new ObjectID(usedCouponRequest.productId) });
         const minute = today.getTime() + productObj.couponExpire * 60 * 60;
 
-        if(today.getTime() > productObj.expiringDate.getTime()) {
+        if (today.getTime() > productObj.expiringDate.getTime()) {
             const errorResponse = ResponseUtil.getErrorResponse('The product had been expiring.', undefined);
             return res.status(400).send(errorResponse);
         }
-            
-        if(productObj.maximumLimit === productObj.receiverCoupon) {
+
+        if (productObj.maximumLimit === productObj.receiverCoupon) {
             const errorResponse = ResponseUtil.getErrorResponse('The product is out of store.', undefined);
             return res.status(400).send(errorResponse);
         }
-        if(productObj.couponExpire !== -1) {
-            if(today.getTime() > minute){
+        if (productObj.couponExpire !== -1) {
+            if (today.getTime() > minute) {
                 const errorResponse = ResponseUtil.getErrorResponse('The coupon was expire.', undefined);
                 return res.status(400).send(errorResponse);
             }
@@ -211,48 +212,49 @@ export class NotificationController {
 
         const couponObj = await this.userCouponService.findOne(
             {
-                _id:new ObjectID(usedCouponRequest.couponId),
-                userId:userObjId ,
+                _id: new ObjectID(usedCouponRequest.couponId),
+                userId: userObjId,
                 productId: productObj.id
             }
         );
-        if(couponObj === undefined) {
+        if (couponObj === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Coupon not found.', undefined);
             return res.status(400).send(errorResponse);
         }
 
-        if(couponObj !== undefined && couponObj.productId === undefined) {
+        if (couponObj !== undefined && couponObj.productId === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Product id is undefined.', undefined);
             return res.status(400).send(errorResponse);
         }
 
-        if(couponObj.active !== true) {
+        if (couponObj.active !== true) {
             const errorResponse = ResponseUtil.getErrorResponse('Counpon is not active.', undefined);
             return res.status(400).send(errorResponse);
         }
 
-        if(couponObj.activeDate !== null) {
+        if (couponObj.activeDate !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been used coupon.', undefined);
             return res.status(400).send(errorResponse);
         }
 
-        if(today.getTime() >  couponObj.expireDate.getTime()) {
+        if (today.getTime() > couponObj.expireDate.getTime()) {
             const errorResponse = ResponseUtil.getErrorResponse('Coupon ExpireDate have been expiring.', undefined);
             return res.status(400).send(errorResponse);
         }
 
         const query = {
-            userId:userObjId,
+            userId: userObjId,
             productId: productObj.id
         };
-        const newValues = {$set:
+        const newValues = {
+            $set:
             {
                 activeDate: today
             }
         };
 
-        const updateUserCoupon = await this.userCouponService.update(query,newValues);
-        if(updateUserCoupon){
+        const updateUserCoupon = await this.userCouponService.update(query, newValues);
+        if (updateUserCoupon) {
             const productModel = new PointStatementModel();
             productModel.title = 'Use a Coupon.';
             productModel.detail = null;
@@ -262,27 +264,27 @@ export class NotificationController {
             productModel.userId = userObjId;
             productModel.pointEventId = null;
             const create = await this.pointStatementService.create(productModel);
-            if(create){
-                try{
-                    const updateProduct = await this.productService.update({_id:productObj.id},{$set:{receiverCoupon: productObj.receiverCoupon + 1}});
-                    if(updateProduct) {
+            if (create) {
+                try {
+                    const updateProduct = await this.productService.update({ _id: productObj.id }, { $set: { receiverCoupon: productObj.receiverCoupon + 1 } });
+                    if (updateProduct) {
                         const successResponse = ResponseUtil.getSuccessResponse('Redeem coupon is success.', undefined);
                         return res.status(200).send(successResponse);
                     } else {
-                        const updateReverse = await this.userCouponService.update({userId:userObjId,productId: productObj.id},
+                        const updateReverse = await this.userCouponService.update({ userId: userObjId, productId: productObj.id },
                             {
-                                $set:{
+                                $set: {
                                     active: false,
                                     activeDate: null
                                 }
                             }
                         );
-                        if(updateReverse){
+                        if (updateReverse) {
                             const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', undefined);
                             return res.status(400).send(errorResponse);
                         }
                     }
-                } catch(error) {
+                } catch (error) {
                     const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', error);
                     return res.status(400).send(errorResponse);
                 }
@@ -291,10 +293,10 @@ export class NotificationController {
     }
 
     @Get('/event/:id')
-    public async getEventObj(@Param('id') id: string,@Res() res: any,@Req() req: any): Promise<any> {
+    public async getEventObj(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         const eventObjId = new ObjectID(id);
-        const pointEventObj = await this.pointEventService.findOne({_id: eventObjId});
-        const result:any = {};
+        const pointEventObj = await this.pointEventService.findOne({ _id: eventObjId });
+        const result: any = {};
         result.id = pointEventObj.id;
         result.createdDate = pointEventObj.createdDate;
         result.title = pointEventObj.title;
@@ -308,8 +310,8 @@ export class NotificationController {
         result.link = pointEventObj.link;
         result.s3CoverPageURL = pointEventObj.s3CoverPageURL;
         result.receiver = pointEventObj.receiver;
-        if(result){
-            const successResponse = ResponseUtil.getSuccessResponse('Get PointEventObj is success.', {'pointEventDetail':result});
+        if (result) {
+            const successResponse = ResponseUtil.getSuccessResponse('Get PointEventObj is success.', { 'pointEventDetail': result });
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Not found PointEvent.', undefined);
@@ -318,10 +320,10 @@ export class NotificationController {
     }
 
     @Get('/product/:id')
-    public async getProductObj(@Param('id') id: string,@Res() res: any,@Req() req: any): Promise<any> {
+    public async getProductObj(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         const productObjId = new ObjectID(id);
-        const productObj = await this.productService.findOne({_id: productObjId});
-        const result:any = {};
+        const productObj = await this.productService.findOne({ _id: productObjId });
+        const result: any = {};
         result.id = productObj.id;
         result.createdDate = productObj.createdDate;
         result.categoryId = productObj.categoryId;
@@ -339,8 +341,8 @@ export class NotificationController {
         result.activeDate = productObj.activeDate;
         result.receiverCoupon = productObj.receiverCoupon;
         result.couponExpire = productObj.couponExpire;
-        if(result){
-            const successResponse = ResponseUtil.getSuccessResponse('Get Product is success.', {'productDetail':result});
+        if (result) {
+            const successResponse = ResponseUtil.getSuccessResponse('Get Product is success.', { 'productDetail': result });
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Not found Product.', undefined);
@@ -360,41 +362,41 @@ export class NotificationController {
         const accumulateAggr = await this.accumulateService.aggregate(
             [
                 {
-                    $match:{
-                        userId:userObjId
+                    $match: {
+                        userId: userObjId
                     }
                 },
                 {
-                    '$addFields':{
-                        'totalPoint':{
-                            '$add':['$accumulatePoint','$usedPoint']
+                    '$addFields': {
+                        'totalPoint': {
+                            '$add': ['$accumulatePoint', '$usedPoint']
                         }
                     }
                 },
                 {
-                    $project:{
-                        createdDate:1,
-                        userId:1,
-                        accumulatePoint:1,
-                        usedPoint:1,
-                        totalPoint:1
+                    $project: {
+                        createdDate: 1,
+                        userId: 1,
+                        accumulatePoint: 1,
+                        usedPoint: 1,
+                        totalPoint: 1
                     }
                 },
                 {
-                    $lookup:{
-                        from:'PointStatement',
-                        let:{'userId':'$userId'},
-                        pipeline:[
+                    $lookup: {
+                        from: 'PointStatement',
+                        let: { 'userId': '$userId' },
+                        pipeline: [
                             {
-                                $match:{
-                                    $expr:{
-                                        $eq:['$$userId','$userId']
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$userId', '$userId']
                                     }
                                 }
                             },
                             {
-                                $sort:{
-                                    createdDate:-1
+                                $sort: {
+                                    createdDate: -1
                                 }
                             },
                             {
@@ -404,29 +406,29 @@ export class NotificationController {
                                 $limit: take
                             }
                         ],
-                        as:'totalPointStatement'
+                        as: 'totalPointStatement'
                     }
                 },
                 {
-                    $lookup:{
-                        from:'PointStatement',
-                        let:{'userId':'$userId'},
-                        pipeline:[
+                    $lookup: {
+                        from: 'PointStatement',
+                        let: { 'userId': '$userId' },
+                        pipeline: [
                             {
-                                $match:{
-                                    $expr:{
-                                        $eq:['$$userId','$userId']
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$userId', '$userId']
                                     }
                                 }
                             },
                             {
-                                $match:{
-                                    type:'RECEIVE_POINT'
+                                $match: {
+                                    type: 'RECEIVE_POINT'
                                 }
                             },
                             {
-                                $sort:{
-                                    createdDate:-1
+                                $sort: {
+                                    createdDate: -1
                                 }
                             },
                             {
@@ -436,29 +438,29 @@ export class NotificationController {
                                 $limit: take
                             }
                         ],
-                        as:'receivePointStatement'
+                        as: 'receivePointStatement'
                     }
                 },
                 {
-                    $lookup:{
-                        from:'PointStatement',
-                        let:{'userId':'$userId'},
-                        pipeline:[
+                    $lookup: {
+                        from: 'PointStatement',
+                        let: { 'userId': '$userId' },
+                        pipeline: [
                             {
-                                $match:{
-                                    $expr:{
-                                        $eq:['$$userId','$userId']
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$userId', '$userId']
                                     }
                                 }
                             },
                             {
-                                $match:{
-                                    type:'REDEEM'
+                                $match: {
+                                    type: 'REDEEM'
                                 }
                             },
                             {
-                                $sort:{
-                                    createdDate:-1
+                                $sort: {
+                                    createdDate: -1
                                 }
                             },
                             {
@@ -468,7 +470,7 @@ export class NotificationController {
                                 $limit: take
                             }
                         ],
-                        as:'redeemPointStatement'
+                        as: 'redeemPointStatement'
                     }
                 }
             ]
@@ -477,94 +479,94 @@ export class NotificationController {
         const userObj = await this.userService.aggregate(
             [
                 {
-                    $match:{
-                        _id:userObjId
+                    $match: {
+                        _id: userObjId
                     }
                 },
                 {
-                    $project:{
-                        _id:1,
-                        firstName:1,
-                        lastName:1,
-                        displayName:1,
-                        uniqueId:1,
-                        birthdate:1,
-                        imageURL:1,
-                        s3ImageURL:1,
+                    $project: {
+                        _id: 1,
+                        firstName: 1,
+                        lastName: 1,
+                        displayName: 1,
+                        uniqueId: 1,
+                        birthdate: 1,
+                        imageURL: 1,
+                        s3ImageURL: 1,
                     }
                 },
                 {
-                    $lookup:{
-                        from:'AuthenticationId',
-                        let:{id:'$_id'},
-                        pipeline:[
+                    $lookup: {
+                        from: 'AuthenticationId',
+                        let: { id: '$_id' },
+                        pipeline: [
                             {
-                                $match:{
-                                    $expr:{
-                                        $eq:['$$id','$user']
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$id', '$user']
                                     }
                                 }
                             },
                             {
-                                $match:{
-                                    providerName:'MFP'
+                                $match: {
+                                    providerName: 'MFP'
                                 }
                             },
                             {
-                                $project:{
-                                    user:1,
-                                    providerName:1,
-                                    properties:1
+                                $project: {
+                                    user: 1,
+                                    providerName: 1,
+                                    properties: 1
                                 }
                             }
                         ],
-                        as:'authenticationId'
+                        as: 'authenticationId'
                     }
                 },
                 {
-                    $unwind:'$authenticationId'
+                    $unwind: '$authenticationId'
                 },
                 {
-                    '$addFields':{
-                        'userId':'$authenticationId.user',
-                        'providerName':'$authenticationId.providerName',
-                        'identificationNumber':'$authenticationId.properties.identification_number'
+                    '$addFields': {
+                        'userId': '$authenticationId.user',
+                        'providerName': '$authenticationId.providerName',
+                        'identificationNumber': '$authenticationId.properties.identification_number'
                     }
                 },
                 {
-                    $project:{
-                        _id:1,
-                        firstName:1,
-                        lastName:1,
-                        displayName:1,
-                        uniqueId:1,
-                        birthdate:1,
-                        imageURL:1,
-                        s3ImageURL:1,
-                        userId:1,
-                        providerName:1,
-                        identificationNumber:1
+                    $project: {
+                        _id: 1,
+                        firstName: 1,
+                        lastName: 1,
+                        displayName: 1,
+                        uniqueId: 1,
+                        birthdate: 1,
+                        imageURL: 1,
+                        s3ImageURL: 1,
+                        userId: 1,
+                        providerName: 1,
+                        identificationNumber: 1
                     }
                 }
             ]
         );
-        const decorateUser:any = {
-            '_id': userObj !== undefined && userObj.length >0 ? userObj[0]._id : undefined,
-            'firstName': userObj !== undefined && userObj.length >0? userObj[0].firstName : undefined,
-            'lastName': userObj !== undefined && userObj.length >0? userObj[0].lastName : undefined,
-            'displayName': userObj !== undefined && userObj.length >0? userObj[0].displayName : undefined,
-            'uniqueId': userObj !== undefined && userObj.length >0? userObj[0].uniqueId : undefined,
-            'birthdate': userObj !== undefined && userObj.length >0? userObj[0].birthdate : undefined,
-            'imageURL': userObj !== undefined && userObj.length >0? userObj[0].imageURL : undefined,
-            's3ImageURL': userObj !== undefined && userObj.length >0? userObj[0].s3ImageURL : undefined,
-            'userId': userObj !== undefined && userObj.length >0? userObj[0].userId : undefined,
-            'providerName': userObj !== undefined && userObj.length >0? userObj[0].providerName : undefined,
-            'identificationNumber': userObj !== undefined && userObj.length >0? 'XXXX-'+userObj[0].identificationNumber.slice(4,userObj[0].identificationNumber.length) : undefined,
+        const decorateUser: any = {
+            '_id': userObj !== undefined && userObj.length > 0 ? userObj[0]._id : undefined,
+            'firstName': userObj !== undefined && userObj.length > 0 ? userObj[0].firstName : undefined,
+            'lastName': userObj !== undefined && userObj.length > 0 ? userObj[0].lastName : undefined,
+            'displayName': userObj !== undefined && userObj.length > 0 ? userObj[0].displayName : undefined,
+            'uniqueId': userObj !== undefined && userObj.length > 0 ? userObj[0].uniqueId : undefined,
+            'birthdate': userObj !== undefined && userObj.length > 0 ? userObj[0].birthdate : undefined,
+            'imageURL': userObj !== undefined && userObj.length > 0 ? userObj[0].imageURL : undefined,
+            's3ImageURL': userObj !== undefined && userObj.length > 0 ? userObj[0].s3ImageURL : undefined,
+            'userId': userObj !== undefined && userObj.length > 0 ? userObj[0].userId : undefined,
+            'providerName': userObj !== undefined && userObj.length > 0 ? userObj[0].providerName : undefined,
+            'identificationNumber': userObj !== undefined && userObj.length > 0 ? 'XXXX-' + userObj[0].identificationNumber.slice(4, userObj[0].identificationNumber.length) : undefined,
         };
 
         const result = {
-            'user': decorateUser!== undefined ? decorateUser: {},
-            'accumulatePoint':accumulateAggr !== undefined ? accumulateAggr[0] : {},
+            'user': decorateUser !== undefined ? decorateUser : {},
+            'accumulatePoint': accumulateAggr !== undefined ? accumulateAggr[0] : {},
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get content points is success.', result);
         return res.status(200).send(successResponse);
@@ -576,42 +578,42 @@ export class NotificationController {
         @Body({ validate: true }) pointLimitOffsetRequest: PointLimitOffsetRequest,
         @Res() res: any,
         @Req() req: any
-        ): Promise<any> {
+    ): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const take = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.limit : 10;
         const skips = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.offset : 0;
         const userCoupon = await this.userCouponService.aggregate(
             [
                 {
-                    $match:{
-                        userId:userObjId
+                    $match: {
+                        userId: userObjId
                     }
                 },
                 {
-                    $lookup:{
-                        from:'PointStatement',
-                        let:{'productId':'$productId'},
-                        pipeline:[
+                    $lookup: {
+                        from: 'PointStatement',
+                        let: { 'productId': '$productId' },
+                        pipeline: [
                             {
-                                $match:{
-                                    $expr:{
-                                        $eq:['$$productId','$productId']
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$productId', '$productId']
                                     }
                                 }
                             },
                             {
-                                $match:{
-                                    productId:{$ne:null},
-                                    userId:userObjId
+                                $match: {
+                                    productId: { $ne: null },
+                                    userId: userObjId
                                 }
                             },
                             {
-                                $project:{
-                                    _id:1,
-                                    title:1,
-                                    point:1,
-                                    productId:1,
-                                    userId:1
+                                $project: {
+                                    _id: 1,
+                                    title: 1,
+                                    point: 1,
+                                    productId: 1,
+                                    userId: 1
                                 }
                             },
                             {
@@ -621,14 +623,14 @@ export class NotificationController {
                                 $limit: take
                             },
                             {
-                                $lookup:{
-                                    from:'Product',
-                                    let:{'productId':'$productId'},
-                                    pipeline:[
+                                $lookup: {
+                                    from: 'Product',
+                                    let: { 'productId': '$productId' },
+                                    pipeline: [
                                         {
-                                            $match:{
-                                                $expr:{
-                                                    $eq:['$$productId','$_id']
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$productId', '$_id']
                                                 }
                                             }
                                         },
@@ -639,46 +641,46 @@ export class NotificationController {
                                             $limit: take
                                         },
                                         {
-                                            $project:{
-                                                _id:1,
-                                                categoryId:1,
-                                                title:1,
-                                                detail:1,
-                                                point:1,
-                                                userId:1,
-                                                asssetId:1,
-                                                coverPageURL:1,
+                                            $project: {
+                                                _id: 1,
+                                                categoryId: 1,
+                                                title: 1,
+                                                detail: 1,
+                                                point: 1,
+                                                userId: 1,
+                                                asssetId: 1,
+                                                coverPageURL: 1,
                                                 s3CoverPageURL: 1,
-                                                categoryName:1,
-                                                expiringDate:1,
-                                                activeDate:1,
-                                                receiverCoupon:1,
-                                                couponExpire:1
+                                                categoryName: 1,
+                                                expiringDate: 1,
+                                                activeDate: 1,
+                                                receiverCoupon: 1,
+                                                couponExpire: 1
                                             }
                                         }
                                     ],
-                                    as:'product'
+                                    as: 'product'
                                 }
                             },
                             {
-                                $unwind:'$product'
+                                $unwind: '$product'
                             }
                         ],
-                        as:'pointStatement'
+                        as: 'pointStatement'
                     }
                 },
                 {
-                    $unwind:'$pointStatement'
+                    $unwind: '$pointStatement'
                 },
                 {
-                    $project:{
-                        _id:1,
-                        createdDate:1,
-                        userId:1,
-                        pointStatement:1,
-                        productId:1,
-                        expireDate:1,
-                        activeDate:1
+                    $project: {
+                        _id: 1,
+                        createdDate: 1,
+                        userId: 1,
+                        pointStatement: 1,
+                        productId: 1,
+                        expireDate: 1,
+                        activeDate: 1
                     }
                 },
                 {
@@ -690,7 +692,7 @@ export class NotificationController {
             ]
         );
         const result = {
-            'userCoupon':userCoupon.length > 0 ? userCoupon : null
+            'userCoupon': userCoupon.length > 0 ? userCoupon : null
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
         return res.status(200).send(successResponse);
@@ -700,7 +702,7 @@ export class NotificationController {
     public async getAccumulatePoint(
         @Res() res: any,
         @Req() req: any
-    ): Promise<any>{
+    ): Promise<any> {
         const userObjId = new ObjectID(req.headers.userid);
         let userCouponCount = undefined;
         let selfPoint = undefined;
@@ -708,70 +710,70 @@ export class NotificationController {
         userCouponCount = await this.userCouponService.aggregate(
             [
                 {
-                    $match:{
-                        userId:userObjId
+                    $match: {
+                        userId: userObjId
                     }
                 },
                 {
-                    $count:'count'
+                    $count: 'count'
                 }
             ]
         );
-        
-        if(userCouponCount !== undefined && userCouponCount.length > 0){
+
+        if (userCouponCount !== undefined && userCouponCount.length > 0) {
             selfPoint = await this.accumulateService.aggregate(
                 [
                     {
-                        $match:{
-                            userId:userObjId
+                        $match: {
+                            userId: userObjId
                         }
                     },
                     {
-                        $lookup:{
-                            from:'User',
-                            let:{'userId':'$userId'},
-                            pipeline:[
+                        $lookup: {
+                            from: 'User',
+                            let: { 'userId': '$userId' },
+                            pipeline: [
                                 {
-                                    $match:{
-                                        $expr:{
-                                            $eq:['$$userId','$_id']
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$userId', '$_id']
                                         }
                                     }
                                 },
                                 {
-                                    $project:{
-                                        firstName:1,
-                                        lastName:1,
-                                        displayName:1,
-                                        uniqueId:1,
-                                        imageURL:1,
-                                        s3ImageURL:1,
-                                        province:1,
-                                        membership:1
+                                    $project: {
+                                        firstName: 1,
+                                        lastName: 1,
+                                        displayName: 1,
+                                        uniqueId: 1,
+                                        imageURL: 1,
+                                        s3ImageURL: 1,
+                                        province: 1,
+                                        membership: 1
 
                                     }
                                 }
-                                
+
                             ],
-                            as:'user'
+                            as: 'user'
                         }
                     },
                     {
-                        $unwind:'$user'
+                        $unwind: '$user'
                     },
                     {
-                        '$addFields':{
-                            'accumulatePoint':{
-                                '$add':['$accumulatePoint','$usedPoint']
+                        '$addFields': {
+                            'accumulatePoint': {
+                                '$add': ['$accumulatePoint', '$usedPoint']
                             }
                         }
                     },
                     {
-                        $project:{
-                            createdDate:1,
-                            userId:1,
-                            user:1,
-                            accumulatePoint:1
+                        $project: {
+                            createdDate: 1,
+                            userId: 1,
+                            user: 1,
+                            accumulatePoint: 1
                         }
                     }
                 ]
@@ -781,68 +783,73 @@ export class NotificationController {
         const sortUserPoint = await this.accumulateService.aggregate(
             [
                 {
-                    $lookup:{
-                        from:'User',
-                        let:{'userId':'$userId'},
-                        pipeline:[
+                    $match: {
+                        accumulatePoint: { $ne: null }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'User',
+                        let: { 'userId': '$userId' },
+                        pipeline: [
                             {
-                                $match:{
-                                    $expr:{
-                                        $eq:['$$userId','$_id']
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$userId', '$_id']
                                     }
                                 }
                             },
                             {
-                                $project:{
-                                    firstName:1,
-                                    lastName:1,
-                                    displayName:1,
-                                    uniqueId:1,
-                                    imageURL:1,
-                                    s3ImageURL:1,
-                                    province:1,
-                                    membership:1
+                                $project: {
+                                    firstName: 1,
+                                    lastName: 1,
+                                    displayName: 1,
+                                    uniqueId: 1,
+                                    imageURL: 1,
+                                    s3ImageURL: 1,
+                                    province: 1,
+                                    membership: 1
 
                                 }
                             }
-                            
+
                         ],
-                        as:'user'
+                        as: 'user'
                     }
                 },
                 {
-                    $unwind:'$user'
+                    $unwind: '$user'
                 },
                 {
-                    $limit:50
+                    $limit: 50
                 },
                 {
-                    '$addFields':{
-                        'accumulatePoint':{
-                            '$add':['$accumulatePoint','$usedPoint']
+                    '$addFields': {
+                        'accumulatePoint': {
+                            '$add': ['$accumulatePoint', '$usedPoint']
                         }
                     }
                 },
                 {
-                    $project:{
-                        createdDate:1,
-                        userId:1,
-                        user:1,
-                        accumulatePoint:1
+                    $project: {
+                        createdDate: 1,
+                        userId: 1,
+                        user: 1,
+                        accumulatePoint: 1
                     }
                 },
                 {
-                    $sort:{
-                        accumulatePoint:-1
+                    $sort: {
+                        accumulatePoint: -1
                     }
                 }
             ]
         );
         let count = 1;
-        if(sortUserPoint !== undefined && sortUserPoint.length >0) {
-            for(const content of sortUserPoint) {
+        if (sortUserPoint !== undefined && sortUserPoint.length > 0) {
+            for (const content of sortUserPoint) {
                 const userString = String(content.userId);
-                if(userString === String(userObjId)){
+                if (userString === String(userObjId)) {
                     break;
                 } else {
                     count += 1;
@@ -852,10 +859,10 @@ export class NotificationController {
         }
 
         const result = {
-            'sortAccumulatePoint':{
+            'sortAccumulatePoint': {
                 'selfOrder': selfPoint !== undefined && count !== undefined ? count : null,
-                'self': selfPoint !== undefined && selfPoint.length > 0  ? selfPoint[0] : null,
-                'rankingPoint':sortUserPoint !== undefined ? sortUserPoint : null
+                'self': selfPoint !== undefined && selfPoint.length > 0 ? selfPoint[0] : null,
+                'rankingPoint': sortUserPoint !== undefined ? sortUserPoint : null
             },
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get content AcumulatePoint is success.', result);
@@ -864,7 +871,7 @@ export class NotificationController {
 
     @Get('/mfp/content')
     public async getPointMfpContents(
-        @QueryParam('offset') offset: number, 
+        @QueryParam('offset') offset: number,
         @QueryParam('limit') limt: number,
         @Res() res: any,
         @Req() req: any): Promise<any> {
@@ -873,24 +880,24 @@ export class NotificationController {
         const accumulateAggr = await this.accumulateService.aggregate(
             [
                 {
-                    $match:{
-                        userId:userObjId
+                    $match: {
+                        userId: userObjId
                     }
                 },
                 {
-                    '$addFields':{
-                        'totalPoint':{
-                            '$add':['$accumulatePoint','$usedPoint']
+                    '$addFields': {
+                        'totalPoint': {
+                            '$add': ['$accumulatePoint', '$usedPoint']
                         }
                     }
                 },
                 {
-                    $project:{
-                        createdDate:1,
-                        userId:1,
-                        accumulatePoint:1,
-                        usedPoint:1,
-                        totalPoint:1
+                    $project: {
+                        createdDate: 1,
+                        userId: 1,
+                        accumulatePoint: 1,
+                        usedPoint: 1,
+                        totalPoint: 1
                     }
                 }
             ]
@@ -898,12 +905,12 @@ export class NotificationController {
         const userCouponCount = await this.userCouponService.aggregate(
             [
                 {
-                    $match:{
-                        userId:userObjId
+                    $match: {
+                        userId: userObjId
                     }
                 },
                 {
-                    $count:'count'
+                    $count: 'count'
                 }
             ]
         );
@@ -911,19 +918,19 @@ export class NotificationController {
         const pointEventsAggr = await this.pointEventService.aggregate(
             [
                 {
-                    $project:{
-                        _id:1,
-                        createdDate:1,
-                        title:1,
-                        detail:1,
-                        point:1,
-                        maximumLimit:1,
-                        condition:1,
-                        assetId:1,
-                        coverPageURL:1,
-                        link:1,
-                        s3CoverPageURL:1,
-                        receiver:1,
+                    $project: {
+                        _id: 1,
+                        createdDate: 1,
+                        title: 1,
+                        detail: 1,
+                        point: 1,
+                        maximumLimit: 1,
+                        condition: 1,
+                        assetId: 1,
+                        coverPageURL: 1,
+                        link: 1,
+                        s3CoverPageURL: 1,
+                        receiver: 1,
                     }
                 }
             ]
@@ -932,75 +939,75 @@ export class NotificationController {
         const categoryProductAggr = await this.productCategoryService.aggregate(
             [
                 {
-                    $project:{
-                        _id:1,
-                        createdDate:1,
-                        title:1,
-                        assetId:1,
-                        coverPageURL:1,
-                        s3CoverPageURL:1,
+                    $project: {
+                        _id: 1,
+                        createdDate: 1,
+                        title: 1,
+                        assetId: 1,
+                        coverPageURL: 1,
+                        s3CoverPageURL: 1,
                     }
                 }
             ]
         );
-        if(categoryProductAggr.length > 0) { for(const content of categoryProductAggr ) {categoryId.push(new ObjectID(content._id)); }}
+        if (categoryProductAggr.length > 0) { for (const content of categoryProductAggr) { categoryId.push(new ObjectID(content._id)); } }
         const productAggr = await this.productCategoryService.aggregate(
             [
                 {
-                    $match:{
-                        _id:{$in:categoryId}
+                    $match: {
+                        _id: { $in: categoryId }
                     }
                 },
                 {
-                    $group:{
-                        _id:'$_id',
-                        title:{$first:'$title'}
+                    $group: {
+                        _id: '$_id',
+                        title: { $first: '$title' }
                     }
                 },
                 {
-                    $lookup:{
-                        from:'Product',
-                        let:{'id':'$_id'},
-                        pipeline:[
+                    $lookup: {
+                        from: 'Product',
+                        let: { 'id': '$_id' },
+                        pipeline: [
                             {
-                                $match:{
-                                    $expr:{
-                                        $eq:['$$id','$categoryId']
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$id', '$categoryId']
                                     }
                                 }
                             },
                             {
-                                $project:{
-                                    _id:1,
-                                    createdDate:1,
-                                    categoryId:1,
-                                    title:1,
-                                    detail:1,
-                                    point:1,
-                                    maximumLimit:1,
-                                    condition:1,
-                                    assetId:1,
-                                    coverPageURL:1,
-                                    s3CoverPageURL:1,
-                                    categoryName:1,
-                                    expiringDate:1,
-                                    activeDate:1,
-                                    receiverCoupon:1,
-                                    couponExpire:1,
+                                $project: {
+                                    _id: 1,
+                                    createdDate: 1,
+                                    categoryId: 1,
+                                    title: 1,
+                                    detail: 1,
+                                    point: 1,
+                                    maximumLimit: 1,
+                                    condition: 1,
+                                    assetId: 1,
+                                    coverPageURL: 1,
+                                    s3CoverPageURL: 1,
+                                    categoryName: 1,
+                                    expiringDate: 1,
+                                    activeDate: 1,
+                                    receiverCoupon: 1,
+                                    couponExpire: 1,
                                 }
                             }
                         ],
-                        as:'product'
+                        as: 'product'
                     }
                 }
             ]
         );
         const result = {
-            'accumulatePoint':accumulateAggr.length > 0 ? accumulateAggr[0] : null,
-            'userCoupon':userCouponCount.length > 0 ? userCouponCount[0].count : 0,
-            'pointEvent':pointEventsAggr,
-            'categoryProduct':categoryProductAggr,
-            'productAggr':productAggr
+            'accumulatePoint': accumulateAggr.length > 0 ? accumulateAggr[0] : null,
+            'userCoupon': userCouponCount.length > 0 ? userCouponCount[0].count : 0,
+            'pointEvent': pointEventsAggr,
+            'categoryProduct': categoryProductAggr,
+            'productAggr': productAggr
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get content points is success.', result);
         return res.status(200).send(successResponse);
@@ -1009,7 +1016,7 @@ export class NotificationController {
     @Get('/category/product/:id')
     public async getCategoryProductContent(
         @Param('id') id: string,
-        @QueryParam('offset') offset: number, 
+        @QueryParam('offset') offset: number,
         @QueryParam('limit') limt: number,
         @Res() res: any,
         @Req() req: any
@@ -1018,56 +1025,56 @@ export class NotificationController {
         const productAggr = await this.productCategoryService.aggregate(
             [
                 {
-                    $match:{
-                        _id:categoryId
+                    $match: {
+                        _id: categoryId
                     }
                 },
                 {
-                    $group:{
-                        _id:'$_id',
-                        title:{$first:'$title'}
+                    $group: {
+                        _id: '$_id',
+                        title: { $first: '$title' }
                     }
                 },
                 {
-                    $lookup:{
-                        from:'Product',
-                        let:{'id':'$_id'},
-                        pipeline:[
+                    $lookup: {
+                        from: 'Product',
+                        let: { 'id': '$_id' },
+                        pipeline: [
                             {
-                                $match:{
-                                    $expr:{
-                                        $eq:['$$id','$categoryId']
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$id', '$categoryId']
                                     }
                                 }
                             },
                             {
-                                $project:{
-                                    _id:1,
-                                    createdDate:1,
-                                    categoryId:1,
-                                    title:1,
-                                    detail:1,
-                                    point:1,
-                                    maximumLimit:1,
-                                    condition:1,
-                                    assetId:1,
-                                    coverPageURL:1,
-                                    s3CoverPageURL:1,
-                                    categoryName:1,
-                                    expiringDate:1,
-                                    activeDate:1,
-                                    receiverCoupon:1,
-                                    couponExpire:1,
+                                $project: {
+                                    _id: 1,
+                                    createdDate: 1,
+                                    categoryId: 1,
+                                    title: 1,
+                                    detail: 1,
+                                    point: 1,
+                                    maximumLimit: 1,
+                                    condition: 1,
+                                    assetId: 1,
+                                    coverPageURL: 1,
+                                    s3CoverPageURL: 1,
+                                    categoryName: 1,
+                                    expiringDate: 1,
+                                    activeDate: 1,
+                                    receiverCoupon: 1,
+                                    couponExpire: 1,
                                 }
                             }
                         ],
-                        as:'product'
+                        as: 'product'
                     }
                 }
             ]
         );
         const result = {
-            'categoryProducts':productAggr[0] !== undefined ? productAggr[0] : null
+            'categoryProducts': productAggr[0] !== undefined ? productAggr[0] : null
         };
         const successResponse = ResponseUtil.getSuccessResponse('Get category product is success.', result);
         return res.status(200).send(successResponse);

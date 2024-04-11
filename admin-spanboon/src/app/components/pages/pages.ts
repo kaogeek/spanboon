@@ -26,3 +26,6 @@ export * from './main.internal/ManipulatePage.component';
 export * from './main.internal/ManipulatePost.component';
 export * from './main.internal/VoteEventPage.component';
 export * from './main.internal/DashboardPage.component';
+export * from './main.internal/PointBannerPage.component';
+export * from './main.internal/PointCategoryPage.component';
+export * from './main.internal/PointProductPage.component';

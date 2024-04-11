@@ -55,7 +55,7 @@
         </ng-container>
         <ng-template #elseTemplate>
             <ng-container
-                *ngIf="(fieldTable.name !== 'startDate') && (fieldTable.name !== 'endDate'); else elseTemplate">
+                *ngIf="(fieldTable.name !== 'startDate') && (fieldTable.name !== 'endDate') && (fieldTable.name !== 'image'); else elseTemplate">
                 -
             </ng-container>
             <ng-template #elseTemplate>
@@ -65,6 +65,9 @@
                 <div *ngIf="fieldTable.name === 'endDate'">
                     {{data.endDateTime | thdatetime}}
                 </div>
+                <ng-container *ngIf="fieldTable.name === 'image'">
+                    <img [src]="baseURL + data.coverPageURL + '/image'" alt="">
+                </ng-container>
             </ng-template>
 
         </ng-template>

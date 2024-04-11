@@ -1,0 +1,27 @@
+<div class="header-add-noti">
+  <span>* สามารถเลือกส่งแจ้งเตือนโหวตได้แค่ 4 โหวตเท่านั้น *</span>
+  <div class="wrapper-button-header">
+    <span>{{valueVote.length + ' / 4'}}</span>
+    <button class="btn-top-table" mat-raised-button (click)="addVoteEvent()">ยืนยัน</button>
+  </div>
+</div>
+<div class="dialog-add-noti">
+  <div class="container">
+    <ng-container *ngFor="let item of listVote;let i = index">
+      <div class="wrapper-item">
+        <div class="wrapper-left">
+          <img [src]="baseURL + item.coverPageURL + '/image'" alt="">
+          <ng-container *ngIf="!isWordCountOver(item.title); else elseTemplate">
+            <span>{{item.title}}</span>
+          </ng-container>
+          <ng-template #elseTemplate>
+            <span>{{item.title | slice:0:220}}....</span>
+          </ng-template>
+        </div>
+        <div class="wrapper-checkbox">
+          <mat-checkbox class="example-margin" (change)="onChange($event)" [value]="item"></mat-checkbox>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

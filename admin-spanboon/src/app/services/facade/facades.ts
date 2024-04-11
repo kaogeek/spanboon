@@ -26,3 +26,6 @@ export * from './ManipulateFacade.service';
 export * from './ManipulatePostFacade.service';
 export * from './VoteEventFacade.service';
 export * from './DashboardFacade.service';
+export * from './PointFacade.service';
+export * from './PointCategoryFacade.service';
+export * from './PointProductFacade.service';

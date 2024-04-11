@@ -68,6 +68,7 @@ export interface ActionTable {
     isComment: boolean;
     isBack: boolean;
     isPreview: boolean;
+    isAddPoint?: boolean;
 }
 
 @Component({
@@ -124,6 +125,8 @@ export class TableComponent implements OnInit {
     @Output() delete: EventEmitter<any> = new EventEmitter();
     @Output() comment: EventEmitter<any> = new EventEmitter();
     @Output() back: EventEmitter<any> = new EventEmitter();
+    @Output() notificationvote: EventEmitter<any> = new EventEmitter();
+    @Output() point: EventEmitter<any> = new EventEmitter();
 
 
     public fieldOpen: any[] = [{ viwe: "All", value: "ทั้งหมด" }, { viwe: "OP", value: "ใช้งาน" }, { viwe: "CO", value: "ไม่ถูกใช้งาน" }];
@@ -139,6 +142,8 @@ export class TableComponent implements OnInit {
     public isLoading: boolean;
     public isBans: boolean;
     public isEmer: boolean = false;
+    public isUserPage: boolean = false;
+    public isVote: boolean = false;
     public isReport: boolean = false;
     public isTodayPage: boolean = false;
     public isNews: boolean = false;
@@ -284,8 +289,8 @@ export class TableComponent implements OnInit {
         search.relation = this.relation;
         search.count = false;
         if (data === 'search') {
-            search.offset = 0;
-            search.limit = 0;
+            search.offset = this.isUserPage && this.search === '' ? 100 : 0;
+            search.limit = this.isUserPage && this.search === '' ? 100 : 0;
         }
         if (isNextPage) {
             search.offset = this.offsetUser + 100;
@@ -538,12 +543,20 @@ export class TableComponent implements OnInit {
         this.preview.emit(data);
     }
 
+    public clickVoteNotification(): void {
+        this.notificationvote.emit('');
+    }
+
     public clickOfficial(data: any): void {
         this.official.emit(data);
     }
 
     public clickBan(data: any): void {
         this.ban.emit(data);
+    }
+
+    public clickPoint(data: any): void {
+        this.point.emit(data);
     }
 
     public clickCreateForm(): void {

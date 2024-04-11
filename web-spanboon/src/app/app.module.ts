@@ -62,7 +62,7 @@ import { DeviceDetectorModule } from 'ngx-device-detector';
 
 import {
   PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, PipeThFormatDatetime,
-  PipeThDatetime, HighlightText, HighlightTextEvent, ConvertTextNotification, ReadmorePipe, CustomDateFormat
+  PipeThDatetime, HighlightText, HighlightTextEvent, ConvertTextNotification, ReadmorePipe, CustomDateFormat, PipeThDateFormat
 } from './components/shares/pipes/pipes';
 
 import {
@@ -126,6 +126,7 @@ import {
   TermsOfServiceV1,
   TermsOfServiceV2,
   TodayDashboardPage,
+  PointPage,
   KnowledgeCenter,
   // timeline 
   ObjectiveTimeline,
@@ -156,6 +157,7 @@ import {
   DialogPoliciesAndTerms,
   DialogDropdown,
   DialogList,
+  DialogPoint,
   AlertComponent,
   TooltipProfile,
   PreloadCard,
@@ -294,6 +296,7 @@ import {
   BindingMemberFacade,
   VoteEventFacade,
   StatisticsFacade,
+  PointEventFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -358,6 +361,7 @@ const COMPONENTS: any[] = [
   TermsOfServiceV1,
   TermsOfServiceV2,
   TodayDashboardPage,
+  PointPage,
   KnowledgeCenter,
   SettingsInfo,
   SettingsAdminRoles,
@@ -414,6 +418,7 @@ const COMPONENTS: any[] = [
   DialogPoliciesAndTerms,
   DialogDropdown,
   DialogList,
+  DialogPoint,
   TagEvent,
   TooltipProfile,
   PreloadCard,
@@ -504,6 +509,7 @@ const PIPE_CLASSES: any[] = [
   CustomDateFormat,
   PipeThFormatDatetime,
   PipeThDatetime,
+  PipeThDateFormat,
   HighlightText,
   HighlightTextEvent,
   ConvertTextNotification,
@@ -568,6 +574,7 @@ const SERVICE_CLASSES: any[] = [
   UserEngagementFacade,
   VoteEventFacade,
   StatisticsFacade,
+  PointEventFacade,
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig

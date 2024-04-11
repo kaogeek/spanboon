@@ -8,11 +8,11 @@
 import { BaseModel } from './BaseModel';
 
 export class Asset extends BaseModel {
-    public userId: string
-    public scope: string
-    public data: string
-    public mimeType: string
-    public fileName: string
-    public size: number
-    public ordering: number
-  }
+  public userId: string
+  public scope: string
+  public data: string
+  public mimeType: string
+  public fileName: string
+  public size: number
+  public ordering: number
+}

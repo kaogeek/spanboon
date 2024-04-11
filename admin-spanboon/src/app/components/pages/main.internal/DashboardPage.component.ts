@@ -263,7 +263,7 @@ export class DashboardPage extends AbstractPage implements OnInit {
     }
 
     public ngOnInit() {
-        this.createMapChart();
+        // this.createMapChart();
         this.chooseDate(new Date());
     }
 
@@ -271,115 +271,115 @@ export class DashboardPage extends AbstractPage implements OnInit {
         return data.map(([code, value]) => [code.toUpperCase(), value]);
     }
 
-    async createMapChart() {
-        // (async () => {
+    // async createMapChart() {
+    //     (async () => {
 
-        //     const geojson = await fetch(
-        //         'https://code.highcharts.com/mapdata/countries/th/th-all.geo.json'
-        //     ).then(response => response.json());
+    //         const geojson = await fetch(
+    //             'https://code.highcharts.com/mapdata/countries/th/th-all.geo.json'
+    //         ).then(response => response.json());
 
-        //     const data: any[] = [
-        //         ['th.ct', 728], ['th.4255', 721], ['th.pg', 323], ['th.st', 134],
-        //         ['th.kr', 14], ['th.sa', 15], ['th.tg', 16], ['th.tt', 527],
-        //         ['th.pl', 18], ['th.ps', 19], ['th.kp', 346], ['th.pc', 123],
-        //         ['th.sh', 22], ['th.at', 23], ['th.lb', 24], ['th.pa', 25],
-        //         ['th.np', 26], ['th.sb', 27], ['th.cn', 28], ['th.bm', 29],
-        //         ['th.pt', 30], ['th.no', 31], ['th.sp', 32], ['th.ss', 33],
-        //         ['th.sm', 34], ['th.pe', 35], ['th.cc', 36], ['th.nn', 37],
-        //         ['th.cb', 38], ['th.br', 39], ['th.kk', 40], ['th.ph', 41],
-        //         ['th.kl', 42], ['th.sr', 43], ['th.nr', 44], ['th.si', 45],
-        //         ['th.re', 46], ['th.le', 47], ['th.nk', 48], ['th.ac', 49],
-        //         ['th.md', 50], ['th.sn', 51], ['th.nw', 52], ['th.pi', 53],
-        //         ['th.rn', 54], ['th.nt', 55], ['th.sg', 56], ['th.pr', 57],
-        //         ['th.py', 58], ['th.so', 59], ['th.ud', 60], ['th.kn', 61],
-        //         ['th.tk', 62], ['th.ut', 63], ['th.ns', 64], ['th.pk', 65],
-        //         ['th.ur', 66], ['th.sk', 67], ['th.ry', 68], ['th.cy', 69],
-        //         ['th.su', 70], ['th.nf', 71], ['th.bk', 72], ['th.mh', 73],
-        //         ['th.pu', 74], ['th.cp', 75], ['th.yl', 7600], ['th.cr', 77],
-        //         ['th.cm', 78], ['th.ln', 79], ['th.na', 80], ['th.lg', 81],
-        //         ['th.pb', 82], ['th.rt', 83], ['th.ys', 84], ['th.ms', 85],
-        //         ['th.un', 86], ['th.nb', 87]
-        //     ]
+    //         const data: any[] = [
+    //             ['th.ct', 728], ['th.4255', 721], ['th.pg', 323], ['th.st', 134],
+    //             ['th.kr', 14], ['th.sa', 15], ['th.tg', 16], ['th.tt', 527],
+    //             ['th.pl', 18], ['th.ps', 19], ['th.kp', 346], ['th.pc', 123],
+    //             ['th.sh', 22], ['th.at', 23], ['th.lb', 24], ['th.pa', 25],
+    //             ['th.np', 26], ['th.sb', 27], ['th.cn', 28], ['th.bm', 29],
+    //             ['th.pt', 30], ['th.no', 31], ['th.sp', 32], ['th.ss', 33],
+    //             ['th.sm', 34], ['th.pe', 35], ['th.cc', 36], ['th.nn', 37],
+    //             ['th.cb', 38], ['th.br', 39], ['th.kk', 40], ['th.ph', 41],
+    //             ['th.kl', 42], ['th.sr', 43], ['th.nr', 44], ['th.si', 45],
+    //             ['th.re', 46], ['th.le', 47], ['th.nk', 48], ['th.ac', 49],
+    //             ['th.md', 50], ['th.sn', 51], ['th.nw', 52], ['th.pi', 53],
+    //             ['th.rn', 54], ['th.nt', 55], ['th.sg', 56], ['th.pr', 57],
+    //             ['th.py', 58], ['th.so', 59], ['th.ud', 60], ['th.kn', 61],
+    //             ['th.tk', 62], ['th.ut', 63], ['th.ns', 64], ['th.pk', 65],
+    //             ['th.ur', 66], ['th.sk', 67], ['th.ry', 68], ['th.cy', 69],
+    //             ['th.su', 70], ['th.nf', 71], ['th.bk', 72], ['th.mh', 73],
+    //             ['th.pu', 74], ['th.cp', 75], ['th.yl', 7600], ['th.cr', 77],
+    //             ['th.cm', 78], ['th.ln', 79], ['th.na', 80], ['th.lg', 81],
+    //             ['th.pb', 82], ['th.rt', 83], ['th.ys', 84], ['th.ms', 85],
+    //             ['th.un', 86], ['th.nb', 87]
+    //         ]
 
-        //     const dataValue = this._uppercaseDataCode(data);
+    //         const dataValue = this._uppercaseDataCode(data);
 
-        //     // Initialize the chart
-        //     Highcharts.mapChart('container', {
-        //         chart: {
-        //             map: geojson
-        //         },
+    //         // Initialize the chart
+    //         Highcharts.mapChart('container', {
+    //             chart: {
+    //                 map: geojson
+    //             },
 
-        //         title: {
-        //             text: 'GeoJSON in Highmaps'
-        //         },
+    //             title: {
+    //                 text: 'GeoJSON in Highmaps'
+    //             },
 
-        //         accessibility: {
-        //             typeDescription: 'Map of Germany.'
-        //         },
+    //             accessibility: {
+    //                 typeDescription: 'Map of Germany.'
+    //             },
 
-        //         exporting: {
-        //             sourceWidth: 600,
-        //             sourceHeight: 500
-        //         },
+    //             exporting: {
+    //                 sourceWidth: 600,
+    //                 sourceHeight: 500
+    //             },
 
-        //         mapNavigation: {
-        //             enabled: true,
-        //             buttonOptions: {
-        //                 verticalAlign: 'bottom'
-        //             }
-        //         },
+    //             mapNavigation: {
+    //                 enabled: true,
+    //                 buttonOptions: {
+    //                     verticalAlign: 'bottom'
+    //                 }
+    //             },
 
-        //         colorAxis: {
-        //             min: 1,
-        //             type: 'logarithmic',
-        //             minColor: '#EEEEFF',
-        //             maxColor: '#000022',
-        //             stops: [
-        //                 [0, '#EFEFFF'],
-        //                 [0.67, '#4444FF'],
-        //                 [1, '#000022']
-        //             ]
-        //         },
+    //             colorAxis: {
+    //                 min: 1,
+    //                 type: 'logarithmic',
+    //                 minColor: '#EEEEFF',
+    //                 maxColor: '#000022',
+    //                 stops: [
+    //                     [0, '#EFEFFF'],
+    //                     [0.67, '#4444FF'],
+    //                     [1, '#000022']
+    //                 ]
+    //             },
 
-        //         legend: {
-        //             layout: 'horizontal',
-        //             borderWidth: 0,
-        //             backgroundColor: 'rgba(255,255,255,0.85)',
-        //             floating: true,
-        //             verticalAlign: 'top',
-        //             y: 25
-        //         },
+    //             legend: {
+    //                 layout: 'horizontal',
+    //                 borderWidth: 0,
+    //                 backgroundColor: 'rgba(255,255,255,0.85)',
+    //                 floating: true,
+    //                 verticalAlign: 'top',
+    //                 y: 25
+    //             },
 
-        //         series: [{
-        //             type: 'map',
-        //             data: dataValue,
-        //             keys: ['hasc', 'value'],
-        //             joinBy: 'hasc',
-        //             name: 'Random data',
-        //             dataLabels: {
-        //                 enabled: true,
-        //                 color: '#FFFFFF',
-        //                 format: '{point.properties.name}'
-        //             },
-        //             animation: {
-        //                 duration: 1000
-        //             },
-        //             tooltip: {
-        //                 pointFormat: '{point.properties.name}: {point.value} คน'
-        //             }
-        //         }]
-        //     });
-        // })();
-    }
+    //             series: [{
+    //                 type: 'map',
+    //                 data: dataValue,
+    //                 keys: ['hasc', 'value'],
+    //                 joinBy: 'hasc',
+    //                 name: 'Random data',
+    //                 dataLabels: {
+    //                     enabled: true,
+    //                     color: '#FFFFFF',
+    //                     format: '{point.properties.name}'
+    //                 },
+    //                 animation: {
+    //                     duration: 1000
+    //                 },
+    //                 tooltip: {
+    //                     pointFormat: '{point.properties.name}: {point.value} คน'
+    //                 }
+    //             }]
+    //         });
+    //     })();
+    // }
 
     public chooseDate(event: any) {
         this.isLoading = true;
-        const startOfYear = moment(event._d ? event._d : event);
-        const endOfYear = moment(event._d ? event._d : event);
-        const dateStart = startOfYear.set({ month: 0, date: 1 }).format("YYYY-01-01T00:00:00.000Z");
-        const dateEnd = endOfYear.set({ month: 11, date: 31 }).format("YYYY-12-31T00:00:00.000Z");
-        this._getStatisticDashboard(dateStart, dateEnd);
-        this._getStatisticUserMFP(dateStart, dateEnd);
+        const currentDate = moment(event._d ? event._d : event);
+        const previousYearDate = moment(currentDate).subtract(1, 'year');
+        const formattedCurrentDate = currentDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+        const formattedPreviousYearDate = previousYearDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+        this._getStatisticDashboard(formattedPreviousYearDate, formattedCurrentDate);
+        this._getStatisticUserMFP(formattedPreviousYearDate, formattedCurrentDate);
     }
 
     private _getStatisticDashboard(start, end) {

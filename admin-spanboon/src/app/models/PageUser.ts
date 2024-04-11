@@ -7,7 +7,7 @@
 
 import { BaseModel } from './BaseModel';
 
-export class PageUser extends BaseModel{
+export class PageUser extends BaseModel {
   public id: number;
   public citizenId: string;
   public firstName: string;
@@ -38,8 +38,9 @@ export class PageUser extends BaseModel{
   public fbUserId: string;
   public fbToken: string;
   public fbAccessExpirationTime: number;
-  public fbSignedRequest: string; 
-  public banned:boolean
-  public asset:any
-  public imageURL:any
+  public fbSignedRequest: string;
+  public banned: boolean
+  public asset: any
+  public imageURL: any
+  public point?: number;
 }

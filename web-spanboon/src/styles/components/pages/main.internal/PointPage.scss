@@ -1,0 +1,549 @@
+.wrapper-point-page {
+  min-height: calc(100vh - 45pt);
+  background: #f0f5f6;
+
+  > .header {
+    background-color: $brandcolor2;
+    height: 50px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 5px 100px;
+    position: fixed;
+    z-index: 10;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    @media (max-width: $large) {
+      padding: 5px 70px;
+      position: sticky;
+      top: 0;
+    }
+
+    @media (max-width: $medium) {
+      padding: 5px 40px;
+    }
+
+    @media (max-width: $small) {
+      padding: 5px 10px;
+    }
+
+    > span {
+      color: white;
+      @include font-size-6($font-head-500);
+
+      @media (max-width: $medium) {
+        display: none;
+      }
+    }
+
+    > .wrapper-menu-point {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      @media (max-width: $medium) {
+        justify-content: flex-end;
+        width: 100%;
+      }
+
+      @media (max-width: $small) {
+        gap: 6px;
+      }
+
+      > .menu {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 8px;
+        padding: 10px 12px;
+        background-color: $white;
+        cursor: pointer;
+        min-width: 90px;
+        justify-content: space-between;
+
+        @media (max-width: $small) {
+          min-width: 70px;
+        }
+
+        &.statistic {
+          background-color: #e2640c;
+
+          > span {
+            color: $white;
+            flex: 0 0 auto;
+          }
+        }
+
+        > img {
+          width: 20px;
+          height: 20px;
+        }
+        > span {
+          color: $black;
+          @include font-size-9($font-head-500);
+
+          @media (max-width: $medium) {
+            @include font-size-10($font-head-500);
+          }
+        }
+      }
+    }
+  }
+
+  > button {
+    position: sticky;
+    top: 130px;
+    left: 10px;
+    color: black;
+  }
+
+  > .wrapper-content {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    margin: 0 auto;
+    padding-top: 40px;
+
+    @media (max-width: $xlarge) {
+      width: 70%;
+    }
+
+    @media (max-width: $large) {
+      width: 80%;
+      padding-top: unset;
+    }
+
+    @media (max-width: $medium) {
+      width: 90%;
+    }
+
+    @media (max-width: $small) {
+      width: 100%;
+    }
+
+    > .banner {
+      margin: 35pt 0 10pt 0;
+
+      @media (max-width: $large) {
+        margin: 20pt 10pt 10pt 10pt;
+
+        > img {
+          border-radius: 8px;
+        }
+      }
+
+      > img {
+        border-radius: 16px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        width: 100%;
+        cursor: pointer;
+      }
+    }
+
+    > .container {
+      margin-bottom: 15pt;
+
+      @media (max-width: $small) {
+        margin-bottom: unset;
+        background-color: $white;
+      }
+
+      > .wrapper-category {
+        display: flex;
+        background: $white;
+        border-radius: 16px;
+        min-height: 120px;
+        overflow: auto;
+        overflow-y: hidden;
+        overflow-x: hidden;
+
+        @media (max-width: $small) {
+          min-height: 90px;
+        }
+
+        > .category {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          margin: 8px 0px;
+          min-width: 160px;
+          border-right: 1px solid #00000010;
+          transition: transform 0.3s;
+          cursor: pointer;
+
+          @media (max-width: $small) {
+            min-width: 80px;
+            border-right: unset;
+          }
+
+          &:hover {
+            transform: scale(1.03);
+          }
+
+          > img {
+            width: 55px;
+            height: 55px;
+            border-radius: 100%;
+            object-fit: cover;
+          }
+
+          > span {
+            word-break: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            opacity: 0.8;
+            @include font-size-9($font-head-100);
+
+            @media (max-width: $small) {
+              display: none;
+            }
+          }
+        }
+      }
+
+      > .box-product {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 20px;
+        margin-top: 40px;
+        gap: 10px;
+
+        @media (max-width: $small) {
+          gap: 5px;
+          margin-top: unset;
+
+          > span {
+            padding: 0 10px;
+            @include font-size-8($font-head-500);
+          }
+
+          > .wrapper-product {
+            padding: 10px;
+          }
+        }
+
+        > span {
+          color: $black;
+          @include font-size-6($font-head-500);
+        }
+
+        > .wrapper-product {
+          display: flex;
+          gap: 10px;
+          overflow: auto;
+          overflow-y: hidden;
+          overflow-x: hidden;
+
+          > .card-content-product {
+            display: flex;
+            flex-direction: column;
+            flex: 0 0 auto;
+            width: 240px;
+            border-radius: 8px;
+            background-color: $white;
+            cursor: pointer;
+
+            @media (max-width: $small) {
+              width: 200px;
+              box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+            }
+
+            &:hover {
+              .title-product {
+                > span {
+                  color: rgba($brandcolor2, 0.95);
+                }
+              }
+            }
+
+            .image-product {
+              @include pointer();
+
+              > .image {
+                object-fit: cover;
+                width: 100%;
+                aspect-ratio: 4/3;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+              }
+            }
+
+            > .title-product {
+              display: flex;
+              align-items: center;
+              z-index: 1;
+              border-bottom: 1px solid rgba($black, 0.08);
+              padding: 10px;
+              height: 40px;
+
+              > span {
+                @include font-size-9($font-head-500);
+                color: $black;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                word-break: break-word;
+                display: -webkit-box;
+              }
+            }
+
+            .bottom {
+              padding: 10px;
+              flex: 1 1 0;
+              position: relative;
+              gap: 5px;
+              display: flex;
+              flex-direction: column;
+
+              > .point {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+
+                > span {
+                  @include font-size-9($font-head-500);
+                  color: black;
+                  cursor: pointer;
+                  -webkit-line-clamp: 3;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                  word-break: break-word;
+                  display: -webkit-box;
+                }
+              }
+
+              > .progress {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+
+                > mat-progress-bar {
+                  height: 20px;
+                  border-radius: 8px;
+
+                  .mat-progress-bar-fill::after {
+                    background-color: $brandcolor2;
+                  }
+
+                  .mat-progress-bar-buffer {
+                    background-color: #d0d0d0;
+                  }
+                }
+
+                > .text {
+                  position: absolute;
+                  color: white;
+                  @include font-size-11($font-head-500);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    &.product {
+      width: 80%;
+
+      @media (max-width: $large) {
+        width: 85%;
+        padding-top: unset;
+      }
+
+      @media (max-width: $medium) {
+        width: 90%;
+      }
+
+      @media (max-width: $small) {
+        width: 95%;
+      }
+
+      > .container {
+        @media (max-width: $large) {
+          margin-top: unset;
+        }
+
+        @media (max-width: $small) {
+          background-color: unset;
+
+          > .box-product {
+            margin-top: 40px;
+          }
+        }
+
+        > .box-product {
+          > .category-title {
+            display: flex;
+            gap: 15px;
+            background: radial-gradient(
+              78.13% 171.62% at 24.58% 0%,
+              #ee7623 0%,
+              #ee5423 100%
+            );
+            padding: 8px 30px;
+            border-radius: 8px;
+            align-items: center;
+
+            > .category-img {
+              width: 50px;
+              height: 50px;
+              object-fit: cover;
+              border: 2px solid $white;
+              border-radius: 100%;
+            }
+            > span {
+              @include font-size-6($font-head-500);
+              color: $white;
+            }
+          }
+
+          > .product-not-found {
+            height: 100pt;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: $white;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+
+            > span {
+              @include font-size-8($font-head-500);
+              color: $black;
+            }
+          }
+
+          > .wrapper-product {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            overflow: unset;
+            overflow-y: unset;
+            overflow-x: unset;
+
+            @media (max-width: $large) {
+              grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            @media (max-width: $medium) {
+              grid-template-columns: 1fr 1fr;
+            }
+
+            @media (max-width: $small) {
+              grid-template-columns: 1fr;
+              padding: unset;
+            }
+
+            > .card-content-product {
+              width: 100%;
+            }
+          }
+
+          > .ranking {
+            > .wrapper-page {
+              display: grid;
+              margin-top: unset;
+              gap: 1px;
+
+              @media (max-width: $large) {
+                grid-template-columns: 1fr !important;
+              }
+
+              > .page {
+                border-radius: 8px;
+                background-color: white;
+                height: 55px;
+                display: flex;
+                align-items: center;
+                padding: 0 10px;
+                justify-content: space-between;
+                @include font-size-9($font-head-500);
+
+                @media (max-width: $large) {
+                  grid-area: unset !important;
+                  grid-column: unset !important;
+                  grid-row: unset !important;
+                }
+
+                > .ranking {
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+
+                  > .image {
+                    width: 33px;
+                    height: 33px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    flex: 0 0 auto;
+
+                    &.image-null {
+                      align-items: center;
+                      display: flex;
+                      justify-content: center;
+                      color: white;
+                      background-color: $brandcolor2;
+                    }
+                  }
+
+                  > .ordering {
+                    text-align: center;
+                    width: 41px;
+                    height: 31px;
+                    color: $brandcolor2;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex: 0 0 auto;
+                  }
+
+                  > .name {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    word-break: break-word;
+                  }
+                }
+
+                > .count {
+                  display: flex;
+                  align-items: center;
+                  flex: 0 0 auto;
+
+                  > span {
+                    padding: 0 10px;
+                    color: $black;
+                  }
+
+                  > .icon-user {
+                    width: $width-icon;
+                    height: $height-icon;
+                  }
+                }
+
+                @media (max-width: $small) {
+                  @include font-size-10($font-head-500);
+
+                  .count {
+                    > span {
+                      padding: 0 5px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

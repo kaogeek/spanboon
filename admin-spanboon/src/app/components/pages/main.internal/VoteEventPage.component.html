@@ -11,216 +11,249 @@
             <div class="form-admin">
                 <div class="wrapper">
                     <div class="form-header">
-                        <h5 class="title">{{preview ? 'ตัวอย่างโหวต' : 'แก้ไข'}}</h5>
+                        <h5 class="title">{{preview ? 'ตัวอย่างโหวต' : (isSendNoti ? 'ส่งแจ้งเตือนโหวต' : 'แก้ไข')}}
+                        </h5>
                     </div>
                     <div class="form-body">
-                        <form>
-                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
-                                <ng-container>
-                                    <mat-slide-toggle (change)="changeClosed($event)"
-                                        [checked]="!valueClosed"></mat-slide-toggle>
+                        <ng-container *ngIf="isSendNoti; else elseNotiTemplate">
+                            <form>
+                                <ng-container *ngIf="isHaveVoteEvent; else elseVoteEvent">
+                                    <ng-container *ngFor="let item of listVoteEvent">
+                                        <div class="container-vote">
+                                            <div class="wrapper-vote">
+                                                <img [src]="item.s3 ? item.image : baseURL + item.image + '/image'"
+                                                    alt="">
+                                                <ng-container *ngIf="!isWordCountOver(item.title); else elseWord">
+                                                    <span>{{item.title}}</span>
+                                                </ng-container>
+                                                <ng-template #elseWord>
+                                                    <span>{{item.title | slice:0:220}}....</span>
+                                                </ng-template>
+                                            </div>
+                                        </div>
+                                    </ng-container>
                                 </ng-container>
-                                <label style="margin-left: 10px;">ปิด/เปิด โหวต</label>
-                            </div>
-                            <div class="form-group" *ngIf="preview"
-                                [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
-                                <ng-container>
-                                    <mat-slide-toggle [(ngModel)]="valueApproved"
-                                        [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
-                                </ng-container>
-                                <label style="margin-left: 10px;">ผ่านการอนุมัติ</label>
-                            </div>
-                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
-                                <ng-container>
-                                    <mat-slide-toggle [(ngModel)]="valuePin"
-                                        [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
-                                </ng-container>
-                                <label style="margin-left: 10px;">ปักหมุด</label>
-                            </div>
-                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
-                                <ng-container>
-                                    <mat-slide-toggle [(ngModel)]="valueShowName"
-                                        [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
-                                </ng-container>
-                                <label style="margin-left: 10px;">แสดงชื่อผู้โหวต</label>
-                            </div>
-                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
-                                <ng-container>
-                                    <mat-slide-toggle [(ngModel)]="valueShowResult"
-                                        [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
-                                </ng-container>
-                                <label style="margin-left: 10px;">แสดงผลโหวตเมื่อปิดโหวต</label>
-                            </div>
-                            <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
-                                <ng-container>
-                                    <span style="cursor: pointer;" (click)="clickShowVote()">
-                                        <mat-slide-toggle style="pointer-events: none;"
-                                            [checked]="valueHide"></mat-slide-toggle>
-                                    </span>
-                                </ng-container>
-                                <label style="margin-left: 10px;">ซ่อน/แสดง โหวต</label>
-                            </div>
-                            <div class="row" *ngIf="preview">
-                                <div class="col-md-12">
-                                    <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
-                                        <mat-form-field>
-                                            <mat-label>สถานะ</mat-label>
-                                            <mat-select [(ngModel)]="valueStatus" name="status"
-                                                placeholder='กรุณาเลือกสถานะ' required>
-                                                <mat-option *ngFor="let status of listStatus" [value]="status">
-                                                    {{status}}
-                                                </mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
+                                <ng-template #elseVoteEvent>
+                                    <button class="btn-top-table" mat-raised-button style="width: 100%;"
+                                        (click)="clickAddVoteEvent()">เพิ่มโหวตอีเวนท์</button>
+                                </ng-template>
+                            </form>
+                        </ng-container>
+                        <ng-template #elseNotiTemplate>
+                            <form>
+                                <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
+                                    <ng-container>
+                                        <mat-slide-toggle (change)="changeClosed($event)"
+                                            [checked]="!valueClosed"></mat-slide-toggle>
+                                    </ng-container>
+                                    <label style="margin-left: 10px;">ปิด/เปิด โหวต</label>
+                                </div>
+                                <div class="form-group" *ngIf="preview"
+                                    [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
+                                    <ng-container>
+                                        <mat-slide-toggle [(ngModel)]="valueApproved"
+                                            [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
+                                    </ng-container>
+                                    <label style="margin-left: 10px;">ผ่านการอนุมัติ</label>
+                                </div>
+                                <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
+                                    <ng-container>
+                                        <mat-slide-toggle [(ngModel)]="valuePin"
+                                            [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
+                                    </ng-container>
+                                    <label style="margin-left: 10px;">ปักหมุด</label>
+                                </div>
+                                <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
+                                    <ng-container>
+                                        <mat-slide-toggle [(ngModel)]="valueShowName"
+                                            [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
+                                    </ng-container>
+                                    <label style="margin-left: 10px;">แสดงชื่อผู้โหวต</label>
+                                </div>
+                                <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
+                                    <ng-container>
+                                        <mat-slide-toggle [(ngModel)]="valueShowResult"
+                                            [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
+                                    </ng-container>
+                                    <label style="margin-left: 10px;">แสดงผลโหวตเมื่อปิดโหวต</label>
+                                </div>
+                                <div class="form-group" [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
+                                    <ng-container>
+                                        <span style="cursor: pointer;" (click)="clickShowVote()">
+                                            <mat-slide-toggle style="pointer-events: none;"
+                                                [checked]="valueHide"></mat-slide-toggle>
+                                        </span>
+                                    </ng-container>
+                                    <label style="margin-left: 10px;">ซ่อน/แสดง โหวต</label>
+                                </div>
+                                <div class="row" *ngIf="preview">
+                                    <div class="col-md-12">
+                                        <div class="form-group"
+                                            [ngStyle]="{'pointer-events': preview ? 'none' : 'unset'}">
+                                            <mat-form-field>
+                                                <mat-label>สถานะ</mat-label>
+                                                <mat-select [(ngModel)]="valueStatus" name="status"
+                                                    placeholder='กรุณาเลือกสถานะ' required>
+                                                    <mat-option *ngFor="let status of listStatus" [value]="status">
+                                                        {{status}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row" *ngIf="!preview">
-                                <div class="col-md-12">
-                                    <div class="form-group title">
-                                        <div class="wrapper-title">
-                                            <span>หัวข้อ :</span>
+                                <div class="row" *ngIf="!preview">
+                                    <div class="col-md-12">
+                                        <div class="form-group title">
+                                            <div class="wrapper-title">
+                                                <span>หัวข้อ :</span>
+                                                <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueTitle"
+                                                    [ngModelOptions]="{standalone: true}"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" *ngIf="!preview">
+                                    <div class="col-md-12">
+                                        <div class="form-group detail">
+                                            <div class="wrapper-detail">
+                                                <span>รายละเอียด :</span>
+                                                <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueDetail"
+                                                    [ngModelOptions]="{standalone: true}"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" *ngIf="!preview">
+                                    <div class="col-md-12">
+                                        <div class="form-group hashtag">
+                                            <mat-form-field style="display: flex;">
+                                                <span>แฮชแท็ค : #</span>
+                                                <input type="text" matInput [formControl]="hashTag"
+                                                    [matAutocomplete]="auto">
+                                                <mat-autocomplete #auto="matAutocomplete">
+                                                    <mat-option *ngFor="let option of filteredOptions | async"
+                                                        [value]="option">
+                                                        {{option}}
+                                                    </mat-option>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="date-vote-wrapper">
+                                        <span>วันเริ่มและปิดสนับสนุน</span>
+                                        <div class="date-picker">
+                                            <span>เริ่ม</span>
+                                            <mat-form-field>
+                                                <input matInput [matDatepicker]="pickerStartSupport"
+                                                    [disabled]="!!valueStartVote && !!valueEndVote && valueStatus !== 'support'"
+                                                    [(ngModel)]="valueStartSupport"
+                                                    (dateChange)="saveDate($event,'start','support')"
+                                                    [ngModelOptions]="{standalone: true}">
+                                                <mat-datepicker-toggle matSuffix
+                                                    [for]="pickerStartSupport"></mat-datepicker-toggle>
+                                                <mat-datepicker #pickerStartSupport></mat-datepicker>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="date-picker">
+                                            <span>ปิด</span>
+                                            <mat-form-field>
+                                                <input matInput [matDatepicker]="pickerEndSupport"
+                                                    [disabled]="!!valueStartVote && !!valueEndVote && valueStatus !== 'support'"
+                                                    [(ngModel)]="valueEndSupport"
+                                                    (dateChange)="saveDate($event,'end','support')"
+                                                    [ngModelOptions]="{standalone: true}">
+                                                <mat-datepicker-toggle matSuffix
+                                                    [for]="pickerEndSupport"></mat-datepicker-toggle>
+                                                <mat-datepicker #pickerEndSupport></mat-datepicker>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group"
+                                    *ngIf="!!valueStartVote && !!valueEndVote && valueStatus !== 'support'">
+                                    <div class="date-vote-wrapper">
+                                        <span>วันเริ่มและปิดโหวต</span>
+                                        <div class="date-picker">
+                                            <span>เริ่ม</span>
+                                            <mat-form-field>
+                                                <input matInput [matDatepicker]="pickerStartVote" [disabled]="preview"
+                                                    [(ngModel)]="valueStartVote"
+                                                    (dateChange)="saveDate($event,'start','vote')"
+                                                    [ngModelOptions]="{standalone: true}">
+                                                <mat-datepicker-toggle matSuffix
+                                                    [for]="pickerStartVote"></mat-datepicker-toggle>
+                                                <mat-datepicker #pickerStartVote></mat-datepicker>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="date-picker">
+                                            <span>ปิด</span>
+                                            <mat-form-field>
+                                                <input matInput [matDatepicker]="pickerEndVote"
+                                                    [(ngModel)]="valueEndVote" [disabled]="preview"
+                                                    (dateChange)="saveDate($event,'end','vote')"
+                                                    [ngModelOptions]="{standalone: true}">
+                                                <mat-datepicker-toggle matSuffix
+                                                    [for]="pickerEndVote"></mat-datepicker-toggle>
+                                                <mat-datepicker #pickerEndVote></mat-datepicker>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" *ngIf="preview">
+                                    <div class="wrapper-title-vote">
+                                        <div class="title-vote">
+                                            <span>หัวข้อโหวต :</span>
                                             <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueTitle"
                                                 [ngModelOptions]="{standalone: true}"></textarea>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row" *ngIf="!preview">
-                                <div class="col-md-12">
-                                    <div class="form-group detail">
-                                        <div class="wrapper-detail">
-                                            <span>รายละเอียด :</span>
+                                        <div class="detail-vote" *ngIf="!!valueDetail">
+                                            <span>รายละเอียดโหวต :</span>
                                             <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueDetail"
                                                 [ngModelOptions]="{standalone: true}"></textarea>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row" *ngIf="!preview">
-                                <div class="col-md-12">
-                                    <div class="form-group hashtag">
-                                        <mat-form-field style="display: flex;">
-                                            <span>แฮชแท็ค : #</span>
-                                            <input type="text" matInput [formControl]="hashTag"
-                                                [matAutocomplete]="auto">
-                                            <mat-autocomplete #auto="matAutocomplete">
-                                                <mat-option *ngFor="let option of filteredOptions | async"
-                                                    [value]="option">
-                                                    {{option}}
-                                                </mat-option>
-                                            </mat-autocomplete>
-                                        </mat-form-field>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="date-vote-wrapper">
-                                    <span>วันเริ่มและปิดสนับสนุน</span>
-                                    <div class="date-picker">
-                                        <span>เริ่ม</span>
-                                        <mat-form-field>
-                                            <input matInput [matDatepicker]="pickerStartSupport"
-                                                [disabled]="!!valueStartVote && !!valueEndVote && valueStatus !== 'support'"
-                                                [(ngModel)]="valueStartSupport"
-                                                (dateChange)="saveDate($event,'start','support')"
-                                                [ngModelOptions]="{standalone: true}">
-                                            <mat-datepicker-toggle matSuffix
-                                                [for]="pickerStartSupport"></mat-datepicker-toggle>
-                                            <mat-datepicker #pickerStartSupport></mat-datepicker>
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="date-picker">
-                                        <span>ปิด</span>
-                                        <mat-form-field>
-                                            <input matInput [matDatepicker]="pickerEndSupport"
-                                                [disabled]="!!valueStartVote && !!valueEndVote && valueStatus !== 'support'"
-                                                [(ngModel)]="valueEndSupport"
-                                                (dateChange)="saveDate($event,'end','support')"
-                                                [ngModelOptions]="{standalone: true}">
-                                            <mat-datepicker-toggle matSuffix
-                                                [for]="pickerEndSupport"></mat-datepicker-toggle>
-                                            <mat-datepicker #pickerEndSupport></mat-datepicker>
-                                        </mat-form-field>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group"
-                                *ngIf="!!valueStartVote && !!valueEndVote && valueStatus !== 'support'">
-                                <div class="date-vote-wrapper">
-                                    <span>วันเริ่มและปิดโหวต</span>
-                                    <div class="date-picker">
-                                        <span>เริ่ม</span>
-                                        <mat-form-field>
-                                            <input matInput [matDatepicker]="pickerStartVote" [disabled]="preview"
-                                                [(ngModel)]="valueStartVote"
-                                                (dateChange)="saveDate($event,'start','vote')"
-                                                [ngModelOptions]="{standalone: true}">
-                                            <mat-datepicker-toggle matSuffix
-                                                [for]="pickerStartVote"></mat-datepicker-toggle>
-                                            <mat-datepicker #pickerStartVote></mat-datepicker>
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="date-picker">
-                                        <span>ปิด</span>
-                                        <mat-form-field>
-                                            <input matInput [matDatepicker]="pickerEndVote" [(ngModel)]="valueEndVote"
-                                                [disabled]="preview" (dateChange)="saveDate($event,'end','vote')"
-                                                [ngModelOptions]="{standalone: true}">
-                                            <mat-datepicker-toggle matSuffix
-                                                [for]="pickerEndVote"></mat-datepicker-toggle>
-                                            <mat-datepicker #pickerEndVote></mat-datepicker>
-                                        </mat-form-field>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group" *ngIf="preview">
-                                <div class="wrapper-title-vote">
-                                    <div class="title-vote">
-                                        <span>หัวข้อโหวต :</span>
-                                        <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueTitle"
-                                            [ngModelOptions]="{standalone: true}"></textarea>
-                                    </div>
-                                    <div class="detail-vote" *ngIf="!!valueDetail">
-                                        <span>รายละเอียดโหวต :</span>
-                                        <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueDetail"
-                                            [ngModelOptions]="{standalone: true}"></textarea>
-                                    </div>
-                                    <div class="detail-vote" *ngIf="!!valueHashtag">
-                                        <span>แฮชแท็ค :</span>
-                                        <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueHashtag"
-                                            [ngModelOptions]="{standalone: true}"></textarea>
-                                    </div>
-                                    <img *ngIf="!!imageCover" class="image-preview"
-                                        src="../../../../assets/img/icon-preview.svg" alt=""
-                                        (click)="imagePreview(imageCover)">
-                                </div>
-                                <div class="question-vote-wrapper" *ngFor="let data of previewData;let index = index">
-                                    <div class="title-question-vote">
-                                        <span>คำถามที่ {{index+1}}</span>
-                                        <span>หัวข้อ : {{data.title}}</span>
-                                        <span>ประเภท : {{data.type === 'single' ? 'คำตอบเดียว' :( data.type === 'multi'
-                                            ? 'หลายคำตอบ' : 'กล่องข้อความ')}}</span>
-                                        <img *ngIf="!!data.coverPageURL" class="image-preview"
+                                        <div class="detail-vote" *ngIf="!!valueHashtag">
+                                            <span>แฮชแท็ค :</span>
+                                            <textarea name="" id="" cols="30" rows="3" [(ngModel)]="valueHashtag"
+                                                [ngModelOptions]="{standalone: true}"></textarea>
+                                        </div>
+                                        <img *ngIf="!!imageCover" class="image-preview"
                                             src="../../../../assets/img/icon-preview.svg" alt=""
-                                            (click)="imagePreview(data.coverPageURL)">
+                                            (click)="imagePreview(imageCover)">
                                     </div>
-                                    <div class="choice-vote" *ngFor="let item of data.voteChoice;let i = index">
-                                        <span>ตัวเลือกที่ {{i+1}}</span>
-                                        <span>หัวข้อ :</span>
-                                        <textarea name="" id="" cols="30" rows="3" [(ngModel)]="item.title"
-                                            [ngModelOptions]="{standalone: true}"></textarea>
-                                        <img *ngIf="!!item.coverPageURL" class="image-preview"
-                                            src="../../../../assets/img/icon-preview.svg" alt=""
-                                            (click)="imagePreview(item.coverPageURL)">
+                                    <div class="question-vote-wrapper"
+                                        *ngFor="let data of previewData;let index = index">
+                                        <div class="title-question-vote">
+                                            <span>คำถามที่ {{index+1}}</span>
+                                            <span>หัวข้อ : {{data.title}}</span>
+                                            <span>ประเภท : {{data.type === 'single' ? 'คำตอบเดียว' :( data.type ===
+                                                'multi'
+                                                ? 'หลายคำตอบ' : 'กล่องข้อความ')}}</span>
+                                            <img *ngIf="!!data.coverPageURL" class="image-preview"
+                                                src="../../../../assets/img/icon-preview.svg" alt=""
+                                                (click)="imagePreview(data.coverPageURL)">
+                                        </div>
+                                        <div class="choice-vote" *ngFor="let item of data.voteChoice;let i = index">
+                                            <span>ตัวเลือกที่ {{i+1}}</span>
+                                            <span>หัวข้อ :</span>
+                                            <textarea name="" id="" cols="30" rows="3" [(ngModel)]="item.title"
+                                                [ngModelOptions]="{standalone: true}"></textarea>
+                                            <img *ngIf="!!item.coverPageURL" class="image-preview"
+                                                src="../../../../assets/img/icon-preview.svg" alt=""
+                                                (click)="imagePreview(item.coverPageURL)">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
+                        </ng-template>
                     </div>
                     <div class="wrapper-action">
                         <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
-                        <button mat-raised-button *ngIf="!preview" class="btn-save" (click)="clickSave()">แก้ไข</button>
+                        <button mat-raised-button *ngIf="!preview" class="btn-save"
+                            (click)="isSendNoti ? clickNoti() : clickSave()">{{isSendNoti ?
+                            'ส่งแจ้งเตือน' : 'แก้ไข'}}</button>
                     </div>
                 </div>
             </div>
@@ -230,7 +263,7 @@
                 <admin-table-component #table [isPin]="true" [facade]="voteEventFacade" [title]="'โหวต'"
                     [fieldTable]="fieldTable" [actions]="actions" (edit)="clickEditForm($event)"
                     (delete)="clickDelete($event)" (approve)="clickApprove($event)" (unapprove)="clickUnApprove($event)"
-                    (preview)="clickPreview($event)"></admin-table-component>
+                    (notificationvote)="clickSendNoti($event)"></admin-table-component>
             </div>
         </mat-drawer-content>
     </mat-drawer-container>

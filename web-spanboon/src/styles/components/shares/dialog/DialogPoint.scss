@@ -1,0 +1,192 @@
+.dialog-point {
+  min-height: calc(100vh - 45pt);
+  background-color: #f0f5f6;
+  display: flex;
+  justify-content: center;
+
+  > .wrapper-card {
+    background-color: #fff;
+    margin: 50px 0;
+    border-radius: 24px;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+
+    > .close-icon {
+      width: 39px;
+      height: 39px;
+      position: fixed;
+      right: 22px;
+      top: 100pt;
+      z-index: 5;
+      @include pointer;
+
+      @media (max-width: $large) {
+        top: 50pt;
+      }
+    }
+
+    > .card-wrapper {
+      width: 60vw;
+      border-radius: 24px;
+      overflow: hidden;
+      height: 100%;
+
+      @media (max-width: $xlarge) {
+        width: 70vw;
+      }
+      @media (max-width: $large) {
+        width: 80vw;
+      }
+      @media (max-width: $medium) {
+        width: 90vw;
+      }
+      @media (max-width: $small) {
+        width: 100vw;
+      }
+
+      > img {
+        aspect-ratio: 2/1;
+        object-fit: cover;
+        width: 100%;
+      }
+
+      > .wrapper-content {
+        padding: 25pt 20pt 20pt 20pt;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+
+        @media (max-width: $small) {
+          padding: 10pt;
+        }
+
+        > .title {
+          @include font-size-6($font-head-500);
+          color: $black;
+        }
+
+        > .detail {
+          @include font-size-9($font-head-100);
+          color: $black;
+        }
+
+        > .condition {
+          display: flex;
+          flex-direction: column;
+          border: 1px solid #00000050;
+          padding: 16px;
+          gap: 10px;
+          border-radius: 16px;
+
+          > span {
+            @include font-size-9($font-head-100);
+            color: $black;
+          }
+        }
+
+        .mat-tab-group {
+          border: 1px solid #113154;
+          border-radius: 32px;
+          overflow: hidden;
+
+          > .mat-tab-header {
+            border-bottom: unset;
+
+            .mat-tab-label {
+              box-shadow: inset -2px -2px 12px -2px rgba($black, 0.5);
+              height: 36px;
+              @include font-size-9($font-head-300);
+
+              &.mat-tab-label-active {
+                opacity: 1;
+                color: $white;
+                background-color: #113154;
+              }
+            }
+
+            .mat-ink-bar {
+              background-color: #113154;
+            }
+          }
+        }
+
+        > .wrapper-point {
+          display: flex;
+          flex-direction: column;
+          padding: 10px;
+          gap: 15px;
+
+          > .point {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            > span {
+              @include font-size-9($font-head-500);
+              color: $black;
+            }
+
+            > div {
+              display: flex;
+              gap: 5px;
+
+              > span {
+                @include font-size-9($font-head-500);
+                color: $black;
+              }
+            }
+          }
+
+          > .border {
+            border-bottom: 1px solid #00000010;
+          }
+
+          > .progress {
+            gap: 5px;
+            display: flex;
+            flex-direction: column;
+
+            > mat-progress-bar {
+              height: 8px;
+              border-radius: 8px;
+
+              .mat-progress-bar-fill::after {
+                background-color: $brandcolor2;
+              }
+
+              .mat-progress-bar-buffer {
+                background-color: #d0d0d0;
+              }
+            }
+
+            > span {
+              @include font-size-10($font-head-100);
+              color: $black;
+              text-align: end;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.panel-backgroud-point {
+  position: fixed !important;
+  top: 90pt;
+  bottom: 0;
+  max-width: 100vw !important;
+  width: 100vw;
+
+  @media (max-width: $large) {
+    top: 45pt;
+  }
+
+  > mat-dialog-container {
+    border-radius: 0px !important;
+    box-shadow: unset;
+  }
+}
+
+.backdrop-overlay-point .cdk-global-overlay-wrapper {
+  overflow-y: auto;
+}

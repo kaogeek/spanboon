@@ -16,6 +16,8 @@ import { AuthenManager } from '../../../services/AuthenManager.service';
 import { PageUser } from '../../../models/PageUser';
 import { Router } from '@angular/router';
 import { UserFacade } from '../../../services/facade/UserFacade.service'
+import { DialogInput } from '../../components';
+import { PointFacade } from '../../../services/facade/PointFacade.service';
 const PAGE_NAME: string = "user";
 
 @Component({
@@ -30,6 +32,7 @@ export class UserPage extends AbstractPage implements OnInit {
     private authenManager: AuthenManager;
     private router: Router;
     private userFacade: UserFacade;
+    private pointFacade: PointFacade;
     public fieldSearch: string[];
 
     public dataForm: PageUser;
@@ -37,6 +40,7 @@ export class UserPage extends AbstractPage implements OnInit {
     public DisplayName: any;
     public Passw: any;
     public isGender: boolean;
+    public isAddPoint: boolean = false;
     public valuetring: string;
     public valueNum: number;
     public orinalDataForm: PageUser;
@@ -47,21 +51,24 @@ export class UserPage extends AbstractPage implements OnInit {
     public imageName: string = '';
     public value: string = '';
     public orderBy: any = {};
+    public pointMember: any = {};
 
     constructor(pageUserFacade: PageUserFacade,
         router: Router,
         dialog: MatDialog,
         authenManager: AuthenManager,
-        userFacade: UserFacade) {
+        userFacade: UserFacade,
+        pointFacade: PointFacade) {
         super(PAGE_NAME, dialog);
         this.pageUserFacade = pageUserFacade;
         this.router = router;
         this.isGender = false
         this.authenManager = authenManager;
         this.userFacade = userFacade;
+        this.pointFacade = pointFacade;
         this.orderBy = { createdDate: -1 };
         this.fieldSearch = [
-            "username"
+            "email"
         ]
         this.fieldTable = [
             {
@@ -137,11 +144,13 @@ export class UserPage extends AbstractPage implements OnInit {
             isComment: false,
             isBack: false,
             isPreview: false,
+            isAddPoint: true,
         };
         this.setFields();
     }
 
     public ngOnInit() {
+        this.table.isUserPage = true;
     }
 
     public handleFileInput(files: FileList) {
@@ -210,10 +219,14 @@ export class UserPage extends AbstractPage implements OnInit {
             dialogRef.afterClosed().subscribe(result => {
                 if (result) {
                     this.submitted = false;
+                    this.isAddPoint = false;
+                    this.dataForm.point = null;
                     this.drawer.toggle();
                 }
             });
         } else {
+            this.isAddPoint = false;
+            this.dataForm.point = null;
             this.drawer.toggle();
         }
     }
@@ -290,5 +303,61 @@ export class UserPage extends AbstractPage implements OnInit {
         }).catch((err) => {
             this.dialogWarning(err.error.message);
         });
+    }
+
+    private _setPointMember(item, respone) {
+        this.pointMember = {
+            id: item.id,
+            email: item.email,
+            image: item.image,
+            imageURL: item.imageURL,
+            displayName: item.displayName,
+            firstName: item.firstName,
+            lastName: item.lastName,
+            point: respone.data[0],
+        }
+    }
+
+    public clickPoint(item: any) {
+        this.pointFacade.getAccumulate(item.id).then((res) => {
+            if (res.data.length > 0) {
+                this._setPointMember(item, res);
+                this.isAddPoint = true;
+                this.drawer.toggle();
+            } else {
+                this.pointFacade.createAccumulateUser(item.id).then((res) => {
+                    if (res) {
+                        this.pointFacade.getAccumulate(item.id).then((res) => {
+                            if (res.data.length > 0) {
+                                this._setPointMember(item, res);
+                                this.isAddPoint = true;
+                                this.drawer.toggle();
+                            }
+                        });
+                    }
+                });
+            }
+        }).catch((err) => {
+            if (err) { }
+        });
+    }
+
+    public addPoint() {
+        let data = {
+            point: this.dataForm.point,
+            userId: this.pointMember.point.userId,
+            id: this.pointMember.point._id
+        }
+        this.pointFacade.addPoint(data).then((res) => {
+            if (res) {
+                this.isAddPoint = false;
+                this.dataForm.point = null;
+                this.pointMember = {};
+                this.dialogWarning("เพิ่มพอยท์แล้ว");
+                this.drawer.toggle();
+            }
+        }).catch((err) => {
+            if (err) { }
+        })
     }
 }

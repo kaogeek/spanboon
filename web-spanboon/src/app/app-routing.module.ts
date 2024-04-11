@@ -23,7 +23,7 @@ import {
   SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
   EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles,
   SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch, LoginMemberProcessing,
-  MemberProcess, MobileProcessing, KnowledgeCenter, VotePage, ProcessingPage, TodayDashboardPage,
+  MemberProcess, MobileProcessing, KnowledgeCenter, VotePage, ProcessingPage, TodayDashboardPage, PointPage,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -283,6 +283,24 @@ export const APP_ROUTES: Routes = [
           {
             path: ':name',
             component: TodayDashboardPage,
+          }
+        ]
+      },
+      {
+        path: PointPage.PAGE_NAME,
+        component: PointPage,
+        children: [
+          {
+            path: '',
+            component: PointPage,
+          },
+          {
+            path: ':name',
+            component: PointPage,
+          },
+          {
+            path: ':name/:id',
+            component: PointPage,
           }
         ]
       },

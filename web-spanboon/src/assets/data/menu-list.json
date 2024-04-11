@@ -12,10 +12,10 @@
     "active": true
   },
   {
-    "image": "../../assets/img/menu-list/vote.svg",
+    "image": "../../assets/img/icons/pointpage/Point_mini_logo.svg",
     "title": "MFP Point",
     "link": "/point",
-    "active": false
+    "active": true
   },
   {
     "image": "../../assets/img/menu-list/survey.svg",

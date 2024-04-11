@@ -31,7 +31,8 @@
                                     </div>
                                     <div class="form-group">
                                         <ng-container>
-                                            <mat-slide-toggle [(ngModel)]="postPics" [ngModelOptions]="{standalone: true}">
+                                            <mat-slide-toggle [(ngModel)]="postPics"
+                                                [ngModelOptions]="{standalone: true}">
                                             </mat-slide-toggle>
                                         </ng-container>
                                         <label style="margin-left: 10px;">โพสต์เฉพาะรูป</label>
@@ -116,7 +117,7 @@
                                                                 <div [formGroupName]="bucketIndex"
                                                                     id="{{'divData-'+bucketIndex}}">
                                                                     <div class="box-name">
-                                                                        Name :
+                                                                        value :
                                                                         <input class="text" type="text" style="margin-left: 5px;
                                                                                 border: 1px solid black;
                                                                                 border-radius: 5px;
