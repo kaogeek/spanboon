@@ -63,6 +63,7 @@ import {
     BIRTHDAY,
 } from '../../constants/SystemConfig';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
+import { POINT_TYPE } from '../../constants/PointType';
 @JsonController()
 export class GuestController {
     constructor(
@@ -1447,7 +1448,7 @@ export class GuestController {
                 productModel.title = ENGAGEMENT_CONTENT_TYPE.LOGIN;
                 productModel.detail = null;
                 productModel.point = firstLogin;
-                productModel.type = ENGAGEMENT_ACTION.FIRST_LOGIN;
+                productModel.type = POINT_TYPE.LOGIN;
                 productModel.userId = loginUser.id;
                 productModel.pointEventId = null;
                 const createPoint = await this.pointStatementService.create(productModel);
@@ -3393,7 +3394,7 @@ export class GuestController {
                     productModel.title = ENGAGEMENT_CONTENT_TYPE.BIRTHDAY + ' ' + today.getFullYear();
                     productModel.detail = null;
                     productModel.point = birthDayValue;
-                    productModel.type = ENGAGEMENT_ACTION.BIRTHDAY;
+                    productModel.type = POINT_TYPE.BIRTHDAY;
                     productModel.userId = user.id;
                     productModel.pointEventId = null;
                     productModel.years = today.getFullYear();

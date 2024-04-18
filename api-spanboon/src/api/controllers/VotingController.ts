@@ -71,7 +71,7 @@ import { Voted as VotedModel } from '../models/VotedModel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { HashTag } from '../models/HashTag';
-
+import { POINT_TYPE } from '../../constants/PointType';
 // startVoteDatetime
 @JsonController('/voting')
 export class VotingController {
@@ -6565,7 +6565,7 @@ export class VotingController {
                 productModel.title = ENGAGEMENT_CONTENT_TYPE.VOTE;
                 productModel.detail = null;
                 productModel.point = votePoint;
-                productModel.type = ENGAGEMENT_ACTION.VOTE;
+                productModel.type = POINT_TYPE.VOTE;
                 productModel.userId = userObjId;
                 productModel.pointEventId = null;
                 const createPoint = await this.pointStatementService.create(productModel);

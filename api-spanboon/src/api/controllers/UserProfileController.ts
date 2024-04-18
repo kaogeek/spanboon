@@ -42,6 +42,7 @@ import { PointStatementModel } from '../models/PointStatementModel';
 import { PointStatementService } from '../services/PointStatementService';
 import { AccumulateService } from '../services/AccumulateService';
 import { AccumulateModel } from '../models/AccumulatePointModel';
+import { POINT_TYPE } from '../../constants/PointType';
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
@@ -725,7 +726,7 @@ export class UserProfileController {
                         {
                             title: 'REGISTER_MEMBERSHIP_MFP',
                             userId:userObjId,
-                            type:'BINDING_MEMBERSHIP'
+                            type:POINT_TYPE.BINDING_MEMBERSHIP
                         }
                     );
                     if(checkSpam === undefined) {
@@ -868,7 +869,7 @@ export class UserProfileController {
         productModel.title = `REGISTER_MEMBERSHIP_MFP`;
         productModel.detail = null;
         productModel.point = 100;
-        productModel.type = 'BINDING_MEMBERSHIP';
+        productModel.type = POINT_TYPE.BINDING_MEMBERSHIP;
         productModel.userId = new ObjectID(userObjId);
         productModel.postId = null;
         productModel.pointEventId = null;

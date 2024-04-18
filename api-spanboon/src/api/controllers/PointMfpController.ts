@@ -6,6 +6,7 @@ import { PointLimitOffsetRequest } from './requests/PointLimitOffsetRequest';
 import { UsedCouponRequest } from './requests/UsedCouponRequest';
 import { ObjectID } from 'mongodb';
 import { PointStatementModel } from '../models/PointStatementModel';
+import { POINT_TYPE } from '../../constants/PointType';
 import { AccumulateModel } from '../models/AccumulatePointModel';
 import { PointStatementService } from '../services/PointStatementService';
 import { AccumulateService } from '../services/AccumulateService';
@@ -97,7 +98,7 @@ export class NotificationController {
             productModel.title = pointStatementRequest.title;
             productModel.detail = pointStatementRequest.detail;
             productModel.point = pointStatementRequest.point;
-            productModel.type = pointStatementRequest.type;
+            productModel.type = POINT_TYPE.REDEEM;
             productModel.userId = userObjId;
             productModel.productId = new ObjectID(pointStatementRequest.productId);
         }
@@ -106,7 +107,7 @@ export class NotificationController {
             productModel.title = pointStatementRequest.title;
             productModel.detail = pointStatementRequest.detail;
             productModel.point = pointStatementRequest.point;
-            productModel.type = pointStatementRequest.type;
+            productModel.type = POINT_TYPE.RECEIVE;
             productModel.userId = userObjId;
             productModel.pointEventId = new ObjectID(pointStatementRequest.pointEventId);
         }
@@ -164,6 +165,15 @@ export class NotificationController {
                 }
                 const productPoint = await this.productService.findOne({ _id: new ObjectID(pointStatementRequest.productId) });
                 const updatePointEvent = await this.productService.update({ _id: productPoint.id }, { $set: { receiverCoupon: productPoint.receiverCoupon + 1 } });
+                const query = { userId: userObjId };
+                const newValues = {
+                    $set:
+                    {
+                        accumulatePoint: accumulateCreate.accumulatePoint - pointStatementRequest.point,
+                        usedPoint: accumulateCreate.usedPoint + pointStatementRequest.point
+                    }
+                };
+                await this.accumulateService.update(query, newValues);
                 if(updatePointEvent){
                     const userCouponModel = new UserCouponModel();
                     userCouponModel.userId = userObjId;
@@ -265,7 +275,7 @@ export class NotificationController {
             productModel.title = 'Use a Coupon.';
             productModel.detail = null;
             productModel.point = productObj.point;
-            productModel.type = 'USE_COUPON';
+            productModel.type = POINT_TYPE.USE_COUPON;
             productModel.productId = productObj.id;
             productModel.userId = userObjId;
             productModel.pointEventId = null;
