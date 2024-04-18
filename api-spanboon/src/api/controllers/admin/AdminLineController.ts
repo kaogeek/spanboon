@@ -5,7 +5,7 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-import { JsonController, Res, Post, Req, Authorized, Body} from 'routing-controllers';
+import { JsonController, Res, Post, Req, Authorized, Body } from 'routing-controllers';
 import moment from 'moment';
 import { UserService } from '../../services/UserService';
 import { DeviceTokenService } from '../../services/DeviceToken';
@@ -29,12 +29,12 @@ import axios from 'axios';
 export class AdminPointController {
     constructor(
         private userService: UserService,
-        private deviceTokenService:DeviceTokenService,
+        private deviceTokenService: DeviceTokenService,
         private notificationService: NotificationService,
-        private authenticationIdService:AuthenticationIdService,
-        private configService:ConfigService,
-        private kaokaiTodaySnapShotService:KaokaiTodaySnapShotService,
-        private lineNewMovePartyService:LineNewMovePartyService
+        private authenticationIdService: AuthenticationIdService,
+        private configService: ConfigService,
+        private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService,
+        private lineNewMovePartyService: LineNewMovePartyService
     ) { }
 
     /**
@@ -63,38 +63,38 @@ export class AdminPointController {
      * @apiErrorExample {json} Error
      * HTTP/1.1 500 Internal Server Error
      */
-    
+
     @Post('/birthday')
     public async birthDayNotificaition(
-        @Res() res: any, 
-        @Req() req: any): Promise<any>{
+        @Res() res: any,
+        @Req() req: any): Promise<any> {
         const headerAdmin = req.headers.admin;
-        const adminUser = await this.userService.findOne({email:headerAdmin});
-        if(adminUser === undefined) {
+        const adminUser = await this.userService.findOne({ email: headerAdmin });
+        if (adminUser === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
             return res.status(400).send(errorResponse);
         }
         const dateFormat = new Date();
-        let month:any = dateFormat.getMonth() + 1;
-        let day:any = dateFormat.getDate(); 
+        let month: any = dateFormat.getMonth() + 1;
+        let day: any = dateFormat.getDate();
 
-        if(day<10) { day='0'+day;}
-        if(month<10) { month='0'+month;}
+        if (day < 10) { day = '0' + day; }
+        if (month < 10) { month = '0' + month; }
 
         const users = await this.userService.aggregate(
             [
                 {
-                    $match:{
-                        dayDate:day.toString(),
-                        monthDate:month.toString()
+                    $match: {
+                        dayDate: day.toString(),
+                        monthDate: month.toString()
                     }
                 }
             ]
         );
-        if(users.length > 0) {
-            for(const content of users) {
-                const tokenDevice = await this.deviceTokenService.find({userId:new ObjectID(content._id)});
-                await this.pushNotificationBirthDay(content,tokenDevice);
+        if (users.length > 0) {
+            for (const content of users) {
+                const tokenDevice = await this.deviceTokenService.find({ userId: new ObjectID(content._id) });
+                await this.pushNotificationBirthDay(content, tokenDevice);
             }
             return res.status(200).send(ResponseUtil.getSuccessResponse('BirthDay Event is success.', `${month}-${day}`));
         } else {
@@ -105,18 +105,18 @@ export class AdminPointController {
 
     @Post('/expired')
     public async expiredMembershipNotification(
-        @Res() res:any, 
-        @Req() req: any): Promise<any>{
+        @Res() res: any,
+        @Req() req: any): Promise<any> {
         const headerAdmin = req.headers.admin;
-        const adminUser = await this.userService.findOne({email:headerAdmin});
-        if(adminUser === undefined) {
+        const adminUser = await this.userService.findOne({ email: headerAdmin });
+        if (adminUser === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
             return res.status(400).send(errorResponse);
         }
-        
+
         let expireMemberShip = DEFAULT_PUSH_NOTI_EXPIRATION_MEMBERSHIP;
         const expireMemberShipConfig = await this.configService.getConfig(PUSH_NOTI_EXPIRATION_MEMBERSHIP);
-        if(expireMemberShipConfig){
+        if (expireMemberShipConfig) {
             expireMemberShip = expireMemberShipConfig.value;
         }
         const today = new Date();
@@ -124,54 +124,49 @@ export class AdminPointController {
         const endDate = moment(today).clone().utcOffset(0).set({ hour: 23, minute: 59, second: 59, millisecond: 59 }).toDate();
         const days = 24 * 60 * 60 * 1000 * expireMemberShip; // one day in milliseconds
 
-        const formatDateStart = startDate.toISOString().slice(0,10) + ' ' + startDate.toTimeString().slice(0, 8);
-        const formatDateEnd = new Date(endDate.getTime() + days).toISOString().slice(0,10) + ' ' + endDate.toTimeString().slice(0,8);
+        const formatDateStart = startDate.toISOString().slice(0, 10) + ' ' + startDate.toTimeString().slice(0, 8);
+        const formatDateEnd = new Date(endDate.getTime() + days).toISOString().slice(0, 10) + ' ' + endDate.toTimeString().slice(0, 8);
         // 2024-09-05 14:53:42
 
         const authUser = await this.authenticationIdService.aggregate(
             [
                 {
-                    $match:{
-                        providerName:'MFP',
-                        expirationDate:{$gte:formatDateStart, $lte:formatDateEnd}
+                    $match: {
+                        providerName: 'MFP',
+                        expirationDate: { $gte: formatDateStart, $lte: formatDateEnd }
                     }
                 }
             ]
         );
-        if(authUser.length > 0) {
-            for(const content of authUser) {
-                const tokenDevice = await this.deviceTokenService.find({userId:new ObjectID(content.user)});
-                await this.pushNotificationExpiredMembership(content,tokenDevice);
+        if (authUser.length > 0) {
+            for (const content of authUser) {
+                const tokenDevice = await this.deviceTokenService.find({ userId: new ObjectID(content.user) });
+                await this.pushNotificationExpiredMembership(content, tokenDevice);
             }
             return res.status(200).send(ResponseUtil.getSuccessResponse('Expired Event is success.', undefined));
         }
     }
 
     @Post('/vote')
+    @Authorized()
     public async voteLine(
         @Body({ validate: true }) lineRequest: LineRequest,
-        @Res() res: any, 
-        @Req() req: any): Promise<any>{
+        @Res() res: any,
+        @Req() req: any): Promise<any> {
         const tokenLine = process.env.LINE_AUTHORIZATION;
-        const headerAdmin = req.headers.admin;
-        const adminUser = await this.userService.findOne({email:headerAdmin});
-        if(adminUser === undefined) {
-            const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
-            return res.status(400).send(errorResponse);
-        }
         // api.line.me/v2/bot/message/push
         const lineUsers = await axios.get(
-            'https://api.line.me/v2/bot/followers/ids',{
-            headers:{
+            'https://api.line.me/v2/bot/followers/ids', {
+            headers: {
                 Authorization: 'Bearer ' + tokenLine
             }
         });
-        if(lineUsers.data.userIds.length > 0) {
+        if (lineUsers.data.userIds.length > 0) {
             // everybody.
-            for(const user of lineUsers.data.userIds){
+            for (const user of lineUsers.data.userIds) {
                 const requestBody = {
                     'to': user.toString(),
-                    'messages':lineRequest.messages
+                    'messages': lineRequest.messages
                 };
                 await axios.post(
                     'https://api.line.me/v2/bot/message/push',
@@ -179,7 +174,7 @@ export class AdminPointController {
                     headers: {
                         'Content-Type': 'application/json',
                         Accept: 'application/json, text/plain, */*',
-                        Authorization: 'Bearer ' +  tokenLine
+                        Authorization: 'Bearer ' + tokenLine
                     }
                 });
             }
@@ -193,21 +188,21 @@ export class AdminPointController {
     @Authorized()
     public async testVoteLine(
         @Body({ validate: true }) lineRequest: LineRequest,
-        @Res() res: any, 
-        @Req() req: any): Promise<any>{
+        @Res() res: any,
+        @Req() req: any): Promise<any> {
         const tokenLine = process.env.LINE_AUTHORIZATION;
 
         // api.line.me/v2/bot/message/push
         const lineUsers = await axios.get(
-            'https://api.line.me/v2/bot/followers/ids',{
-            headers:{
+            'https://api.line.me/v2/bot/followers/ids', {
+            headers: {
                 Authorization: 'Bearer ' + tokenLine
             }
         });
-        if(lineUsers.data.userIds.length > 0) {
+        if (lineUsers.data.userIds.length > 0) {
             const requestBody = {
                 'to': 'U6a9f92a2c2bea19e096bc14ef83812ba',
-                'messages':lineRequest.messages
+                'messages': lineRequest.messages
             };
             await axios.post(
                 'https://api.line.me/v2/bot/message/push',
@@ -215,7 +210,7 @@ export class AdminPointController {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json, text/plain, */*',
-                    Authorization: 'Bearer ' +  tokenLine
+                    Authorization: 'Bearer ' + tokenLine
                 }
             });
             return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', undefined));
@@ -226,19 +221,19 @@ export class AdminPointController {
 
     @Post('/content/oa')
     public async lineOaKaokaiContent(
-        @Res() res: any, 
-        @Req() req:any
-    ): Promise<any>{
+        @Res() res: any,
+        @Req() req: any
+    ): Promise<any> {
         const headerAdmin = req.headers.admin;
-        const adminUser = await this.userService.findOne({email:headerAdmin});
-        if(adminUser === undefined) {
+        const adminUser = await this.userService.findOne({ email: headerAdmin });
+        if (adminUser === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
             return res.status(400).send(errorResponse);
         }
-        const objStackIds:any = [];
+        const objStackIds: any = [];
         const lineOaStack = await this.lineNewMovePartyService.aggregate([]);
-        if(lineOaStack.length > 0) {
-            for(const line of lineOaStack) {
+        if (lineOaStack.length > 0) {
+            for (const line of lineOaStack) {
                 line.objIds.map((ids) => objStackIds.push(new ObjectID(ids)));
             }
         }
@@ -247,23 +242,23 @@ export class AdminPointController {
         const kaokaiSnapshot = await this.kaokaiTodaySnapShotService.aggregate(
             [
                 {
-                    $match:{
-                        _id: {$nin:objStackIds},
-                        endDateTime: {$lte: today, $gte:twoWeeksAgo}
+                    $match: {
+                        _id: { $nin: objStackIds },
+                        endDateTime: { $lte: today, $gte: twoWeeksAgo }
                     }
                 },
                 {
-                    $sort:{
-                        count:-1,
-                        sumCount:-1
+                    $sort: {
+                        count: -1,
+                        sumCount: -1
                     }
                 },
                 {
-                    $limit:4
+                    $limit: 4
                 }
             ]
         );
-        const content:any = {
+        const content: any = {
             'messages': [
                 {
                     'type': 'flex',
@@ -284,16 +279,16 @@ export class AdminPointController {
             ]
         };
 
-        if(kaokaiSnapshot.length > 0){
-            const stackIds:any = [];
-            for(const [key,kaokai] of Object.entries(kaokaiSnapshot)) {
+        if (kaokaiSnapshot.length > 0) {
+            const stackIds: any = [];
+            for (const [key, kaokai] of Object.entries(kaokaiSnapshot)) {
                 stackIds.push(new ObjectID(kaokai._id));
                 let kaokaiToday = undefined;
-                if(parseInt(key,10) === 0 && kaokaiSnapshot.length > 0){
-                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                if (parseInt(key, 10) === 0 && kaokaiSnapshot.length > 0) {
+                    let dd: any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
                     let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
-                    if(dd<10) { dd='0'+dd;}
-                    if(mm<10) { mm='0'+mm;}
+                    if (dd < 10) { dd = '0' + dd; }
+                    if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
                     content['messages'][0].contents.body.contents.push(
                         {
@@ -366,8 +361,8 @@ export class AdminPointController {
                                 },
                                 {
                                     'type': 'box',
-                                    'layout':'vertical',
-                                    'contents':[]
+                                    'layout': 'vertical',
+                                    'contents': []
                                 }
                             ],
                             'width': '100%',
@@ -375,17 +370,16 @@ export class AdminPointController {
                         }
                     );
                 }
-                
-                if(
-                    parseInt(key,10) === 1 && 
-                    kaokaiSnapshot.length > 0 && 
-                    content['messages'][0].contents.body.contents.length >0
-                    )
-                {
-                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+
+                if (
+                    parseInt(key, 10) === 1 &&
+                    kaokaiSnapshot.length > 0 &&
+                    content['messages'][0].contents.body.contents.length > 0
+                ) {
+                    let dd: any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
                     let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
-                    if(dd<10) { dd='0'+dd;}
-                    if(mm<10) { mm='0'+mm;}
+                    if (dd < 10) { dd = '0' + dd; }
+                    if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
@@ -432,21 +426,20 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri':kaokaiToday,
+                                'uri': kaokaiToday,
                             }
                         },
                     );
                 }
-                if(
-                    parseInt(key,10) === 2 && 
-                    kaokaiSnapshot.length > 0 && 
-                    content['messages'][0].contents.body.contents.length >0                
-                )
-                {
-                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                if (
+                    parseInt(key, 10) === 2 &&
+                    kaokaiSnapshot.length > 0 &&
+                    content['messages'][0].contents.body.contents.length > 0
+                ) {
+                    let dd: any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
                     let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
-                    if(dd<10) { dd='0'+dd;}
-                    if(mm<10) { mm='0'+mm;}
+                    if (dd < 10) { dd = '0' + dd; }
+                    if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
@@ -493,21 +486,20 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri':kaokaiToday,
+                                'uri': kaokaiToday,
                             }
                         },
                     );
                 }
-                if(
-                    parseInt(key,10) === 3 &&
-                    kaokaiSnapshot.length > 0 && 
-                    content['messages'][0].contents.body.contents.length >0
-                    )
-                {
-                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                if (
+                    parseInt(key, 10) === 3 &&
+                    kaokaiSnapshot.length > 0 &&
+                    content['messages'][0].contents.body.contents.length > 0
+                ) {
+                    let dd: any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
                     let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
-                    if(dd<10) { dd='0'+dd;}
-                    if(mm<10) { mm='0'+mm;}
+                    if (dd < 10) { dd = '0' + dd; }
+                    if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
@@ -567,28 +559,28 @@ export class AdminPointController {
 
             const create = await this.lineNewMovePartyService.create(lineNewMoveParty);
             // api.line.me/v2/bot/message/push
-            if(create) {
+            if (create) {
                 const lineUsers = await axios.get(
-                    'https://api.line.me/v2/bot/followers/ids',{
-                    headers:{
+                    'https://api.line.me/v2/bot/followers/ids', {
+                    headers: {
                         Authorization: 'Bearer ' + tokenLine
                     }
                 });
                 // console.log('content',content['messages'][0].contents.body.contents);
-                if(lineUsers.data.userIds.length > 0 && content['messages'][0].contents.body.contents.length > 0) {
-                    for(const user of lineUsers.data.userIds) {
+                if (lineUsers.data.userIds.length > 0 && content['messages'][0].contents.body.contents.length > 0) {
+                    for (const user of lineUsers.data.userIds) {
                         const requestBody = {
                             'to': String(user),
-                            'messages':content['messages']
+                            'messages': content['messages']
                         };
-                        
+
                         await axios.post(
                             'https://api.line.me/v2/bot/message/push',
                             requestBody, {
                             headers: {
                                 'Content-Type': 'application/json',
                                 Accept: 'application/json, text/plain, */*',
-                                Authorization: 'Bearer ' +  tokenLine
+                                Authorization: 'Bearer ' + tokenLine
                             }
                         });
                     }
@@ -605,19 +597,19 @@ export class AdminPointController {
 
     @Post('/test/content/oa')
     public async testLineOaKaokaiContent(
-        @Res() res: any, 
-        @Req() req:any
-    ): Promise<any>{
+        @Res() res: any,
+        @Req() req: any
+    ): Promise<any> {
         const headerAdmin = req.headers.admin;
-        const adminUser = await this.userService.findOne({email:headerAdmin});
-        if(adminUser === undefined) {
+        const adminUser = await this.userService.findOne({ email: headerAdmin });
+        if (adminUser === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
             return res.status(400).send(errorResponse);
         }
-        const objStackIds:any = [];
+        const objStackIds: any = [];
         const lineOaStack = await this.lineNewMovePartyService.aggregate([]);
-        if(lineOaStack.length > 0) {
-            for(const line of lineOaStack) {
+        if (lineOaStack.length > 0) {
+            for (const line of lineOaStack) {
                 line.objIds.map((ids) => objStackIds.push(new ObjectID(ids)));
             }
         }
@@ -626,23 +618,23 @@ export class AdminPointController {
         const kaokaiSnapshot = await this.kaokaiTodaySnapShotService.aggregate(
             [
                 {
-                    $match:{
-                        _id: {$nin:objStackIds},
-                        endDateTime: {$lte: today, $gte:twoWeeksAgo}
+                    $match: {
+                        _id: { $nin: objStackIds },
+                        endDateTime: { $lte: today, $gte: twoWeeksAgo }
                     }
                 },
                 {
-                    $sort:{
-                        count:-1,
-                        sumCount:-1
+                    $sort: {
+                        count: -1,
+                        sumCount: -1
                     }
                 },
                 {
-                    $limit:4
+                    $limit: 4
                 }
             ]
         );
-        const content:any = {
+        const content: any = {
             'messages': [
                 {
                     'type': 'flex',
@@ -663,16 +655,16 @@ export class AdminPointController {
             ]
         };
 
-        if(kaokaiSnapshot.length > 0){
-            const stackIds:any = [];
-            for(const [key,kaokai] of Object.entries(kaokaiSnapshot)) {
+        if (kaokaiSnapshot.length > 0) {
+            const stackIds: any = [];
+            for (const [key, kaokai] of Object.entries(kaokaiSnapshot)) {
                 stackIds.push(new ObjectID(kaokai._id));
                 let kaokaiToday = undefined;
-                if(parseInt(key,10) === 0 && kaokaiSnapshot.length > 0){
-                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                if (parseInt(key, 10) === 0 && kaokaiSnapshot.length > 0) {
+                    let dd: any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
                     let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
-                    if(dd<10) { dd='0'+dd;}
-                    if(mm<10) { mm='0'+mm;}
+                    if (dd < 10) { dd = '0' + dd; }
+                    if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
                     content['messages'][0].contents.body.contents.push(
                         {
@@ -745,8 +737,8 @@ export class AdminPointController {
                                 },
                                 {
                                     'type': 'box',
-                                    'layout':'vertical',
-                                    'contents':[]
+                                    'layout': 'vertical',
+                                    'contents': []
                                 }
                             ],
                             'width': '100%',
@@ -754,78 +746,16 @@ export class AdminPointController {
                         }
                     );
                 }
-                
-                if(
-                    parseInt(key,10) === 1 && 
-                    kaokaiSnapshot.length > 0 && 
-                    content['messages'][0].contents.body.contents.length >0
-                    )
-                {
-                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+
+                if (
+                    parseInt(key, 10) === 1 &&
+                    kaokaiSnapshot.length > 0 &&
+                    content['messages'][0].contents.body.contents.length > 0
+                ) {
+                    let dd: any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
                     let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
-                    if(dd<10) { dd='0'+dd;}
-                    if(mm<10) { mm='0'+mm;}
-                    kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
-                    content['messages'][0].contents.body.contents[2].contents[1].contents.push(
-                        {
-                            'type': 'box',
-                            'layout': 'horizontal',
-                            'contents': [
-                                {
-                                    'type': 'box',
-                                    'layout': 'horizontal',
-                                    'contents': [
-                                        {
-                                            'type': 'image',
-                                            'url': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].coverPageSignUrl : kaokai.data.majorTrend.contents[0].coverPageSignUrl,
-                                            'size': '80px',
-                                            'align': 'start',
-                                            'aspectMode': 'cover'
-                                        }
-                                    ],
-                                    'paddingAll': '5px',
-                                    'cornerRadius': '8px',
-                                    'width': '30%'
-                                },
-                                {
-                                    'type': 'box',
-                                    'layout': 'vertical',
-                                    'contents': [
-                                        {
-                                            'type': 'text',
-                                            'text': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].post.title : kaokai.data.majorTrend.contents[0].post.title,
-                                            'wrap': true,
-                                            'size': '14px',
-                                            'align': 'start',
-                                            'gravity': 'center',
-                                            'maxLines': 3,
-                                            'margin': '5px'
-                                        }
-                                    ]
-                                }
-                            ],
-                            'backgroundColor': '#FFFFFF',
-                            'width': '100%',
-                            'height': '70px',
-                            'cornerRadius': '8px',
-                            'action': {
-                                'type':'uri',
-                                'label':'action',
-                                'uri':kaokaiToday
-                            }
-                        },
-                    );
-                }
-                if(
-                    parseInt(key,10) === 2 && 
-                    kaokaiSnapshot.length > 0 && 
-                    content['messages'][0].contents.body.contents.length >0                
-                )
-                {
-                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
-                    let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
-                    if(dd<10) { dd='0'+dd;}
-                    if(mm<10) { mm='0'+mm;}
+                    if (dd < 10) { dd = '0' + dd; }
+                    if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
@@ -872,21 +802,80 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri':kaokaiToday,
+                                'uri': kaokaiToday
                             }
                         },
                     );
                 }
-                if(
-                    parseInt(key,10) === 3 &&
-                    kaokaiSnapshot.length > 0 && 
-                    content['messages'][0].contents.body.contents.length >0
-                    )
-                {
-                    let dd:any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                if (
+                    parseInt(key, 10) === 2 &&
+                    kaokaiSnapshot.length > 0 &&
+                    content['messages'][0].contents.body.contents.length > 0
+                ) {
+                    let dd: any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
                     let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
-                    if(dd<10) { dd='0'+dd;}
-                    if(mm<10) { mm='0'+mm;}
+                    if (dd < 10) { dd = '0' + dd; }
+                    if (mm < 10) { mm = '0' + mm; }
+                    kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    content['messages'][0].contents.body.contents[2].contents[1].contents.push(
+                        {
+                            'type': 'box',
+                            'layout': 'horizontal',
+                            'contents': [
+                                {
+                                    'type': 'box',
+                                    'layout': 'horizontal',
+                                    'contents': [
+                                        {
+                                            'type': 'image',
+                                            'url': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].coverPageSignUrl : kaokai.data.majorTrend.contents[0].coverPageSignUrl,
+                                            'size': '80px',
+                                            'align': 'start',
+                                            'aspectMode': 'cover'
+                                        }
+                                    ],
+                                    'paddingAll': '5px',
+                                    'cornerRadius': '8px',
+                                    'width': '30%'
+                                },
+                                {
+                                    'type': 'box',
+                                    'layout': 'vertical',
+                                    'contents': [
+                                        {
+                                            'type': 'text',
+                                            'text': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].post.title : kaokai.data.majorTrend.contents[0].post.title,
+                                            'wrap': true,
+                                            'size': '14px',
+                                            'align': 'start',
+                                            'gravity': 'center',
+                                            'maxLines': 3,
+                                            'margin': '5px'
+                                        }
+                                    ]
+                                }
+                            ],
+                            'backgroundColor': '#FFFFFF',
+                            'width': '100%',
+                            'height': '70px',
+                            'cornerRadius': '8px',
+                            'action': {
+                                'type': 'uri',
+                                'label': 'action',
+                                'uri': kaokaiToday,
+                            }
+                        },
+                    );
+                }
+                if (
+                    parseInt(key, 10) === 3 &&
+                    kaokaiSnapshot.length > 0 &&
+                    content['messages'][0].contents.body.contents.length > 0
+                ) {
+                    let dd: any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
+                    let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
+                    if (dd < 10) { dd = '0' + dd; }
+                    if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
@@ -946,27 +935,27 @@ export class AdminPointController {
 
             const create = await this.lineNewMovePartyService.create(lineNewMoveParty);
             // api.line.me/v2/bot/message/push
-            if(create) {
+            if (create) {
                 const lineUsers = await axios.get(
-                    'https://api.line.me/v2/bot/followers/ids',{
-                    headers:{
+                    'https://api.line.me/v2/bot/followers/ids', {
+                    headers: {
                         Authorization: 'Bearer ' + tokenLine
                     }
                 });
                 // console.log('content',content['messages'][0].contents.body.contents);
-                if(lineUsers.data.userIds.length > 0 && content['messages'][0].contents.body.contents.length > 0) {
+                if (lineUsers.data.userIds.length > 0 && content['messages'][0].contents.body.contents.length > 0) {
                     const requestBody = {
                         'to': 'U589f12b01e4f66d84ac302bb1cbbfb78',
-                        'messages':content['messages']
+                        'messages': content['messages']
                     };
-                    
+
                     await axios.post(
                         'https://api.line.me/v2/bot/message/push',
                         requestBody, {
                         headers: {
                             'Content-Type': 'application/json',
                             Accept: 'application/json, text/plain, */*',
-                            Authorization: 'Bearer ' +  tokenLine
+                            Authorization: 'Bearer ' + tokenLine
                         }
                     });
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', undefined));
@@ -978,36 +967,36 @@ export class AdminPointController {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Not found the contents.', []));
         }
     }
-    
+
     @Post('/migrate/birthday')
     public async migrateBirthDay(
-        @Res() res: any, 
-        @Req() req:any): Promise<any>{
+        @Res() res: any,
+        @Req() req: any): Promise<any> {
         const headerAdmin = req.headers.admin;
-        const adminUser = await this.userService.findOne({email:headerAdmin});
-        if(adminUser === undefined) {
+        const adminUser = await this.userService.findOne({ email: headerAdmin });
+        if (adminUser === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Admin is not found.', undefined);
             return res.status(400).send(errorResponse);
         }
 
-        const users:any = await this.userService.aggregate([
+        const users: any = await this.userService.aggregate([
             {
-                $match:{
-                    dayDate:null,
-                    monthDate:null
+                $match: {
+                    dayDate: null,
+                    monthDate: null
                 }
             },
             {
-                $limit:20000
+                $limit: 20000
             }
         ]);
-        if(users.length >0){
-            for(const content of users) {
-                if(content.birthdate !== undefined ) {
+        if (users.length > 0) {
+            for (const content of users) {
+                if (content.birthdate !== undefined) {
                     const dateTimeStamp = Date.parse(content.birthdate);
                     const date = new Date(dateTimeStamp);
                     const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
-                    if(typeof(content.birthdate) === 'object'){
+                    if (typeof (content.birthdate) === 'object') {
                         // year-month-days
                         // 2023-03-11
                         const timeStampMonth = new Date(date.getTime()).toLocaleDateString('th-TH', {
@@ -1015,24 +1004,24 @@ export class AdminPointController {
                         });
 
                         // console.log('date.getDate()',date.getDate());
-                        let monthObj:any = timeStampMonth;
+                        let monthObj: any = timeStampMonth;
                         // console.log('monthObj',monthObj);
                         const timeStampDay = new Date(date.getTime() - oneDay).toLocaleDateString('th-TH', {
                             day: 'numeric'
                         });
-                                            
-                        if(parseInt(timeStampDay,10) === 30) {
+
+                        if (parseInt(timeStampDay, 10) === 30) {
                             continue;
                         }
 
-                        if(parseInt(timeStampDay,10) === 31) {
+                        if (parseInt(timeStampDay, 10) === 31) {
                             continue;
                         }
-                        
-                        let dayObj:any = timeStampDay; 
-                        
-                        if(dayObj<10) { dayObj='0'+dayObj;}
-                        if(monthObj<10) { monthObj='0'+monthObj;}
+
+                        let dayObj: any = timeStampDay;
+
+                        if (dayObj < 10) { dayObj = '0' + dayObj; }
+                        if (monthObj < 10) { monthObj = '0' + monthObj; }
 
                         const query = {
                             _id: new ObjectID(content._id)
@@ -1040,32 +1029,32 @@ export class AdminPointController {
                         // console.log(' _id: new ObjectID(content._id)', new ObjectID(content._id));
 
                         const update = {
-                        $set:{
-                            dayDate:dayObj.toString(),
-                            monthDate:monthObj.toString()
+                            $set: {
+                                dayDate: dayObj.toString(),
+                                monthDate: monthObj.toString()
                             }
                         };
-                        
-                        await this.userService.update(query,update);
+
+                        await this.userService.update(query, update);
                     } else {
-                        let month:any = date.getMonth() + 1;
-                        let day:any = date.getDate(); 
-                        if(day<10) { day='0'+day;}
-                        if(month<10) { month='0'+month;}
+                        let month: any = date.getMonth() + 1;
+                        let day: any = date.getDate();
+                        if (day < 10) { day = '0' + day; }
+                        if (month < 10) { month = '0' + month; }
 
                         const query = {
                             _id: new ObjectID(content._id)
                         };
                         // console.log(' _id: new ObjectID(content._id)', new ObjectID(content._id));
-                        
+
                         const update = {
-                        $set:{
-                            dayDate:day.toString(),
-                            monthDate:month.toString()
+                            $set: {
+                                dayDate: day.toString(),
+                                monthDate: month.toString()
                             }
                         };
-                        
-                        await this.userService.update(query,update);
+
+                        await this.userService.update(query, update);
                     }
                 } else {
                     continue;
@@ -1076,11 +1065,11 @@ export class AdminPointController {
         return res.status(200).send(ResponseUtil.getSuccessResponse('Migrate BirthDay Event is success.', undefined));
     }
 
-    private async pushNotificationExpiredMembership(data:any, token:any): Promise<any>{
-        if(token.length>0){
-            for(const content of token) {
-                if(content.token !== undefined && content.token !== null && content.token !== '') {
-                    await this.notificationService.pushNotificationMessageExpiredMemberShip(data,content.token);
+    private async pushNotificationExpiredMembership(data: any, token: any): Promise<any> {
+        if (token.length > 0) {
+            for (const content of token) {
+                if (content.token !== undefined && content.token !== null && content.token !== '') {
+                    await this.notificationService.pushNotificationMessageExpiredMemberShip(data, content.token);
                 } else {
                     continue;
                 }
@@ -1088,11 +1077,11 @@ export class AdminPointController {
         }
     }
 
-    private async pushNotificationBirthDay(data:any, token:any): Promise<any>{
-        if(token.length>0){
-            for(const content of token) {
-                if(content.token !== undefined && content.token !== null && content.token !== ''){
-                    await this.notificationService.pushNotificationMessageBirthDay(data,content.token);
+    private async pushNotificationBirthDay(data: any, token: any): Promise<any> {
+        if (token.length > 0) {
+            for (const content of token) {
+                if (content.token !== undefined && content.token !== null && content.token !== '') {
+                    await this.notificationService.pushNotificationMessageBirthDay(data, content.token);
                 } else {
                     continue;
                 }
