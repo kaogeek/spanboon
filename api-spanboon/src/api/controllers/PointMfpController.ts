@@ -589,7 +589,7 @@ export class NotificationController {
             's3ImageURL': userObj !== undefined && userObj.length > 0 ? userObj[0].s3ImageURL : undefined,
             'userId': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? userObj[0].userId[0] : null,
             'providerName': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? userObj[0].providerName[0] : null,
-            'identificationNumber': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? 'XXXX-' + userObj[0].identificationNumber[0].slice(4, userObj[0].identificationNumber.length) : null,
+            'identificationNumber': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? 'XXXX-' + userObj[0].identificationNumber[0].slice(4, userObj[0].identificationNumber[0].length) : null,
             'mfpSerial': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? userObj[0].mfpSerial[0] : null
         };
 

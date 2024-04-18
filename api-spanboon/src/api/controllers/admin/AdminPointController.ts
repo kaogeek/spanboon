@@ -412,6 +412,10 @@ export class AdminPointController {
         }
 
         const convertPoint = Math.ceil(productRequest.point);
+        if(convertPoint < 0){
+            const errorResponse = ResponseUtil.getErrorResponse('Point is less than 0.', undefined);
+            return res.status(400).send(errorResponse);
+        }
 
         const signUrl = productRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(productRequest.s3CoverPageURL) : undefined;
 

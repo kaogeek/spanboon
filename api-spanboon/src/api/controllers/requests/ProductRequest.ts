@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { IsNotEmpty, IsPositive, IsArray, IsString } from 'class-validator';
+import { IsNotEmpty, IsPositive, IsArray, IsString, IsInt } from 'class-validator';
 
 export class ProductRequest {
 
@@ -11,7 +11,6 @@ export class ProductRequest {
     @IsString()
     public title: string;
     @IsNotEmpty({ message: 'point is required' })
-    @IsPositive({ message: 'value is not Positive number' })
     public point: number;
 
     @IsNotEmpty({ message: 'maximumLimit is required' })
