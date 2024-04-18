@@ -150,3 +150,12 @@ export const BIRTHDAY_NOTIFICATION_SYSTEM = 'birthday.notification.system';
 
 export const DEFAULT_PUSH_NOTI_EXPIRATION_MEMBERSHIP = 7;
 export const PUSH_NOTI_EXPIRATION_MEMBERSHIP ='push.noti.expiration.membership';
+
+export const DEFAULT_FIRST_LOGIN = 2;
+export const FIRST_LOGIN = 'first.login.point';
+
+export const DEFAULT_VOTE_SCORE = 2;
+export const VOTE_SCORE = 'vote.score';
+
+export const DEFAULT_BIRTHDAY = 50;
+export const BIRTHDAY = 'birthday.event';

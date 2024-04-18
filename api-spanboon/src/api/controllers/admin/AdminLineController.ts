@@ -1006,9 +1006,8 @@ export class AdminPointController {
                 if(content.birthdate !== undefined ) {
                     const dateTimeStamp = Date.parse(content.birthdate);
                     const date = new Date(dateTimeStamp);
-                    // const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
+                    const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
                     if(typeof(content.birthdate) === 'object'){
-                        /*
                         // year-month-days
                         // 2023-03-11
                         const timeStampMonth = new Date(date.getTime()).toLocaleDateString('th-TH', {
@@ -1021,6 +1020,15 @@ export class AdminPointController {
                         const timeStampDay = new Date(date.getTime() - oneDay).toLocaleDateString('th-TH', {
                             day: 'numeric'
                         });
+                                            
+                        if(parseInt(timeStampDay,10) === 30) {
+                            continue;
+                        }
+
+                        if(parseInt(timeStampDay,10) === 31) {
+                            continue;
+                        }
+                        
                         let dayObj:any = timeStampDay; 
                         
                         if(dayObj<10) { dayObj='0'+dayObj;}
@@ -1039,8 +1047,6 @@ export class AdminPointController {
                         };
                         
                         await this.userService.update(query,update);
-                        */
-                       continue;
                     } else {
                         let month:any = date.getMonth() + 1;
                         let day:any = date.getDate(); 

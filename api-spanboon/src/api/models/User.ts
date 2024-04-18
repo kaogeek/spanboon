@@ -88,10 +88,10 @@ export class User extends BaseModel {
     public birthdate: Date;
 
     @Column({ name: 'monthDate'})
-    public monthDate: string;
+    public monthDate: number;
 
     @Column({ name: 'dayDate'})
-    public dayDate: string;
+    public dayDate: number;
 
     @Column({ name: 'imageURL' })
     public imageURL: string;

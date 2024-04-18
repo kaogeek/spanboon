@@ -49,6 +49,20 @@ import axios from 'axios';
 import qs from 'qs';
 import * as bcrypt from 'bcrypt';
 import { S3Service } from '../services/S3Service';
+import { UserEngagement } from '../models/UserEngagement';
+import { UserEngagementService } from '../services/UserEngagementService';
+import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
+import { PointStatementModel } from '../models/PointStatementModel';
+import { PointStatementService } from '../services/PointStatementService';
+import { AccumulateModel } from '../models/AccumulatePointModel';
+import { AccumulateService } from '../services/AccumulateService';
+import {
+    DEFAULT_FIRST_LOGIN,
+    FIRST_LOGIN,
+    DEFAULT_BIRTHDAY,
+    BIRTHDAY,
+} from '../../constants/SystemConfig';
+import { DateTimeUtil } from '../../utils/DateTimeUtil';
 @JsonController()
 export class GuestController {
     constructor(
@@ -65,6 +79,9 @@ export class GuestController {
         private deviceToken: DeviceTokenService,
         private otpService: OtpService,
         private s3Service: S3Service,
+        private userEngagementService:UserEngagementService,
+        private pointStatementService:PointStatementService,
+        private accumulateService:AccumulateService
     ) { }
 
     @Get('/register/date')
@@ -1373,7 +1390,6 @@ export class GuestController {
                     }
                 }
             );
-            console.log('getMembershipById',getMembershipById);
         }
         if (loginUser === undefined) {
             const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
@@ -1402,6 +1418,61 @@ export class GuestController {
             identification: getMembershipById ? getMembershipById.data.data.identification_number.slice(0, getMembershipById.data.data.identification_number.length - 4) + 'XXXX' : undefined,
             mobile: getMembershipById ? getMembershipById.data.data.mobile_number.slice(0, getMembershipById.data.data.mobile_number.length - 4) + 'XXXX' : undefined,
         };
+        const loginEngage = await this.userEngagementService.findOne(
+            {
+                action:ENGAGEMENT_ACTION.FIRST_LOGIN,
+                contentType:ENGAGEMENT_CONTENT_TYPE.LOGIN,
+                userId: loginUser
+            }
+        );
+        if(loginEngage === undefined) {
+            const clientId = req.headers['client-id'];
+            const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
+            const userEngagement = new UserEngagement();
+            userEngagement.clientId = clientId;
+            userEngagement.contentId = null;
+            userEngagement.contentType = ENGAGEMENT_CONTENT_TYPE.LOGIN;
+            userEngagement.ip = ipAddress;
+            userEngagement.userId = loginUser;
+            userEngagement.action = ENGAGEMENT_ACTION.FIRST_LOGIN;
+            const createEngagement = await this.userEngagementService.create(userEngagement);
+            let firstLogin = DEFAULT_FIRST_LOGIN;
+            const firstLoginPoint = await this.configService.getConfig(FIRST_LOGIN);
+            if (firstLoginPoint) {
+                firstLogin = parseInt(firstLoginPoint.value, 10);
+            }
+            // FIRST_LOGIN
+            if(createEngagement){
+                const productModel = new PointStatementModel();
+                productModel.title = ENGAGEMENT_CONTENT_TYPE.LOGIN;
+                productModel.detail = null;
+                productModel.point = firstLogin;
+                productModel.type = ENGAGEMENT_ACTION.FIRST_LOGIN;
+                productModel.userId = loginUser.id;
+                productModel.pointEventId = null;
+                const createPoint = await this.pointStatementService.create(productModel);
+                if(createPoint) {
+                    const accumulateCreate = await this.accumulateService.findOne({ userId: loginUser.id });
+                    if (accumulateCreate === undefined) {
+                        const accumulateModel = new AccumulateModel();
+                        accumulateModel.userId = loginUser.id;
+                        accumulateModel.accumulatePoint = firstLogin;
+                        accumulateModel.usedPoint = 0;
+                        await this.accumulateService.create(accumulateModel);
+                    } else {
+                        const query = { userId: loginUser.id };
+                        const newValues = {
+                            $set:
+                            {
+                                accumulatePoint: accumulateCreate.accumulatePoint + firstLogin
+                            }
+                        };
+                        await this.accumulateService.update(query, newValues);
+                    }
+                }
+            }
+        }
+
         const result = { token: loginToken, user: loginUser };
 
         const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
@@ -3250,7 +3321,8 @@ export class GuestController {
                         expirationDate_law_expired:getMembershipById.data.data.law_expired_at,
                         membershipState:getMembershipById.data.data.state,
                         membershipType:getMembershipById.data.data.membershipType,
-                        mobileNumber:getMembershipById.data.data.mobile_number
+                        mobileNumber:getMembershipById.data.data.mobile_number,
+                        mfpSerial : getMembershipById.data.data.serial
                     }
                 }
             );
@@ -3271,7 +3343,83 @@ export class GuestController {
             state: getMembershipById ? getMembershipById.data.data.state : undefined,
             identification: getMembershipById ? getMembershipById.data.data.identification_number.slice(0, getMembershipById.data.data.identification_number.length - 4) + 'XXXX' : undefined,
             mobile: getMembershipById ? getMembershipById.data.data.mobile_number.slice(0, getMembershipById.data.data.mobile_number.length - 4) + 'XXXX' : undefined,
+            serial: getMembershipById ? getMembershipById.data.data.serial : undefined,
         };
+        const birthDay = await this.birthDayEvent(user.id);
+        const pointStatementYear = await this.pointStatementService.findOne(
+            {
+                type:'BIRTHDAY',
+                userId:user.id,
+                years:today.getFullYear()
+            }
+        );
+        if(birthDay === true && pointStatementYear === undefined) {
+            const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 2);
+            const pointStatementBirthday = await this.pointStatementService.aggregate(
+                [
+                    {
+                        $match:{
+                            title:'BIRTHDAY',
+                            type:'BIRTHDAY',
+                            userId: new ObjectID(user.id),
+                            createdDate:{$gte:monthRange[1],$lte:today}
+                        }
+                    },
+                    {
+                        $limit:1
+                    }
+                ]
+            );
+
+            if(pointStatementBirthday.length === 0){
+                const clientId = request.headers['client-id'];
+                const ipAddress = (request.headers['x-forwarded-for'] || request.connection.remoteAddress || request.socket.remoteAddress || request.connection.socket.remoteAddress).split(',')[0];
+                const userEngagement = new UserEngagement();
+                userEngagement.clientId = clientId;
+                userEngagement.contentId = null;
+                userEngagement.contentType = ENGAGEMENT_CONTENT_TYPE.BIRTHDAY;
+                userEngagement.ip = ipAddress;
+                userEngagement.userId = user.id;
+                userEngagement.action = ENGAGEMENT_ACTION.BIRTHDAY;
+                const createEngagement = await this.userEngagementService.create(userEngagement);
+                let birthDayValue = DEFAULT_BIRTHDAY;
+                const birthDayConfig = await this.configService.getConfig(BIRTHDAY);
+                if (birthDayConfig) {
+                    birthDayValue = parseInt(birthDayConfig.value, 10);
+                }
+                // FIRST_LOGIN
+                if(createEngagement){
+                    const productModel = new PointStatementModel();
+                    productModel.title = ENGAGEMENT_CONTENT_TYPE.BIRTHDAY + ' ' + today.getFullYear();
+                    productModel.detail = null;
+                    productModel.point = birthDayValue;
+                    productModel.type = ENGAGEMENT_ACTION.BIRTHDAY;
+                    productModel.userId = user.id;
+                    productModel.pointEventId = null;
+                    productModel.years = today.getFullYear();
+                    const createPoint = await this.pointStatementService.create(productModel);
+                    if(createPoint) {
+                        const accumulateCreate = await this.accumulateService.findOne({ userId: user.id });
+                        if (accumulateCreate === undefined) {
+                            const accumulateModel = new AccumulateModel();
+                            accumulateModel.userId = user.id;
+                            accumulateModel.accumulatePoint = birthDayValue;
+                            accumulateModel.usedPoint = 0;
+                            await this.accumulateService.create(accumulateModel);
+                        } else {
+                            const query = { userId: user.id };
+                            const newValues = {
+                                $set:
+                                {
+                                    accumulatePoint: accumulateCreate.accumulatePoint + birthDayValue
+                                }
+                            };
+                            await this.accumulateService.update(query, newValues);
+                        }
+                    }
+                }
+            }
+        }
 
         delete user.fbUserId;
         delete user.fbToken;
@@ -3292,6 +3440,26 @@ export class GuestController {
         const successResponse: any = { status: 1, message: 'Account was valid.', data: { user, token: tokenParam, mode: isMode } };
 
         return response.status(200).send(successResponse);
+    }
+
+    private async birthDayEvent(userId: string): Promise<boolean> {
+        const today = new Date();
+        const timeStampDay = new Date(today.getTime()).toLocaleDateString('th-TH', {
+            day: 'numeric',
+            month: 'numeric',
+        });
+        const splitTimeStamp = timeStampDay.split('/');
+        const user = await this.userService.findOne(
+            {
+                _id: new ObjectID(userId),
+                monthDate: parseInt(splitTimeStamp[1],10),
+                dayDate: parseInt(splitTimeStamp[0],10)
+            }
+        );
+        if(user !== undefined) {
+            return true;
+        }
+        return false;
     }
 
     private createBasePageUser(registerParam: CreateUserRequest): User {

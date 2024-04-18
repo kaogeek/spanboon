@@ -163,18 +163,20 @@ export class NotificationController {
                     }
                 }
                 const productPoint = await this.productService.findOne({ _id: new ObjectID(pointStatementRequest.productId) });
-
-                const userCouponModel = new UserCouponModel();
-                userCouponModel.userId = userObjId;
-                userCouponModel.active = false;
-                userCouponModel.flag = false;
-                userCouponModel.productId = productPoint.id;
-                userCouponModel.expireDate = productPoint.expiringDate;
-                userCouponModel.activeDate = null;
-                const createUserCoupon = await this.userCouponService.create(userCouponModel);
-                if (createUserCoupon) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Redeem coupon is success.', create);
-                    return res.status(200).send(successResponse);
+                const updatePointEvent = await this.productService.update({ _id: productPoint.id }, { $set: { receiverCoupon: productPoint.receiverCoupon + 1 } });
+                if(updatePointEvent){
+                    const userCouponModel = new UserCouponModel();
+                    userCouponModel.userId = userObjId;
+                    userCouponModel.active = false;
+                    userCouponModel.flag = false;
+                    userCouponModel.productId = productPoint.id;
+                    userCouponModel.expireDate = new Date(productPoint.expiringDate);
+                    userCouponModel.activeDate = null;
+                    const createUserCoupon = await this.userCouponService.create(userCouponModel);
+                    if (createUserCoupon) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Redeem coupon is success.', create);
+                        return res.status(200).send(successResponse);
+                    }
                 }
             }
         } else {
@@ -192,6 +194,11 @@ export class NotificationController {
         const userObjId = new ObjectID(req.user.id);
         const today = new Date();
         const productObj = await this.productService.findOne({ _id: new ObjectID(usedCouponRequest.productId) });
+        const pointStatement = await this.pointStatementService.findOne({type:'USE_COUPON',userId:userObjId,productId:productObj.id});
+        if(pointStatement !== undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been actived coupon.', undefined);
+            return res.status(400).send(errorResponse);
+        }
         const minute = today.getTime() + productObj.couponExpire * 60 * 60;
 
         if (today.getTime() > productObj.expiringDate.getTime()) {
@@ -231,12 +238,12 @@ export class NotificationController {
             const errorResponse = ResponseUtil.getErrorResponse('Counpon is not active.', undefined);
             return res.status(400).send(errorResponse);
         }
-
+        /*
         if (couponObj.activeDate !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been used coupon.', undefined);
             return res.status(400).send(errorResponse);
         }
-
+        */
         if (today.getTime() > couponObj.expireDate.getTime()) {
             const errorResponse = ResponseUtil.getErrorResponse('Coupon ExpireDate have been expiring.', undefined);
             return res.status(400).send(errorResponse);
@@ -265,29 +272,11 @@ export class NotificationController {
             productModel.pointEventId = null;
             const create = await this.pointStatementService.create(productModel);
             if (create) {
-                try {
-                    const updateProduct = await this.productService.update({ _id: productObj.id }, { $set: { receiverCoupon: productObj.receiverCoupon + 1 } });
-                    if (updateProduct) {
-                        const successResponse = ResponseUtil.getSuccessResponse('Redeem coupon is success.', undefined);
-                        return res.status(200).send(successResponse);
-                    } else {
-                        const updateReverse = await this.userCouponService.update({ userId: userObjId, productId: productObj.id },
-                            {
-                                $set: {
-                                    active: false,
-                                    activeDate: null
-                                }
-                            }
-                        );
-                        if (updateReverse) {
-                            const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', undefined);
-                            return res.status(400).send(errorResponse);
-                        }
-                    }
-                } catch (error) {
-                    const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', error);
-                    return res.status(400).send(errorResponse);
-                }
+                const successResponse = ResponseUtil.getSuccessResponse('Redeem coupon is success.', undefined);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', undefined);
+                return res.status(400).send(errorResponse);
             }
         }
     }
@@ -321,8 +310,22 @@ export class NotificationController {
 
     @Get('/product/:id')
     public async getProductObj(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.headers.userid);
         const productObjId = new ObjectID(id);
         const productObj = await this.productService.findOne({ _id: productObjId });
+        const pointStatementCoupon = await this.pointStatementService.findOne(
+            {   
+                type:'USE_COUPON',
+                userId:userObjId,productId:productObj.id
+            }
+        );
+        const pointStatementRedeem = await this.pointStatementService.findOne(
+            {
+                type:'REDEEM',
+                userId:userObjId,
+                productId:productObj.id
+            }
+        );
         const result: any = {};
         result.id = productObj.id;
         result.createdDate = productObj.createdDate;
@@ -341,6 +344,8 @@ export class NotificationController {
         result.activeDate = productObj.activeDate;
         result.receiverCoupon = productObj.receiverCoupon;
         result.couponExpire = productObj.couponExpire;
+        result.useCoupon = pointStatementCoupon !== undefined ? true : false; // ใช้ coupon หรือยัง
+        result.redeemCoupon = pointStatementRedeem !== undefined ? true : false; // มี coupon หรือไม่
         if (result) {
             const successResponse = ResponseUtil.getSuccessResponse('Get Product is success.', { 'productDetail': result });
             return res.status(200).send(successResponse);
@@ -516,7 +521,8 @@ export class NotificationController {
                                 $project: {
                                     user: 1,
                                     providerName: 1,
-                                    properties: 1
+                                    properties: 1,
+                                    mfpSerial:1
                                 }
                             }
                         ],
@@ -524,13 +530,11 @@ export class NotificationController {
                     }
                 },
                 {
-                    $unwind: '$authenticationId'
-                },
-                {
                     '$addFields': {
                         'userId': '$authenticationId.user',
                         'providerName': '$authenticationId.providerName',
-                        'identificationNumber': '$authenticationId.properties.identification_number'
+                        'identificationNumber': '$authenticationId.properties.identification_number',
+                        'mfpSerial': '$authenticationId.mfpSerial'
                     }
                 },
                 {
@@ -544,8 +548,10 @@ export class NotificationController {
                         imageURL: 1,
                         s3ImageURL: 1,
                         userId: 1,
+                        authenticationId:1,
                         providerName: 1,
-                        identificationNumber: 1
+                        identificationNumber: 1,
+                        mfpSerial:1
                     }
                 }
             ]
@@ -559,9 +565,10 @@ export class NotificationController {
             'birthdate': userObj !== undefined && userObj.length > 0 ? userObj[0].birthdate : undefined,
             'imageURL': userObj !== undefined && userObj.length > 0 ? userObj[0].imageURL : undefined,
             's3ImageURL': userObj !== undefined && userObj.length > 0 ? userObj[0].s3ImageURL : undefined,
-            'userId': userObj !== undefined && userObj.length > 0 ? userObj[0].userId : undefined,
-            'providerName': userObj !== undefined && userObj.length > 0 ? userObj[0].providerName : undefined,
-            'identificationNumber': userObj !== undefined && userObj.length > 0 ? 'XXXX-' + userObj[0].identificationNumber.slice(4, userObj[0].identificationNumber.length) : undefined,
+            'userId': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? userObj[0].userId[0] : null,
+            'providerName': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? userObj[0].providerName[0] : null,
+            'identificationNumber': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? 'XXXX-' + userObj[0].identificationNumber[0].slice(4, userObj[0].identificationNumber.length) : null,
+            'mfpSerial': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? userObj[0].mfpSerial[0] : null
         };
 
         const result = {

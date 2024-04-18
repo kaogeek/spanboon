@@ -160,8 +160,8 @@ export class AdminPointController {
             $set: {
                 username: user.username,
                 active: adminActiveCouponRequest.active,
-                expireDate: adminActiveCouponRequest.expireDate,
-                activeDate: adminActiveCouponRequest.activeDate
+                expireDate: new Date(adminActiveCouponRequest.expireDate),
+                activeDate: new Date(adminActiveCouponRequest.activeDate)
             }
         };
         const update = await this.userCouponService.update(query, newValues);

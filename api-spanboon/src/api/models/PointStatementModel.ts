@@ -58,6 +58,9 @@ export class PointStatementModel extends BaseModel {
     @Column({ name: 'adminName'})
     public adminName: ObjectID;
 
+    @Column({ name: 'years'})
+    public years: any;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

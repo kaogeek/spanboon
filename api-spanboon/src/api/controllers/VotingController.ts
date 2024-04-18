@@ -30,6 +30,13 @@ import { S3Service } from '../services/S3Service';
 import axios from 'axios';
 import qs from 'qs';
 import * as path from 'path';
+import { UserEngagement } from '../models/UserEngagement';
+import { UserEngagementService } from '../services/UserEngagementService';
+import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
+import { PointStatementModel } from '../models/PointStatementModel';
+import { PointStatementService } from '../services/PointStatementService';
+import { AccumulateModel } from '../models/AccumulatePointModel';
+import { AccumulateService } from '../services/AccumulateService';
 import {
     DEFAULT_MIN_SUPPORT,
     MIN_SUPPORT,
@@ -49,7 +56,9 @@ import {
     MAX_VOTE_CHOICES,
     DEFAULT_MAX_VOTE_QUESTIONS,
     MAX_VOTE_QUESTIONS,
-    PRIVILEGES
+    PRIVILEGES,
+    DEFAULT_VOTE_SCORE,
+    VOTE_SCORE
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -81,6 +90,9 @@ export class VotingController {
         private inviteVoteService: InviteVoteService,
         private hashTagService: HashTagService,
         private s3Service: S3Service,
+        private userEngagementService:UserEngagementService,
+        private pointStatementService:PointStatementService,
+        private accumulateService:AccumulateService
         // private retrieveVoteService: RetrieveVoteService
     ) { }
 
@@ -6532,7 +6544,51 @@ export class VotingController {
 
             }
             // check spam vote
-
+            const clientId = req.headers['client-id'];
+            const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
+            const userEngagement = new UserEngagement();
+            userEngagement.clientId = clientId;
+            userEngagement.contentId = null;
+            userEngagement.contentType = ENGAGEMENT_CONTENT_TYPE.VOTE;
+            userEngagement.ip = ipAddress;
+            userEngagement.userId = userObjId;
+            userEngagement.action = ENGAGEMENT_ACTION.VOTE;
+            const createEngagement = await this.userEngagementService.create(userEngagement);
+            let votePoint = DEFAULT_VOTE_SCORE;
+            const votePointConfig = await this.configService.getConfig(VOTE_SCORE);
+            if (votePointConfig) {
+                votePoint = parseInt(votePointConfig.value, 10);
+            }
+            // FIRST_LOGIN
+            if(createEngagement){
+                const productModel = new PointStatementModel();
+                productModel.title = ENGAGEMENT_CONTENT_TYPE.VOTE;
+                productModel.detail = null;
+                productModel.point = votePoint;
+                productModel.type = ENGAGEMENT_ACTION.VOTE;
+                productModel.userId = userObjId;
+                productModel.pointEventId = null;
+                const createPoint = await this.pointStatementService.create(productModel);
+                if(createPoint) {
+                    const accumulateCreate = await this.accumulateService.findOne({ userId: userObjId });
+                    if (accumulateCreate === undefined) {
+                        const accumulateModel = new AccumulateModel();
+                        accumulateModel.userId = userObjId;
+                        accumulateModel.accumulatePoint = votePoint;
+                        accumulateModel.usedPoint = 0;
+                        await this.accumulateService.create(accumulateModel);
+                    } else {
+                        const query = { userId: userObjId };
+                        const newValues = {
+                            $set:
+                            {
+                                accumulatePoint: accumulateCreate.accumulatePoint + votePoint
+                            }
+                        };
+                        await this.accumulateService.update(query, newValues);
+                    }
+                }
+            }
             if (response.length > 0 && response !== undefined) {
                 const successResponse = ResponseUtil.getSuccessResponse('Create vote is success.', response);
                 return res.status(200).send(successResponse);
