@@ -163,7 +163,20 @@ export class NotificationController {
                         return res.status(400).send(errorResponse);
                     }
                 }
+                const today = new Date();
+                
                 const productPoint = await this.productService.findOne({ _id: new ObjectID(pointStatementRequest.productId) });
+
+                if (today.getTime() > productPoint.expiringDate.getTime()) {
+                    const errorResponse = ResponseUtil.getErrorResponse('The product had been expiring.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+        
+                if (productPoint.maximumLimit === productPoint.receiverCoupon) {
+                    const errorResponse = ResponseUtil.getErrorResponse('The product is out of store.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
                 const updatePointEvent = await this.productService.update({ _id: productPoint.id }, { $set: { receiverCoupon: productPoint.receiverCoupon + 1 } });
                 const query = { userId: userObjId };
                 const newValues = {
@@ -619,6 +632,7 @@ export class NotificationController {
                             },
                             {
                                 $match: {
+                                    type: { $ne : POINT_TYPE.USE_COUPON},
                                     productId: { $ne: null },
                                     userId: userObjId
                                 }
