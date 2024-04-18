@@ -936,7 +936,8 @@ export class NotificationController {
             [
                 {
                     $match: {
-                        userId: userObjId
+                        userId: userObjId,
+                        activeDate: null
                     }
                 },
                 {
