@@ -932,12 +932,14 @@ export class NotificationController {
                 }
             ]
         );
+        const today = new Date();
         const userCouponCount = await this.userCouponService.aggregate(
             [
                 {
                     $match: {
                         userId: userObjId,
-                        activeDate: null
+                        activeDate: null,
+                        expireDate: {$gte:today}
                     }
                 },
                 {
