@@ -167,7 +167,7 @@ export class NotificationController {
                 if(updatePointEvent){
                     const userCouponModel = new UserCouponModel();
                     userCouponModel.userId = userObjId;
-                    userCouponModel.active = false;
+                    // userCouponModel.active = false;
                     userCouponModel.flag = false;
                     userCouponModel.productId = productPoint.id;
                     userCouponModel.expireDate = new Date(productPoint.expiringDate);
@@ -233,12 +233,11 @@ export class NotificationController {
             const errorResponse = ResponseUtil.getErrorResponse('Product id is undefined.', undefined);
             return res.status(400).send(errorResponse);
         }
-
+        /*
         if (couponObj.active !== true) {
-            const errorResponse = ResponseUtil.getErrorResponse('Counpon is not active.', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('Coupon is not active.', undefined);
             return res.status(400).send(errorResponse);
         }
-        /*
         if (couponObj.activeDate !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been used coupon.', undefined);
             return res.status(400).send(errorResponse);
