@@ -3,6 +3,7 @@ import { JsonController, Res, Post, Req, Body, Authorized, Get, QueryParam, Para
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { PointStatementRequest } from './requests/PointStatementRequest';
 import { PointLimitOffsetRequest } from './requests/PointLimitOffsetRequest';
+import { PointAccumulateRequest } from './requests/PointAccumulateRequest';
 import { UsedCouponRequest } from './requests/UsedCouponRequest';
 import { ObjectID } from 'mongodb';
 import { PointStatementModel } from '../models/PointStatementModel';
@@ -286,13 +287,13 @@ export class NotificationController {
             const updateCouponExpire = await this.userCouponService.update(query, newValues);
             const expireCoupon = await this.pointStatementService.findOne(
                 {
-                    userId:userObjId,
-                    type:POINT_TYPE.COUPON_EXPIRED,
-                    productId:productObj.id
+                    userId: userObjId,
+                    type: POINT_TYPE.COUPON_EXPIRED,
+                    productId: productObj.id
                 }
             );
-            if(expireCoupon === undefined) {
-                if(updateCouponExpire){
+            if (expireCoupon === undefined) {
+                if (updateCouponExpire) {
                     productModel.title = 'The Coupon has expired.';
                     productModel.detail = null;
                     productModel.point = productObj.point;
@@ -429,12 +430,12 @@ export class NotificationController {
     @Post('/accumulate/search')
     @Authorized('user')
     public async getAccumulate(
-        @Body({ validate: true }) pointLimitOffsetRequest: PointLimitOffsetRequest,
+        @Body({ validate: true }) pointAccumulateRequest: PointAccumulateRequest,
         @Res() res: any,
         @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
-        const take = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.limit : 10;
-        const skips = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.offset : 0;
+        const take = pointAccumulateRequest !== undefined ? pointAccumulateRequest.limit : 10;
+        const skips = pointAccumulateRequest !== undefined ? pointAccumulateRequest.offset : 0;
         const accumulateAggr = await this.accumulateService.aggregate(
             [
                 {
