@@ -683,8 +683,6 @@ export class NotificationController {
         let activeDateCoupon = pointLimitOffsetRequest.whereConditions.activeDate;
         // { $ne: null }
         if(activeDateCoupon === 'not_null') { activeDateCoupon = {$ne:null}; }
-        console.log('activeCoupon',activeCoupon);
-        console.log('activeDateCoupon',activeDateCoupon);
         const userCoupon = await this.userCouponService.aggregate(
             [
                 {
