@@ -3,6 +3,7 @@ import { JsonController, Res, Post, Req, Body, Authorized, Get, QueryParam, Para
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { PointStatementRequest } from './requests/PointStatementRequest';
 import { PointLimitOffsetRequest } from './requests/PointLimitOffsetRequest';
+import { PointAccumulateRequest } from './requests/PointAccumulateRequest';
 import { UsedCouponRequest } from './requests/UsedCouponRequest';
 import { ObjectID } from 'mongodb';
 import { PointStatementModel } from '../models/PointStatementModel';
@@ -284,19 +285,15 @@ export class NotificationController {
             };
 
             const updateCouponExpire = await this.userCouponService.update(query, newValues);
-<<<<<<< HEAD
-            if (updateCouponExpire) {
-                const errorResponse = ResponseUtil.getErrorResponse('Coupon ExpireDate have been expiring.', undefined);
-=======
             const expireCoupon = await this.pointStatementService.findOne(
                 {
-                    userId:userObjId,
-                    type:POINT_TYPE.COUPON_EXPIRED,
-                    productId:productObj.id
+                    userId: userObjId,
+                    type: POINT_TYPE.COUPON_EXPIRED,
+                    productId: productObj.id
                 }
             );
-            if(expireCoupon === undefined) {
-                if(updateCouponExpire){
+            if (expireCoupon === undefined) {
+                if (updateCouponExpire) {
                     productModel.title = 'The Coupon has expired.';
                     productModel.detail = null;
                     productModel.point = productObj.point;
@@ -312,7 +309,6 @@ export class NotificationController {
                 }
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('The Coupon has expired.', undefined);
->>>>>>> ae78a1788c838b660e60023ea01632c982f57988
                 return res.status(400).send(errorResponse);
             }
         }
@@ -324,13 +320,8 @@ export class NotificationController {
         newValues = {
             $set:
             {
-<<<<<<< HEAD
                 active: true,
-                activeDate: null
-=======
-                active:true,
                 activeDate: today
->>>>>>> ae78a1788c838b660e60023ea01632c982f57988
             }
         };
 
@@ -439,12 +430,12 @@ export class NotificationController {
     @Post('/accumulate/search')
     @Authorized('user')
     public async getAccumulate(
-        @Body({ validate: true }) pointLimitOffsetRequest: PointLimitOffsetRequest,
+        @Body({ validate: true }) pointAccumulateRequest: PointAccumulateRequest,
         @Res() res: any,
         @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
-        const take = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.limit : 10;
-        const skips = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.offset : 0;
+        const take = pointAccumulateRequest !== undefined ? pointAccumulateRequest.limit : 10;
+        const skips = pointAccumulateRequest !== undefined ? pointAccumulateRequest.offset : 0;
         const accumulateAggr = await this.accumulateService.aggregate(
             [
                 {
@@ -692,9 +683,9 @@ export class NotificationController {
         const activeCoupon = pointLimitOffsetRequest.whereConditions.active; // boolean true, false
         let activeDateCoupon = pointLimitOffsetRequest.whereConditions.activeDate;
         // { $ne: null }
-        if(activeDateCoupon === 'not_null') { activeDateCoupon = {$ne:null}; }
-        console.log('activeCoupon',activeCoupon);
-        console.log('activeDateCoupon',activeDateCoupon);
+        if (activeDateCoupon === 'not_null') { activeDateCoupon = { $ne: null }; }
+        console.log('activeCoupon', activeCoupon);
+        console.log('activeDateCoupon', activeDateCoupon);
         const userCoupon = await this.userCouponService.aggregate(
             [
                 {
