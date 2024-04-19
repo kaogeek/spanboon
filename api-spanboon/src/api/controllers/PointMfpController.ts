@@ -49,7 +49,7 @@ export class NotificationController {
             const errorResponse = ResponseUtil.getErrorResponse('Not found the user.', undefined);
             return res.status(400).send(errorResponse);
         }
-        if (pointStatementRequest.type === 'RECEIVE_POINT') {
+        if (pointStatementRequest.type === POINT_TYPE.RECEIVE) {
             const pointStateMentuser = await this.pointStatementService.findOne(
                 {
                     pointEventId: new ObjectID(pointStatementRequest.pointEventId),
@@ -62,7 +62,7 @@ export class NotificationController {
             }
         }
 
-        if (pointStatementRequest.type === 'REDEEM') {
+        if (pointStatementRequest.type === POINT_TYPE.REDEEM) {
             const productStatenebt = await this.pointStatementService.findOne(
                 {
                     productId: new ObjectID(pointStatementRequest.productId),
@@ -74,7 +74,7 @@ export class NotificationController {
             }
         }
 
-        if (pointStatementRequest.type === 'RECEIVE_POINT' &&
+        if (pointStatementRequest.type === POINT_TYPE.RECEIVE &&
             pointStatementRequest.pointEventId === undefined &&
             pointStatementRequest.pointEventId === null &&
             pointStatementRequest.pointEventId === ''
@@ -83,7 +83,7 @@ export class NotificationController {
             return res.status(400).send(errorResponse);
         }
 
-        if (pointStatementRequest.type === 'REDEEM' &&
+        if (pointStatementRequest.type === POINT_TYPE.REDEEM &&
             pointStatementRequest.productId === undefined &&
             pointStatementRequest.productId === null &&
             pointStatementRequest.productId === ''
@@ -94,7 +94,7 @@ export class NotificationController {
 
         const productModel = new PointStatementModel();
 
-        if (pointStatementRequest.type === 'REDEEM') {
+        if (pointStatementRequest.type === POINT_TYPE.REDEEM) {
             productModel.title = pointStatementRequest.title;
             productModel.detail = pointStatementRequest.detail;
             productModel.point = pointStatementRequest.point;
@@ -103,7 +103,7 @@ export class NotificationController {
             productModel.productId = new ObjectID(pointStatementRequest.productId);
         }
 
-        if (pointStatementRequest.type === 'RECEIVE_POINT') {
+        if (pointStatementRequest.type === POINT_TYPE.RECEIVE) {
             productModel.title = pointStatementRequest.title;
             productModel.detail = pointStatementRequest.detail;
             productModel.point = pointStatementRequest.point;
@@ -127,7 +127,7 @@ export class NotificationController {
                 }
             }
 
-            if (accumulateCreate !== undefined && pointStatementRequest.type === 'RECEIVE_POINT') {
+            if (accumulateCreate !== undefined && pointStatementRequest.type === POINT_TYPE.RECEIVE) {
                 const pointEventObjId = new ObjectID(pointStatementRequest.pointEventId);
                 const pointEvent = await this.pointEventService.findOne({ _id: pointEventObjId });
 
@@ -155,7 +155,7 @@ export class NotificationController {
                     }
                 }
             }
-            if (accumulateCreate !== undefined && pointStatementRequest.type === 'REDEEM') {
+            if (accumulateCreate !== undefined && pointStatementRequest.type === POINT_TYPE.REDEEM) {
                 if (accumulateCreate.accumulatePoint < pointStatementRequest.point) {
                     const errorResponse = ResponseUtil.getErrorResponse('The point you have got is not enough.', undefined);
                     const deletePointStatement = await this.pointStatementService.delete({ _id: create.id, userId: userObjId });
@@ -164,14 +164,14 @@ export class NotificationController {
                     }
                 }
                 const today = new Date();
-                
+
                 const productPoint = await this.productService.findOne({ _id: new ObjectID(pointStatementRequest.productId) });
 
                 if (today.getTime() > productPoint.expiringDate.getTime()) {
                     const errorResponse = ResponseUtil.getErrorResponse('The product had been expiring.', undefined);
                     return res.status(400).send(errorResponse);
                 }
-        
+
                 if (productPoint.maximumLimit === productPoint.receiverCoupon) {
                     const errorResponse = ResponseUtil.getErrorResponse('The product is out of store.', undefined);
                     return res.status(400).send(errorResponse);
@@ -187,7 +187,7 @@ export class NotificationController {
                     }
                 };
                 await this.accumulateService.update(query, newValues);
-                if(updatePointEvent){
+                if (updatePointEvent) {
                     const userCouponModel = new UserCouponModel();
                     userCouponModel.userId = userObjId;
                     userCouponModel.active = false;
@@ -217,10 +217,10 @@ export class NotificationController {
         const userObjId = new ObjectID(req.user.id);
         const today = new Date();
         const productObj = await this.productService.findOne({ _id: new ObjectID(usedCouponRequest.productId) });
-        const pointStatement = await this.pointStatementService.findOne({type:'USE_COUPON',userId:userObjId,productId:productObj.id});
-        let query:any;
-        let newValues:any;
-        if(pointStatement !== undefined) {
+        const pointStatement = await this.pointStatementService.findOne({ type: 'USE_COUPON', userId: userObjId, productId: productObj.id });
+        let query: any;
+        let newValues: any;
+        if (pointStatement !== undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been actived coupon.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -278,11 +278,11 @@ export class NotificationController {
             newValues = {
                 $set:
                 {
-                    active:false,
+                    active: false,
                     activeDate: today
                 }
             };
-    
+
             const updateCouponExpire = await this.userCouponService.update(query, newValues);
             const expireCoupon = await this.pointStatementService.findOne(
                 {
@@ -350,9 +350,9 @@ export class NotificationController {
         const eventObjId = new ObjectID(id);
         const pointEventObj = await this.pointEventService.findOne({ _id: eventObjId });
         const pointStatementCoupon = await this.pointStatementService.findOne(
-            {   
-                type:'RECEIVE_POINT',
-                userId:userObjId,productId:pointEventObj.id
+            {
+                type: 'RECEIVE_POINT',
+                userId: userObjId, productId: pointEventObj.id
             }
         );
         const result: any = {};
@@ -385,16 +385,16 @@ export class NotificationController {
         const productObjId = new ObjectID(id);
         const productObj = await this.productService.findOne({ _id: productObjId });
         const pointStatementCoupon = await this.pointStatementService.findOne(
-            {   
-                type:'USE_COUPON',
-                userId:userObjId,productId:productObj.id
+            {
+                type: POINT_TYPE.USE_COUPON,
+                userId: userObjId, productId: productObj.id
             }
         );
         const pointStatementRedeem = await this.pointStatementService.findOne(
             {
-                type:'REDEEM',
-                userId:userObjId,
-                productId:productObj.id
+                type: POINT_TYPE.REDEEM,
+                userId: userObjId,
+                productId: productObj.id
             }
         );
         const result: any = {};
@@ -468,6 +468,11 @@ export class NotificationController {
                                     $expr: {
                                         $eq: ['$$userId', '$userId']
                                     }
+                                },
+                            },
+                            {
+                                $match: {
+                                    type: { $ne: POINT_TYPE.USE_COUPON },
                                 }
                             },
                             {
@@ -499,7 +504,7 @@ export class NotificationController {
                             },
                             {
                                 $match: {
-                                    type: 'RECEIVE_POINT'
+                                    type: { $nin: [POINT_TYPE.REDEEM, POINT_TYPE.ADMIN_REDUCE, POINT_TYPE.USE_COUPON] }
                                 }
                             },
                             {
@@ -531,7 +536,7 @@ export class NotificationController {
                             },
                             {
                                 $match: {
-                                    type: 'REDEEM'
+                                    type: { $in: [POINT_TYPE.REDEEM, POINT_TYPE.ADMIN_REDUCE] }
                                 }
                             },
                             {
@@ -593,7 +598,7 @@ export class NotificationController {
                                     user: 1,
                                     providerName: 1,
                                     properties: 1,
-                                    mfpSerial:1
+                                    mfpSerial: 1
                                 }
                             }
                         ],
@@ -619,10 +624,10 @@ export class NotificationController {
                         imageURL: 1,
                         s3ImageURL: 1,
                         userId: 1,
-                        authenticationId:1,
+                        authenticationId: 1,
                         providerName: 1,
                         identificationNumber: 1,
-                        mfpSerial:1
+                        mfpSerial: 1
                     }
                 }
             ]
@@ -639,7 +644,7 @@ export class NotificationController {
             userId: ObjectID;
             providerName: string;
             identificationNumber: string;
-            mfpSerial:number
+            mfpSerial: number
         } = {
             '_id': userObj !== undefined && userObj.length > 0 ? userObj[0]._id : undefined,
             'firstName': userObj !== undefined && userObj.length > 0 ? userObj[0].firstName : undefined,
@@ -783,7 +788,7 @@ export class NotificationController {
                         productId: 1,
                         expireDate: 1,
                         activeDate: 1,
-                        active:1
+                        active: 1
                     }
                 },
                 {
@@ -1012,7 +1017,7 @@ export class NotificationController {
                     $match: {
                         userId: userObjId,
                         activeDate: null,
-                        expireDate: {$gte:today}
+                        expireDate: { $gte: today }
                     }
                 },
                 {
@@ -1024,8 +1029,8 @@ export class NotificationController {
         const pointEventsAggr = await this.pointEventService.aggregate(
             [
                 {
-                    $sort:{
-                        createdDate:-1
+                    $sort: {
+                        createdDate: -1
                     }
                 },
                 {
@@ -1050,29 +1055,29 @@ export class NotificationController {
         const categoryProductAggr = await this.productCategoryService.aggregate(
             [
                 {
-                    $match:{
-                        pin:true
+                    $match: {
+                        pin: true
                     }
                 },
                 {
-                    $lookup:{
-                        from:'Product',
-                        let:{id:'$_id'},
-                        pipeline:[
+                    $lookup: {
+                        from: 'Product',
+                        let: { id: '$_id' },
+                        pipeline: [
                             {
-                                $match:{
-                                    $expr:{
-                                        $eq:['$$id','$categoryId']
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$id', '$categoryId']
                                     }
                                 }
                             }
                         ],
-                        as:'product'
+                        as: 'product'
                     }
                 },
                 {
-                    $sort:{
-                        createdDate:-1
+                    $sort: {
+                        createdDate: -1
                     }
                 },
                 {
@@ -1083,10 +1088,10 @@ export class NotificationController {
                         assetId: 1,
                         coverPageURL: 1,
                         s3CoverPageURL: 1,
-                        product:{
-                            $cond:[
+                        product: {
+                            $cond: [
                                 {
-                                    $gt:[{$size: '$product'},0]
+                                    $gt: [{ $size: '$product' }, 0]
                                 },
                                 true,
                                 false
@@ -1095,8 +1100,8 @@ export class NotificationController {
                     }
                 },
                 {
-                    $match:{
-                        product:true
+                    $match: {
+                        product: true
                     }
                 }
             ]
@@ -1107,7 +1112,7 @@ export class NotificationController {
                 {
                     $match: {
                         _id: { $in: categoryId },
-                        pin:true,
+                        pin: true,
                     }
                 },
                 {
@@ -1153,8 +1158,8 @@ export class NotificationController {
                     }
                 },
                 {
-                    $sort:{
-                        createdDate:-1
+                    $sort: {
+                        createdDate: -1
                     }
                 }
             ]
