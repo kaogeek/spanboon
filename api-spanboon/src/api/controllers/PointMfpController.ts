@@ -16,6 +16,7 @@ import { PointEventService } from '../services/PointEventService';
 import { ProductService } from '../services/ProductService';
 import { UserService } from '../services/UserService';
 import { ProductCategoryService } from '../services/ProductCategoryService';
+import { ObjectId } from 'aws-sdk/clients/codecommit';
 
 // startVoteDatetime
 @JsonController('/point')
@@ -583,7 +584,20 @@ export class NotificationController {
                 }
             ]
         );
-        const decorateUser: any = {
+        const decorateUser: {
+            _id: ObjectID;
+            firstName: string;
+            lastName: string;
+            displayName: string;
+            uniqueId: string;
+            birthdate: Date;
+            imageURL: string;
+            s3ImageURL: string;
+            userId: ObjectID;
+            providerName: string;
+            identificationNumber: string;
+            mfpSerial:number
+        } = {
             '_id': userObj !== undefined && userObj.length > 0 ? userObj[0]._id : undefined,
             'firstName': userObj !== undefined && userObj.length > 0 ? userObj[0].firstName : undefined,
             'lastName': userObj !== undefined && userObj.length > 0 ? userObj[0].lastName : undefined,
