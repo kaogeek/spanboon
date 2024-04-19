@@ -3443,7 +3443,7 @@ export class GuestController {
         return response.status(200).send(successResponse);
     }
 
-    private async birthDayEvent(userId: string): Promise<boolean> {
+    private async birthDayEvent(userId: string | number): Promise<boolean> {
         const today = new Date();
         const timeStampDay = new Date(today.getTime()).toLocaleDateString('th-TH', {
             day: 'numeric',

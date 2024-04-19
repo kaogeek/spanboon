@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { IsNotEmpty, IsPositive, IsArray, IsString, IsInt } from 'class-validator';
+import { IsNotEmpty, IsPositive, IsArray, IsString } from 'class-validator';
 
 export class ProductRequest {
 
