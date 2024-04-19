@@ -46,4 +46,7 @@ export class ProductRequest {
 
     @IsNotEmpty({ message: 'couponExpire is required' })
     public couponExpire: number;
+
+    @IsNotEmpty({ message: 'pin is required' })
+    public pin: boolean;
 }

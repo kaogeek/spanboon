@@ -190,7 +190,7 @@ export class NotificationController {
                 if(updatePointEvent){
                     const userCouponModel = new UserCouponModel();
                     userCouponModel.userId = userObjId;
-                    // userCouponModel.active = false;
+                    userCouponModel.active = false;
                     userCouponModel.flag = false;
                     userCouponModel.productId = productPoint.id;
                     userCouponModel.expireDate = new Date(productPoint.expiringDate);
@@ -218,6 +218,8 @@ export class NotificationController {
         const today = new Date();
         const productObj = await this.productService.findOne({ _id: new ObjectID(usedCouponRequest.productId) });
         const pointStatement = await this.pointStatementService.findOne({type:'USE_COUPON',userId:userObjId,productId:productObj.id});
+        let query:any;
+        let newValues:any;
         if(pointStatement !== undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been actived coupon.', undefined);
             return res.status(400).send(errorResponse);
@@ -235,7 +237,7 @@ export class NotificationController {
         }
         if (productObj.couponExpire !== -1) {
             if (today.getTime() > minute) {
-                const errorResponse = ResponseUtil.getErrorResponse('The coupon was expire.', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('The product was expire.', undefined);
                 return res.status(400).send(errorResponse);
             }
         }
@@ -267,18 +269,34 @@ export class NotificationController {
         }
         */
         if (today.getTime() > couponObj.expireDate.getTime()) {
-            const errorResponse = ResponseUtil.getErrorResponse('Coupon ExpireDate have been expiring.', undefined);
-            return res.status(400).send(errorResponse);
+            query = {
+                userId: userObjId,
+                productId: productObj.id
+            };
+            newValues = {
+                $set:
+                {
+                    active:false,
+                    activeDate: today
+                }
+            };
+    
+            const updateCouponExpire = await this.userCouponService.update(query, newValues);
+            if(updateCouponExpire){
+                const errorResponse = ResponseUtil.getErrorResponse('Coupon ExpireDate have been expiring.', undefined);
+                return res.status(400).send(errorResponse);
+            }
         }
 
-        const query = {
+        query = {
             userId: userObjId,
             productId: productObj.id
         };
-        const newValues = {
+        newValues = {
             $set:
             {
-                activeDate: today
+                active:true,
+                activeDate: null
             }
         };
 
@@ -305,8 +323,15 @@ export class NotificationController {
 
     @Get('/event/:id')
     public async getEventObj(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.headers.userid);
         const eventObjId = new ObjectID(id);
         const pointEventObj = await this.pointEventService.findOne({ _id: eventObjId });
+        const pointStatementCoupon = await this.pointStatementService.findOne(
+            {   
+                type:'RECEIVE_POINT',
+                userId:userObjId,productId:pointEventObj.id
+            }
+        );
         const result: any = {};
         result.id = pointEventObj.id;
         result.createdDate = pointEventObj.createdDate;
@@ -321,6 +346,7 @@ export class NotificationController {
         result.link = pointEventObj.link;
         result.s3CoverPageURL = pointEventObj.s3CoverPageURL;
         result.receiver = pointEventObj.receiver;
+        result.eventActive = pointStatementCoupon !== undefined ? true : false; // รับแล้ว?
         if (result) {
             const successResponse = ResponseUtil.getSuccessResponse('Get PointEventObj is success.', { 'pointEventDetail': result });
             return res.status(200).send(successResponse);
@@ -624,11 +650,14 @@ export class NotificationController {
         const userObjId = new ObjectID(req.user.id);
         const take = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.limit : 10;
         const skips = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.offset : 0;
+        const typeCondition = pointLimitOffsetRequest.whereConditions.type;
+        const activeCoupon = pointLimitOffsetRequest.whereConditions.active; // boolean true, false
         const userCoupon = await this.userCouponService.aggregate(
             [
                 {
                     $match: {
-                        userId: userObjId
+                        userId: userObjId,
+                        active: activeCoupon
                     }
                 },
                 {
@@ -645,7 +674,7 @@ export class NotificationController {
                             },
                             {
                                 $match: {
-                                    type: { $ne : POINT_TYPE.USE_COUPON},
+                                    type: typeCondition,
                                     productId: { $ne: null },
                                     userId: userObjId
                                 }
@@ -656,7 +685,8 @@ export class NotificationController {
                                     title: 1,
                                     point: 1,
                                     productId: 1,
-                                    userId: 1
+                                    userId: 1,
+                                    type: 1
                                 }
                             },
                             {
@@ -723,7 +753,8 @@ export class NotificationController {
                         pointStatement: 1,
                         productId: 1,
                         expireDate: 1,
-                        activeDate: 1
+                        activeDate: 1,
+                        active:1
                     }
                 },
                 {
@@ -964,6 +995,11 @@ export class NotificationController {
         const pointEventsAggr = await this.pointEventService.aggregate(
             [
                 {
+                    $sort:{
+                        createdDate:-1
+                    }
+                },
+                {
                     $project: {
                         _id: 1,
                         createdDate: 1,
@@ -985,6 +1021,32 @@ export class NotificationController {
         const categoryProductAggr = await this.productCategoryService.aggregate(
             [
                 {
+                    $match:{
+                        pin:true
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'Product',
+                        let:{id:'$_id'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $eq:['$$id','$categoryId']
+                                    }
+                                }
+                            }
+                        ],
+                        as:'product'
+                    }
+                },
+                {
+                    $sort:{
+                        createdDate:-1
+                    }
+                },
+                {
                     $project: {
                         _id: 1,
                         createdDate: 1,
@@ -992,6 +1054,20 @@ export class NotificationController {
                         assetId: 1,
                         coverPageURL: 1,
                         s3CoverPageURL: 1,
+                        product:{
+                            $cond:[
+                                {
+                                    $gt:[{$size: '$product'},0]
+                                },
+                                true,
+                                false
+                            ]
+                        }
+                    }
+                },
+                {
+                    $match:{
+                        product:true
                     }
                 }
             ]
@@ -1001,7 +1077,8 @@ export class NotificationController {
             [
                 {
                     $match: {
-                        _id: { $in: categoryId }
+                        _id: { $in: categoryId },
+                        pin:true,
                     }
                 },
                 {
@@ -1044,6 +1121,11 @@ export class NotificationController {
                             }
                         ],
                         as: 'product'
+                    }
+                },
+                {
+                    $sort:{
+                        createdDate:-1
                     }
                 }
             ]

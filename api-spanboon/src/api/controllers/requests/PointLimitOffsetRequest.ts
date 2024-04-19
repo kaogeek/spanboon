@@ -6,4 +6,8 @@ export class PointLimitOffsetRequest {
     public limit: string;
     @IsNotEmpty({ message: 'point is required' })
     public offset:number;
+
+    @IsNotEmpty({ message: 'whereConditions is required' })
+    public whereConditions: any;
+
 }

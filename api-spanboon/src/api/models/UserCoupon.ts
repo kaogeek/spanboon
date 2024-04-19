@@ -18,10 +18,9 @@ export class UserCouponModel extends BaseModel {
     @IsNotEmpty()
     @IsMongoId()
     public id: ObjectID;
-    /*
     @Column({ name: 'active' })
     public active: boolean;
-    */
+    
     @Column({ name: 'userId' })
     public userId: ObjectID;
 
