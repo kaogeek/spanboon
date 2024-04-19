@@ -328,6 +328,7 @@ export class AdminPointController {
         productCategoryModel.assetId = categoryPointRequest.assetId;
         productCategoryModel.coverPageURL = categoryPointRequest.coverPageURL;
         productCategoryModel.s3CoverPageURL = signUrl;
+        productCategoryModel.pin = categoryPointRequest.pin;
         const create = await this.productCategoryService.create(productCategoryModel);
         if (create) {
             const successResponse = ResponseUtil.getSuccessResponse('Create Product Category is success.', create);
@@ -438,6 +439,7 @@ export class AdminPointController {
         productModel.activeDate = new Date(productRequest.activeDate);
         productModel.receiverCoupon = 0;
         productModel.couponExpire = productRequest.couponExpire;
+        productModel.pin = productRequest.pin;
         const create = await this.productService.create(productModel);
         if (create) {
             const successResponse = ResponseUtil.getSuccessResponse('Create Product is success.', create);

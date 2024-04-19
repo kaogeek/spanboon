@@ -67,6 +67,9 @@ export class ProductModel extends BaseModel {
     @Column({ name: 'couponExpire'})
     public couponExpire: number;
 
+    @Column({ name: 'pin'})
+    public pin: boolean;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();
