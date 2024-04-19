@@ -268,6 +268,8 @@ export class NotificationController {
             return res.status(400).send(errorResponse);
         }
         */
+        const productModel = new PointStatementModel();
+
         if (today.getTime() > couponObj.expireDate.getTime()) {
             query = {
                 userId: userObjId,
@@ -282,8 +284,35 @@ export class NotificationController {
             };
 
             const updateCouponExpire = await this.userCouponService.update(query, newValues);
+<<<<<<< HEAD
             if (updateCouponExpire) {
                 const errorResponse = ResponseUtil.getErrorResponse('Coupon ExpireDate have been expiring.', undefined);
+=======
+            const expireCoupon = await this.pointStatementService.findOne(
+                {
+                    userId:userObjId,
+                    type:POINT_TYPE.COUPON_EXPIRED,
+                    productId:productObj.id
+                }
+            );
+            if(expireCoupon === undefined) {
+                if(updateCouponExpire){
+                    productModel.title = 'The Coupon has expired.';
+                    productModel.detail = null;
+                    productModel.point = productObj.point;
+                    productModel.type = POINT_TYPE.COUPON_EXPIRED;
+                    productModel.productId = productObj.id;
+                    productModel.userId = userObjId;
+                    productModel.pointEventId = null;
+                    const createExpire = await this.pointStatementService.create(productModel);
+                    if (createExpire) {
+                        const errorResponse = ResponseUtil.getErrorResponse('The Coupon has expired.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('The Coupon has expired.', undefined);
+>>>>>>> ae78a1788c838b660e60023ea01632c982f57988
                 return res.status(400).send(errorResponse);
             }
         }
@@ -295,14 +324,18 @@ export class NotificationController {
         newValues = {
             $set:
             {
+<<<<<<< HEAD
                 active: true,
                 activeDate: null
+=======
+                active:true,
+                activeDate: today
+>>>>>>> ae78a1788c838b660e60023ea01632c982f57988
             }
         };
 
         const updateUserCoupon = await this.userCouponService.update(query, newValues);
         if (updateUserCoupon) {
-            const productModel = new PointStatementModel();
             productModel.title = 'Use a Coupon.';
             productModel.detail = null;
             productModel.point = productObj.point;
@@ -657,12 +690,18 @@ export class NotificationController {
         const skips = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.offset : 0;
         const typeCondition = pointLimitOffsetRequest.whereConditions.type;
         const activeCoupon = pointLimitOffsetRequest.whereConditions.active; // boolean true, false
+        let activeDateCoupon = pointLimitOffsetRequest.whereConditions.activeDate;
+        // { $ne: null }
+        if(activeDateCoupon === 'not_null') { activeDateCoupon = {$ne:null}; }
+        console.log('activeCoupon',activeCoupon);
+        console.log('activeDateCoupon',activeDateCoupon);
         const userCoupon = await this.userCouponService.aggregate(
             [
                 {
                     $match: {
                         userId: userObjId,
-                        active: activeCoupon
+                        active: activeCoupon,
+                        activeDate: activeDateCoupon
                     }
                 },
                 {
