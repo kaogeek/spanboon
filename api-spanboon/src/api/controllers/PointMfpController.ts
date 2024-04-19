@@ -16,7 +16,6 @@ import { PointEventService } from '../services/PointEventService';
 import { ProductService } from '../services/ProductService';
 import { UserService } from '../services/UserService';
 import { ProductCategoryService } from '../services/ProductCategoryService';
-import { ObjectId } from 'aws-sdk/clients/codecommit';
 
 // startVoteDatetime
 @JsonController('/point')
