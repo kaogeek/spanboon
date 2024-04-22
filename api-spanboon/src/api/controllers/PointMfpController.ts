@@ -909,12 +909,77 @@ export class NotificationController {
                 },
             );
         }
+        let result: any|string|number = {};
        const search = await this.userCouponService.aggregate(userCoupon);
-        const result = {
-            'userCoupon': search.length > 0 ? search : null
+       // readyCoupon
+       // alreadyCoupon
+       // expireCoupon
+
+       let successResponse:any = undefined;
+
+       if(
+        pointLimitOffsetRequest.whereConditions?.type === 'REDEEM' && 
+        pointLimitOffsetRequest.whereConditions?.active === false && 
+        pointLimitOffsetRequest.whereConditions?.activeDate === null) 
+        {
+        result = {
+            'readyCoupon': search.length > 0 ? search : null
         };
-        const successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+        successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
         return res.status(200).send(successResponse);
+        } else if (
+            pointLimitOffsetRequest.whereConditions?.type === 'USE_COUPON' && 
+            pointLimitOffsetRequest.whereConditions?.active === true && 
+            pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
+        ) {
+        result = {
+            'alreadyCoupon': search.length > 0 ? search : null
+        };
+        if(result['alreadyCoupon'].length > 0){
+            successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+            return res.status(200).send(successResponse);
+        }
+        } else if (
+            pointLimitOffsetRequest.whereConditions?.type === 'COUPON_HAS_EXPIRED' && 
+            pointLimitOffsetRequest.whereConditions?.active === false && 
+            pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
+        ) {
+            result = {
+                'expireCoupon': search.length > 0 ? search : null
+            };
+            successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+            return res.status(200).send(successResponse);
+        }
+
+        if(pointLimitOffsetRequest.whereConditions === undefined) {
+            result = {
+                'readyCoupon': [],
+                'alreadyCoupon': [],
+                'expireCoupon': [],
+            };
+
+            if(search.length > 0) {
+                for(const content of search) {
+                    if(content.pointStatement.type === 'REDEEM') {
+                        result['readyCoupon'].push(content);
+                    }
+                    if(content.pointStatement.type === 'USE_COUPON'){
+                        result['alreadyCoupon'].push(content);
+                    }
+                    if(content.pointStatement.type === 'COUPON_HAS_EXPIRED') {
+                        result['expireCoupon'].push(content);
+                    }
+                }
+            }
+            if(result['readyCoupon'].length > 0 || result['alreadyCoupon'].length > 0 || result['expireCoupon'].length > 0) {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            } else {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            }
+       }
+
     }
 
     @Post('/sort/accumulate/search')
