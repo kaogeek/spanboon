@@ -64,6 +64,9 @@ export class AuthenticationId extends BaseModel {
     @Column({ name: 'mobileNumber' })
     public mobileNumber: any;
 
+    @Column({ name: 'mfpSerial'})
+    public mfpSerial: any;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

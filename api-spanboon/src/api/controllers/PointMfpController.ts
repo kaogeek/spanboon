@@ -3,9 +3,11 @@ import { JsonController, Res, Post, Req, Body, Authorized, Get, QueryParam, Para
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { PointStatementRequest } from './requests/PointStatementRequest';
 import { PointLimitOffsetRequest } from './requests/PointLimitOffsetRequest';
+import { PointAccumulateRequest } from './requests/PointAccumulateRequest';
 import { UsedCouponRequest } from './requests/UsedCouponRequest';
 import { ObjectID } from 'mongodb';
 import { PointStatementModel } from '../models/PointStatementModel';
+import { POINT_TYPE } from '../../constants/PointType';
 import { AccumulateModel } from '../models/AccumulatePointModel';
 import { PointStatementService } from '../services/PointStatementService';
 import { AccumulateService } from '../services/AccumulateService';
@@ -48,7 +50,7 @@ export class NotificationController {
             const errorResponse = ResponseUtil.getErrorResponse('Not found the user.', undefined);
             return res.status(400).send(errorResponse);
         }
-        if (pointStatementRequest.type === 'RECEIVE_POINT') {
+        if (pointStatementRequest.type === POINT_TYPE.RECEIVE) {
             const pointStateMentuser = await this.pointStatementService.findOne(
                 {
                     pointEventId: new ObjectID(pointStatementRequest.pointEventId),
@@ -61,7 +63,7 @@ export class NotificationController {
             }
         }
 
-        if (pointStatementRequest.type === 'REDEEM') {
+        if (pointStatementRequest.type === POINT_TYPE.REDEEM) {
             const productStatenebt = await this.pointStatementService.findOne(
                 {
                     productId: new ObjectID(pointStatementRequest.productId),
@@ -73,7 +75,7 @@ export class NotificationController {
             }
         }
 
-        if (pointStatementRequest.type === 'RECEIVE_POINT' &&
+        if (pointStatementRequest.type === POINT_TYPE.RECEIVE &&
             pointStatementRequest.pointEventId === undefined &&
             pointStatementRequest.pointEventId === null &&
             pointStatementRequest.pointEventId === ''
@@ -82,7 +84,7 @@ export class NotificationController {
             return res.status(400).send(errorResponse);
         }
 
-        if (pointStatementRequest.type === 'REDEEM' &&
+        if (pointStatementRequest.type === POINT_TYPE.REDEEM &&
             pointStatementRequest.productId === undefined &&
             pointStatementRequest.productId === null &&
             pointStatementRequest.productId === ''
@@ -93,20 +95,20 @@ export class NotificationController {
 
         const productModel = new PointStatementModel();
 
-        if (pointStatementRequest.type === 'REDEEM') {
+        if (pointStatementRequest.type === POINT_TYPE.REDEEM) {
             productModel.title = pointStatementRequest.title;
             productModel.detail = pointStatementRequest.detail;
             productModel.point = pointStatementRequest.point;
-            productModel.type = pointStatementRequest.type;
+            productModel.type = POINT_TYPE.REDEEM;
             productModel.userId = userObjId;
             productModel.productId = new ObjectID(pointStatementRequest.productId);
         }
 
-        if (pointStatementRequest.type === 'RECEIVE_POINT') {
+        if (pointStatementRequest.type === POINT_TYPE.RECEIVE) {
             productModel.title = pointStatementRequest.title;
             productModel.detail = pointStatementRequest.detail;
             productModel.point = pointStatementRequest.point;
-            productModel.type = pointStatementRequest.type;
+            productModel.type = POINT_TYPE.RECEIVE;
             productModel.userId = userObjId;
             productModel.pointEventId = new ObjectID(pointStatementRequest.pointEventId);
         }
@@ -126,7 +128,7 @@ export class NotificationController {
                 }
             }
 
-            if (accumulateCreate !== undefined && pointStatementRequest.type === 'RECEIVE_POINT') {
+            if (accumulateCreate !== undefined && pointStatementRequest.type === POINT_TYPE.RECEIVE) {
                 const pointEventObjId = new ObjectID(pointStatementRequest.pointEventId);
                 const pointEvent = await this.pointEventService.findOne({ _id: pointEventObjId });
 
@@ -154,7 +156,7 @@ export class NotificationController {
                     }
                 }
             }
-            if (accumulateCreate !== undefined && pointStatementRequest.type === 'REDEEM') {
+            if (accumulateCreate !== undefined && pointStatementRequest.type === POINT_TYPE.REDEEM) {
                 if (accumulateCreate.accumulatePoint < pointStatementRequest.point) {
                     const errorResponse = ResponseUtil.getErrorResponse('The point you have got is not enough.', undefined);
                     const deletePointStatement = await this.pointStatementService.delete({ _id: create.id, userId: userObjId });
@@ -162,19 +164,43 @@ export class NotificationController {
                         return res.status(400).send(errorResponse);
                     }
                 }
+                const today = new Date();
+
                 const productPoint = await this.productService.findOne({ _id: new ObjectID(pointStatementRequest.productId) });
 
-                const userCouponModel = new UserCouponModel();
-                userCouponModel.userId = userObjId;
-                userCouponModel.active = false;
-                userCouponModel.flag = false;
-                userCouponModel.productId = productPoint.id;
-                userCouponModel.expireDate = productPoint.expiringDate;
-                userCouponModel.activeDate = null;
-                const createUserCoupon = await this.userCouponService.create(userCouponModel);
-                if (createUserCoupon) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Redeem coupon is success.', create);
-                    return res.status(200).send(successResponse);
+                if (today.getTime() > productPoint.expiringDate.getTime()) {
+                    const errorResponse = ResponseUtil.getErrorResponse('The product had been expiring.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+                if (productPoint.maximumLimit === productPoint.receiverCoupon) {
+                    const errorResponse = ResponseUtil.getErrorResponse('The product is out of store.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+                const updatePointEvent = await this.productService.update({ _id: productPoint.id }, { $set: { receiverCoupon: productPoint.receiverCoupon + 1 } });
+                const query = { userId: userObjId };
+                const newValues = {
+                    $set:
+                    {
+                        accumulatePoint: accumulateCreate.accumulatePoint - pointStatementRequest.point,
+                        usedPoint: accumulateCreate.usedPoint + pointStatementRequest.point
+                    }
+                };
+                await this.accumulateService.update(query, newValues);
+                if (updatePointEvent) {
+                    const userCouponModel = new UserCouponModel();
+                    userCouponModel.userId = userObjId;
+                    userCouponModel.active = false;
+                    userCouponModel.flag = false;
+                    userCouponModel.productId = productPoint.id;
+                    userCouponModel.expireDate = new Date(productPoint.expiringDate);
+                    userCouponModel.activeDate = null;
+                    const createUserCoupon = await this.userCouponService.create(userCouponModel);
+                    if (createUserCoupon) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Redeem coupon is success.', create);
+                        return res.status(200).send(successResponse);
+                    }
                 }
             }
         } else {
@@ -192,6 +218,13 @@ export class NotificationController {
         const userObjId = new ObjectID(req.user.id);
         const today = new Date();
         const productObj = await this.productService.findOne({ _id: new ObjectID(usedCouponRequest.productId) });
+        const pointStatement = await this.pointStatementService.findOne({ type: 'USE_COUPON', userId: userObjId, productId: productObj.id });
+        let query: any;
+        let newValues: any;
+        if (pointStatement !== undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been actived coupon.', undefined);
+            return res.status(400).send(errorResponse);
+        }
         const minute = today.getTime() + productObj.couponExpire * 60 * 60;
 
         if (today.getTime() > productObj.expiringDate.getTime()) {
@@ -205,7 +238,7 @@ export class NotificationController {
         }
         if (productObj.couponExpire !== -1) {
             if (today.getTime() > minute) {
-                const errorResponse = ResponseUtil.getErrorResponse('The coupon was expire.', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('The product was expire.', undefined);
                 return res.status(400).send(errorResponse);
             }
         }
@@ -226,76 +259,103 @@ export class NotificationController {
             const errorResponse = ResponseUtil.getErrorResponse('Product id is undefined.', undefined);
             return res.status(400).send(errorResponse);
         }
-
+        /*
         if (couponObj.active !== true) {
-            const errorResponse = ResponseUtil.getErrorResponse('Counpon is not active.', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('Coupon is not active.', undefined);
             return res.status(400).send(errorResponse);
         }
-
         if (couponObj.activeDate !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been used coupon.', undefined);
             return res.status(400).send(errorResponse);
         }
+        */
+        const productModel = new PointStatementModel();
 
         if (today.getTime() > couponObj.expireDate.getTime()) {
-            const errorResponse = ResponseUtil.getErrorResponse('Coupon ExpireDate have been expiring.', undefined);
-            return res.status(400).send(errorResponse);
+            query = {
+                userId: userObjId,
+                productId: productObj.id
+            };
+            newValues = {
+                $set:
+                {
+                    active: false,
+                    activeDate: today
+                }
+            };
+
+            const updateCouponExpire = await this.userCouponService.update(query, newValues);
+            const expireCoupon = await this.pointStatementService.findOne(
+                {
+                    userId: userObjId,
+                    type: POINT_TYPE.COUPON_EXPIRED,
+                    productId: productObj.id
+                }
+            );
+            if (expireCoupon === undefined) {
+                if (updateCouponExpire) {
+                    productModel.title = 'The Coupon has expired.';
+                    productModel.detail = null;
+                    productModel.point = productObj.point;
+                    productModel.type = POINT_TYPE.COUPON_EXPIRED;
+                    productModel.productId = productObj.id;
+                    productModel.userId = userObjId;
+                    productModel.pointEventId = null;
+                    const createExpire = await this.pointStatementService.create(productModel);
+                    if (createExpire) {
+                        const errorResponse = ResponseUtil.getErrorResponse('The Coupon has expired.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('The Coupon has expired.', undefined);
+                return res.status(400).send(errorResponse);
+            }
         }
 
-        const query = {
+        query = {
             userId: userObjId,
             productId: productObj.id
         };
-        const newValues = {
+        newValues = {
             $set:
             {
+                active: true,
                 activeDate: today
             }
         };
 
         const updateUserCoupon = await this.userCouponService.update(query, newValues);
         if (updateUserCoupon) {
-            const productModel = new PointStatementModel();
             productModel.title = 'Use a Coupon.';
             productModel.detail = null;
             productModel.point = productObj.point;
-            productModel.type = 'USE_COUPON';
+            productModel.type = POINT_TYPE.USE_COUPON;
             productModel.productId = productObj.id;
             productModel.userId = userObjId;
             productModel.pointEventId = null;
             const create = await this.pointStatementService.create(productModel);
             if (create) {
-                try {
-                    const updateProduct = await this.productService.update({ _id: productObj.id }, { $set: { receiverCoupon: productObj.receiverCoupon + 1 } });
-                    if (updateProduct) {
-                        const successResponse = ResponseUtil.getSuccessResponse('Redeem coupon is success.', undefined);
-                        return res.status(200).send(successResponse);
-                    } else {
-                        const updateReverse = await this.userCouponService.update({ userId: userObjId, productId: productObj.id },
-                            {
-                                $set: {
-                                    active: false,
-                                    activeDate: null
-                                }
-                            }
-                        );
-                        if (updateReverse) {
-                            const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', undefined);
-                            return res.status(400).send(errorResponse);
-                        }
-                    }
-                } catch (error) {
-                    const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', error);
-                    return res.status(400).send(errorResponse);
-                }
+                const successResponse = ResponseUtil.getSuccessResponse('Redeem coupon is success.', undefined);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Error have occured.', undefined);
+                return res.status(400).send(errorResponse);
             }
         }
     }
 
     @Get('/event/:id')
     public async getEventObj(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.headers.userid);
         const eventObjId = new ObjectID(id);
         const pointEventObj = await this.pointEventService.findOne({ _id: eventObjId });
+        const pointStatementCoupon = await this.pointStatementService.findOne(
+            {
+                type: 'RECEIVE_POINT',
+                userId: userObjId, productId: pointEventObj.id
+            }
+        );
         const result: any = {};
         result.id = pointEventObj.id;
         result.createdDate = pointEventObj.createdDate;
@@ -310,6 +370,7 @@ export class NotificationController {
         result.link = pointEventObj.link;
         result.s3CoverPageURL = pointEventObj.s3CoverPageURL;
         result.receiver = pointEventObj.receiver;
+        result.eventActive = pointStatementCoupon !== undefined ? true : false; // รับแล้ว?
         if (result) {
             const successResponse = ResponseUtil.getSuccessResponse('Get PointEventObj is success.', { 'pointEventDetail': result });
             return res.status(200).send(successResponse);
@@ -321,8 +382,22 @@ export class NotificationController {
 
     @Get('/product/:id')
     public async getProductObj(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.headers.userid);
         const productObjId = new ObjectID(id);
         const productObj = await this.productService.findOne({ _id: productObjId });
+        const pointStatementCoupon = await this.pointStatementService.findOne(
+            {
+                type: POINT_TYPE.USE_COUPON,
+                userId: userObjId, productId: productObj.id
+            }
+        );
+        const pointStatementRedeem = await this.pointStatementService.findOne(
+            {
+                type: POINT_TYPE.REDEEM,
+                userId: userObjId,
+                productId: productObj.id
+            }
+        );
         const result: any = {};
         result.id = productObj.id;
         result.createdDate = productObj.createdDate;
@@ -341,6 +416,8 @@ export class NotificationController {
         result.activeDate = productObj.activeDate;
         result.receiverCoupon = productObj.receiverCoupon;
         result.couponExpire = productObj.couponExpire;
+        result.useCoupon = pointStatementCoupon !== undefined ? true : false; // ใช้ coupon หรือยัง
+        result.redeemCoupon = pointStatementRedeem !== undefined ? true : false; // มี coupon หรือไม่
         if (result) {
             const successResponse = ResponseUtil.getSuccessResponse('Get Product is success.', { 'productDetail': result });
             return res.status(200).send(successResponse);
@@ -353,12 +430,12 @@ export class NotificationController {
     @Post('/accumulate/search')
     @Authorized('user')
     public async getAccumulate(
-        @Body({ validate: true }) pointLimitOffsetRequest: PointLimitOffsetRequest,
+        @Body({ validate: true }) pointAccumulateRequest: PointAccumulateRequest,
         @Res() res: any,
         @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
-        const take = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.limit : 10;
-        const skips = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.offset : 0;
+        const take = pointAccumulateRequest !== undefined ? pointAccumulateRequest.limit : 10;
+        const skips = pointAccumulateRequest !== undefined ? pointAccumulateRequest.offset : 0;
         const accumulateAggr = await this.accumulateService.aggregate(
             [
                 {
@@ -392,6 +469,11 @@ export class NotificationController {
                                     $expr: {
                                         $eq: ['$$userId', '$userId']
                                     }
+                                },
+                            },
+                            {
+                                $match: {
+                                    type: { $ne: POINT_TYPE.USE_COUPON },
                                 }
                             },
                             {
@@ -423,7 +505,7 @@ export class NotificationController {
                             },
                             {
                                 $match: {
-                                    type: 'RECEIVE_POINT'
+                                    type: { $nin: [POINT_TYPE.REDEEM, POINT_TYPE.ADMIN_REDUCE, POINT_TYPE.USE_COUPON] }
                                 }
                             },
                             {
@@ -455,7 +537,7 @@ export class NotificationController {
                             },
                             {
                                 $match: {
-                                    type: 'REDEEM'
+                                    type: { $in: [POINT_TYPE.REDEEM, POINT_TYPE.ADMIN_REDUCE] }
                                 }
                             },
                             {
@@ -516,7 +598,8 @@ export class NotificationController {
                                 $project: {
                                     user: 1,
                                     providerName: 1,
-                                    properties: 1
+                                    properties: 1,
+                                    mfpSerial: 1
                                 }
                             }
                         ],
@@ -524,13 +607,11 @@ export class NotificationController {
                     }
                 },
                 {
-                    $unwind: '$authenticationId'
-                },
-                {
                     '$addFields': {
                         'userId': '$authenticationId.user',
                         'providerName': '$authenticationId.providerName',
-                        'identificationNumber': '$authenticationId.properties.identification_number'
+                        'identificationNumber': '$authenticationId.properties.identification_number',
+                        'mfpSerial': '$authenticationId.mfpSerial'
                     }
                 },
                 {
@@ -544,13 +625,28 @@ export class NotificationController {
                         imageURL: 1,
                         s3ImageURL: 1,
                         userId: 1,
+                        authenticationId: 1,
                         providerName: 1,
-                        identificationNumber: 1
+                        identificationNumber: 1,
+                        mfpSerial: 1
                     }
                 }
             ]
         );
-        const decorateUser: any = {
+        const decorateUser: {
+            _id: ObjectID;
+            firstName: string;
+            lastName: string;
+            displayName: string;
+            uniqueId: string;
+            birthdate: Date;
+            imageURL: string;
+            s3ImageURL: string;
+            userId: ObjectID;
+            providerName: string;
+            identificationNumber: string;
+            mfpSerial: number
+        } = {
             '_id': userObj !== undefined && userObj.length > 0 ? userObj[0]._id : undefined,
             'firstName': userObj !== undefined && userObj.length > 0 ? userObj[0].firstName : undefined,
             'lastName': userObj !== undefined && userObj.length > 0 ? userObj[0].lastName : undefined,
@@ -559,9 +655,10 @@ export class NotificationController {
             'birthdate': userObj !== undefined && userObj.length > 0 ? userObj[0].birthdate : undefined,
             'imageURL': userObj !== undefined && userObj.length > 0 ? userObj[0].imageURL : undefined,
             's3ImageURL': userObj !== undefined && userObj.length > 0 ? userObj[0].s3ImageURL : undefined,
-            'userId': userObj !== undefined && userObj.length > 0 ? userObj[0].userId : undefined,
-            'providerName': userObj !== undefined && userObj.length > 0 ? userObj[0].providerName : undefined,
-            'identificationNumber': userObj !== undefined && userObj.length > 0 ? 'XXXX-' + userObj[0].identificationNumber.slice(4, userObj[0].identificationNumber.length) : undefined,
+            'userId': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? userObj[0].userId[0] : null,
+            'providerName': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? userObj[0].providerName[0] : null,
+            'identificationNumber': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? 'XXXX-' + userObj[0].identificationNumber[0].slice(4, userObj[0].identificationNumber[0].length) : null,
+            'mfpSerial': userObj !== undefined && userObj.length > 0 && userObj[0].authenticationId.length > 0 ? userObj[0].mfpSerial[0] : null
         };
 
         const result = {
@@ -582,11 +679,20 @@ export class NotificationController {
         const userObjId = new ObjectID(req.user.id);
         const take = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.limit : 10;
         const skips = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.offset : 0;
+        const typeCondition = pointLimitOffsetRequest.whereConditions.type;
+        const activeCoupon = pointLimitOffsetRequest.whereConditions.active; // boolean true, false
+        let activeDateCoupon = pointLimitOffsetRequest.whereConditions.activeDate;
+        // { $ne: null }
+        if (activeDateCoupon === 'not_null') { activeDateCoupon = { $ne: null }; }
+        console.log('activeCoupon', activeCoupon);
+        console.log('activeDateCoupon', activeDateCoupon);
         const userCoupon = await this.userCouponService.aggregate(
             [
                 {
                     $match: {
-                        userId: userObjId
+                        userId: userObjId,
+                        active: activeCoupon,
+                        activeDate: activeDateCoupon
                     }
                 },
                 {
@@ -603,6 +709,7 @@ export class NotificationController {
                             },
                             {
                                 $match: {
+                                    type: typeCondition,
                                     productId: { $ne: null },
                                     userId: userObjId
                                 }
@@ -613,7 +720,8 @@ export class NotificationController {
                                     title: 1,
                                     point: 1,
                                     productId: 1,
-                                    userId: 1
+                                    userId: 1,
+                                    type: 1
                                 }
                             },
                             {
@@ -680,7 +788,8 @@ export class NotificationController {
                         pointStatement: 1,
                         productId: 1,
                         expireDate: 1,
-                        activeDate: 1
+                        activeDate: 1,
+                        active: 1
                     }
                 },
                 {
@@ -902,11 +1011,14 @@ export class NotificationController {
                 }
             ]
         );
+        const today = new Date();
         const userCouponCount = await this.userCouponService.aggregate(
             [
                 {
                     $match: {
-                        userId: userObjId
+                        userId: userObjId,
+                        activeDate: null,
+                        expireDate: { $gte: today }
                     }
                 },
                 {
@@ -917,6 +1029,11 @@ export class NotificationController {
 
         const pointEventsAggr = await this.pointEventService.aggregate(
             [
+                {
+                    $sort: {
+                        createdDate: -1
+                    }
+                },
                 {
                     $project: {
                         _id: 1,
@@ -939,6 +1056,32 @@ export class NotificationController {
         const categoryProductAggr = await this.productCategoryService.aggregate(
             [
                 {
+                    $match: {
+                        pin: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'Product',
+                        let: { id: '$_id' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$id', '$categoryId']
+                                    }
+                                }
+                            }
+                        ],
+                        as: 'product'
+                    }
+                },
+                {
+                    $sort: {
+                        createdDate: -1
+                    }
+                },
+                {
                     $project: {
                         _id: 1,
                         createdDate: 1,
@@ -946,6 +1089,20 @@ export class NotificationController {
                         assetId: 1,
                         coverPageURL: 1,
                         s3CoverPageURL: 1,
+                        product: {
+                            $cond: [
+                                {
+                                    $gt: [{ $size: '$product' }, 0]
+                                },
+                                true,
+                                false
+                            ]
+                        }
+                    }
+                },
+                {
+                    $match: {
+                        product: true
                     }
                 }
             ]
@@ -955,7 +1112,8 @@ export class NotificationController {
             [
                 {
                     $match: {
-                        _id: { $in: categoryId }
+                        _id: { $in: categoryId },
+                        pin: true,
                     }
                 },
                 {
@@ -998,6 +1156,11 @@ export class NotificationController {
                             }
                         ],
                         as: 'product'
+                    }
+                },
+                {
+                    $sort: {
+                        createdDate: -1
                     }
                 }
             ]

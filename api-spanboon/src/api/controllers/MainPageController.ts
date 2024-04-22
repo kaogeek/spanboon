@@ -199,7 +199,7 @@ export class MainPageController {
                         if(mm<10) { mm='0'+mm;}
                         productModel.title = `หน้าหนึ่งฉบับวันที่ ${checkSnapshot.endDateTime.getFullYear()}-${mm}-${dd}`;
                         productModel.detail = null;
-                        productModel.point = 20;
+                        productModel.point = 2;
                         productModel.type = 'TODAY_NEWS_POINT';
                         productModel.userId = new ObjectID(userId);
                         productModel.postId = null;

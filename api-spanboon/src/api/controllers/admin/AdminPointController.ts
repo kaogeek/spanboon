@@ -160,8 +160,8 @@ export class AdminPointController {
             $set: {
                 username: user.username,
                 active: adminActiveCouponRequest.active,
-                expireDate: adminActiveCouponRequest.expireDate,
-                activeDate: adminActiveCouponRequest.activeDate
+                expireDate: new Date(adminActiveCouponRequest.expireDate),
+                activeDate: new Date(adminActiveCouponRequest.activeDate)
             }
         };
         const update = await this.userCouponService.update(query, newValues);
@@ -328,6 +328,7 @@ export class AdminPointController {
         productCategoryModel.assetId = categoryPointRequest.assetId;
         productCategoryModel.coverPageURL = categoryPointRequest.coverPageURL;
         productCategoryModel.s3CoverPageURL = signUrl;
+        productCategoryModel.pin = categoryPointRequest.pin;
         const create = await this.productCategoryService.create(productCategoryModel);
         if (create) {
             const successResponse = ResponseUtil.getSuccessResponse('Create Product Category is success.', create);
@@ -412,6 +413,10 @@ export class AdminPointController {
         }
 
         const convertPoint = Math.ceil(productRequest.point);
+        if(convertPoint < 0){
+            const errorResponse = ResponseUtil.getErrorResponse('Point is less than 0.', undefined);
+            return res.status(400).send(errorResponse);
+        }
 
         const signUrl = productRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(productRequest.s3CoverPageURL) : undefined;
 
@@ -434,6 +439,7 @@ export class AdminPointController {
         productModel.activeDate = new Date(productRequest.activeDate);
         productModel.receiverCoupon = 0;
         productModel.couponExpire = productRequest.couponExpire;
+        productModel.pin = productRequest.pin;
         const create = await this.productService.create(productModel);
         if (create) {
             const successResponse = ResponseUtil.getSuccessResponse('Create Product is success.', create);

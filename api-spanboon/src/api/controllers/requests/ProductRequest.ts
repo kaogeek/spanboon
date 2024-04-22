@@ -11,7 +11,6 @@ export class ProductRequest {
     @IsString()
     public title: string;
     @IsNotEmpty({ message: 'point is required' })
-    @IsPositive({ message: 'value is not Positive number' })
     public point: number;
 
     @IsNotEmpty({ message: 'maximumLimit is required' })
@@ -47,4 +46,7 @@ export class ProductRequest {
 
     @IsNotEmpty({ message: 'couponExpire is required' })
     public couponExpire: number;
+
+    @IsNotEmpty({ message: 'pin is required' })
+    public pin: boolean;
 }

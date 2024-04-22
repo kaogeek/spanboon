@@ -14,6 +14,9 @@ export class CategoryPointRequest {
     @IsString()
     public coverPageURL:string;
 
+    @IsNotEmpty({ message: 'pin is required' })
+    public pin:boolean;
+
     public s3CoverPageURL:string;
 
 }

@@ -1075,7 +1075,7 @@ export class PostsController {
                 {
                     productModel.title = `คุณกดถูกใจโพสต์`;
                     productModel.detail = `${nameUser.name}`;
-                    productModel.point = 50;
+                    productModel.point = 1;
                     productModel.type = 'PAGE_LIKE_POINT';
                     productModel.userId = userObjId;
                     productModel.postId = postObjId;
@@ -1109,7 +1109,7 @@ export class PostsController {
                 {
                     productModel.title = `คุณกดถูกใจโพสต์`;
                     productModel.detail = `${nameUser.displayName}`;
-                    productModel.point = 50;
+                    productModel.point = 1;
                     productModel.type = 'USER_LIKE_POINT';
                     productModel.userId = userObjId;
                     productModel.postId = postObjId;

@@ -37,6 +37,9 @@ export class ProductCategoryModel extends BaseModel {
     @Column({ name: 's3CoverPageURL'})
     public s3CoverPageURL: string;
 
+    @Column({ name: 'pin'})
+    public pin: boolean;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

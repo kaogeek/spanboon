@@ -1,13 +1,9 @@
 import 'reflect-metadata';
 import { IsNotEmpty } from 'class-validator';
 
-export class PointLimitOffsetRequest {
+export class PointAccumulateRequest {
     @IsNotEmpty({ message: 'title is required' })
     public limit: string;
     @IsNotEmpty({ message: 'point is required' })
-    public offset:number;
-
-    @IsNotEmpty({ message: 'whereConditions is required' })
-    public whereConditions: any;
-
+    public offset: number;
 }
