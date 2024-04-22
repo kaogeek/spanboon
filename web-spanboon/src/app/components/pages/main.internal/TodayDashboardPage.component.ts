@@ -77,14 +77,14 @@ export class TodayDashboardPage extends AbstractPage implements OnInit {
     public dataLoading: number[] = Array.from({ length: 50 }, (_, index) => index)
     public menuList: any[] = [
         {
-            name: 'ภาพรวม',
+            name: 'สถิติการใช้งาน',
             status: '',
             icon: '../../../../assets/img/icons/votepage/block.svg',
             icon2: '../../../../assets/img/icons/votepage/block-active.svg',
             isLogin: false,
         },
         {
-            name: 'สมาชิกพรรค',
+            name: 'คนที่ออนไลน์',
             status: 'mfp',
             icon: '../../../../assets/img/icons/votepage/user.svg',
             icon2: '../../../../assets/img/icons/votepage/user-active.svg',

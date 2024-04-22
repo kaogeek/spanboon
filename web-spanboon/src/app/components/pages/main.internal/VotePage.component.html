@@ -1,7 +1,7 @@
 <div class="wrapper-vote-page">
     <div class="wrapper-left" *ngIf="!paramsKey">
         <div class="menu-wrapper">
-            <p>Vote</p>
+            <p>ก้าวไกล Vote</p>
             <ng-container *ngFor="let item of menuList">
                 <div *ngIf="item.isLogin === isLogin()" role="button" class="menu-box"
                     [class.active]="activeMenu === item.status"

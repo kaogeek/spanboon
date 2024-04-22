@@ -7,19 +7,19 @@
   },
   {
     "image": "../../assets/img/menu-list/vote.svg",
-    "title": "MFP Vote",
+    "title": "ก้าวไกล Vote",
     "link": "/vote",
     "active": true
   },
   {
     "image": "../../assets/img/icons/pointpage/Point_mini_logo.svg",
-    "title": "MFP Point",
+    "title": "ก้าวไกล Point",
     "link": "/point",
     "active": true
   },
   {
     "image": "../../assets/img/menu-list/survey.svg",
-    "title": "แดชบอร์ด",
+    "title": "สถิติการใช้งาน",
     "link": "/dashboard",
     "active": true
   },
