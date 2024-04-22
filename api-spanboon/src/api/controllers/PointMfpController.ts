@@ -683,6 +683,8 @@ export class NotificationController {
         let activeCoupon = pointLimitOffsetRequest.whereConditions?.active; // boolean true, false
         let activeDateCoupon = pointLimitOffsetRequest.whereConditions?.activeDate;
         const today = new Date();
+        let result: any|string|number = {};
+        let successResponse:any = undefined;
         // { $ne: null }
         const userCoupon: any|string|number = [];
         userCoupon.push(
@@ -692,17 +694,6 @@ export class NotificationController {
                 }
             },
         );
-
-        if(pointLimitOffsetRequest.whereConditions === undefined) {
-            userCoupon.push(
-                {
-                    $match:{
-                        active:false,
-                        activeDate: null,
-                    }
-                }
-            );
-        }
 
         if(
             pointLimitOffsetRequest.whereConditions?.active !== undefined 
@@ -719,110 +710,367 @@ export class NotificationController {
         if(activeDateCoupon === 'not_null') { activeDateCoupon = {$match:{activeDate: {$ne:null}}}; userCoupon.push(activeDateCoupon);}
         if(activeDateCoupon === null) { activeDateCoupon = {$match:{activeDate: null}}; userCoupon.push(activeDateCoupon);}
         if(typeCondition === undefined) { 
-            userCoupon.push(
-                {
-                    $lookup: {
-                        from: 'PointStatement',
-                        let: { 'productId': '$productId' },
-                        pipeline: [
-                            {
-                                $match: {
-                                    $expr: {
-                                        $eq: ['$$productId', '$productId']
+            const redeem = await this.userCouponService.aggregate(
+                [
+                    {
+                        $match:{
+                            userId: userObjId,
+                            active:false,
+                            activeDate: null,
+                            expireDate:{$gte:today}
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PointStatement',
+                            let: { 'productId': '$productId' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$productId', '$productId']
+                                        }
                                     }
-                                }
-                            },
-                            {
-                                $match: {
-                                    productId: { $ne: null },
-                                    userId: userObjId
-                                }
-                            },
-                            {
-                                $project: {
-                                    _id: 1,
-                                    title: 1,
-                                    point: 1,
-                                    productId: 1,
-                                    userId: 1,
-                                    type: 1
-                                }
-                            },
-                            {
-                                $skip: skips
-                            },
-                            {
-                                $limit: take
-                            },
-                            {
-                                $lookup: {
-                                    from: 'Product',
-                                    let: { 'productId': '$productId' },
-                                    pipeline: [
-                                        {
-                                            $match: {
-                                                $expr: {
-                                                    $eq: ['$$productId', '$_id']
+                                },
+                                {
+                                    $match: {
+                                        type:'REDEEM',
+                                        productId: { $ne: null },
+                                        userId: userObjId
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        _id: 1,
+                                        title: 1,
+                                        point: 1,
+                                        productId: 1,
+                                        userId: 1,
+                                        type: 1
+                                    }
+                                },
+                                {
+                                    $skip: skips
+                                },
+                                {
+                                    $limit: take
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Product',
+                                        let: { 'productId': '$productId' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$productId', '$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $skip: skips
+                                            },
+                                            {
+                                                $limit: take
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    categoryId: 1,
+                                                    title: 1,
+                                                    detail: 1,
+                                                    point: 1,
+                                                    userId: 1,
+                                                    asssetId: 1,
+                                                    coverPageURL: 1,
+                                                    s3CoverPageURL: 1,
+                                                    categoryName: 1,
+                                                    expiringDate: 1,
+                                                    activeDate: 1,
+                                                    receiverCoupon: 1,
+                                                    couponExpire: 1
                                                 }
                                             }
-                                        },
-                                        {
-                                            $skip: skips
-                                        },
-                                        {
-                                            $limit: take
-                                        },
-                                        {
-                                            $project: {
-                                                _id: 1,
-                                                categoryId: 1,
-                                                title: 1,
-                                                detail: 1,
-                                                point: 1,
-                                                userId: 1,
-                                                asssetId: 1,
-                                                coverPageURL: 1,
-                                                s3CoverPageURL: 1,
-                                                categoryName: 1,
-                                                expiringDate: 1,
-                                                activeDate: 1,
-                                                receiverCoupon: 1,
-                                                couponExpire: 1
-                                            }
-                                        }
-                                    ],
-                                    as: 'product'
+                                        ],
+                                        as: 'product'
+                                    }
+                                },
+                                {
+                                    $unwind: '$product'
                                 }
-                            },
-                            {
-                                $unwind: '$product'
-                            }
-                        ],
-                        as: 'pointStatement'
-                    }
-                },
-                {
-                    $unwind: '$pointStatement'
-                },
-                {
-                    $project: {
-                        _id: 1,
-                        createdDate: 1,
-                        userId: 1,
-                        pointStatement: 1,
-                        productId: 1,
-                        expireDate: 1,
-                        activeDate: 1,
-                        active: 1
-                    }
-                },
-                {
-                    $skip: skips
-                },
-                {
-                    $limit: take
-                },
+                            ],
+                            as: 'pointStatement'
+                        }
+                    },
+                    {
+                        $unwind: '$pointStatement'
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            createdDate: 1,
+                            userId: 1,
+                            pointStatement: 1,
+                            productId: 1,
+                            expireDate: 1,
+                            activeDate: 1,
+                            active: 1
+                        }
+                    },
+                    {
+                        $skip: skips
+                    },
+                    {
+                        $limit: take
+                    },
+                ]
             );
+
+            const usedCoupon = await this.userCouponService.aggregate(
+                [
+                    {
+                        $match:{
+                            userId: userObjId,
+                            active:true,
+                            activeDate: {$ne:null},
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PointStatement',
+                            let: { 'productId': '$productId' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$productId', '$productId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: {
+                                        type:'USE_COUPON',
+                                        productId: { $ne: null },
+                                        userId: userObjId
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        _id: 1,
+                                        title: 1,
+                                        point: 1,
+                                        productId: 1,
+                                        userId: 1,
+                                        type: 1
+                                    }
+                                },
+                                {
+                                    $skip: skips
+                                },
+                                {
+                                    $limit: take
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Product',
+                                        let: { 'productId': '$productId' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$productId', '$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $skip: skips
+                                            },
+                                            {
+                                                $limit: take
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    categoryId: 1,
+                                                    title: 1,
+                                                    detail: 1,
+                                                    point: 1,
+                                                    userId: 1,
+                                                    asssetId: 1,
+                                                    coverPageURL: 1,
+                                                    s3CoverPageURL: 1,
+                                                    categoryName: 1,
+                                                    expiringDate: 1,
+                                                    activeDate: 1,
+                                                    receiverCoupon: 1,
+                                                    couponExpire: 1
+                                                }
+                                            }
+                                        ],
+                                        as: 'product'
+                                    }
+                                },
+                                {
+                                    $unwind: '$product'
+                                }
+                            ],
+                            as: 'pointStatement'
+                        }
+                    },
+                    {
+                        $unwind: '$pointStatement'
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            createdDate: 1,
+                            userId: 1,
+                            pointStatement: 1,
+                            productId: 1,
+                            expireDate: 1,
+                            activeDate: 1,
+                            active: 1
+                        }
+                    },
+                    {
+                        $skip: skips
+                    },
+                    {
+                        $limit: take
+                    },
+                ]
+            );
+
+            const expireCoupon = await this.userCouponService.aggregate(
+                [
+                    {
+                        $match:{
+                            userId: userObjId,
+                            active: false,
+                            activeDate: {$ne:null},
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PointStatement',
+                            let: { 'productId': '$productId' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$productId', '$productId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: {
+                                        type:'COUPON_HAS_EXPIRED',
+                                        productId: { $ne: null },
+                                        userId: userObjId
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        _id: 1,
+                                        title: 1,
+                                        point: 1,
+                                        productId: 1,
+                                        userId: 1,
+                                        type: 1
+                                    }
+                                },
+                                {
+                                    $skip: skips
+                                },
+                                {
+                                    $limit: take
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Product',
+                                        let: { 'productId': '$productId' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$productId', '$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $skip: skips
+                                            },
+                                            {
+                                                $limit: take
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    categoryId: 1,
+                                                    title: 1,
+                                                    detail: 1,
+                                                    point: 1,
+                                                    userId: 1,
+                                                    asssetId: 1,
+                                                    coverPageURL: 1,
+                                                    s3CoverPageURL: 1,
+                                                    categoryName: 1,
+                                                    expiringDate: 1,
+                                                    activeDate: 1,
+                                                    receiverCoupon: 1,
+                                                    couponExpire: 1
+                                                }
+                                            }
+                                        ],
+                                        as: 'product'
+                                    }
+                                },
+                                {
+                                    $unwind: '$product'
+                                }
+                            ],
+                            as: 'pointStatement'
+                        }
+                    },
+                    {
+                        $unwind: '$pointStatement'
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            createdDate: 1,
+                            userId: 1,
+                            pointStatement: 1,
+                            productId: 1,
+                            expireDate: 1,
+                            activeDate: 1,
+                            active: 1
+                        }
+                    },
+                    {
+                        $skip: skips
+                    },
+                    {
+                        $limit: take
+                    },
+                ]
+            );
+
+            if(pointLimitOffsetRequest.whereConditions === undefined) {
+                result = {
+                    'readyCoupon': redeem,
+                    'alreadyCoupon': usedCoupon,
+                    'expireCoupon': expireCoupon,
+                };
+    
+                if(result['readyCoupon'].length > 0 || result['alreadyCoupon'].length > 0 || result['expireCoupon'].length > 0) {
+                    successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                    return res.status(200).send(successResponse);
+                } else {
+                    successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                    return res.status(200).send(successResponse);
+                }
+           }
         }  
         if(typeCondition !== undefined) {
             userCoupon.push(
@@ -931,13 +1179,10 @@ export class NotificationController {
                 },
             );
         }
-        let result: any|string|number = {};
        const search = await this.userCouponService.aggregate(userCoupon);
        // readyCoupon
        // alreadyCoupon
        // expireCoupon
-
-       let successResponse:any = undefined;
 
        if(
         pointLimitOffsetRequest.whereConditions?.type === 'REDEEM' && 
@@ -972,38 +1217,6 @@ export class NotificationController {
             successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
             return res.status(200).send(successResponse);
         }
-
-        if(pointLimitOffsetRequest.whereConditions === undefined) {
-            result = {
-                'readyCoupon': [],
-                'alreadyCoupon': [],
-                'expireCoupon': [],
-            };
-
-            if(search.length > 0) {
-                for(const content of search) {
-                    if(content.pointStatement.type === 'REDEEM' && content.expireDate.getTime() > today.getTime()) {
-                        result['readyCoupon'].push(content);
-                    }
-                    if(content.pointStatement.type === 'REDEEM' && today.getTime() > content.expireDate.getTime()) {
-                        result['expireCoupon'].push(content);
-                    }
-                    if(content.pointStatement.type === 'USE_COUPON'){
-                        result['alreadyCoupon'].push(content);
-                    }
-                    if(content.pointStatement.type === 'COUPON_HAS_EXPIRED') {
-                        result['expireCoupon'].push(content);
-                    }
-                }
-            }
-            if(result['readyCoupon'].length > 0 || result['alreadyCoupon'].length > 0 || result['expireCoupon'].length > 0) {
-                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
-                return res.status(200).send(successResponse);
-            } else {
-                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
-                return res.status(200).send(successResponse);
-            }
-       }
 
     }
 

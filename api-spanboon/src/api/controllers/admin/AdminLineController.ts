@@ -238,7 +238,7 @@ export class AdminPointController {
             }
         }
         const today = new Date();
-        const twoWeeksAgo = new Date(today.getTime() - 24 * 60 * 60 * 1000 * 31);
+        const twoWeeksAgo = new Date(today.getTime() - 24 * 60 * 60 * 1000 * 90);
         const kaokaiSnapshot = await this.kaokaiTodaySnapShotService.aggregate(
             [
                 {
@@ -340,7 +340,7 @@ export class AdminPointController {
                                                     'action': {
                                                         'type': 'uri',
                                                         'label': 'อ่านเพิ่มเติม',
-                                                        'uri': kaokaiToday+'?openExternalBrowser=1'
+                                                        'uri': kaokaiToday+'&openExternalBrowser=1'
                                                     },
                                                     'color': '#F18805',
                                                     'scaling': false,
@@ -370,7 +370,7 @@ export class AdminPointController {
                         }
                     );
                 }
-                console.log('kaokaiToday',kaokaiToday);
+
                 if (
                     parseInt(key, 10) === 1 &&
                     kaokaiSnapshot.length > 0 &&
@@ -427,7 +427,7 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday+'?openExternalBrowser=1',
+                                'uri': kaokaiToday+'&openExternalBrowser=1',
                             }
                         },
                     );
@@ -442,7 +442,6 @@ export class AdminPointController {
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
-                    console.log('kaokaiToday_3',kaokaiToday);
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
                             'type': 'box',
@@ -488,7 +487,7 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday+'?openExternalBrowser=1',
+                                'uri': kaokaiToday+'&openExternalBrowser=1',
                             }
                         },
                     );
@@ -503,7 +502,6 @@ export class AdminPointController {
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
-                    console.log('kaokaiToday_4',kaokaiToday);
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
                             'type': 'box',
@@ -549,7 +547,7 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday+'?openExternalBrowser=1',
+                                'uri': kaokaiToday+'&openExternalBrowser=1',
                             }
                         },
                     );
