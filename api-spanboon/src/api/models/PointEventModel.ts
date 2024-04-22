@@ -46,14 +46,17 @@ export class PointEventModel extends BaseModel {
     @Column({ name: 'username' })
     public username: string;
 
-    @Column({ name: 'link'})
+    @Column({ name: 'link' })
     public link: string;
 
-    @Column({ name: 's3CoverPageURL'})
+    @Column({ name: 's3CoverPageURL' })
     public s3CoverPageURL: string;
 
-    @Column({ name: 'receiver'})
+    @Column({ name: 'receiver' })
     public receiver: number;
+
+    @Column({ name: 'pin' })
+    public pin: boolean;
 
     @BeforeInsert()
     public createDetails(): any {

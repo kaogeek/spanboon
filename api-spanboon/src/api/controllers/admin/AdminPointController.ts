@@ -128,7 +128,8 @@ export class AdminPointController {
                     username: user.username,
                     link: pointEventRequest.link,
                     s3CoverPageURL: signUrl,
-                    updateDate: new Date()
+                    updateDate: new Date(),
+                    pin: pointEventRequest.pin
                 }
             }
         );
@@ -363,7 +364,8 @@ export class AdminPointController {
                     assetId: categoryPointRequest.assetId,
                     coverPageURL: categoryPointRequest.coverPageURL,
                     s3CoverPageURL: signUrl,
-                    updateDate: new Date()
+                    updateDate: new Date(),
+                    pin: categoryPointRequest.pin
                 }
             }
         );
@@ -413,7 +415,7 @@ export class AdminPointController {
         }
 
         const convertPoint = Math.ceil(productRequest.point);
-        if(convertPoint < 0){
+        if (convertPoint < 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Point is less than 0.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -485,7 +487,8 @@ export class AdminPointController {
                     expiringDate: new Date(productRequest.expiringDate),
                     activeDate: new Date(productRequest.activeDate),
                     couponExpire: productRequest.couponExpire,
-                    updateDate: new Date()
+                    updateDate: new Date(),
+                    pin: productRequest.pin
                 }
             }
         );

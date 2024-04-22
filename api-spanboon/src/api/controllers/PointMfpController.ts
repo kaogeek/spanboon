@@ -320,7 +320,7 @@ export class NotificationController {
         newValues = {
             $set:
             {
-                active:true,
+                active: true,
                 activeDate: today
             }
         };
@@ -686,7 +686,7 @@ export class NotificationController {
         let result: any|string|number = {};
         let successResponse:any = undefined;
         // { $ne: null }
-        const userCoupon: any|string|number = [];
+        const userCoupon: any | string | number = [];
         userCoupon.push(
             {
                 $match: {
@@ -1205,10 +1205,21 @@ export class NotificationController {
         if(result['alreadyCoupon'].length > 0){
             successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
             return res.status(200).send(successResponse);
-        }
         } else if (
-            pointLimitOffsetRequest.whereConditions?.type === 'COUPON_HAS_EXPIRED' && 
-            pointLimitOffsetRequest.whereConditions?.active === false && 
+            pointLimitOffsetRequest.whereConditions?.type === 'USE_COUPON' &&
+            pointLimitOffsetRequest.whereConditions?.active === true &&
+            pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
+        ) {
+            result = {
+                'alreadyCoupon': search.length > 0 ? search : null
+            };
+            if (result['alreadyCoupon'].length > 0) {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            }
+        } else if (
+            pointLimitOffsetRequest.whereConditions?.type === 'COUPON_HAS_EXPIRED' &&
+            pointLimitOffsetRequest.whereConditions?.active === false &&
             pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
         ) {
             result = {
@@ -1430,7 +1441,7 @@ export class NotificationController {
                 {
                     $match: {
                         userId: userObjId,
-                        active:false,
+                        active: false,
                         activeDate: null,
                         expireDate: { $gte: today }
                     }
@@ -1443,6 +1454,11 @@ export class NotificationController {
 
         const pointEventsAggr = await this.pointEventService.aggregate(
             [
+                {
+                    $match: {
+                        pin: true
+                    }
+                },
                 {
                     $sort: {
                         createdDate: -1
@@ -1549,6 +1565,11 @@ export class NotificationController {
                                 }
                             },
                             {
+                                $match: {
+                                    pin: true
+                                }
+                            },
+                            {
                                 $project: {
                                     _id: 1,
                                     createdDate: 1,
@@ -1610,8 +1631,8 @@ export class NotificationController {
                     $group: {
                         _id: '$_id',
                         title: { $first: '$title' },
-                        coverPageURL: {$first: '$coverPageURL'},
-                        s3CoverPageURL: {$first:'$s3CoverPageURL'}
+                        coverPageURL: { $first: '$coverPageURL' },
+                        s3CoverPageURL: { $first: '$s3CoverPageURL' }
                     }
                 },
                 {
