@@ -62,7 +62,8 @@ import { DeviceDetectorModule } from 'ngx-device-detector';
 
 import {
   PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, PipeThFormatDatetime,
-  PipeThDatetime, HighlightText, HighlightTextEvent, ConvertTextNotification, ReadmorePipe, CustomDateFormat, PipeThDateFormat
+  PipeThDatetime, HighlightText, HighlightTextEvent, ConvertTextNotification, ReadmorePipe, CustomDateFormat, PipeThDateFormat,
+  ShortNumberCustomPipe
 } from './components/shares/pipes/pipes';
 
 import {
@@ -516,6 +517,7 @@ const PIPE_CLASSES: any[] = [
   SafePipe,
   RemoveBadWords,
   ReadmorePipe,
+  ShortNumberCustomPipe,
 ];
 
 const DIRECTIVE_CLASSES: any[] = [

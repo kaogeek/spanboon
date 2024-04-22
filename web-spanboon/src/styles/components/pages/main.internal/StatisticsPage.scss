@@ -285,6 +285,7 @@
         }
 
         > .wrapper-page {
+          grid-template-columns: 1fr 1fr;
           display: grid;
           margin-top: 8px;
           gap: 8px;

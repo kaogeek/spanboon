@@ -1,7 +1,7 @@
 <div class="date-picker">
     <mat-form-field>
-        <input matInput [matDatepicker]="dp" placeholder="Choose year" [min]="minDate" [max]="maxDate"
-            [formControl]="date" (click)="dp.open()">
+        <input matInput [matDatepicker]="dp" placeholder="เลือกปี" [min]="minDate" [max]="maxDate" [formControl]="date"
+            (click)="dp.open()">
         <mat-datepicker #dp startView="multi-year" (yearSelected)="chosenYearHandler($event, dp)"
             panelClass="example-month-picker">
         </mat-datepicker>

@@ -18,3 +18,4 @@ export * from './HighlightTextEvent.pipe';
 export * from './ConvertTextNotification.pipe';
 export * from './Readmore.pipe';
 export * from './CustomDateFormat.pipe';
+export * from './ShortNumberCustom.pipe';
