@@ -320,7 +320,7 @@ export class NotificationController {
         newValues = {
             $set:
             {
-                active:true,
+                active: true,
                 activeDate: today
             }
         };
@@ -684,7 +684,7 @@ export class NotificationController {
         let activeDateCoupon = pointLimitOffsetRequest.whereConditions?.activeDate;
         const today = new Date();
         // { $ne: null }
-        const userCoupon: any|string|number = [];
+        const userCoupon: any | string | number = [];
         userCoupon.push(
             {
                 $match: {
@@ -693,11 +693,11 @@ export class NotificationController {
             },
         );
 
-        if(pointLimitOffsetRequest.whereConditions === undefined) {
+        if (pointLimitOffsetRequest.whereConditions === undefined) {
             userCoupon.push(
                 {
-                    $match:{
-                        active:false,
+                    $match: {
+                        active: false,
                         activeDate: null,
                         expireDate: { $gte: today }
                     }
@@ -705,32 +705,32 @@ export class NotificationController {
             );
         }
 
-        if(
-            pointLimitOffsetRequest.whereConditions?.active !== undefined 
-            && typeCondition === 'REDEEM') { 
-                activeCoupon = 
-                {
-                    $match:{
-                        active:activeCoupon,
-                        expireDate: { $gte: today }
-                    }
-                }; 
-                userCoupon.push(activeCoupon);
+        if (
+            pointLimitOffsetRequest.whereConditions?.active !== undefined
+            && typeCondition === 'REDEEM') {
+            activeCoupon =
+            {
+                $match: {
+                    active: activeCoupon,
+                    expireDate: { $gte: today }
+                }
+            };
+            userCoupon.push(activeCoupon);
         }
-        if(
-            pointLimitOffsetRequest.whereConditions?.active !== undefined 
-            && typeCondition !== 'REDEEM') { 
-                activeCoupon = 
-                {
-                    $match:{
-                        active:activeCoupon
-                    }
-                }; 
-                userCoupon.push(activeCoupon);
+        if (
+            pointLimitOffsetRequest.whereConditions?.active !== undefined
+            && typeCondition !== 'REDEEM') {
+            activeCoupon =
+            {
+                $match: {
+                    active: activeCoupon
+                }
+            };
+            userCoupon.push(activeCoupon);
         }
-        if(activeDateCoupon === 'not_null') { activeDateCoupon = {$match:{activeDate: {$ne:null}}}; userCoupon.push(activeDateCoupon);}
-        if(activeDateCoupon === null) { activeDateCoupon = {$match:{activeDate: null}}; userCoupon.push(activeDateCoupon);}
-        if(typeCondition === undefined) { 
+        if (activeDateCoupon === 'not_null') { activeDateCoupon = { $match: { activeDate: { $ne: null } } }; userCoupon.push(activeDateCoupon); }
+        if (activeDateCoupon === null) { activeDateCoupon = { $match: { activeDate: null } }; userCoupon.push(activeDateCoupon); }
+        if (typeCondition === undefined) {
             userCoupon.push(
                 {
                     $lookup: {
@@ -835,8 +835,8 @@ export class NotificationController {
                     $limit: take
                 },
             );
-        }  
-        if(typeCondition !== undefined) {
+        }
+        if (typeCondition !== undefined) {
             userCoupon.push(
                 {
                     $lookup: {
@@ -943,39 +943,38 @@ export class NotificationController {
                 },
             );
         }
-        let result: any|string|number = {};
-       const search = await this.userCouponService.aggregate(userCoupon);
-       // readyCoupon
-       // alreadyCoupon
-       // expireCoupon
+        let result: any | string | number = {};
+        const search = await this.userCouponService.aggregate(userCoupon);
+        // readyCoupon
+        // alreadyCoupon
+        // expireCoupon
 
-       let successResponse:any = undefined;
+        let successResponse: any = undefined;
 
-       if(
-        pointLimitOffsetRequest.whereConditions?.type === 'REDEEM' && 
-        pointLimitOffsetRequest.whereConditions?.active === false && 
-        pointLimitOffsetRequest.whereConditions?.activeDate === null) 
-        {
-        result = {
-            'readyCoupon': search.length > 0 ? search : null
-        };
-        successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
-        return res.status(200).send(successResponse);
-        } else if (
-            pointLimitOffsetRequest.whereConditions?.type === 'USE_COUPON' && 
-            pointLimitOffsetRequest.whereConditions?.active === true && 
-            pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
-        ) {
-        result = {
-            'alreadyCoupon': search.length > 0 ? search : null
-        };
-        if(result['alreadyCoupon'].length > 0){
+        if (
+            pointLimitOffsetRequest.whereConditions?.type === 'REDEEM' &&
+            pointLimitOffsetRequest.whereConditions?.active === false &&
+            pointLimitOffsetRequest.whereConditions?.activeDate === null) {
+            result = {
+                'readyCoupon': search.length > 0 ? search : null
+            };
             successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
             return res.status(200).send(successResponse);
-        }
         } else if (
-            pointLimitOffsetRequest.whereConditions?.type === 'COUPON_HAS_EXPIRED' && 
-            pointLimitOffsetRequest.whereConditions?.active === false && 
+            pointLimitOffsetRequest.whereConditions?.type === 'USE_COUPON' &&
+            pointLimitOffsetRequest.whereConditions?.active === true &&
+            pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
+        ) {
+            result = {
+                'alreadyCoupon': search.length > 0 ? search : null
+            };
+            if (result['alreadyCoupon'].length > 0) {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            }
+        } else if (
+            pointLimitOffsetRequest.whereConditions?.type === 'COUPON_HAS_EXPIRED' &&
+            pointLimitOffsetRequest.whereConditions?.active === false &&
             pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
         ) {
             result = {
@@ -985,34 +984,34 @@ export class NotificationController {
             return res.status(200).send(successResponse);
         }
 
-        if(pointLimitOffsetRequest.whereConditions === undefined) {
+        if (pointLimitOffsetRequest.whereConditions === undefined) {
             result = {
                 'readyCoupon': [],
                 'alreadyCoupon': [],
                 'expireCoupon': [],
             };
 
-            if(search.length > 0) {
-                for(const content of search) {
-                    if(content.pointStatement.type === 'REDEEM') {
+            if (search.length > 0) {
+                for (const content of search) {
+                    if (content.pointStatement.type === 'REDEEM') {
                         result['readyCoupon'].push(content);
                     }
-                    if(content.pointStatement.type === 'USE_COUPON'){
+                    if (content.pointStatement.type === 'USE_COUPON') {
                         result['alreadyCoupon'].push(content);
                     }
-                    if(content.pointStatement.type === 'COUPON_HAS_EXPIRED') {
+                    if (content.pointStatement.type === 'COUPON_HAS_EXPIRED') {
                         result['expireCoupon'].push(content);
                     }
                 }
             }
-            if(result['readyCoupon'].length > 0 || result['alreadyCoupon'].length > 0 || result['expireCoupon'].length > 0) {
+            if (result['readyCoupon'].length > 0 || result['alreadyCoupon'].length > 0 || result['expireCoupon'].length > 0) {
                 successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
                 return res.status(200).send(successResponse);
             } else {
                 successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
                 return res.status(200).send(successResponse);
             }
-       }
+        }
 
     }
 
@@ -1226,7 +1225,7 @@ export class NotificationController {
                 {
                     $match: {
                         userId: userObjId,
-                        active:false,
+                        active: false,
                         activeDate: null,
                         expireDate: { $gte: today }
                     }
@@ -1239,6 +1238,11 @@ export class NotificationController {
 
         const pointEventsAggr = await this.pointEventService.aggregate(
             [
+                {
+                    $match: {
+                        pin: true
+                    }
+                },
                 {
                     $sort: {
                         createdDate: -1
@@ -1345,6 +1349,11 @@ export class NotificationController {
                                 }
                             },
                             {
+                                $match: {
+                                    pin: true
+                                }
+                            },
+                            {
                                 $project: {
                                     _id: 1,
                                     createdDate: 1,
@@ -1406,8 +1415,8 @@ export class NotificationController {
                     $group: {
                         _id: '$_id',
                         title: { $first: '$title' },
-                        coverPageURL: {$first: '$coverPageURL'},
-                        s3CoverPageURL: {$first:'$s3CoverPageURL'}
+                        coverPageURL: { $first: '$coverPageURL' },
+                        s3CoverPageURL: { $first: '$s3CoverPageURL' }
                     }
                 },
                 {
