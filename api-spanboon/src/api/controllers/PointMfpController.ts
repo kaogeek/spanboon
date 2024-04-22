@@ -320,7 +320,7 @@ export class NotificationController {
         newValues = {
             $set:
             {
-                active: true,
+                active:true,
                 activeDate: today
             }
         };
@@ -679,22 +679,165 @@ export class NotificationController {
         const userObjId = new ObjectID(req.user.id);
         const take = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.limit : 10;
         const skips = pointLimitOffsetRequest !== undefined ? pointLimitOffsetRequest.offset : 0;
-        const typeCondition = pointLimitOffsetRequest.whereConditions.type;
-        const activeCoupon = pointLimitOffsetRequest.whereConditions.active; // boolean true, false
-        let activeDateCoupon = pointLimitOffsetRequest.whereConditions.activeDate;
+        const typeCondition = pointLimitOffsetRequest.whereConditions?.type;
+        let activeCoupon = pointLimitOffsetRequest.whereConditions?.active; // boolean true, false
+        let activeDateCoupon = pointLimitOffsetRequest.whereConditions?.activeDate;
+        const today = new Date();
         // { $ne: null }
-        if (activeDateCoupon === 'not_null') { activeDateCoupon = { $ne: null }; }
-        console.log('activeCoupon', activeCoupon);
-        console.log('activeDateCoupon', activeDateCoupon);
-        const userCoupon = await this.userCouponService.aggregate(
-            [
+        const userCoupon: any|string|number = [];
+        userCoupon.push(
+            {
+                $match: {
+                    userId: userObjId,
+                }
+            },
+        );
+
+        if(pointLimitOffsetRequest.whereConditions === undefined) {
+            userCoupon.push(
                 {
-                    $match: {
-                        userId: userObjId,
-                        active: activeCoupon,
-                        activeDate: activeDateCoupon
+                    $match:{
+                        active:false,
+                        activeDate: null,
+                        expireDate: { $gte: today }
+                    }
+                }
+            );
+        }
+
+        if(
+            pointLimitOffsetRequest.whereConditions?.active !== undefined 
+            && typeCondition === 'REDEEM') { 
+                activeCoupon = 
+                {
+                    $match:{
+                        active:activeCoupon,
+                        expireDate: { $gte: today }
+                    }
+                }; 
+                userCoupon.push(activeCoupon);
+        }
+        if(
+            pointLimitOffsetRequest.whereConditions?.active !== undefined 
+            && typeCondition !== 'REDEEM') { 
+                activeCoupon = 
+                {
+                    $match:{
+                        active:activeCoupon
+                    }
+                }; 
+                userCoupon.push(activeCoupon);
+        }
+        if(activeDateCoupon === 'not_null') { activeDateCoupon = {$match:{activeDate: {$ne:null}}}; userCoupon.push(activeDateCoupon);}
+        if(activeDateCoupon === null) { activeDateCoupon = {$match:{activeDate: null}}; userCoupon.push(activeDateCoupon);}
+        if(typeCondition === undefined) { 
+            userCoupon.push(
+                {
+                    $lookup: {
+                        from: 'PointStatement',
+                        let: { 'productId': '$productId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$productId', '$productId']
+                                    }
+                                }
+                            },
+                            {
+                                $match: {
+                                    productId: { $ne: null },
+                                    userId: userObjId
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    title: 1,
+                                    point: 1,
+                                    productId: 1,
+                                    userId: 1,
+                                    type: 1
+                                }
+                            },
+                            {
+                                $skip: skips
+                            },
+                            {
+                                $limit: take
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Product',
+                                    let: { 'productId': '$productId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$productId', '$_id']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $skip: skips
+                                        },
+                                        {
+                                            $limit: take
+                                        },
+                                        {
+                                            $project: {
+                                                _id: 1,
+                                                categoryId: 1,
+                                                title: 1,
+                                                detail: 1,
+                                                point: 1,
+                                                userId: 1,
+                                                asssetId: 1,
+                                                coverPageURL: 1,
+                                                s3CoverPageURL: 1,
+                                                categoryName: 1,
+                                                expiringDate: 1,
+                                                activeDate: 1,
+                                                receiverCoupon: 1,
+                                                couponExpire: 1
+                                            }
+                                        }
+                                    ],
+                                    as: 'product'
+                                }
+                            },
+                            {
+                                $unwind: '$product'
+                            }
+                        ],
+                        as: 'pointStatement'
                     }
                 },
+                {
+                    $unwind: '$pointStatement'
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        createdDate: 1,
+                        userId: 1,
+                        pointStatement: 1,
+                        productId: 1,
+                        expireDate: 1,
+                        activeDate: 1,
+                        active: 1
+                    }
+                },
+                {
+                    $skip: skips
+                },
+                {
+                    $limit: take
+                },
+            );
+        }  
+        if(typeCondition !== undefined) {
+            userCoupon.push(
                 {
                     $lookup: {
                         from: 'PointStatement',
@@ -798,13 +941,79 @@ export class NotificationController {
                 {
                     $limit: take
                 },
-            ]
-        );
-        const result = {
-            'userCoupon': userCoupon.length > 0 ? userCoupon : null
+            );
+        }
+        let result: any|string|number = {};
+       const search = await this.userCouponService.aggregate(userCoupon);
+       // readyCoupon
+       // alreadyCoupon
+       // expireCoupon
+
+       let successResponse:any = undefined;
+
+       if(
+        pointLimitOffsetRequest.whereConditions?.type === 'REDEEM' && 
+        pointLimitOffsetRequest.whereConditions?.active === false && 
+        pointLimitOffsetRequest.whereConditions?.activeDate === null) 
+        {
+        result = {
+            'readyCoupon': search.length > 0 ? search : null
         };
-        const successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+        successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
         return res.status(200).send(successResponse);
+        } else if (
+            pointLimitOffsetRequest.whereConditions?.type === 'USE_COUPON' && 
+            pointLimitOffsetRequest.whereConditions?.active === true && 
+            pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
+        ) {
+        result = {
+            'alreadyCoupon': search.length > 0 ? search : null
+        };
+        if(result['alreadyCoupon'].length > 0){
+            successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+            return res.status(200).send(successResponse);
+        }
+        } else if (
+            pointLimitOffsetRequest.whereConditions?.type === 'COUPON_HAS_EXPIRED' && 
+            pointLimitOffsetRequest.whereConditions?.active === false && 
+            pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
+        ) {
+            result = {
+                'expireCoupon': search.length > 0 ? search : null
+            };
+            successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+            return res.status(200).send(successResponse);
+        }
+
+        if(pointLimitOffsetRequest.whereConditions === undefined) {
+            result = {
+                'readyCoupon': [],
+                'alreadyCoupon': [],
+                'expireCoupon': [],
+            };
+
+            if(search.length > 0) {
+                for(const content of search) {
+                    if(content.pointStatement.type === 'REDEEM') {
+                        result['readyCoupon'].push(content);
+                    }
+                    if(content.pointStatement.type === 'USE_COUPON'){
+                        result['alreadyCoupon'].push(content);
+                    }
+                    if(content.pointStatement.type === 'COUPON_HAS_EXPIRED') {
+                        result['expireCoupon'].push(content);
+                    }
+                }
+            }
+            if(result['readyCoupon'].length > 0 || result['alreadyCoupon'].length > 0 || result['expireCoupon'].length > 0) {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            } else {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            }
+       }
+
     }
 
     @Post('/sort/accumulate/search')
@@ -1017,6 +1226,7 @@ export class NotificationController {
                 {
                     $match: {
                         userId: userObjId,
+                        active:false,
                         activeDate: null,
                         expireDate: { $gte: today }
                     }
@@ -1195,7 +1405,9 @@ export class NotificationController {
                 {
                     $group: {
                         _id: '$_id',
-                        title: { $first: '$title' }
+                        title: { $first: '$title' },
+                        coverPageURL: {$first: '$coverPageURL'},
+                        s3CoverPageURL: {$first:'$s3CoverPageURL'}
                     }
                 },
                 {
