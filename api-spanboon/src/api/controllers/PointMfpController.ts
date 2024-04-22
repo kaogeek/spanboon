@@ -682,7 +682,7 @@ export class NotificationController {
         const typeCondition = pointLimitOffsetRequest.whereConditions?.type;
         let activeCoupon = pointLimitOffsetRequest.whereConditions?.active; // boolean true, false
         let activeDateCoupon = pointLimitOffsetRequest.whereConditions?.activeDate;
-
+        const today = new Date();
         // { $ne: null }
         const userCoupon: any|string|number = [];
         userCoupon.push(
@@ -692,8 +692,42 @@ export class NotificationController {
                 }
             },
         );
-        if(activeCoupon === undefined) { activeCoupon = {$or:[{active:false},{active:true}]};}
-        if(activeCoupon !== undefined) { activeCoupon = {$match:{active:activeDateCoupon}};}
+
+        if(pointLimitOffsetRequest.whereConditions === undefined) {
+            userCoupon.push(
+                {
+                    $match:{
+                        active:false,
+                        activeDate: null,
+                        expireDate: { $gte: today }
+                    }
+                }
+            );
+        }
+
+        if(
+            pointLimitOffsetRequest.whereConditions?.active !== undefined 
+            && typeCondition === 'REDEEM') { 
+                activeCoupon = 
+                {
+                    $match:{
+                        active:activeCoupon,
+                        expireDate: { $gte: today }
+                    }
+                }; 
+                userCoupon.push(activeCoupon);
+        }
+        if(
+            pointLimitOffsetRequest.whereConditions?.active !== undefined 
+            && typeCondition !== 'REDEEM') { 
+                activeCoupon = 
+                {
+                    $match:{
+                        active:activeCoupon
+                    }
+                }; 
+                userCoupon.push(activeCoupon);
+        }
         if(activeDateCoupon === 'not_null') { activeDateCoupon = {$match:{activeDate: {$ne:null}}}; userCoupon.push(activeDateCoupon);}
         if(activeDateCoupon === null) { activeDateCoupon = {$match:{activeDate: null}}; userCoupon.push(activeDateCoupon);}
         if(typeCondition === undefined) { 
@@ -1192,6 +1226,7 @@ export class NotificationController {
                 {
                     $match: {
                         userId: userObjId,
+                        active:false,
                         activeDate: null,
                         expireDate: { $gte: today }
                     }
