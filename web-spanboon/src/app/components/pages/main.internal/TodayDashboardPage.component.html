@@ -1,7 +1,7 @@
 <div class="wrapper-statistic-page">
     <div class="wrapper-left">
         <div class="menu-wrapper">
-            <p [attr.aria-label]="'แดชบอร์ด'">แดชบอร์ด</p>
+            <p [attr.aria-label]="'สถิติการใช้งาน'">สถิติการใช้งาน</p>
             <ng-container *ngFor="let item of menuList">
                 <div class="menu-box" role="button" [class.active]="activeMenu === item.status"
                     [routerLink]="!!item.status ? ['', 'dashboard', item.status] : ['','dashboard']">
@@ -33,8 +33,7 @@
                 </div>
                 <div class="container-item">
                     <div class="header">
-                        <span style="font-weight: bold;" [attr.aria-label]="'MFP'">MFP </span>
-                        <span [attr.aria-label]="'Dashboard'">Dashboard</span>
+                        <span [attr.aria-label]="'สถิติการใช้งาน'">สถิติการใช้งาน</span>
                     </div>
                     <datepicker-year (chooseDate)="chooseDate($event)"></datepicker-year>
                     <div class="wrapper-item">
@@ -101,12 +100,9 @@
                             [attr.aria-label]="'จำนวนเพจที่มีผู้ติดตามมากที่สุดจากมากไปน้อย 50 อันดับแรก'">จำนวนเพจที่มีผู้ติดตามมากที่สุดจากมากไปน้อย
                             50 อันดับแรก</span>
                     </div>
-                    <div class="wrapper-page" *ngIf="!!listPage"
-                        [ngStyle]="{'grid-template-columns': listPage.length <= 24 ? '1fr' : 'repeat(2, 1fr)'}">
+                    <div class="wrapper-page" *ngIf="!!listPage">
                         <ng-container *ngFor="let item of listPage;let index = index">
-                            <div class="page"
-                                [ngStyle]="{'grid-column': index <= 24 ? '1' : '2', 'grid-row': index > 24 ? getGridRow(index) : ''}"
-                                (click)="clickToPage(item)">
+                            <div class="page" (click)="clickToPage(item)">
                                 <div class="ranking">
                                     <img *ngIf="index === 0" src="../../../../assets/img/ranking-1.png" alt="อันดับ1">
                                     <img *ngIf="index === 1" src="../../../../assets/img/ranking-2.png" alt="อันดับ2">
@@ -137,10 +133,9 @@
                             </div>
                         </ng-container>
                     </div>
-                    <div class="wrapper-page" *ngIf="isLoading" [ngStyle]="{'grid-template-columns': 'repeat(2, 1fr)'}">
+                    <div class="wrapper-page" *ngIf="isLoading">
                         <ng-container *ngFor="let item of dataLoading;let index = index">
-                            <div class="page"
-                                [ngStyle]="{'grid-column': index <= 24 ? '1' : '2', 'grid-row': index > 24 ? getGridRow(index) : ''}">
+                            <div class="page">
                                 <div class="ranking">
                                     <img *ngIf="index === 0" src="../../../../assets/img/ranking-1.png" alt="">
                                     <img *ngIf="index === 1" src="../../../../assets/img/ranking-2.png" alt="">

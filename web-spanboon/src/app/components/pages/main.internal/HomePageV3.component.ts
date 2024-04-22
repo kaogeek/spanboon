@@ -151,10 +151,13 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         this.authenManager.checkAccountStatus(tokens, mode, { updateUser: true });
       }
       if (rawDate) {
-        const dateParts = rawDate.split('-');
-        this.queryParamsUrl = new Date(`${dateParts[1]}-${dateParts[0]}-${dateParts[2]}`).getTime();
+        // const dateParts = rawDate.split('-');
+        // this.queryParamsUrl = new Date(`${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`).getTime(); //year-month-day
+        const dateUTC = new Date(`${rawDate}T00:00:00Z`);
+        dateUTC.setUTCHours(dateUTC.getUTCHours() - 7); // Subtract 7 hours from UTC time
+        const timestamp = dateUTC.getTime();
+        this.queryParamsUrl = timestamp;
       }
-      // You can use the value of the 'date' parameter here
     });
     this.startDate = new Date();
     this.pageFacade = pageFacade;
@@ -249,7 +252,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
-    let formattedDate = `${day}-${month}-${year}`;
+    let formattedDate = `${year}-${month}-${day}`;
     this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res) => {
       if (res) {
         this.model = res.data.data;
@@ -557,9 +560,13 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     const dateReal = dateFormat.setDate(dateFormat.getDate());
     const dates = new Date(dateReal).toISOString(); // convert to ISO string
     this.mainPageModelFacade.snapshot(snapshot, dates).then((res) => {
-
+      if (res) {
+        this.isLoading = false;
+      }
     }).catch((err) => {
-      if (err) { }
+      if (err) {
+        this.isLoading = false;
+      }
     })
   }
 
