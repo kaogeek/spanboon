@@ -699,7 +699,6 @@ export class NotificationController {
                     $match: {
                         active: false,
                         activeDate: null,
-                        expireDate: { $gte: today }
                     }
                 }
             );
@@ -707,27 +706,16 @@ export class NotificationController {
 
         if (
             pointLimitOffsetRequest.whereConditions?.active !== undefined
-            && typeCondition === 'REDEEM') {
+        ) {
             activeCoupon =
             {
                 $match: {
                     active: activeCoupon,
-                    expireDate: { $gte: today }
                 }
             };
             userCoupon.push(activeCoupon);
         }
-        if (
-            pointLimitOffsetRequest.whereConditions?.active !== undefined
-            && typeCondition !== 'REDEEM') {
-            activeCoupon =
-            {
-                $match: {
-                    active: activeCoupon
-                }
-            };
-            userCoupon.push(activeCoupon);
-        }
+
         if (activeDateCoupon === 'not_null') { activeDateCoupon = { $match: { activeDate: { $ne: null } } }; userCoupon.push(activeDateCoupon); }
         if (activeDateCoupon === null) { activeDateCoupon = { $match: { activeDate: null } }; userCoupon.push(activeDateCoupon); }
         if (typeCondition === undefined) {
@@ -993,8 +981,11 @@ export class NotificationController {
 
             if (search.length > 0) {
                 for (const content of search) {
-                    if (content.pointStatement.type === 'REDEEM') {
+                    if (content.pointStatement.type === 'REDEEM' && content.expireDate.getTime() > today.getTime()) {
                         result['readyCoupon'].push(content);
+                    }
+                    if (content.pointStatement.type === 'REDEEM' && today.getTime() > content.expireDate.getTime()) {
+                        result['expireCoupon'].push(content);
                     }
                     if (content.pointStatement.type === 'USE_COUPON') {
                         result['alreadyCoupon'].push(content);
