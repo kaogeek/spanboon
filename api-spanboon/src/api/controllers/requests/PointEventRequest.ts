@@ -6,11 +6,9 @@ export class PointEventRequest {
     @IsString()
     public title: string;
     @IsNotEmpty({ message: 'point is required' })
-    @IsPositive({ message: 'value is not Positive number' })
     public point: number;
 
     @IsNotEmpty({ message: 'maximumLimit is required' })
-    @IsPositive({ message: 'value is not Positive number' })
     public maximumLimit: number;
 
     @IsNotEmpty({ message: 'detail is required' })
