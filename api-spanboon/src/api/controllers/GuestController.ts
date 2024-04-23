@@ -1390,7 +1390,11 @@ export class GuestController {
                         Authorization: `Bearer ${tokenCredential}`
                     }
                 }
-            );
+            ).then((response) => {
+                console.log('response',response);
+            }).catch((err) => {
+                console.log('err',err.data);
+            });
         }
         if (loginUser === undefined) {
             const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
@@ -1419,6 +1423,7 @@ export class GuestController {
             identification: getMembershipById ? getMembershipById.data.data.identification_number.slice(0, getMembershipById.data.data.identification_number.length - 4) + 'XXXX' : undefined,
             mobile: getMembershipById ? getMembershipById.data.data.mobile_number.slice(0, getMembershipById.data.data.mobile_number.length - 4) + 'XXXX' : undefined,
         };
+
         const loginEngage = await this.userEngagementService.findOne(
             {
                 action:ENGAGEMENT_ACTION.FIRST_LOGIN,

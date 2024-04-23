@@ -517,7 +517,11 @@ export class PointMfpController {
                             'messages': content['messages']
                         };
                         
-                        await axios.post('https://api.line.me/v2/bot/message/push',requestBody, { headers: {'Content-Type': 'application/json', Accept: 'application/json, text/plain, */*',Authorization: 'Bearer ' + tokenLine}});
+                        await axios.post('https://api.line.me/v2/bot/message/push',requestBody, { headers: {'Content-Type': 'application/json', Accept: 'application/json, text/plain, */*',Authorization: 'Bearer ' + tokenLine}}).then((res) => {            
+                            console.log('response Axios');                
+                        }).catch((err) => {
+                            return err.data.message;
+                        });
                     }
                     const pageLike = await this.configService.getConfig(LINE_NEWS_WEEK_OA);
                     let pageLikePoint = DEFAULT_LINE_NEWS_WEEK_OA;
