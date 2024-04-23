@@ -170,12 +170,18 @@ export class PointMfpController {
             for (const [key, kaokai] of Object.entries(kaokaiSnapshot)) {
                 stackIds.push(new ObjectID(kaokai._id));
                 let kaokaiToday = undefined;
+                let dateTime = undefined;
                 if (parseInt(key, 10) === 0 && kaokaiSnapshot.length > 0) {
                     let dd: any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
                     let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    dateTime = kaokaiSnapshot[key].endDateTime.toLocaleDateString('th-TH', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    });
                     content['messages'][0].contents.body.contents.push(
                         {
                             'type': 'image',
@@ -216,6 +222,15 @@ export class PointMfpController {
                                             'text': kaokai.data.pageRoundRobin.contents[0] !== undefined ? kaokai.data.pageRoundRobin.contents[0].post.title : kaokai.data.majorTrend.contents[0].post.title,
                                             'maxLines': 3,
                                             'wrap': true
+                                        },
+                                        {
+                                            'type': 'text',
+                                            'text': `ฉบับวันที่ ${dateTime}`,
+                                            'gravity': 'bottom',
+                                            'align': 'end',
+                                            'size': '12px',
+                                            'margin': '5px',
+                                            'offsetEnd': '5px'
                                         },
                                         {
                                             'type': 'box',
@@ -267,7 +282,11 @@ export class PointMfpController {
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
-                    console.log('kaokaiToday_2',kaokaiToday);
+                    dateTime = kaokaiSnapshot[key].endDateTime.toLocaleDateString('th-TH', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    });
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
                             'type': 'box',
@@ -302,7 +321,16 @@ export class PointMfpController {
                                             'gravity': 'center',
                                             'maxLines': 3,
                                             'margin': '5px'
-                                        }
+                                        },
+                                        {
+                                            'type': 'text',
+                                            'text': `ฉบับวันที่ ${dateTime}`,
+                                            'gravity': 'bottom',
+                                            'align': 'end',
+                                            'size': '12px',
+                                            'margin': '5px',
+                                            'offsetEnd': '5px'
+                                        },
                                     ]
                                 }
                             ],
@@ -328,6 +356,11 @@ export class PointMfpController {
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    dateTime = kaokaiSnapshot[key].endDateTime.toLocaleDateString('th-TH', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    });
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
                             'type': 'box',
@@ -362,7 +395,16 @@ export class PointMfpController {
                                             'gravity': 'center',
                                             'maxLines': 3,
                                             'margin': '5px'
-                                        }
+                                        },
+                                        {
+                                            'type': 'text',
+                                            'text': `ฉบับวันที่ ${dateTime}`,
+                                            'gravity': 'bottom',
+                                            'align': 'end',
+                                            'size': '12px',
+                                            'margin': '5px',
+                                            'offsetEnd': '5px'
+                                        },
                                     ]
                                 }
                             ],
@@ -388,6 +430,11 @@ export class PointMfpController {
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    dateTime = kaokaiSnapshot[key].endDateTime.toLocaleDateString('th-TH', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    });
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
                             'type': 'box',
@@ -422,7 +469,16 @@ export class PointMfpController {
                                             'gravity': 'center',
                                             'maxLines': 3,
                                             'margin': '5px'
-                                        }
+                                        },
+                                        {
+                                            'type': 'text',
+                                            'text': `ฉบับวันที่ ${dateTime}`,
+                                            'gravity': 'bottom',
+                                            'align': 'end',
+                                            'size': '12px',
+                                            'margin': '5px',
+                                            'offsetEnd': '5px'
+                                        },
                                     ]
                                 }
                             ],

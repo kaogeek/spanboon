@@ -733,7 +733,6 @@ export class PointMfpController {
         if (activeDateCoupon === 'not_null') { activeDateCoupon = { $match: { activeDate: { $ne: null } } }; userCoupon.push(activeDateCoupon); }
         if (activeDateCoupon === null) { activeDateCoupon = { $match: { activeDate: null } }; userCoupon.push(activeDateCoupon); }
         if (typeCondition === undefined) {
-            console.log('pass1');
             const redeem = await this.userCouponService.aggregate([
                 {
                     $match:{
