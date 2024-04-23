@@ -1,16 +1,14 @@
 import 'reflect-metadata';
-import { IsNotEmpty, IsPositive, IsArray, IsString } from 'class-validator';
+import { IsNotEmpty, IsArray, IsString } from 'class-validator';
 
 export class PointEventRequest {
     @IsNotEmpty({ message: 'title is required' })
     @IsString()
     public title: string;
     @IsNotEmpty({ message: 'point is required' })
-    @IsPositive({ message: 'value is not Positive number' })
     public point: number;
 
     @IsNotEmpty({ message: 'maximumLimit is required' })
-    @IsPositive({ message: 'value is not Positive number' })
     public maximumLimit: number;
 
     @IsNotEmpty({ message: 'detail is required' })

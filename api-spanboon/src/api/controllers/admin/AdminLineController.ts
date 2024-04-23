@@ -15,7 +15,9 @@ import { ResponseUtil } from '../../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
 import {
     DEFAULT_PUSH_NOTI_EXPIRATION_MEMBERSHIP,
-    PUSH_NOTI_EXPIRATION_MEMBERSHIP
+    PUSH_NOTI_EXPIRATION_MEMBERSHIP,
+    DEFAULT_LINE_NEWS_WEEK_OA,
+    LINE_NEWS_WEEK_OA
 } from '../../../constants/SystemConfig';
 import { ConfigService } from '../../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../../services/KaokaiTodaySnapShot';
@@ -237,8 +239,13 @@ export class AdminPointController {
                 line.objIds.map((ids) => objStackIds.push(new ObjectID(ids)));
             }
         }
+        const pageLike = await this.configService.getConfig(LINE_NEWS_WEEK_OA);
+        let pageLikePoint = DEFAULT_LINE_NEWS_WEEK_OA;
+        if (pageLike) {
+            pageLikePoint = parseInt(pageLike.value, 10);
+        }
         const today = new Date();
-        const twoWeeksAgo = new Date(today.getTime() - 24 * 60 * 60 * 1000 * 14);
+        const twoWeeksAgo = new Date(today.getTime() - 24 * 60 * 60 * 1000 * pageLikePoint);
         const kaokaiSnapshot = await this.kaokaiTodaySnapShotService.aggregate(
             [
                 {
@@ -381,7 +388,6 @@ export class AdminPointController {
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
-                    console.log('kaokaiToday_2',kaokaiToday);
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
                             'type': 'box',

@@ -108,6 +108,12 @@ export class AdminPointController {
     public async updatePointEvent(@Body({ validate: true }) pointEventRequest: PointEventRequest, @Param('id') eventId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const eventObjId = new ObjectID(eventId);
+        const limit = pointEventRequest.maximumLimit;
+        const point = pointEventRequest.point;
+        if (limit < 0 || point < 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Point or Maximum Limit is less than 0.', undefined);
+            return res.status(400).send(errorResponse);
+        }
         const user = await this.userService.findOne({ _id: userObjId });
 
         const signUrl = pointEventRequest.s3CoverPageURL !== undefined ? await this.s3Service.s3signCloudFront(pointEventRequest.s3CoverPageURL) : undefined;
@@ -529,7 +535,11 @@ export class AdminPointController {
     @Post('/event/search')
     @Authorized()
     public async searchPointEvent(@Res() res: any, @Req() req: any): Promise<any> {
-        const pointEvent = await this.pointEventService.find();
+        const pointEvent = await this.pointEventService.aggregate([
+            {
+                $sort: { createdDate: -1 }
+            }
+        ]);
         if (pointEvent.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Search PointEvent is success.', pointEvent);
             return res.status(200).send(successResponse);
@@ -542,7 +552,11 @@ export class AdminPointController {
     @Post('/category/search')
     @Authorized()
     public async searchCategory(@Res() res: any, @Req() req: any): Promise<any> {
-        const Category = await this.productCategoryService.find();
+        const Category = await this.productCategoryService.aggregate([
+            {
+                $sort: { createdDate: -1 }
+            }
+        ]);
         if (Category.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Search Category is success.', Category);
             return res.status(200).send(successResponse);
@@ -555,7 +569,11 @@ export class AdminPointController {
     @Post('/product/search')
     @Authorized()
     public async searchProduct(@Res() res: any, @Req() req: any): Promise<any> {
-        const product = await this.productService.find();
+        const product = await this.productService.aggregate([
+            {
+                $sort: { createdDate: -1 }
+            }
+        ]);
         if (product.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Search Product is success.', product);
             return res.status(200).send(successResponse);

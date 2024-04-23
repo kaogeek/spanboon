@@ -733,7 +733,6 @@ export class PointMfpController {
         if (activeDateCoupon === 'not_null') { activeDateCoupon = { $match: { activeDate: { $ne: null } } }; userCoupon.push(activeDateCoupon); }
         if (activeDateCoupon === null) { activeDateCoupon = { $match: { activeDate: null } }; userCoupon.push(activeDateCoupon); }
         if (typeCondition === undefined) {
-            console.log('pass1');
             const redeem = await this.userCouponService.aggregate([
                 {
                     $match:{
@@ -773,12 +772,6 @@ export class PointMfpController {
                                 }
                             },
                             {
-                                $skip: skips
-                            },
-                            {
-                                $limit: take
-                            },
-                            {
                                 $lookup: {
                                     from: 'Product',
                                     let: { 'productId': '$productId' },
@@ -789,12 +782,6 @@ export class PointMfpController {
                                                     $eq: ['$$productId', '$_id']
                                                 }
                                             }
-                                        },
-                                        {
-                                            $skip: skips
-                                        },
-                                        {
-                                            $limit: take
                                         },
                                         {
                                             $project: {
@@ -887,12 +874,6 @@ export class PointMfpController {
                                 }
                             },
                             {
-                                $skip: skips
-                            },
-                            {
-                                $limit: take
-                            },
-                            {
                                 $lookup: {
                                     from: 'Product',
                                     let: { 'productId': '$productId' },
@@ -903,12 +884,6 @@ export class PointMfpController {
                                                     $eq: ['$$productId', '$_id']
                                                 }
                                             }
-                                        },
-                                        {
-                                            $skip: skips
-                                        },
-                                        {
-                                            $limit: take
                                         },
                                         {
                                             $project: {
@@ -952,6 +927,11 @@ export class PointMfpController {
                         expireDate: 1,
                         activeDate: 1,
                         active: 1
+                    }
+                },
+                {
+                    $sort:{
+                        createdDate:-1
                     }
                 },
                 {
@@ -1000,12 +980,6 @@ export class PointMfpController {
                                 }
                             },
                             {
-                                $skip: skips
-                            },
-                            {
-                                $limit: take
-                            },
-                            {
                                 $lookup: {
                                     from: 'Product',
                                     let: { 'productId': '$productId' },
@@ -1016,12 +990,6 @@ export class PointMfpController {
                                                     $eq: ['$$productId', '$_id']
                                                 }
                                             }
-                                        },
-                                        {
-                                            $skip: skips
-                                        },
-                                        {
-                                            $limit: take
                                         },
                                         {
                                             $project: {
@@ -1065,6 +1033,11 @@ export class PointMfpController {
                         expireDate: 1,
                         activeDate: 1,
                         active: 1
+                    }
+                },
+                {
+                    $sort:{
+                        createdDate:-1
                     }
                 },
                 {
@@ -1113,12 +1086,6 @@ export class PointMfpController {
                                 }
                             },
                             {
-                                $skip: skips
-                            },
-                            {
-                                $limit: take
-                            },
-                            {
                                 $lookup: {
                                     from: 'Product',
                                     let: { 'productId': '$productId' },
@@ -1129,12 +1096,6 @@ export class PointMfpController {
                                                     $eq: ['$$productId', '$_id']
                                                 }
                                             }
-                                        },
-                                        {
-                                            $skip: skips
-                                        },
-                                        {
-                                            $limit: take
                                         },
                                         {
                                             $project: {
@@ -1178,6 +1139,11 @@ export class PointMfpController {
                         expireDate: 1,
                         activeDate: 1,
                         active: 1
+                    }
+                },
+                {
+                    $sort:{
+                        createdDate:-1
                     }
                 },
                 {
@@ -1230,12 +1196,6 @@ export class PointMfpController {
                                 }
                             },
                             {
-                                $skip: skips
-                            },
-                            {
-                                $limit: take
-                            },
-                            {
                                 $lookup: {
                                     from: 'Product',
                                     let: { 'productId': '$productId' },
@@ -1246,12 +1206,6 @@ export class PointMfpController {
                                                     $eq: ['$$productId', '$_id']
                                                 }
                                             }
-                                        },
-                                        {
-                                            $skip: skips
-                                        },
-                                        {
-                                            $limit: take
                                         },
                                         {
                                             $project: {
@@ -1298,6 +1252,11 @@ export class PointMfpController {
                     }
                 },
                 {
+                    $sort:{
+                        createdDate:-1
+                    }
+                },
+                {
                     $skip: skips
                 },
                 {
@@ -1315,19 +1274,27 @@ export class PointMfpController {
             pointLimitOffsetRequest.whereConditions?.active === false &&
             pointLimitOffsetRequest.whereConditions?.activeDate === null) {
             result = {
-                'readyCoupon': search.length > 0 ? search : null
+                'readyCoupon': search.length > 0 ? search : []
             };
-            successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
-            return res.status(200).send(successResponse);
+            if (result['readyCoupon'] !== null && result['readyCoupon'].length > 0) {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            } else {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            }
         } else if (
             pointLimitOffsetRequest.whereConditions?.type === 'USE_COUPON' &&
             pointLimitOffsetRequest.whereConditions?.active === true &&
             pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
         ) {
             result = {
-                'alreadyCoupon': search.length > 0 ? search : null
+                'alreadyCoupon': search.length > 0 ? search : []
             };
-            if (result['alreadyCoupon'].length > 0) {
+            if (result['alreadyCoupon'] !== null && result['alreadyCoupon'].length > 0) {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            } else {
                 successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
                 return res.status(200).send(successResponse);
             }
@@ -1336,11 +1303,131 @@ export class PointMfpController {
             pointLimitOffsetRequest.whereConditions?.active === false &&
             pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
         ) {
+            const redeemExpireCoupon = await this.userCouponService.aggregate([
+                {
+                    $match:{
+                        userId: userObjId,
+                        active: false,
+                        activeDate: null,
+                        expireDate:{$lte:today}
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'PointStatement',
+                        let: { 'productId': '$productId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$productId', '$productId']
+                                    }
+                                }
+                            },
+                            {
+                                $match: {
+                                    type:'REDEEM',
+                                    productId: { $ne: null },
+                                    userId: userObjId
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    title: 1,
+                                    point: 1,
+                                    productId: 1,
+                                    userId: 1,
+                                    type: 1
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Product',
+                                    let: { 'productId': '$productId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$productId', '$_id']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                _id: 1,
+                                                categoryId: 1,
+                                                title: 1,
+                                                detail: 1,
+                                                point: 1,
+                                                userId: 1,
+                                                asssetId: 1,
+                                                coverPageURL: 1,
+                                                s3CoverPageURL: 1,
+                                                categoryName: 1,
+                                                expiringDate: 1,
+                                                activeDate: 1,
+                                                receiverCoupon: 1,
+                                                couponExpire: 1
+                                            }
+                                        }
+                                    ],
+                                    as: 'product'
+                                }
+                            },
+                            {
+                                $unwind: '$product'
+                            }
+                        ],
+                        as: 'pointStatement'
+                    }
+                },
+                {
+                    $unwind: '$pointStatement'
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        createdDate: 1,
+                        userId: 1,
+                        pointStatement: 1,
+                        productId: 1,
+                        expireDate: 1,
+                        activeDate: 1,
+                        active: 1
+                    }
+                },
+                {
+                    $sort:{
+                        createdDate:-1
+                    }
+                },
+                {
+                    $skip: skips
+                },
+                {
+                    $limit: take
+                },
+            ]);
+
+            let counponExpireResult = search;
+            if(search.length > 0 && redeemExpireCoupon.length > 0) {
+                counponExpireResult.concat(redeemExpireCoupon);
+            }
+            if(search.length === 0 && redeemExpireCoupon.length > 0) {
+                counponExpireResult = redeemExpireCoupon;
+            }
+
             result = {
-                'expireCoupon': search.length > 0 ? search : null
+                'expireCoupon': counponExpireResult
             };
-            successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
-            return res.status(200).send(successResponse);
+            if (result['expireCoupon'] !== null && result['expireCoupon'].length > 0) {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            } else {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            }
         }
     }
 
