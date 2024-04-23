@@ -57,8 +57,8 @@ import {
     DEFAULT_MAX_VOTE_QUESTIONS,
     MAX_VOTE_QUESTIONS,
     PRIVILEGES,
-    DEFAULT_VOTE_SCORE,
-    VOTE_SCORE
+    DEFAULT_VOTE_POINT,
+    VOTE_POINT
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -6554,8 +6554,8 @@ export class VotingController {
             userEngagement.userId = userObjId;
             userEngagement.action = ENGAGEMENT_ACTION.VOTE;
             const createEngagement = await this.userEngagementService.create(userEngagement);
-            let votePoint = DEFAULT_VOTE_SCORE;
-            const votePointConfig = await this.configService.getConfig(VOTE_SCORE);
+            let votePoint = DEFAULT_VOTE_POINT;
+            const votePointConfig = await this.configService.getConfig(VOTE_POINT);
             if (votePointConfig) {
                 votePoint = parseInt(votePointConfig.value, 10);
             }

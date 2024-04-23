@@ -46,6 +46,11 @@ import { PointStatementModel } from '../models/PointStatementModel';
 import { PointStatementService } from '../services/PointStatementService';
 import { AccumulateService } from '../services/AccumulateService';
 import { AccumulateModel } from '../models/AccumulatePointModel';
+import {
+    DEFAULT_COMMENT_POINT,
+    COMMENT_POINT
+} from '../../constants/SystemConfig';
+import { ConfigService } from '../services/ConfigService';
 @JsonController('/post')
 export class PostsCommentController {
     constructor(
@@ -63,7 +68,8 @@ export class PostsCommentController {
         private userService: UserService,
         private authenticationIdService: AuthenticationIdService,
         private pointStatementService:PointStatementService,
-        private accumulateService:AccumulateService
+        private accumulateService:AccumulateService,
+        private configService:ConfigService
     ) { }
 
     // PostsComment List API
@@ -228,6 +234,11 @@ export class PostsCommentController {
                 const nameUser:any = commentAsPage !== undefined && commentAsPage !== null ? await this.pageService.findOne({_id:new ObjectID(commentAsPage)}) : await this.userService.findOne({_id:userObjId});
                 const productModel = new PointStatementModel();
                 const checkSpam = await this.pointStatementService.findOne({userId:userObjId,postId:postObjId});
+                const commentValue = await this.configService.getConfig(COMMENT_POINT);
+                let commentPoint = DEFAULT_COMMENT_POINT;
+                if (commentValue) {
+                    commentPoint = parseInt(commentValue.value, 10);
+                }
                 if(
                     commentAsPage !== undefined && 
                     commentAsPage !== null &&
@@ -237,7 +248,7 @@ export class PostsCommentController {
                 {
                     productModel.title = `คุณคอมเม้นโพสต์`;
                     productModel.detail = `${nameUser.name}`;
-                    productModel.point = 50;
+                    productModel.point = commentPoint;
                     productModel.type = 'PAGE_COMMENT_POINT';
                     productModel.userId = userObjId;
                     productModel.postId = postObjId;
@@ -256,7 +267,7 @@ export class PostsCommentController {
                         } else {
                             await this.accumulateService.update(
                                 {userId:userObjId},
-                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + commentPoint}}
                             );
                         }
                     }
@@ -271,7 +282,7 @@ export class PostsCommentController {
                 {
                     productModel.title = `คุณคอมเม้นโพสต์`;
                     productModel.detail = `${nameUser.displayName}`;
-                    productModel.point = 50;
+                    productModel.point = commentPoint;
                     productModel.type = 'USER_COMMENT_POINT';
                     productModel.userId = userObjId;
                     productModel.postId = postObjId;
@@ -290,7 +301,7 @@ export class PostsCommentController {
                         } else {
                             await this.accumulateService.update(
                                 {userId:userObjId},
-                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + commentPoint}}
                             );
                         }
                     }

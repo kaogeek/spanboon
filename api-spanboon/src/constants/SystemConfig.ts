@@ -151,11 +151,35 @@ export const BIRTHDAY_NOTIFICATION_SYSTEM = 'birthday.notification.system';
 export const DEFAULT_PUSH_NOTI_EXPIRATION_MEMBERSHIP = 7;
 export const PUSH_NOTI_EXPIRATION_MEMBERSHIP ='push.noti.expiration.membership';
 
-export const DEFAULT_FIRST_LOGIN = 2;
-export const FIRST_LOGIN = 'first.login.point';
+export const DEFAULT_FIRST_LOGIN_POINT = 2;
+export const FIRST_LOGIN_POINT = 'first.login.point';
 
-export const DEFAULT_VOTE_SCORE = 2;
-export const VOTE_SCORE = 'vote.score';
+export const DEFAULT_VOTE_POINT = 2;
+export const VOTE_POINT= 'vote.point';
 
-export const DEFAULT_BIRTHDAY = 50;
-export const BIRTHDAY = 'birthday.event';
+export const DEFAULT_BIRTHDAY_POINT = 50;
+export const BIRTHDAY_POINT = 'birthday.event';
+
+export const DEFAULT_BINDING_MEMBERSHIP_POINT = 100;
+export const BINDING_MEMBERSHIP_POINT = 'binding.membership';
+
+export const DEFAULT_COMMENT_POINT = 2;
+export const COMMENT_POINT = 'comment.score';
+
+// PAGE_POST_POINT
+
+export const DEFAULT_PAGE_POST_POINT = 2;
+export const PAGE_POST_POINT = 'page.post.point';
+
+// TODAY_NEWS_POINT
+
+export const DEFAULT_TODAY_NEWS_POINT = 2;
+export const TODAY_NEWS_POINT = 'today.news.point';
+
+// PAGE_LIKE_POINT
+
+export const DEFAULT_PAGE_LIKE_POINT = 2;
+export const PAGE_LIKE_POINT = 'page.like.point';
+
+export const DEFAULT_LINE_NEWS_WEEK_OA = 14;
+export const LINE_NEWS_WEEK_OA = 'line.news.week.oa';

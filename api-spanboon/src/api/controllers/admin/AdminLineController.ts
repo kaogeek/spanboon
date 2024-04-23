@@ -238,7 +238,7 @@ export class AdminPointController {
             }
         }
         const today = new Date();
-        const twoWeeksAgo = new Date(today.getTime() - 24 * 60 * 60 * 1000 * 90);
+        const twoWeeksAgo = new Date(today.getTime() - 24 * 60 * 60 * 1000 * 14);
         const kaokaiSnapshot = await this.kaokaiTodaySnapShotService.aggregate(
             [
                 {

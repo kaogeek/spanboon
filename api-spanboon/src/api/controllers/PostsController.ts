@@ -58,6 +58,10 @@ import { PointStatementModel } from '../models/PointStatementModel';
 import { PointStatementService } from '../services/PointStatementService';
 import { AccumulateService } from '../services/AccumulateService';
 import { AccumulateModel } from '../models/AccumulatePointModel';
+import {
+    DEFAULT_PAGE_LIKE_POINT,
+    PAGE_LIKE_POINT,
+} from '../../constants/SystemConfig';
 @JsonController('/post')
 export class PostsController {
     constructor(
@@ -1066,6 +1070,11 @@ export class PostsController {
                 const nameUser:any = likeAsPage !== undefined && likeAsPage !== null ? await this.pageService.findOne({_id:new ObjectID(likeAsPage)}) : await this.userService.findOne({_id:userObjId});
                 const productModel = new PointStatementModel();
                 const checkSpam = await this.pointStatementService.findOne({userId:userObjId,postId:postObjId});
+                const pageLike = await this.configService.getConfig(PAGE_LIKE_POINT);
+                let pageLikePoint = DEFAULT_PAGE_LIKE_POINT;
+                if (pageLike) {
+                    pageLikePoint = parseInt(pageLike.value, 10);
+                }
                 if(
                     likeAsPage !== undefined && 
                     likeAsPage !== null &&
@@ -1075,7 +1084,7 @@ export class PostsController {
                 {
                     productModel.title = `คุณกดถูกใจโพสต์`;
                     productModel.detail = `${nameUser.name}`;
-                    productModel.point = 1;
+                    productModel.point = pageLikePoint;
                     productModel.type = 'PAGE_LIKE_POINT';
                     productModel.userId = userObjId;
                     productModel.postId = postObjId;
@@ -1094,7 +1103,7 @@ export class PostsController {
                         } else {
                             await this.accumulateService.update(
                                 {userId:userObjId},
-                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + pageLikePoint}}
                             );
                         }
                     }
@@ -1109,7 +1118,7 @@ export class PostsController {
                 {
                     productModel.title = `คุณกดถูกใจโพสต์`;
                     productModel.detail = `${nameUser.displayName}`;
-                    productModel.point = 1;
+                    productModel.point = pageLikePoint;
                     productModel.type = 'USER_LIKE_POINT';
                     productModel.userId = userObjId;
                     productModel.postId = postObjId;
@@ -1128,7 +1137,7 @@ export class PostsController {
                         } else {
                             await this.accumulateService.update(
                                 {userId:userObjId},
-                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + pageLikePoint}}
                             );
                         }
                     }

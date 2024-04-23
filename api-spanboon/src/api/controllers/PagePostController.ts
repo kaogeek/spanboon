@@ -70,6 +70,11 @@ import { PointStatementModel } from '../models/PointStatementModel';
 import { PointStatementService } from '../services/PointStatementService';
 import { AccumulateService } from '../services/AccumulateService';
 import { AccumulateModel } from '../models/AccumulatePointModel';
+import {
+    DEFAULT_PAGE_POST_POINT,
+    PAGE_POST_POINT
+} from '../../constants/SystemConfig';
+import { ConfigService } from '../services/ConfigService';
 @JsonController('/page')
 export class PagePostController {
     constructor(
@@ -99,7 +104,8 @@ export class PagePostController {
         private hidePostService: HidePostService,
         private authenticationIdService: AuthenticationIdService,
         private pointStatementService:PointStatementService,
-        private accumulateService:AccumulateService
+        private accumulateService:AccumulateService,
+        private configService:ConfigService
     ) { }
     // @Get('/test/post')
     // public async test(@Req() req:any):Promise<any>{
@@ -695,6 +701,11 @@ export class PagePostController {
                 const userObj = await this.userService.findOne({_id:userObjId});
                 const nameUser:any = pageIds !== undefined && pageIds !== null && pageIds !== '' ? await this.pageService.findOne({_id:pageObjId}) : userObj.displayName;
                 const productModel = new PointStatementModel();
+                const pagePostConfig = await this.configService.getConfig(PAGE_POST_POINT);
+                let pagePostPoint = DEFAULT_PAGE_POST_POINT;
+                if (pagePostConfig) {
+                    pagePostPoint = parseInt(pagePostConfig.value, 10);
+                }
                 if(
                     pageId !== undefined && 
                     pageId !== null && 
@@ -704,7 +715,7 @@ export class PagePostController {
                     if(pagePost.title.length > 20 && postDetail.length > 100) {
                         productModel.title = `${pagePost.title}`;
                         productModel.detail = `${nameUser.name}`;
-                        productModel.point = 50;
+                        productModel.point = pagePostPoint;
                         productModel.type = 'PAGE_POST_POINT';
                         productModel.userId = userObjId;
                         productModel.postId = createPostPageData.id;
@@ -716,13 +727,13 @@ export class PagePostController {
                             if(accumulateCreate === undefined) {
                                 const accumulateModel = new AccumulateModel();
                                 accumulateModel.userId = userObjId;
-                                accumulateModel.accumulatePoint = 50;
+                                accumulateModel.accumulatePoint = createPointStatement.point;
                                 accumulateModel.usedPoint = 0;
                                 await this.accumulateService.create(accumulateModel);
                             } else {
                                 await this.accumulateService.update(
                                     {userId:userObjId},
-                                    {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                                    {$set:{accumulatePoint:accumulateCreate.accumulatePoint + pagePostPoint}}
                                 );
                             }
                         }
@@ -737,7 +748,7 @@ export class PagePostController {
                     if(pagePost.title.length > 20 && postDetail.length > 100) {
                         productModel.title = `${pagePost.title}`;
                         productModel.detail = `${nameUser}`;
-                        productModel.point = 50;
+                        productModel.point = pagePostPoint;
                         productModel.type = 'USER_POST_POINT';
                         productModel.userId = userObjId;
                         productModel.postId = createPostPageData.id;
@@ -749,13 +760,13 @@ export class PagePostController {
                             if(accumulateCreate === undefined) {
                                 const accumulateModel = new AccumulateModel();
                                 accumulateModel.userId = userObjId;
-                                accumulateModel.accumulatePoint = 50;
+                                accumulateModel.accumulatePoint = createPointStatement.point;
                                 accumulateModel.usedPoint = 0;
                                 await this.accumulateService.create(accumulateModel);
                             } else {
                                 await this.accumulateService.update(
                                     {userId:userObjId},
-                                    {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 50}}
+                                    {$set:{accumulatePoint:accumulateCreate.accumulatePoint + pagePostPoint}}
                                 );
                             }
                         }
