@@ -57,8 +57,8 @@ import {
     DEFAULT_MAX_VOTE_QUESTIONS,
     MAX_VOTE_QUESTIONS,
     PRIVILEGES,
-    DEFAULT_VOTE_SCORE,
-    VOTE_SCORE
+    DEFAULT_VOTE_POINT,
+    VOTE_POINT
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -3073,43 +3073,140 @@ export class VotingController {
                     }
                 },
                 {
-                    $lookup: {
-                        from: 'User',
-                        let: { 'userId': '$userId' },
-                        pipeline: [
+                    $lookup:{
+                        from:'VotingEvent',
+                        let: {'votingId': '$votingId'},
+                        pipeline:[
                             {
-                                $match: {
+                                $match:{
                                     $expr:
                                     {
-                                        $eq: ['$$userId', '$_id']
+                                        $eq:['$$votingId','$_id']
                                     }
                                 }
                             },
                             {
-                                $project: {
-                                    _id: 1,
-                                    firstName: 1,
-                                    lastName: 1,
-                                    displayName: 1,
-                                    uniqueId: 1,
-                                    imageURL: 1,
-                                    s3ImageURL: 1
+                               $project:{
+                                    showVoterName:1
+                               } 
+                            }
+                        ],
+                        as:'votingEvent'
+                    }
+                },
+                {
+                    $unwind:{
+                        path: '$votingEvent'
+                    }
+                },
+                {
+                    $addFields:{
+                        'showVoterName': '$votingEvent.showVoterName'
+                    }
+                },
+                {
+                    $project:{
+                        _id:1,
+                        createdBy:1,
+                        createdDate:1,
+                        createdTime:1,
+                        createdByUsername:1,
+                        updateDate:1,
+                        updateByUsername:1,
+                        id:1,
+                        votingId:1,
+                        userId:1,
+                        pageId:1,
+                        answer:1,
+                        voteItemId:1,
+                        voteChoiceId:1,
+                        showVoterName:{
+                            $cond:[
+                                {
+                                    $eq:['showVoterName', true]
+                                },
+                                true,
+                                false,
+                            ]
+                        }
+                    }
+                },
+                {
+                    $facet: {
+                        showVoterName: [
+                            {
+                                $match: {
+                                    showVoterName: true
+                                },
+                            }
+                        ],
+                        notShowVoterName: [
+                            {
+                                $match: {
+                                    showVoterName: false
                                 }
                             },
                             {
-                                $limit: take
+                                $lookup: {
+                                    from: 'User',
+                                    let: { userId: '$userId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr:
+                                                {
+                                                    $eq: ['$$userId', '$_id']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                _id: 1,
+                                                firstName: 1,
+                                                lastName: 1,
+                                                imageURL: 1,
+                                                s3ImageURL: 1
+                                            }
+                                        }
+                                    ],
+                                    as: 'user'
+                                }
                             },
                             {
-                                $skip: offset
+                                $unwind: {
+                                    path: '$user'
+                                }
                             }
-                        ],
-                        as: 'user'
+                        ]
+                    }
+                },
+                {
+                    $addFields: {
+                        combinedResults: {
+                            $concatArrays: ['$showVoterName', '$notShowVoterName'],
+                        }
                     }
                 },
                 {
                     $unwind: {
-                        path: '$user'
+                        path: '$combinedResults',
+                    },
+                },
+                {
+                    $replaceRoot: {
+                        newRoot: '$combinedResults',
+                    },
+                },
+                {
+                    $sort: {
+                        createdDate: -1
                     }
+                },
+                {
+                    $skip: offset
+                },
+                {
+                    $limit: take
                 }
             ]
         );
@@ -3118,8 +3215,8 @@ export class VotingController {
             const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteItem);
             return res.status(200).send(successResponse);
         } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists user.', undefined);
-            return res.status(400).send(errorResponse);
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', []);
+            return res.status(200).send(successResponse);
         }
     }
 
@@ -6553,8 +6650,8 @@ export class VotingController {
             userEngagement.userId = userObjId;
             userEngagement.action = ENGAGEMENT_ACTION.VOTE;
             const createEngagement = await this.userEngagementService.create(userEngagement);
-            let votePoint = DEFAULT_VOTE_SCORE;
-            const votePointConfig = await this.configService.getConfig(VOTE_SCORE);
+            let votePoint = DEFAULT_VOTE_POINT;
+            const votePointConfig = await this.configService.getConfig(VOTE_POINT);
             if (votePointConfig) {
                 votePoint = parseInt(votePointConfig.value, 10);
             }

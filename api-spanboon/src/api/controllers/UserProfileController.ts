@@ -43,6 +43,11 @@ import { PointStatementService } from '../services/PointStatementService';
 import { AccumulateService } from '../services/AccumulateService';
 import { AccumulateModel } from '../models/AccumulatePointModel';
 import { POINT_TYPE } from '../../constants/PointType';
+import {
+    DEFAULT_BINDING_MEMBERSHIP_POINT,
+    BINDING_MEMBERSHIP_POINT
+} from '../../constants/SystemConfig';
+import { ConfigService } from '../services/ConfigService';
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
@@ -55,7 +60,8 @@ export class UserProfileController {
         private assetService: AssetService,
         private hidePostService: HidePostService,
         private accumulateService:AccumulateService,
-        private pointStatementService:PointStatementService
+        private pointStatementService:PointStatementService,
+        private configService:ConfigService
     ) { }
 
     // Get UserProfile API
@@ -865,10 +871,15 @@ export class UserProfileController {
     }
 
     private async getPointFunction(userObjId:string): Promise<any>{
+        const binding = await this.configService.getConfig(BINDING_MEMBERSHIP_POINT);
+        let bindingScore = DEFAULT_BINDING_MEMBERSHIP_POINT;
+        if (binding) {
+            bindingScore = parseInt(binding.value, 10);
+        }
         const productModel = new PointStatementModel();
         productModel.title = `REGISTER_MEMBERSHIP_MFP`;
         productModel.detail = null;
-        productModel.point = 100;
+        productModel.point = bindingScore;
         productModel.type = POINT_TYPE.BINDING_MEMBERSHIP;
         productModel.userId = new ObjectID(userObjId);
         productModel.postId = null;
@@ -887,7 +898,7 @@ export class UserProfileController {
             } 
             await this.accumulateService.update(
                 {userId:new ObjectID(userObjId)},
-                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 20}}
+                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + bindingScore}}
             );
         }
     }

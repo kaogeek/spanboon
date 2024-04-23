@@ -57,10 +57,10 @@ import { PointStatementService } from '../services/PointStatementService';
 import { AccumulateModel } from '../models/AccumulatePointModel';
 import { AccumulateService } from '../services/AccumulateService';
 import {
-    DEFAULT_FIRST_LOGIN,
-    FIRST_LOGIN,
-    DEFAULT_BIRTHDAY,
-    BIRTHDAY,
+    DEFAULT_FIRST_LOGIN_POINT,
+    FIRST_LOGIN_POINT,
+    DEFAULT_BIRTHDAY_POINT,
+    BIRTHDAY_POINT,
 } from '../../constants/SystemConfig';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { POINT_TYPE } from '../../constants/PointType';
@@ -1437,8 +1437,8 @@ export class GuestController {
             userEngagement.userId = loginUser;
             userEngagement.action = ENGAGEMENT_ACTION.FIRST_LOGIN;
             const createEngagement = await this.userEngagementService.create(userEngagement);
-            let firstLogin = DEFAULT_FIRST_LOGIN;
-            const firstLoginPoint = await this.configService.getConfig(FIRST_LOGIN);
+            let firstLogin = DEFAULT_FIRST_LOGIN_POINT;
+            const firstLoginPoint = await this.configService.getConfig(FIRST_LOGIN_POINT);
             if (firstLoginPoint) {
                 firstLogin = parseInt(firstLoginPoint.value, 10);
             }
@@ -3383,17 +3383,17 @@ export class GuestController {
                 userEngagement.userId = user.id;
                 userEngagement.action = ENGAGEMENT_ACTION.BIRTHDAY;
                 const createEngagement = await this.userEngagementService.create(userEngagement);
-                let birthDayValue = DEFAULT_BIRTHDAY;
-                const birthDayConfig = await this.configService.getConfig(BIRTHDAY);
+                let birthDayPoint = DEFAULT_BIRTHDAY_POINT;
+                const birthDayConfig = await this.configService.getConfig(BIRTHDAY_POINT);
                 if (birthDayConfig) {
-                    birthDayValue = parseInt(birthDayConfig.value, 10);
+                    birthDayPoint = parseInt(birthDayConfig.value, 10);
                 }
                 // FIRST_LOGIN
                 if(createEngagement){
                     const productModel = new PointStatementModel();
                     productModel.title = ENGAGEMENT_CONTENT_TYPE.BIRTHDAY + ' ' + today.getFullYear();
                     productModel.detail = null;
-                    productModel.point = birthDayValue;
+                    productModel.point = birthDayPoint;
                     productModel.type = POINT_TYPE.BIRTHDAY;
                     productModel.userId = user.id;
                     productModel.pointEventId = null;
@@ -3404,7 +3404,7 @@ export class GuestController {
                         if (accumulateCreate === undefined) {
                             const accumulateModel = new AccumulateModel();
                             accumulateModel.userId = user.id;
-                            accumulateModel.accumulatePoint = birthDayValue;
+                            accumulateModel.accumulatePoint = birthDayPoint;
                             accumulateModel.usedPoint = 0;
                             await this.accumulateService.create(accumulateModel);
                         } else {
@@ -3412,7 +3412,7 @@ export class GuestController {
                             const newValues = {
                                 $set:
                                 {
-                                    accumulatePoint: accumulateCreate.accumulatePoint + birthDayValue
+                                    accumulatePoint: accumulateCreate.accumulatePoint + birthDayPoint
                                 }
                             };
                             await this.accumulateService.update(query, newValues);
