@@ -3202,6 +3202,12 @@ export class VotingController {
                         createdDate: -1
                     }
                 },
+                {
+                    $skip: offset
+                },
+                {
+                    $limit: take
+                }
             ]
         );
 

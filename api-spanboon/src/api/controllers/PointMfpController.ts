@@ -772,12 +772,6 @@ export class PointMfpController {
                                 }
                             },
                             {
-                                $skip: skips
-                            },
-                            {
-                                $limit: take
-                            },
-                            {
                                 $lookup: {
                                     from: 'Product',
                                     let: { 'productId': '$productId' },
@@ -788,12 +782,6 @@ export class PointMfpController {
                                                     $eq: ['$$productId', '$_id']
                                                 }
                                             }
-                                        },
-                                        {
-                                            $skip: skips
-                                        },
-                                        {
-                                            $limit: take
                                         },
                                         {
                                             $project: {
@@ -886,12 +874,6 @@ export class PointMfpController {
                                 }
                             },
                             {
-                                $skip: skips
-                            },
-                            {
-                                $limit: take
-                            },
-                            {
                                 $lookup: {
                                     from: 'Product',
                                     let: { 'productId': '$productId' },
@@ -902,12 +884,6 @@ export class PointMfpController {
                                                     $eq: ['$$productId', '$_id']
                                                 }
                                             }
-                                        },
-                                        {
-                                            $skip: skips
-                                        },
-                                        {
-                                            $limit: take
                                         },
                                         {
                                             $project: {
@@ -999,12 +975,6 @@ export class PointMfpController {
                                 }
                             },
                             {
-                                $skip: skips
-                            },
-                            {
-                                $limit: take
-                            },
-                            {
                                 $lookup: {
                                     from: 'Product',
                                     let: { 'productId': '$productId' },
@@ -1015,12 +985,6 @@ export class PointMfpController {
                                                     $eq: ['$$productId', '$_id']
                                                 }
                                             }
-                                        },
-                                        {
-                                            $skip: skips
-                                        },
-                                        {
-                                            $limit: take
                                         },
                                         {
                                             $project: {
@@ -1112,12 +1076,6 @@ export class PointMfpController {
                                 }
                             },
                             {
-                                $skip: skips
-                            },
-                            {
-                                $limit: take
-                            },
-                            {
                                 $lookup: {
                                     from: 'Product',
                                     let: { 'productId': '$productId' },
@@ -1128,12 +1086,6 @@ export class PointMfpController {
                                                     $eq: ['$$productId', '$_id']
                                                 }
                                             }
-                                        },
-                                        {
-                                            $skip: skips
-                                        },
-                                        {
-                                            $limit: take
                                         },
                                         {
                                             $project: {
@@ -1229,12 +1181,6 @@ export class PointMfpController {
                                 }
                             },
                             {
-                                $skip: skips
-                            },
-                            {
-                                $limit: take
-                            },
-                            {
                                 $lookup: {
                                     from: 'Product',
                                     let: { 'productId': '$productId' },
@@ -1245,12 +1191,6 @@ export class PointMfpController {
                                                     $eq: ['$$productId', '$_id']
                                                 }
                                             }
-                                        },
-                                        {
-                                            $skip: skips
-                                        },
-                                        {
-                                            $limit: take
                                         },
                                         {
                                             $project: {
@@ -1314,19 +1254,27 @@ export class PointMfpController {
             pointLimitOffsetRequest.whereConditions?.active === false &&
             pointLimitOffsetRequest.whereConditions?.activeDate === null) {
             result = {
-                'readyCoupon': search.length > 0 ? search : null
+                'readyCoupon': search.length > 0 ? search : []
             };
-            successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
-            return res.status(200).send(successResponse);
+            if (result['readyCoupon'] !== null && result['readyCoupon'].length > 0) {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            } else {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            }
         } else if (
             pointLimitOffsetRequest.whereConditions?.type === 'USE_COUPON' &&
             pointLimitOffsetRequest.whereConditions?.active === true &&
             pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
         ) {
             result = {
-                'alreadyCoupon': search.length > 0 ? search : null
+                'alreadyCoupon': search.length > 0 ? search : []
             };
-            if (result['alreadyCoupon'].length > 0) {
+            if (result['alreadyCoupon'] !== null && result['alreadyCoupon'].length > 0) {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            } else {
                 successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
                 return res.status(200).send(successResponse);
             }
@@ -1336,10 +1284,15 @@ export class PointMfpController {
             pointLimitOffsetRequest.whereConditions?.activeDate === 'not_null'
         ) {
             result = {
-                'expireCoupon': search.length > 0 ? search : null
+                'expireCoupon': search.length > 0 ? search : []
             };
-            successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
-            return res.status(200).send(successResponse);
+            if (result['expireCoupon'] !== null && result['expireCoupon'].length > 0) {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            } else {
+                successResponse = ResponseUtil.getSuccessResponse('Get content UserCoupon is success.', result);
+                return res.status(200).send(successResponse);
+            }
         }
     }
 
