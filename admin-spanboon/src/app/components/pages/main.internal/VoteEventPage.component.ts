@@ -392,7 +392,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
       messages: [
         {
           "type": "flex",
-          "altText": "This is a Flex Message",
+          "altText": this.listVoteEvent[0].title,
           "contents": {
             "type": "bubble",
             "size": "mega",
@@ -461,7 +461,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
                           'action': {
                             'type': 'uri',
                             'label': this.listVoteEvent[0].status === "support" ? "กดสนับสนุน" : (this.listVoteEvent[0].status === "vote" ? "เริ่มโหวตเลย" : "ดูผลโหวต"),
-                            'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[0].id
+                            'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[0].id + "?openExternalBrowser=1"
                           },
                           'color': '#F18805',
                           'scaling': false,
@@ -542,7 +542,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
               'action': {
                 'type': 'uri',
                 'label': 'action',
-                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[1].id,
+                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[1].id + "?openExternalBrowser=1",
               },
             },
           );
@@ -594,7 +594,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
               'action': {
                 'type': 'uri',
                 'label': 'action',
-                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[2].id,
+                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[2].id + "?openExternalBrowser=1",
               }
             },
           );
@@ -646,7 +646,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
               'action': {
                 'type': 'uri',
                 'label': 'action',
-                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[3].id,
+                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[3].id + "?openExternalBrowser=1",
               }
             },
           );

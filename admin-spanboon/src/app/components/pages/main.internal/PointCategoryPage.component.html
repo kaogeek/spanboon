@@ -16,6 +16,14 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
+                                        <mat-slide-toggle [(ngModel)]="dataForm.pin"
+                                            [ngModelOptions]="{standalone: true}">
+                                        </mat-slide-toggle>
+                                        <label style="margin-left: 10px;">ปักหมุดสินค้า</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
                                         <label>รูปภาพ</label>
                                         <div class="image"
                                             [ngStyle]="{'border': !!image.coverPageURL ? 'unset' : '1px solid','border-style': !!image.coverPageURL ? 'unset' : 'dashed'}">
