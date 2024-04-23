@@ -238,7 +238,7 @@ export class AdminPointController {
             }
         }
         const today = new Date();
-        const twoWeeksAgo = new Date(today.getTime() - 24 * 60 * 60 * 1000 * 14);
+        const twoWeeksAgo = new Date(today.getTime() - 24 * 60 * 60 * 1000 * 90);
         const kaokaiSnapshot = await this.kaokaiTodaySnapShotService.aggregate(
             [
                 {
@@ -262,7 +262,7 @@ export class AdminPointController {
             'messages': [
                 {
                     'type': 'flex',
-                    'altText': 'This is a Flex Message',
+                    'altText': 'ข่าวก้าวไกล ที่น่าสนใจในช่วง 2 สัปดาห์ที่ผ่านมา',
                     'contents': {
                         'type': 'bubble',
                         'size': 'mega',
@@ -340,7 +340,7 @@ export class AdminPointController {
                                                     'action': {
                                                         'type': 'uri',
                                                         'label': 'อ่านเพิ่มเติม',
-                                                        'uri': `${kaokaiToday}`
+                                                        'uri': kaokaiToday+'&openExternalBrowser=1'
                                                     },
                                                     'color': '#F18805',
                                                     'scaling': false,
@@ -381,6 +381,7 @@ export class AdminPointController {
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
+                    console.log('kaokaiToday_2',kaokaiToday);
                     content['messages'][0].contents.body.contents[2].contents[1].contents.push(
                         {
                             'type': 'box',
@@ -426,7 +427,7 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday,
+                                'uri': kaokaiToday+'&openExternalBrowser=1',
                             }
                         },
                     );
@@ -486,7 +487,7 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday,
+                                'uri': kaokaiToday+'&openExternalBrowser=1',
                             }
                         },
                     );
@@ -546,7 +547,7 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday,
+                                'uri': kaokaiToday+'&openExternalBrowser=1',
                             }
                         },
                     );

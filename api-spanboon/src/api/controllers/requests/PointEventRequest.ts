@@ -6,11 +6,11 @@ export class PointEventRequest {
     @IsString()
     public title: string;
     @IsNotEmpty({ message: 'point is required' })
-    @IsPositive({ message: 'value is not Positive number'})
-    public point:number;
+    @IsPositive({ message: 'value is not Positive number' })
+    public point: number;
 
     @IsNotEmpty({ message: 'maximumLimit is required' })
-    @IsPositive({ message: 'value is not Positive number'})
+    @IsPositive({ message: 'value is not Positive number' })
     public maximumLimit: number;
 
     @IsNotEmpty({ message: 'detail is required' })
@@ -26,12 +26,15 @@ export class PointEventRequest {
 
     @IsNotEmpty({ message: 'coverPageURL is required' })
     @IsString()
-    public coverPageURL:string;
+    public coverPageURL: string;
 
     @IsNotEmpty({ message: 'link is required' })
     @IsString()
-    public link:string;
+    public link: string;
 
-    public s3CoverPageURL:string;
+    @IsNotEmpty({ message: 'pin is required' })
+    public pin: boolean;
+
+    public s3CoverPageURL: string;
 
 }
