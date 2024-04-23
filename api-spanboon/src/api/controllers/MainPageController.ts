@@ -89,7 +89,9 @@ import {
     REVERSE_SEARCH,
     DEFAULT_FILTER_NEWS,
     FILTER_NEWS,
-    VOTE_DASHBOARD
+    VOTE_DASHBOARD,
+    DEFAULT_TODAY_NEWS_POINT,
+    TODAY_NEWS_POINT
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
@@ -159,6 +161,9 @@ export class MainPageController {
         const linkAnnounceMent = await this.configService.getConfig(KAOKAITODAY_LINK_ANNOUNCEMENT);
         const rangeHashtag = await this.configService.getConfig(KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS);
         const rateLimit = await this.configService.getConfig(SEARCH_CONFIG_VALUES);
+        const todayNews = await this.configService.getConfig(TODAY_NEWS_POINT);
+        let todayNewsPoint = DEFAULT_TODAY_NEWS_POINT;
+
         let announcements = DEFAULT_KAOKAITODAY_ANNOUNCEMENT;
         let linkAnnouncements = DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT;
         let assetEmergenDays = DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY;
@@ -197,9 +202,12 @@ export class MainPageController {
                         let mm = checkSnapshot.endDateTime.getMonth() + 1;
                         if(dd<10) { dd='0'+dd;}
                         if(mm<10) { mm='0'+mm;}
+                        if (todayNews) {
+                            todayNewsPoint = parseInt(todayNews.value, 10);
+                        }
                         productModel.title = `หน้าหนึ่งฉบับวันที่ ${checkSnapshot.endDateTime.getFullYear()}-${mm}-${dd}`;
                         productModel.detail = null;
-                        productModel.point = 2;
+                        productModel.point = todayNewsPoint;
                         productModel.type = 'TODAY_NEWS_POINT';
                         productModel.userId = new ObjectID(userId);
                         productModel.postId = null;
@@ -212,13 +220,13 @@ export class MainPageController {
                             if(accumulateCreate === undefined) {
                                 const accumulateModel = new AccumulateModel();
                                 accumulateModel.userId = new ObjectID(userId);
-                                accumulateModel.accumulatePoint = 20;
+                                accumulateModel.accumulatePoint = createPointStatement.point;
                                 accumulateModel.usedPoint = 0;
                                 await this.accumulateService.create(accumulateModel);
                             } 
                             const updateAccumulate = await this.accumulateService.update(
                                 {userId:new ObjectID(userId)},
-                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + 20}}
+                                {$set:{accumulatePoint:accumulateCreate.accumulatePoint + todayNewsPoint}}
                             );
                             if(updateAccumulate){
                                 const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot);
