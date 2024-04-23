@@ -18,6 +18,7 @@ import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { DialogAddNoti } from '../../shares/DialogAddNoti.component';
+import { LoadingService } from '../../../services/loading/loading.service';
 
 
 const PAGE_NAME: string = "vote";
@@ -40,6 +41,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
   public voteEventFacade: VoteEventFacade;
   private authenManager: AuthenManager;
   private router: Router;
+  private loadingService: LoadingService;
 
   public isSendNoti: boolean = false;
   public isHaveVoteEvent: boolean = false;
@@ -69,8 +71,9 @@ export class VoteEventPage extends AbstractPage implements OnInit {
   public hashTag = new FormControl();
   public filteredOptions: Observable<string[]>;
 
-  constructor(voteEventFacade: VoteEventFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
+  constructor(voteEventFacade: VoteEventFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager, loadingService: LoadingService) {
     super(PAGE_NAME, dialog);
+    this.loadingService = loadingService;
     this.voteEventFacade = voteEventFacade;
     this.router = router;
     this.authenManager = authenManager;
@@ -134,6 +137,10 @@ export class VoteEventPage extends AbstractPage implements OnInit {
   }
 
   public ngOnInit() {
+    setTimeout(() => {
+      this.loadingService.isLoading.next(false);
+    }, 2000);
+
     this.table.isVote = true;
     this._getHashTag();
 
@@ -392,7 +399,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
       messages: [
         {
           "type": "flex",
-          "altText": "This is a Flex Message",
+          "altText": this.listVoteEvent[0].title,
           "contents": {
             "type": "bubble",
             "size": "mega",
@@ -461,7 +468,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
                           'action': {
                             'type': 'uri',
                             'label': this.listVoteEvent[0].status === "support" ? "กดสนับสนุน" : (this.listVoteEvent[0].status === "vote" ? "เริ่มโหวตเลย" : "ดูผลโหวต"),
-                            'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[0].id
+                            'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[0].id + "?openExternalBrowser=1"
                           },
                           'color': '#F18805',
                           'scaling': false,
@@ -542,7 +549,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
               'action': {
                 'type': 'uri',
                 'label': 'action',
-                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[1].id,
+                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[1].id + "?openExternalBrowser=1",
               },
             },
           );
@@ -594,7 +601,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
               'action': {
                 'type': 'uri',
                 'label': 'action',
-                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[2].id,
+                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[2].id + "?openExternalBrowser=1",
               }
             },
           );
@@ -646,7 +653,7 @@ export class VoteEventPage extends AbstractPage implements OnInit {
               'action': {
                 'type': 'uri',
                 'label': 'action',
-                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[3].id,
+                'uri': "https://today.moveforwardparty.org/vote/event/" + this.listVoteEvent[3].id + "?openExternalBrowser=1",
               }
             },
           );

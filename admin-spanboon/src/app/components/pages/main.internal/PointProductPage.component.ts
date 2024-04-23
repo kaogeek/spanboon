@@ -159,6 +159,7 @@ export class PointProductPage extends AbstractPage implements OnInit {
             this.dataForm.expiredDate = data.expiringDate;
             this.dataForm.activeDate = data.activeDate;
             this.dataForm.coverPageURL = data.coverPageURL;
+            this.dataForm.pin = data.pin;
             const toSelect = this.dataCategory.find((value) => value.title === data.categoryName);
             this.categoryGroup.get('category').setValue(toSelect);
             this.image = {
@@ -178,6 +179,7 @@ export class PointProductPage extends AbstractPage implements OnInit {
             this.dataForm.point = null;
             this.dataForm.limit = null;
             this.dataForm.coverPageURL = "";
+            this.dataForm.pin = false;
             this.image = {};
         }
         this.orinalDataForm = JSON.parse(JSON.stringify(this.dataForm));
@@ -281,10 +283,10 @@ export class PointProductPage extends AbstractPage implements OnInit {
         if (!this.image.assetId) {
             return this.dialogWarning('กรุณาเพิ่มรูปภาพหน้าปก');
         }
-        if (!this.dataForm.title) {
+        if (!this.dataForm.title || this.dataForm.title.trim() === '') {
             return this.dialogWarning('กรุณาใส่หัวข้อ');
         }
-        if (!this.dataForm.detail) {
+        if (!this.dataForm.detail || this.dataForm.detail.trim() === '') {
             return this.dialogWarning('กรุณาใส่รายละเอียด');
         }
         if (!this.dataForm.point) {
@@ -300,7 +302,7 @@ export class PointProductPage extends AbstractPage implements OnInit {
             return this.dialogWarning('กรุณาเพิ่มเงื่อนไข');
         } else {
             for (let index = 0; index < this.conditions().value.length; index++) {
-                if (this.conditions().value[index].value === '') {
+                if (this.conditions().value[index].value === '' || this.conditions().value[index].value.trim() === '') {
                     return this.dialogWarning('กรุณาระบุเงื่อนไขข้อที่ ' + (index + 1));
                 }
             }
@@ -312,9 +314,10 @@ export class PointProductPage extends AbstractPage implements OnInit {
                 condition.push(item.value);
             }
         }
+
         let value = {
-            title: this.dataForm.title,
-            detail: this.dataForm.detail,
+            title: this._trimValue(this.dataForm.title),
+            detail: this._trimValue(this.dataForm.detail),
             point: this.dataForm.point,
             maximumLimit: this.dataForm.limit,
             condition: condition,
@@ -325,6 +328,7 @@ export class PointProductPage extends AbstractPage implements OnInit {
             categoryId: this.categoryGroup.get('category').value.id,
             expiringDate: this.dataForm.expiredDate,
             activeDate: this.dataForm.activeDate,
+            pin: this.dataForm.pin ? true : false,
             couponExpire: -1,
             receiver: 0
         };
@@ -334,6 +338,7 @@ export class PointProductPage extends AbstractPage implements OnInit {
                     this.setFields();
                     this._removeFormConditions();
                     this.table.searchData();
+                    this.edit = false;
                     this.drawer.toggle();
                 }
             }).catch((err) => {
@@ -345,12 +350,19 @@ export class PointProductPage extends AbstractPage implements OnInit {
                     this.setFields();
                     this._removeFormConditions();
                     this.table.searchData();
+                    this.edit = false;
                     this.drawer.toggle();
                 }
             }).catch((err) => {
                 if (err) { }
             });
         }
+    }
+
+    private _trimValue(text) {
+        const data = text;
+        const trimData = data.trim().replace(/\s+/g, ' ');
+        return trimData;
     }
 
     public onFileSelect(event) {
