@@ -5,6 +5,7 @@ import { VoteEventFacade } from '../../services/facade/VoteEventFacade.service';
 import { SearchFilter } from '../../models/SearchFilter';
 import { MatCheckboxChange } from '@angular/material';
 import { DialogWarningComponent } from '../shares/DialogWarningComponent.component';
+import { LoadingService } from '../../services/loading/loading.service';
 
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
@@ -16,6 +17,7 @@ const SEARCH_OFFSET: number = 0;
 export class DialogAddNoti {
     public baseURL: string;
     private dialog: MatDialog;
+    private loadingService: LoadingService;
     public voteFacade: VoteEventFacade;
     public listVote: any[] = [];
     public isSeeMore: boolean = false;
@@ -24,14 +26,20 @@ export class DialogAddNoti {
     constructor(public dialogRef: MatDialogRef<DialogAddNoti>,
         @Inject(MAT_DIALOG_DATA) public data: any,
         voteFacade: VoteEventFacade,
+        loadingService: LoadingService,
         dialog: MatDialog) {
         this.dialog = dialog;
         this.baseURL = environment.apiBaseURL;
+        this.loadingService = loadingService;
         this.voteFacade = voteFacade;
     }
 
     public ngOnInit(): void {
         this._getVoteEvent();
+
+        setTimeout(() => {
+            this.loadingService.isLoading.next(false);
+        }, 2000);
     }
 
     private _getVoteEvent() {

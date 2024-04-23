@@ -1,4 +1,4 @@
-import { JsonController, Res, Post, Body, Req, Authorized, Param, Delete, Put, Get,QueryParam } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Authorized, Param, Delete, Put, Get, QueryParam } from 'routing-controllers';
 import { VotingEventRequest } from './requests/VotingEventRequest';
 import { VotingContentsRequest } from './requests/VotingContentsRequest';
 // import { UserSupportRequest } from './requests/UserSupportRequest';
@@ -90,9 +90,9 @@ export class VotingController {
         private inviteVoteService: InviteVoteService,
         private hashTagService: HashTagService,
         private s3Service: S3Service,
-        private userEngagementService:UserEngagementService,
-        private pointStatementService:PointStatementService,
-        private accumulateService:AccumulateService
+        private userEngagementService: UserEngagementService,
+        private pointStatementService: PointStatementService,
+        private accumulateService: AccumulateService
         // private retrieveVoteService: RetrieveVoteService
     ) { }
 
@@ -433,7 +433,7 @@ export class VotingController {
                         pin: 1,
                         showVoterName: 1,
                         showVoteResult: 1,
-                        hide:1,
+                        hide: 1,
                         voted: 1,
                         service: 1,
                         passing_scores: 1,
@@ -576,14 +576,14 @@ export class VotingController {
                         let: { 'id': '$_id' },
                         pipeline: [
                             {
-                                $match:{
-                                    $expr:{
-                                        $eq:['$$id','$votingId']
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$id', '$votingId']
                                     }
                                 }
                             },
                             {
-                                $match:{
+                                $match: {
                                     userId: userObjId
                                 }
                             }
@@ -631,10 +631,10 @@ export class VotingController {
                                 false
                             ]
                         },
-                        myVotes:{
-                            $cond:[
+                        myVotes: {
+                            $cond: [
                                 {
-                                    $gt: [{ $size : '$myVotes'}, 0]
+                                    $gt: [{ $size: '$myVotes' }, 0]
                                 },
                                 true,
                                 false
@@ -704,7 +704,7 @@ export class VotingController {
         let hashTagVote: any = undefined;
         let closetSupportAggr: any = undefined;
         let generalSection: any = undefined;
-        const stackId:any = [];
+        const stackId: any = [];
 
         if (votingContentsRequest.pin === true) {
             pinned = await this.votingEventService.aggregate(
@@ -744,7 +744,7 @@ export class VotingController {
                             voted: 1,
                             service: 1,
                             passing_scores: 1,
-                            hide:1,
+                            hide: 1,
                             createPage: {
                                 $cond: [
                                     {
@@ -898,14 +898,14 @@ export class VotingController {
                             let: { 'id': '$_id' },
                             pipeline: [
                                 {
-                                    $match:{
-                                        $expr:{
-                                            $eq:['$$id','$votingId']
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$id', '$votingId']
                                         }
                                     }
                                 },
                                 {
-                                    $match:{
+                                    $match: {
                                         userId: userObjId
                                     }
                                 }
@@ -953,10 +953,10 @@ export class VotingController {
                                     false
                                 ]
                             },
-                            myVotes:{
-                                $cond:[
+                            myVotes: {
+                                $cond: [
                                     {
-                                        $gt: [{ $size : '$myVotes'}, 0]
+                                        $gt: [{ $size: '$myVotes' }, 0]
                                     },
                                     true,
                                     false
@@ -1016,7 +1016,7 @@ export class VotingController {
                             showVoteResult: 1,
                             voted: 1,
                             service: 1,
-                            hide:1,
+                            hide: 1,
                             createPage: {
                                 $cond: [
                                     {
@@ -1209,8 +1209,8 @@ export class VotingController {
                     }
                 ]
             );
-            if(myVote !== undefined && myVote.length > 0) {
-                for(const objMyVote of myVote) {
+            if (myVote !== undefined && myVote.length > 0) {
+                for (const objMyVote of myVote) {
                     stackId.push(new ObjectID(objMyVote._id));
                 }
             }
@@ -1251,7 +1251,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
-                            hide:1,
+                            hide: 1,
                             voted: 1,
                             service: 1,
                             createPage: {
@@ -1366,7 +1366,7 @@ export class VotingController {
                     },
                     {
                         $match: {
-                            pin:false,
+                            pin: false,
                             status: 'support',
                             title: exp
                         }
@@ -1492,7 +1492,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
-                            hide:1,
+                            hide: 1,
                             voted: 1,
                             service: 1,
                             createPage: {
@@ -1613,7 +1613,7 @@ export class VotingController {
                             title: exp,
                             pin: false,
                             hide: true,
-                            _id:{$nin:stackId}
+                            _id: { $nin: stackId }
                         }
                     },
                     {
@@ -1647,14 +1647,14 @@ export class VotingController {
                             let: { 'id': '$_id' },
                             pipeline: [
                                 {
-                                    $match:{
-                                        $expr:{
-                                            $eq:['$$id','$votingId']
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$id', '$votingId']
                                         }
                                     }
                                 },
                                 {
-                                    $match:{
+                                    $match: {
                                         userId: userObjId
                                     }
                                 }
@@ -1668,14 +1668,14 @@ export class VotingController {
                             let: { 'id': '$_id' },
                             pipeline: [
                                 {
-                                    $match:{
-                                        $expr:{
-                                            $eq:['$$id','$votingId']
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$id', '$votingId']
                                         }
                                     }
                                 },
                                 {
-                                    $match:{
+                                    $match: {
                                         userId: userObjId
                                     }
                                 }
@@ -1723,10 +1723,10 @@ export class VotingController {
                                     false
                                 ]
                             },
-                            myVotes:{
-                                $cond:[
+                            myVotes: {
+                                $cond: [
                                     {
-                                        $gt: [{ $size : '$myVotes'}, 0]
+                                        $gt: [{ $size: '$myVotes' }, 0]
                                     },
                                     true,
                                     false
@@ -1755,7 +1755,7 @@ export class VotingController {
                         }
                     },
                     {
-                        $match:{
+                        $match: {
                             hashTag: exp
                         }
                     },
@@ -1814,7 +1814,7 @@ export class VotingController {
                                         pin: 1,
                                         showVoterName: 1,
                                         showVoteResult: 1,
-                                        hide:1,
+                                        hide: 1,
                                         voted: 1,
                                         service: 1,
                                         createPage: {
@@ -2024,10 +2024,10 @@ export class VotingController {
                                     }
                                 },
                                 {
-                                    $match:{
+                                    $match: {
                                         pin: false,
                                         hide: true,
-                                        _id: {$nin:stackId}
+                                        _id: { $nin: stackId }
                                     }
                                 },
                                 {
@@ -2088,7 +2088,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
-                            hide:1,
+                            hide: 1,
                             voted: 1,
                             service: 1,
                             createPage: {
@@ -2241,14 +2241,14 @@ export class VotingController {
                             let: { 'id': '$_id' },
                             pipeline: [
                                 {
-                                    $match:{
-                                        $expr:{
-                                            $eq:['$$id','$votingId']
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$id', '$votingId']
                                         }
                                     }
                                 },
                                 {
-                                    $match:{
+                                    $match: {
                                         userId: userObjId
                                     }
                                 }
@@ -2297,9 +2297,9 @@ export class VotingController {
                                 ]
                             },
                             myVotes: {
-                                $cond:[
+                                $cond: [
                                     {
-                                        $gt: [{ $size : '$myVotes'}, 0]
+                                        $gt: [{ $size: '$myVotes' }, 0]
                                     },
                                     true,
                                     false
@@ -2317,37 +2317,37 @@ export class VotingController {
             );
         }
         // section อื่นๆ
-        if(votingContentsRequest.generalSection === true) {
+        if (votingContentsRequest.generalSection === true) {
             // stackId need to be cached to better performance.
             // It Need more Instances to cache the data.
-            if(pinned !== undefined && pinned.length > 0) {
-                for(const pin of pinned) {
+            if (pinned !== undefined && pinned.length > 0) {
+                for (const pin of pinned) {
                     stackId.push(new ObjectID(pin._id));
                 }
             }
-            if(supporter !== undefined && supporter.length > 0) {
-                for(const ObjSupporter of supporter) {
+            if (supporter !== undefined && supporter.length > 0) {
+                for (const ObjSupporter of supporter) {
                     stackId.push(new ObjectID(ObjSupporter._id));
                 }
             }
-            if(closeVote !== undefined && closeVote.length > 0) {
-                for(const ObjcloseVote of closeVote) {
+            if (closeVote !== undefined && closeVote.length > 0) {
+                for (const ObjcloseVote of closeVote) {
                     stackId.push(new ObjectID(ObjcloseVote._id));
                 }
             }
-            if(hashTagVote !== undefined && hashTagVote.length > 0) {
-                for(const ObjHashTagVote of hashTagVote){
+            if (hashTagVote !== undefined && hashTagVote.length > 0) {
+                for (const ObjHashTagVote of hashTagVote) {
                     const returnResult = await this.HashTagVoting(ObjHashTagVote);
                     stackId.concat(returnResult);
                 }
             }
-            if(closetSupportAggr !== undefined && closetSupportAggr.length > 0) {
-                for(const ObjClosetSupportAggr of closetSupportAggr) {
+            if (closetSupportAggr !== undefined && closetSupportAggr.length > 0) {
+                for (const ObjClosetSupportAggr of closetSupportAggr) {
                     stackId.push(new ObjectID(ObjClosetSupportAggr._id));
                 }
             }
-            if(votingContentsRequest.voteObjId !== undefined && votingContentsRequest.voteObjId.length > 0) {
-                for(const voteIds of votingContentsRequest.voteObjId) {
+            if (votingContentsRequest.voteObjId !== undefined && votingContentsRequest.voteObjId.length > 0) {
+                for (const voteIds of votingContentsRequest.voteObjId) {
                     stackId.push(new ObjectID(voteIds));
                 }
             }
@@ -2386,7 +2386,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
-                            hide:1,
+                            hide: 1,
                             voted: 1,
                             service: 1,
                             createPage: {
@@ -2501,7 +2501,7 @@ export class VotingController {
                     },
                     {
                         $match: {
-                            _id:{$nin:stackId},
+                            _id: { $nin: stackId },
                             hide: true,
                             title: exp
                         }
@@ -2537,14 +2537,14 @@ export class VotingController {
                             let: { 'id': '$_id' },
                             pipeline: [
                                 {
-                                    $match:{
-                                        $expr:{
-                                            $eq:['$$id','$votingId']
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$id', '$votingId']
                                         }
                                     }
                                 },
                                 {
-                                    $match:{
+                                    $match: {
                                         userId: userObjId
                                     }
                                 }
@@ -2593,9 +2593,9 @@ export class VotingController {
                                 ]
                             },
                             myVotes: {
-                                $cond:[
+                                $cond: [
                                     {
-                                        $gt: [{ $size : '$myVotes'}, 0]
+                                        $gt: [{ $size: '$myVotes' }, 0]
                                     },
                                     true,
                                     false
@@ -2645,17 +2645,17 @@ export class VotingController {
 
     // hashTag/search
     @Post('/hashtag/search')
-    public async VotinghashTagSearch(@Body({ validate: true }) votingContentsRequest: VotingContentsRequest,@Res() res: any, @Req() req: any): Promise<any>{
+    public async VotinghashTagSearch(@Body({ validate: true }) votingContentsRequest: VotingContentsRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = req.headers.userid ? new ObjectID(req.headers.userid) : undefined;
         const keywords = votingContentsRequest.keyword;
         const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
         const take = votingContentsRequest.limit ? votingContentsRequest.limit : 10;
         const skips = votingContentsRequest.offset ? votingContentsRequest.offset : 0;
 
-        const hashTagVote:any = await this.votingEventService.aggregate(
+        const hashTagVote: any = await this.votingEventService.aggregate(
             [
                 {
-                    $match:{
+                    $match: {
                         hashTag: exp
                     }
                 },
@@ -2714,7 +2714,7 @@ export class VotingController {
                                     pin: 1,
                                     showVoterName: 1,
                                     showVoteResult: 1,
-                                    hide:1,
+                                    hide: 1,
                                     voted: 1,
                                     service: 1,
                                     createPage: {
@@ -2924,7 +2924,7 @@ export class VotingController {
                                 }
                             },
                             {
-                                $match:{
+                                $match: {
                                     pin: false,
                                     hide: true,
                                 }
@@ -2953,7 +2953,7 @@ export class VotingController {
 
         const result: any = {};
         result.hashTagVote = hashTagVote;
-        
+
         const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', result, countRows[0].count);
         return res.status(200).send(successResponse);
     }
@@ -3113,7 +3113,7 @@ export class VotingController {
                 }
             ]
         );
-
+        console.log('voteitem', voteItem);
         if (voteItem.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteItem);
             return res.status(200).send(successResponse);
@@ -3171,7 +3171,7 @@ export class VotingController {
                             pin: 1,
                             showVoterName: 1,
                             showVoteResult: 1,
-                            hide:1,
+                            hide: 1,
                             service: 1,
                             createPage: {
                                 $cond: [
@@ -3309,14 +3309,14 @@ export class VotingController {
                             let: { 'id': '$_id' },
                             pipeline: [
                                 {
-                                    $match:{
-                                        $expr:{
-                                            $eq:['$$id','$votingId']
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$id', '$votingId']
                                         }
                                     }
                                 },
                                 {
-                                    $match:{
+                                    $match: {
                                         userId: userObjId
                                     }
                                 }
@@ -3364,10 +3364,10 @@ export class VotingController {
                                     false
                                 ]
                             },
-                            myVotes:{
-                                $cond:[
+                            myVotes: {
+                                $cond: [
                                     {
-                                        $gt: [{ $size : '$myVotes'}, 0]
+                                        $gt: [{ $size: '$myVotes' }, 0]
                                     },
                                     true,
                                     false
@@ -3381,7 +3381,7 @@ export class VotingController {
                             userId: userObjId,
                             hide: true,
                             title: exp,
-                            
+
                         }
                     },
                     {
@@ -3661,7 +3661,7 @@ export class VotingController {
                                     }
                                 },
                                 {
-                                    $match:{
+                                    $match: {
                                         hide: true,
                                         title: exp
                                     }
@@ -3911,7 +3911,7 @@ export class VotingController {
                                     }
                                 },
                                 {
-                                    $match:{
+                                    $match: {
                                         hide: true,
                                         title: exp
                                     }
@@ -4585,7 +4585,7 @@ export class VotingController {
                                 }
                             },
                             {
-                                $match:{
+                                $match: {
                                     hide: true,
                                 }
                             },
@@ -4799,7 +4799,7 @@ export class VotingController {
 
     // get Item
     @Get('/item/vote/:votingId')
-    public async getItemVote(@Body({ validate: true }) search: FindVoteRequest, @Param('votingId') votingId: string,@QueryParam('limit') limit: number,@QueryParam('offset') offset: number,  @Res() res: any, @Req() req: any): Promise<any> {
+    public async getItemVote(@Body({ validate: true }) search: FindVoteRequest, @Param('votingId') votingId: string, @QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Res() res: any, @Req() req: any): Promise<any> {
         const voteObjId = new ObjectID(votingId);
 
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId });
@@ -4810,17 +4810,17 @@ export class VotingController {
         let takeLimit = 0;
         let takeOffset = 0;
 
-        const voteItemFind = await this.voteItemService.find({votingId:voteObjId});
+        const voteItemFind = await this.voteItemService.find({ votingId: voteObjId });
 
-        if(limit !== undefined) {
+        if (limit !== undefined) {
             takeLimit = limit;
         }
 
-        if(offset !== undefined) {
+        if (offset !== undefined) {
             takeOffset = offset;
         }
 
-        if(limit === undefined) {
+        if (limit === undefined) {
             takeLimit = voteItemFind.length;
         }
 
@@ -5149,14 +5149,14 @@ export class VotingController {
 
         const regex = /[%^*+|~=`{}\[\]\/]/;
         const matchTitle = votingEventRequest.title.match(regex);
-        if(matchTitle !== null && matchTitle.length > 0) {
+        if (matchTitle !== null && matchTitle.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
             return res.status(400).send(errorResponse);
         }
 
         const matchDetail = votingEventRequest.detail ? votingEventRequest.detail.match(regex) : null;
 
-        if(matchDetail !== null && matchDetail.length > 0) {
+        if (matchDetail !== null && matchDetail.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in detail what you wrote.', matchTitle);
             return res.status(400).send(errorResponse);
         }
@@ -5166,18 +5166,18 @@ export class VotingController {
                 await this.assetService.update({ _id: new ObjectID(assetId) }, { $set: { expirationDate: today } });
             }
         }
-        
+
         if (votingEventRequest.delete.length > 0) {
             for (const voteItem of votingEventRequest.delete) {
                 await this.voteItemService.delete({ _id: new ObjectID(voteItem), votingId: voteObjId });
-                await this.voteChoiceService.delete({voteItem: new ObjectID(voteItem)});
+                await this.voteChoiceService.delete({ voteItem: new ObjectID(voteItem) });
             }
         }
-        
-        if(votingEventRequest.deleteChoices !== undefined &&
-            votingEventRequest.deleteChoices.length >0) {
-            for(const voteChoice of votingEventRequest.deleteChoices) {
-                await this.voteChoiceService.delete({_id: new ObjectID(voteChoice)});
+
+        if (votingEventRequest.deleteChoices !== undefined &&
+            votingEventRequest.deleteChoices.length > 0) {
+            for (const voteChoice of votingEventRequest.deleteChoices) {
+                await this.voteChoiceService.delete({ _id: new ObjectID(voteChoice) });
             }
         }
 
@@ -5186,24 +5186,24 @@ export class VotingController {
 
         const maxConfigVoteChoices = await this.configService.getConfig(MAX_VOTE_CHOICES);
 
-        if(maxConfigVoteChoices){
+        if (maxConfigVoteChoices) {
             maxVoteChoices = maxConfigVoteChoices.value;
         }
 
         const maxConfigVoteQuestion = await this.configService.getConfig(MAX_VOTE_QUESTIONS);
-        if(maxConfigVoteQuestion) {
+        if (maxConfigVoteQuestion) {
             maxVote = maxConfigVoteQuestion.value;
         }
 
-        if(votingEventRequest.voteItem.length > maxVote) {
+        if (votingEventRequest.voteItem.length > maxVote) {
             const errorResponse = ResponseUtil.getErrorResponse('The number of VoteItem exceeds the maximum configured for VoteQuestion.', undefined);
             return res.status(400).send(errorResponse);
         }
 
         for (const voteItems of votingEventRequest.voteItem) {
             // check voteChoices
-            const resultError = await this.CheckVoteChoices(voteItems,maxVoteChoices);
-            if(resultError === 0) {
+            const resultError = await this.CheckVoteChoices(voteItems, maxVoteChoices);
+            if (resultError === 0) {
                 const errorResponse = ResponseUtil.getErrorResponse('The number of VoteChoice exceeds the maximum configured for VoteChoice.', undefined);
                 return res.status(400).send(errorResponse);
             }
@@ -5213,7 +5213,7 @@ export class VotingController {
         let newValues: any;
         // const objIds = [];
         if (votingEventRequest.voteItem.length > 0) {
-            for (const [i,voteItem] of votingEventRequest.voteItem.entries()) {
+            for (const [i, voteItem] of votingEventRequest.voteItem.entries()) {
                 // objIds.push(new ObjectID(voteItem._id));
 
                 // ไม่มี voteItem ต้องการสร้าง voteItem เพิ่ม และ สร้าง voteChoice
@@ -5225,7 +5225,7 @@ export class VotingController {
                     // check ordering exists?
                     const voteItemEdit: any = new VoteItemModel();
                     voteItemEdit.votingId = voteObjId;
-                    voteItemEdit.ordering = i+1;
+                    voteItemEdit.ordering = i + 1;
                     voteItemEdit.type = voteItem.typeChoice;
                     voteItemEdit.title = voteItem.title;
                     voteItemEdit.assetId = voteItem.assetId;
@@ -5248,7 +5248,7 @@ export class VotingController {
                     // check ordering exists?
                     const voteItemEdit: any = new VoteItemModel();
                     voteItemEdit.votingId = voteObjId;
-                    voteItemEdit.ordering = i+1;
+                    voteItemEdit.ordering = i + 1;
                     voteItemEdit.type = voteItem.typeChoice;
                     voteItemEdit.title = voteItem.title;
                     voteItemEdit.assetId = voteItem.assetId;
@@ -5263,14 +5263,14 @@ export class VotingController {
                 }
 
                 // สร้างเฉพาะ voteItem ที่เป็นแบบคำถาม
-                if(voteItem.typeChoice === 'text' && 
-                    voteItem.typeChoice !== 'multi' && 
+                if (voteItem.typeChoice === 'text' &&
+                    voteItem.typeChoice !== 'multi' &&
                     voteItem.typeChoice !== 'single' &&
                     voteItem._id === undefined
                 ) {
                     const voteItemEdit: any = new VoteItemModel();
                     voteItemEdit.votingId = voteObjId;
-                    voteItemEdit.ordering = i+1;
+                    voteItemEdit.ordering = i + 1;
                     voteItemEdit.type = voteItem.typeChoice;
                     voteItemEdit.title = voteItem.title;
                     voteItemEdit.assetId = voteItem.assetId;
@@ -5283,16 +5283,16 @@ export class VotingController {
                 // UpdateVoteChoice อัพเดท voteChoices
                 // CreateVoteChoice สร้าง choice เพิ่ม
                 if (voteItem._id !== undefined && voteItem.voteChoice.length > 0) {
-                    const obJId = {'id':voteItem._id};
+                    const obJId = { 'id': voteItem._id };
                     await this.UpdateVoteChoice(voteItem);
-                    await this.CreateVoteChoice(obJId,voteItem);
+                    await this.CreateVoteChoice(obJId, voteItem);
                     // ถ้าต้องการลบ voteChoice ออกไปด้วยใน array voteItem.voteChoice จะต้อง shift หรือ pop ออกมาแล้ว
                     // api ถึงจะ compare ได้ว่าตัวไหนหายไป
                 }
-                query = { _id: new ObjectID(voteItem._id),votingId: voteObjId };
+                query = { _id: new ObjectID(voteItem._id), votingId: voteObjId };
                 newValues = {
                     $set: {
-                        ordering: i+1,
+                        ordering: i + 1,
                         title: voteItem.title,
                         coverPageURL: voteItem.coverPageURL,
                         s3CoverPageURL: voteItem.s3CoverPageURL,
@@ -5333,7 +5333,7 @@ export class VotingController {
 
     // supported ???
     @Get('/get/support/:id')
-    public async getSupport(@Body({ validate: true }) search: FindVoteRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
+    public async getSupport(@Body({ validate: true }) search: FindVoteRequest, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }
@@ -5601,13 +5601,13 @@ export class VotingController {
             minSupportValue = parseInt(configMinSupport.value, 10);
         }
 
-        if (typeof(vdr) !== 'number') {
+        if (typeof (vdr) !== 'number') {
             const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not number.', undefined);
             return res.status(400).send(errorResponse);
         }
 
         const postiveNumber = vdr > 0;
-        if(postiveNumber === false) {
+        if (postiveNumber === false) {
             const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not positive number.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -5693,14 +5693,14 @@ export class VotingController {
         */
         const regex = /[%^*+|~=`{}\[\]\/]/;
         const matchTitle = title.match(regex);
-        if(matchTitle !== null && matchTitle.length > 0) {
+        if (matchTitle !== null && matchTitle.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
             return res.status(400).send(errorResponse);
         }
 
         const matchDetail = detail ? detail.match(regex) : null;
 
-        if(matchDetail !== null && matchDetail.length > 0) {
+        if (matchDetail !== null && matchDetail.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in detail what you wrote.', matchTitle);
             return res.status(400).send(errorResponse);
         }
@@ -5740,45 +5740,45 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
-        if(votingEventRequest.voteItem.length === 0) {
+        if (votingEventRequest.voteItem.length === 0) {
             const errorResponse = ResponseUtil.getErrorResponse('VoteItem is empty.', undefined);
             return res.status(400).send(errorResponse);
         }
 
-        if(votingEventRequest.voteItem.length > 0) {
-            for(const item of votingEventRequest.voteItem) {
+        if (votingEventRequest.voteItem.length > 0) {
+            for (const item of votingEventRequest.voteItem) {
 
-                if(item.titleItem === undefined) {
+                if (item.titleItem === undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('VoteItem Title is required.', undefined);
                     return res.status(400).send(errorResponse);
                 }
 
-                const foundItemTitle =  item.titleItem ? item.titleItem.match(regex) : null;
-                if(foundItemTitle !== null && foundItemTitle.length > 0) {
+                const foundItemTitle = item.titleItem ? item.titleItem.match(regex) : null;
+                if (foundItemTitle !== null && foundItemTitle.length > 0) {
                     const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteItem title what you wrote.', foundItemTitle);
                     return res.status(400).send(errorResponse);
                 }
 
-                if(item.titleItem === ''){
+                if (item.titleItem === '') {
                     const errorResponse = ResponseUtil.getErrorResponse('VoteItem Title is required.', undefined);
                     return res.status(400).send(errorResponse);
                 }
                 const voteChoice = await this.CheckEmptyTitleVoteChoice(item);
-                if(item.typeChoice !== 'text' && 
-                   voteChoice !== null && 
-                   voteChoice !== '' && 
-                   voteChoice.length === 0
+                if (item.typeChoice !== 'text' &&
+                    voteChoice !== null &&
+                    voteChoice !== '' &&
+                    voteChoice.length === 0
                 ) {
                     const errorResponse = ResponseUtil.getErrorResponse('VoteChoice is empty.', undefined);
                     return res.status(400).send(errorResponse);
                 }
 
-                if(voteChoice !== null && voteChoice.length > 0) {
+                if (voteChoice !== null && voteChoice.length > 0) {
                     const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteChoice title what you wrote.', foundItemTitle);
                     return res.status(400).send(errorResponse);
                 }
 
-                if(voteChoice !== null && voteChoice === ''){
+                if (voteChoice !== null && voteChoice === '') {
                     const errorResponse = ResponseUtil.getErrorResponse('VoteChoice Title is required.', undefined);
                     return res.status(400).send(errorResponse);
                 }
@@ -5791,24 +5791,24 @@ export class VotingController {
 
         const maxConfigVoteChoices = await this.configService.getConfig(MAX_VOTE_CHOICES);
 
-        if(maxConfigVoteChoices){
+        if (maxConfigVoteChoices) {
             maxVoteChoices = maxConfigVoteChoices.value;
         }
 
         const maxConfigVoteQuestion = await this.configService.getConfig(MAX_VOTE_QUESTIONS);
-        if(maxConfigVoteQuestion) {
+        if (maxConfigVoteQuestion) {
             maxVote = maxConfigVoteQuestion.value;
         }
 
-        if(votingEventRequest.voteItem.length > maxVote) {
+        if (votingEventRequest.voteItem.length > maxVote) {
             const errorResponse = ResponseUtil.getErrorResponse('The number of VoteItem exceeds the maximum configured for VoteQuestion.', undefined);
             return res.status(400).send(errorResponse);
         }
 
         for (const voteItems of votingEventRequest.voteItem) {
             // check voteChoices
-            const resultError = await this.CheckVoteChoices(voteItems,maxVoteChoices);
-            if(resultError === 0) {
+            const resultError = await this.CheckVoteChoices(voteItems, maxVoteChoices);
+            if (resultError === 0) {
                 const errorResponse = ResponseUtil.getErrorResponse('The number of VoteChoice exceeds the maximum configured for VoteChoice.', undefined);
                 return res.status(400).send(errorResponse);
             }
@@ -5816,23 +5816,23 @@ export class VotingController {
 
         let hideMode = false;
         const resRank = await this.RankingLevelFunction(userObjId);
-        if(resRank.status === 0) {
+        if (resRank.status === 0) {
             const errorResponse = ResponseUtil.getErrorResponse(resRank.message, resRank.data);
             return res.status(400).send(errorResponse);
         }
 
         // ตรงนี้เราจะใช้ในการเช็ดว่า ค่าระบบ triggerSwitchCreateVote เป็น true หรือเป็น false
         // โดยถ้า triggerSwitchCreateVote เป็น true จะทำให้ hidemode ของ level 2 และ 3 เป็น true ซึ่งเมื่อสร้าง vote แล้วจะแสดงทันที
-        if(resRank.message === 1) {
+        if (resRank.message === 1) {
             hideMode = resRank.data;
         }
-        
-        if(resRank.message === 2) {
+
+        if (resRank.message === 2) {
             hideMode = resRank.data;
 
         }
 
-        if(resRank.message === 3) {
+        if (resRank.message === 3) {
             hideMode = resRank.data;
         }
 
@@ -5872,16 +5872,16 @@ export class VotingController {
         votingEvent.service = votingEventRequest.service;
         votingEvent.hide = hideMode;
         const result = await this.votingEventService.create(votingEvent);
-        const stackVoteItem:any = {
-            'VoteItem':[],
-            'VoteChoice':[]
+        const stackVoteItem: any = {
+            'VoteItem': [],
+            'VoteChoice': []
         };
         if (result) {
-            
+
             // const stackVoteItems:any = {};
             if (votingEventRequest.voteItem.length > 0) {
                 for (const voteItems of votingEventRequest.voteItem) {
-                    if(voteItems.titleItem !== '') {
+                    if (voteItems.titleItem !== '') {
                         const voteItem = new VoteItemModel();
                         voteItem.votingId = result.id;
                         voteItem.ordering = voteItems.ordering;
@@ -5894,7 +5894,7 @@ export class VotingController {
                         const createVoteItem = await this.voteItemService.create(voteItem);
                         if (createVoteItem) {
                             stackVoteItem['VoteItem'].push(createVoteItem);
-                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems,userObjId);
+                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems, userObjId);
                             stackVoteItem['VoteChoice'].push(createdVoteChoice);
                         }
                     } else {
@@ -5904,16 +5904,16 @@ export class VotingController {
                 const query = { _id: new ObjectID(result.assetId) };
                 const newValue = { $set: { expirationDate: null } };
                 await this.assetService.update(query, newValue);
-                const formatVoteItem:any = {};
-                if(stackVoteItem['VoteItem'].length >0) {
-                    for(const data of stackVoteItem['VoteItem']){
+                const formatVoteItem: any = {};
+                if (stackVoteItem['VoteItem'].length > 0) {
+                    for (const data of stackVoteItem['VoteItem']) {
                         formatVoteItem.ordering = data.ordering;
                         formatVoteItem.titleItem = data.title;
                         formatVoteItem.typeChoice = data.type;
                         formatVoteItem.assetIdItem = data.assetId;
                         formatVoteItem.coverPageURLItem = data.coverPageURL;
                         formatVoteItem.voteChoice = stackVoteItem['VoteChoice'].shift();
-                        
+
                     }
                 }
 
@@ -6008,13 +6008,13 @@ export class VotingController {
             vdr = votingEventRequest.voteDaysRange;
         }
 
-        if (typeof(vdr) !== 'number') {
+        if (typeof (vdr) !== 'number') {
             const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not number.', undefined);
             return res.status(400).send(errorResponse);
         }
 
         const postiveNumber = vdr > 0;
-        if(postiveNumber === false) {
+        if (postiveNumber === false) {
             const errorResponse = ResponseUtil.getErrorResponse('voteDaysRange is not positive number.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -6024,24 +6024,24 @@ export class VotingController {
 
         const maxConfigVoteChoices = await this.configService.getConfig(MAX_VOTE_CHOICES);
 
-        if(maxConfigVoteChoices){
+        if (maxConfigVoteChoices) {
             maxVoteChoices = maxConfigVoteChoices.value;
         }
 
         const maxConfigVoteQuestion = await this.configService.getConfig(MAX_VOTE_QUESTIONS);
-        if(maxConfigVoteQuestion) {
+        if (maxConfigVoteQuestion) {
             maxVote = maxConfigVoteQuestion.value;
         }
 
-        if(votingEventRequest.voteItem.length > maxVote) {
+        if (votingEventRequest.voteItem.length > maxVote) {
             const errorResponse = ResponseUtil.getErrorResponse('The number of VoteItem exceeds the maximum configured for VoteQuestion.', undefined);
             return res.status(400).send(errorResponse);
         }
 
         for (const voteItems of votingEventRequest.voteItem) {
             // check voteChoices
-            const resultError = await this.CheckVoteChoices(voteItems,maxVoteChoices);
-            if(resultError === 0) {
+            const resultError = await this.CheckVoteChoices(voteItems, maxVoteChoices);
+            if (resultError === 0) {
                 const errorResponse = ResponseUtil.getErrorResponse('The number of VoteChoice exceeds the maximym configured for VoteChoice.', undefined);
                 return res.status(400).send(errorResponse);
             }
@@ -6147,14 +6147,14 @@ export class VotingController {
 
         const regex = /[$%^&*+|~=`{}\[\]\/<>]/;
         const matchTitle = title.match(regex);
-        if(matchTitle !== null && matchTitle.length > 0) {
+        if (matchTitle !== null && matchTitle.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in title what you wrote.', matchTitle);
             return res.status(400).send(errorResponse);
         }
 
         const matchDetail = detail ? detail.match(regex) : null;
 
-        if(matchDetail !== null && matchDetail.length > 0) {
+        if (matchDetail !== null && matchDetail.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('Found special characters in detail what you wrote.', matchTitle);
             return res.status(400).send(errorResponse);
         }
@@ -6194,46 +6194,45 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
-        if(votingEventRequest.voteItem.length === 0) {
+        if (votingEventRequest.voteItem.length === 0) {
             const errorResponse = ResponseUtil.getErrorResponse('VoteItem is empty.', undefined);
             return res.status(400).send(errorResponse);
         }
 
-        if(votingEventRequest.voteItem.length > 0) {
-            for(const item of votingEventRequest.voteItem) {
+        if (votingEventRequest.voteItem.length > 0) {
+            for (const item of votingEventRequest.voteItem) {
 
-                if(item.titleItem === undefined) {
+                if (item.titleItem === undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('VoteItem Title is required.', undefined);
                     return res.status(400).send(errorResponse);
                 }
 
-                const foundItemTitle =  item.titleItem ? item.titleItem.match(regex) : null;
-                if(foundItemTitle !== null && foundItemTitle.length > 0) {
+                const foundItemTitle = item.titleItem ? item.titleItem.match(regex) : null;
+                if (foundItemTitle !== null && foundItemTitle.length > 0) {
                     const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteItem title what you wrote.', foundItemTitle);
                     return res.status(400).send(errorResponse);
                 }
 
-                if(item.titleItem === ''){
+                if (item.titleItem === '') {
                     const errorResponse = ResponseUtil.getErrorResponse('VoteItem Title is required.', undefined);
                     return res.status(400).send(errorResponse);
                 }
                 const voteChoice = await this.CheckEmptyTitleVoteChoice(item);
 
-                if(item.typeChoice !== 'text' && 
-                   voteChoice !== null && 
-                   voteChoice !== '' && 
-                   voteChoice.length === 0) 
-                {
+                if (item.typeChoice !== 'text' &&
+                    voteChoice !== null &&
+                    voteChoice !== '' &&
+                    voteChoice.length === 0) {
                     const errorResponse = ResponseUtil.getErrorResponse('VoteChoice is empty.', undefined);
                     return res.status(400).send(errorResponse);
                 }
 
-                if(voteChoice !== null && voteChoice.length > 0) {
+                if (voteChoice !== null && voteChoice.length > 0) {
                     const errorResponse = ResponseUtil.getErrorResponse('Found special characters in voteChoice title what you wrote.', foundItemTitle);
                     return res.status(400).send(errorResponse);
                 }
 
-                if(voteChoice !== null && voteChoice === ''){
+                if (voteChoice !== null && voteChoice === '') {
                     const errorResponse = ResponseUtil.getErrorResponse('VoteChoice Title is required.', undefined);
                     return res.status(400).send(errorResponse);
                 }
@@ -6243,23 +6242,23 @@ export class VotingController {
 
         let hideMode = false;
         const resRank = await this.RankingLevelFunction(userObjId);
-        if(resRank.status === 0) {
+        if (resRank.status === 0) {
             const errorResponse = ResponseUtil.getErrorResponse(resRank.message, resRank.data);
             return res.status(400).send(errorResponse);
         }
 
         // ตรงนี้เราจะใช้ในการเช็ดว่า ค่าระบบ triggerSwitchCreateVote เป็น true หรือเป็น false
         // โดยถ้า triggerSwitchCreateVote เป็น true จะทำให้ hidemode ของ level 2 และ 3 เป็น true ซึ่งเมื่อสร้าง vote แล้วจะแสดงทันที
-        if(resRank.message === 1) {
+        if (resRank.message === 1) {
             hideMode = resRank.data;
         }
-        
-        if(resRank.message === 2) {
+
+        if (resRank.message === 2) {
             hideMode = resRank.data;
 
         }
 
-        if(resRank.message === 3) {
+        if (resRank.message === 3) {
             hideMode = resRank.data;
         }
 
@@ -6298,16 +6297,16 @@ export class VotingController {
         votingEvent.service = votingEventRequest.service;
         votingEvent.hide = hideMode;
         const result = await this.votingEventService.create(votingEvent);
-        
-        const stackVoteItem:any = {
-            'VoteItem':[],
-            'VoteChoice':[]
+
+        const stackVoteItem: any = {
+            'VoteItem': [],
+            'VoteChoice': []
         };
         if (result) {
             // const stackVoteItems:any = {};
             if (votingEventRequest.voteItem.length > 0) {
                 for (const voteItems of votingEventRequest.voteItem) {
-                    if(voteItems.titleItem !== '') {
+                    if (voteItems.titleItem !== '') {
                         const voteItem = new VoteItemModel();
                         voteItem.votingId = result.id;
                         voteItem.ordering = voteItems.ordering;
@@ -6321,7 +6320,7 @@ export class VotingController {
                         const createVoteItem = await this.voteItemService.create(voteItem);
                         if (createVoteItem) {
                             stackVoteItem['VoteItem'].push(createVoteItem);
-                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems,userObjId,pageObjId);
+                            const createdVoteChoice = await this.CreateVoteChoice(createVoteItem, voteItems, userObjId, pageObjId);
                             stackVoteItem['VoteChoice'].push(createdVoteChoice);
                         }
                     } else {
@@ -6331,15 +6330,15 @@ export class VotingController {
                 const query = { _id: new ObjectID(result.assetId) };
                 const newValue = { $set: { expirationDate: null } };
                 await this.assetService.update(query, newValue);
-                const formatVoteItem:any = {};
-                if(stackVoteItem['VoteItem'].length >0) {
-                    for(const data of stackVoteItem['VoteItem']){
+                const formatVoteItem: any = {};
+                if (stackVoteItem['VoteItem'].length > 0) {
+                    for (const data of stackVoteItem['VoteItem']) {
                         formatVoteItem.ordering = data.ordering;
                         formatVoteItem.titleItem = data.title;
                         formatVoteItem.typeChoice = data.type;
                         formatVoteItem.assetIdItem = data.assetId;
                         formatVoteItem.coverPageURLItem = data.coverPageURL;
-                        formatVoteItem.voteChoice = stackVoteItem['VoteChoice'].shift(); 
+                        formatVoteItem.voteChoice = stackVoteItem['VoteChoice'].shift();
                     }
                 }
 
@@ -6560,7 +6559,7 @@ export class VotingController {
                 votePoint = parseInt(votePointConfig.value, 10);
             }
             // FIRST_LOGIN
-            if(createEngagement){
+            if (createEngagement) {
                 const productModel = new PointStatementModel();
                 productModel.title = ENGAGEMENT_CONTENT_TYPE.VOTE;
                 productModel.detail = null;
@@ -6569,7 +6568,7 @@ export class VotingController {
                 productModel.userId = userObjId;
                 productModel.pointEventId = null;
                 const createPoint = await this.pointStatementService.create(productModel);
-                if(createPoint) {
+                if (createPoint) {
                     const accumulateCreate = await this.accumulateService.findOne({ userId: userObjId });
                     if (accumulateCreate === undefined) {
                         const accumulateModel = new AccumulateModel();
@@ -6834,12 +6833,12 @@ export class VotingController {
 
         const response = await this.RankingLevelFunction(reqUserId);
 
-        if(response.status === 1) {
+        if (response.status === 1) {
             const successResponse = ResponseUtil.getSuccessResponse(response.message, response.data);
             return res.status(200).send(successResponse);
         }
 
-        if(response.status === 0) {
+        if (response.status === 0) {
             const errorResponse = ResponseUtil.getErrorResponse(response.message, response.data);
             return res.status(400).send(errorResponse);
         }
@@ -6849,11 +6848,11 @@ export class VotingController {
     public async DeepLink(@Res() res: any, @Req() req: any): Promise<any> {
         const test = path.join(__dirname, '../../../apple-app-site-association'); // Construct an absolute file path
 
-        if(fs.existsSync(test) === false) {
+        if (fs.existsSync(test) === false) {
             return null;
         }
         const readfile = fs.readFileSync(test, { encoding: 'utf8' });
-      
+
         return res.status(200).send(readfile);
     }
 
@@ -6898,7 +6897,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
     }
-    
+
     private async VoteChoice(voteItemId: string, voteItem: any, votingId: string, userId: string, pageId: string): Promise<any> {
         const created: any = [];
         if (voteItem.voteItemId !== undefined && voteItem.answer === undefined) {
@@ -6930,18 +6929,18 @@ export class VotingController {
         return created;
     }
 
-    private async CreateVoteChoice(createVoteItem: any, voteItems: any, userId?: string, pageId?:string): Promise<any> {
+    private async CreateVoteChoice(createVoteItem: any, voteItems: any, userId?: string, pageId?: string): Promise<any> {
         const userObjId = new ObjectID(userId);
         const pageObjId = pageId !== null ? new ObjectID(pageId) : null;
         if (voteItems) {
             const voteChoiceObj = voteItems.voteChoice;
-            const stack:any = [];
+            const stack: any = [];
             if (voteChoiceObj.length > 0) {
                 for (const voteChoicePiece of voteChoiceObj) {
-                    if(voteChoicePiece._id !== undefined) {
+                    if (voteChoicePiece._id !== undefined) {
                         continue;
                     }
-                    if(voteChoicePiece.title === ''){
+                    if (voteChoicePiece.title === '') {
                         continue;
                     }
                     const voteChoice = new VoteChoiceModel();
@@ -6965,10 +6964,10 @@ export class VotingController {
 
         if (voteItems) {
             const voteChoiceObj = voteItems.voteChoice;
-            const stack:any = [];
+            const stack: any = [];
             if (voteChoiceObj.length > 0) {
                 for (const voteChoicePiece of voteChoiceObj) {
-                    if(voteChoicePiece.title === ''){
+                    if (voteChoicePiece.title === '') {
                         continue;
                     }
 
@@ -6993,10 +6992,10 @@ export class VotingController {
             if (voteChoiceObj.length > 0) {
                 for (const voteChoicePiece of voteChoiceObj) {
                     const foundTitleVoteChoice = voteChoicePiece.title.match(regex);
-                    if(foundTitleVoteChoice !== null && foundTitleVoteChoice.length > 0) {
+                    if (foundTitleVoteChoice !== null && foundTitleVoteChoice.length > 0) {
                         return foundTitleVoteChoice;
                     }
-                    if(voteChoicePiece.title === ''){
+                    if (voteChoicePiece.title === '') {
                         return '';
                     }
                     return foundTitleVoteChoice;
@@ -7007,11 +7006,11 @@ export class VotingController {
         }
     }
 
-    private async RankingLevelFunction(user: string): Promise<any>{
+    private async RankingLevelFunction(user: string): Promise<any> {
         const reqUserId = user ? user : null;
-        if(
-            reqUserId === undefined || 
-            reqUserId === null 
+        if (
+            reqUserId === undefined ||
+            reqUserId === null
         ) {
             const errorResponse = ResponseUtil.getErrorResponse('Headers.userid not found.', undefined);
             return errorResponse;
@@ -7021,16 +7020,16 @@ export class VotingController {
         // ranking level
         let rank = null;
         const rankingConfig = await this.configService.getConfig(PRIVILEGES);
-        if(rankingConfig.value === '1'){
+        if (rankingConfig.value === '1') {
             rank = 1;
         }
-        if(rankingConfig.value === '2'){
+        if (rankingConfig.value === '2') {
             rank = 2;
         }
-        if(rankingConfig.value === '3'){
+        if (rankingConfig.value === '3') {
             rank = 3;
         }
-        if(rank === 1) {
+        if (rank === 1) {
             let eligibleValue = undefined;
             const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
             if (eligibleConfig) {
@@ -7044,14 +7043,14 @@ export class VotingController {
                 return successResponse;
             }
 
-                    // membership
+            // membership
             const requestBody = {
                 'grant_type': process.env.GRANT_TYPE,
                 'client_id': process.env.CLIENT_ID,
                 'client_secret': process.env.CLIENT_SECRET,
                 'scope': process.env.SCOPE
             };
-            
+
             const formattedData = qs.stringify(requestBody);
 
             const response = await axios.post(
@@ -7112,17 +7111,17 @@ export class VotingController {
                 return errorResponse;
             }
 
-            const authentication = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP'});
-            if(authentication !== undefined) {
+            const authentication = await this.authenticationIdService.findOne({ user: userObjId, providerName: 'MFP' });
+            if (authentication !== undefined) {
                 const successResponse = ResponseUtil.getSuccessResponse(2, false);
                 return successResponse;
             } else {
                 const successResponse = ResponseUtil.getSuccessResponse(3, false);
                 return successResponse;
-            } 
-        } 
+            }
+        }
 
-        if(rank === 2) {
+        if (rank === 2) {
             let eligibleValue = undefined;
             const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
             if (eligibleConfig) {
@@ -7136,14 +7135,14 @@ export class VotingController {
                 return successResponse;
             }
 
-                    // membership
+            // membership
             const requestBody = {
                 'grant_type': process.env.GRANT_TYPE,
                 'client_id': process.env.CLIENT_ID,
                 'client_secret': process.env.CLIENT_SECRET,
                 'scope': process.env.SCOPE
             };
-            
+
             const formattedData = qs.stringify(requestBody);
 
             const response = await axios.post(
@@ -7204,17 +7203,17 @@ export class VotingController {
                 return errorResponse;
             }
 
-            const authentication = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP'});
-            if(authentication !== undefined) {
+            const authentication = await this.authenticationIdService.findOne({ user: userObjId, providerName: 'MFP' });
+            if (authentication !== undefined) {
                 const successResponse = ResponseUtil.getSuccessResponse(2, true);
                 return successResponse;
             } else {
                 const successResponse = ResponseUtil.getSuccessResponse(3, false);
                 return successResponse;
-            } 
+            }
         }
 
-        if(rank === 3) {
+        if (rank === 3) {
             let eligibleValue = undefined;
             const eligibleConfig = await this.configService.getConfig(ELIGIBLE_VOTES);
             if (eligibleConfig) {
@@ -7228,14 +7227,14 @@ export class VotingController {
                 return successResponse;
             }
 
-                    // membership
+            // membership
             const requestBody = {
                 'grant_type': process.env.GRANT_TYPE,
                 'client_id': process.env.CLIENT_ID,
                 'client_secret': process.env.CLIENT_SECRET,
                 'scope': process.env.SCOPE
             };
-            
+
             const formattedData = qs.stringify(requestBody);
 
             const response = await axios.post(
@@ -7296,8 +7295,8 @@ export class VotingController {
                 return errorResponse;
             }
 
-            const authentication = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP'});
-            if(authentication !== undefined) {
+            const authentication = await this.authenticationIdService.findOne({ user: userObjId, providerName: 'MFP' });
+            if (authentication !== undefined) {
                 const successResponse = ResponseUtil.getSuccessResponse(2, false);
                 return successResponse;
             } else {
@@ -7307,13 +7306,13 @@ export class VotingController {
         }
     }
 
-    private async CheckVoteChoices(voteItems:any,maxVoteChoices:any): Promise<any>{
+    private async CheckVoteChoices(voteItems: any, maxVoteChoices: any): Promise<any> {
         const voteChoiceObj = voteItems.voteChoice;
-        if (voteChoiceObj.length > 0) {    
-            if(voteChoiceObj.length > maxVoteChoices) {
+        if (voteChoiceObj.length > 0) {
+            if (voteChoiceObj.length > maxVoteChoices) {
                 return 0;
             }
-        } 
+        }
     }
 
     private async UpdateVoteChoice(voteItem: any): Promise<any> {
@@ -7337,10 +7336,10 @@ export class VotingController {
         }
     }
 
-    private async HashTagVoting(hashTagObjs:any): Promise<any>{
-        const stackId:any = [];
-        if(hashTagObjs.votingEvent.length > 0){
-            for(const hashTagObj of hashTagObjs.votingEvent){
+    private async HashTagVoting(hashTagObjs: any): Promise<any> {
+        const stackId: any = [];
+        if (hashTagObjs.votingEvent.length > 0) {
+            for (const hashTagObj of hashTagObjs.votingEvent) {
                 stackId.push(new ObjectID(hashTagObj._id));
             }
         }
