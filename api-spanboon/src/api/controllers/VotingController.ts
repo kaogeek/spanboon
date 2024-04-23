@@ -3123,7 +3123,7 @@ export class VotingController {
                         showVoterName:{
                             $cond:[
                                 {
-                                    $eq:['showVoterName', true]
+                                    $eq:['$showVoterName', true]
                                 },
                                 true,
                                 false,
@@ -3138,13 +3138,6 @@ export class VotingController {
                                 $match: {
                                     showVoterName: true
                                 },
-                            }
-                        ],
-                        notShowVoterName: [
-                            {
-                                $match: {
-                                    showVoterName: false
-                                }
                             },
                             {
                                 $lookup: {
@@ -3175,6 +3168,13 @@ export class VotingController {
                             {
                                 $unwind: {
                                     path: '$user'
+                                }
+                            }
+                        ],
+                        notShowVoterName: [
+                            {
+                                $match: {
+                                    showVoterName: false
                                 }
                             }
                         ]
@@ -3210,7 +3210,6 @@ export class VotingController {
                 }
             ]
         );
-        console.log('voteitem', voteItem);
         if (voteItem.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteItem);
             return res.status(200).send(successResponse);
