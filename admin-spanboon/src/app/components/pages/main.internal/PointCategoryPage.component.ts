@@ -106,6 +106,7 @@ export class PointCategoryPage extends AbstractPage implements OnInit {
             this.dataForm.title = data.title;
             this.dataForm.id = data.id;
             this.dataForm.coverPageURL = data.coverPageURL;
+            this.dataForm.pin = data.pin;
             this.image = {
                 assetId: data.assetId,
                 coverPageURL: data.coverPageURL,
@@ -116,6 +117,7 @@ export class PointCategoryPage extends AbstractPage implements OnInit {
             this.dataForm.title = "";
             this.dataForm.id = "";
             this.dataForm.coverPageURL = "";
+            this.dataForm.pin = false;
             this.image = {};
         }
         this.orinalDataForm = JSON.parse(JSON.stringify(this.dataForm));
@@ -190,20 +192,22 @@ export class PointCategoryPage extends AbstractPage implements OnInit {
         if (!this.image.assetId) {
             return this.dialogWarning('กรุณาเพิ่มรูปภาพหน้าปก');
         }
-        if (!this.dataForm.title) {
+        if (!this.dataForm.title || this.dataForm.title.trim() === '') {
             return this.dialogWarning('กรุณาใส่หัวข้อ');
         }
         let value = {
-            title: this.dataForm.title,
+            title: this._trimValue(this.dataForm.title),
             assetId: this.image.assetId,
             coverPageURL: this.image.coverPageURL,
             s3CoverPageURL: this.image.s3CoverPageURL,
+            pin: this.dataForm.pin ? true : false
         };
         if (this.edit) {
             this.pointCategoryFacade.update(value, this.dataForm.id).then((res) => {
                 if (res) {
                     this.setFields();
                     this.table.searchData();
+                    this.edit = false;
                     this.drawer.toggle();
                 }
             }).catch((err) => {
@@ -214,12 +218,19 @@ export class PointCategoryPage extends AbstractPage implements OnInit {
                 if (res) {
                     this.setFields();
                     this.table.searchData();
+                    this.edit = false;
                     this.drawer.toggle();
                 }
             }).catch((err) => {
                 if (err) { }
             });
         }
+    }
+
+    private _trimValue(text) {
+        const data = text;
+        const trimData = data.trim().replace(/\s+/g, ' ');
+        return trimData;
     }
 
     public onFileSelect(event) {

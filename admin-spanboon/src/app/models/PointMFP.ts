@@ -21,6 +21,7 @@ export class PointMFP extends BaseModel {
     public point: number;
     public condition: any[] = [];
     public category: any = {};
+    public pin: boolean;
     // image
     public mimeType: string;
     public data: string;
