@@ -11,7 +11,7 @@
                     <mat-tab label="รายละเอียด"></mat-tab>
                     <mat-tab label="เงื่อนไข"></mat-tab>
                 </mat-tab-group>
-                <div class="wrapper-point">
+                <div class="wrapper-point" *ngIf="data.type !== 'banner'">
                     <div class="point">
                         <span>คะแนนที่ต้องใช้</span>
                         <div>
@@ -35,11 +35,19 @@
                     <ng-container *ngSwitchCase="1">
                         <div class="condition">
                             <ng-container *ngFor="let item of data.point.condition">
-                                <span>- {{item}}</span>
+                                <span>&#x2022; {{item}}</span>
                             </ng-container>
                         </div>
                     </ng-container>
                 </ng-container>
+            </div>
+            <div class="button-redeem" (click)="clickDialog(data.type === 'banner' ? true : false)">
+                <button mat-flat-button [disabled]="data.type === 'banner' ? false : checkCondition()"
+                    [ngClass]="{'disabled': data.type === 'banner' ? false : checkCondition()}">
+                    {{data.type === 'banner' ? 'เปิดดู' :
+                    (coupon.expire && !coupon.redeem ? 'หมดเขตการแลกคูปอง' :
+                    (coupon.expire && coupon.redeem ? 'คุณแลกคูปองไปแล้ว' :
+                    (!coupon.expire && coupon.redeem ? 'คุณแลกคูปองไปแล้ว' : 'แลกคูปอง')))}}</button>
             </div>
         </div>
     </div>

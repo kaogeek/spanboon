@@ -44,13 +44,16 @@ export class PointEventFacade extends AbstractFacade {
     });
   }
 
-  public coupon(limit: number, offset: number): Promise<any> {
+  public coupon(limit: number, offset: number, whereCondition?): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/point/coupon/search';
       let body: any = {
         limit: limit,
-        offset: offset
+        offset: offset,
       };
+      if (!!whereCondition) {
+        Object.assign(whereCondition);
+      }
       let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -79,6 +82,18 @@ export class PointEventFacade extends AbstractFacade {
   public getCategoryProduct(id): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/point/category/product/' + id;
+      let options = this.authMgr.getDefaultOptions();
+      this.http.get(url, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getProduct(id): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/point/product/' + id;
       let options = this.authMgr.getDefaultOptions();
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response.data);

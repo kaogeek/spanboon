@@ -15,6 +15,7 @@ const PAGE_TITLE: string = 'ก้าวไกลพอยท์';
     templateUrl: './PointPage.component.html',
 })
 export class PointPage extends AbstractPage implements OnInit {
+
     private destroy = new Subject<void>()
     public static readonly PAGE_NAME: string = PAGE_NAME;
 
@@ -71,7 +72,7 @@ export class PointPage extends AbstractPage implements OnInit {
         return Math.max(0, Math.min(100, percentage));
     }
 
-    public clickDialogPoint(data, isCategory?: boolean) {
+    public clickDialogPoint(data, type, isCategory?: boolean) {
         if (!isCategory) {
             let dialog = this.dialog.open(DialogPoint, {
                 backdropClass: 'backdrop-overlay-point',
@@ -80,7 +81,8 @@ export class PointPage extends AbstractPage implements OnInit {
                 disableClose: true,
                 autoFocus: false,
                 data: {
-                    point: data
+                    point: data,
+                    type: type
                 }
             });
             // dialog.afterClosed().subscribe((res) => {

@@ -15,7 +15,7 @@
     "image": "../../assets/img/icons/pointpage/Point_mini_logo.svg",
     "title": "ก้าวไกล Point",
     "link": "/point",
-    "active": true
+    "active": false
   },
   {
     "image": "../../assets/img/menu-list/survey.svg",

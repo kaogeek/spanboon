@@ -2,7 +2,7 @@
     @license Spanboon Platform v0.1
     (c) 2020-2021 KaoGeek. http://kaogeek.dev
     License: MIT. https://opensource.org/licenses/MIT
-    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>, Panupap-somprasong <panupap.s@absolute.co.th>
 -->
 
 <div class="setting-account">
@@ -14,8 +14,9 @@
             <div class="settings-left">
                 <div class="settings-list">
                     <div class="list-item-menu" matRipple role="button" matTooltip="{{link.label}}"
-                        [matTooltipPosition]="'right'" *ngFor="let link of (isMemberShip ? links : links.slice(0, 2))"
+                        [matTooltipPosition]="'right'" *ngFor="let link of links.slice(0, 2)"
                         (click)="selecedInformation(link)" [class.active]="selected === link.label">
+                        <!-- (isMemberShip ? links : links.slice(0, 2)) -->
                         <ng-container *ngIf="!!link.icon; else elseIconImage">
                             <mat-icon class="settings-icon">{{link.icon}}</mat-icon>
                         </ng-container>
@@ -64,18 +65,20 @@
                                 </div>
                                 <div class="border"></div>
                                 <div class="wrapper-point">
-                                    <div class="point used">
-                                        <span>คะแนนที่ใช้ได้</span>
-                                        <span>{{accumulate.accumulatePoint.accumulatePoint | number: '1.0-0':
-                                            'en'}}</span>
+                                    <div class="point">
+                                        <span>คะแนนที่ได้รับ</span>
+                                        <span>{{accumulate.accumulatePoint.totalPoint | number: '1.0-0': 'en'}}</span>
+                                        <!-- <span>{{accumulate.accumulatePoint.totalPoint | shortNumber}}</span> -->
                                     </div>
                                     <div class="point">
                                         <span>คะแนนที่ใช้ไป</span>
                                         <span>{{accumulate.accumulatePoint.usedPoint | number: '1.0-0': 'en'}}</span>
+                                        <!-- <span>{{accumulate.accumulatePoint.usedPoint | shortNumber}}</span> -->
                                     </div>
-                                    <div class="point">
-                                        <span>คะแนนสะสม</span>
-                                        <span>{{accumulate.accumulatePoint.totalPoint | number: '1.0-0': 'en'}}</span>
+                                    <div class="point used">
+                                        <span>คะแนนคงเหลือ</span>
+                                        <span>{{accumulate.accumulatePoint.accumulatePoint | number: '1.0-0':
+                                            'en'}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -90,21 +93,27 @@
                                                     <ng-container
                                                         *ngFor="let item of accumulate.accumulatePoint.totalPointStatement">
                                                         <div class="history"
-                                                            [ngClass]="{'active': (item.type === 'REDEEM' || item.type === 'ADMIN_REDUCE_POINT')}">
+                                                            [ngClass]="{'active': (item.type === 'REDEEM' || item.type === 'ADMIN_REDUCE_POINT'),'use-coupon': item.type === 'USE_COUPON'}">
                                                             <div class="title">
                                                                 <span class="line-clamp-2">{{item.title}}</span>
-                                                                <div class="point">
+                                                                <div class="point" *ngIf="item.type !== 'USE_COUPON'">
                                                                     <img [src]="pointLogo">
                                                                     <span
                                                                         [ngStyle]="{'color': (item.type === 'REDEEM' || item.type === 'ADMIN_REDUCE_POINT') ? '#F94343' : '#72D8A7'}">{{item.type
                                                                         === 'REDEEM' ? '-' : ''}}{{item.point | number:
                                                                         '1.0-0': 'en'}}</span>
+                                                                    <!-- <span
+                                                                        [ngStyle]="{'color': (item.type === 'REDEEM' || item.type === 'ADMIN_REDUCE_POINT') ? '#F94343' : '#72D8A7'}">{{item.type
+                                                                        === 'REDEEM' ? '-' : ''}}{{item.point |
+                                                                        shortNumber}}</span> -->
                                                                 </div>
                                                             </div>
                                                             <div class="date">
-                                                                <span>{{(item.type === 'REDEEM' || item.type ===
+                                                                <span>{{(item.type
+                                                                    === 'REDEEM' || item.type ===
                                                                     'ADMIN_REDUCE_POINT') ? 'ใช้คะแนน' :
-                                                                    'ได้รับคะแนน'}}</span>
+                                                                    (item.type === 'USE_COUPON' ? 'ใช้คูปอง' :
+                                                                    'ได้รับคะแนน')}}</span>
                                                                 <span>{{item.createdDate | minimizeThDate}}</span>
                                                             </div>
                                                         </div>
@@ -197,16 +206,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="settings-right point" *ngIf="selected === 'โค้ดของฉัน'">
+                <div class="settings-right point" *ngIf="selected === 'คูปองของฉัน'">
                     <div class="container-point" *ngIf="!!coupon">
                         <div class="box-content">
                             <span>{{selected}}</span>
                             <div class="menu-setting coupon">
-                                <mat-tab-group mat-stretch-tabs>
+                                <mat-tab-group mat-stretch-tabs [selectedIndex]="tabIndex"
+                                    (selectedIndexChange)="tabIndex = $event">
                                     <mat-tab label="พร้อมใช้งาน">
                                         <div class="wrapper-coupon">
-                                            <ng-container *ngFor="let item of coupon">
-                                                <ng-container *ngIf="!item.activeDate">
+                                            <ng-container *ngFor="let item of coupon.total">
+                                                <ng-container
+                                                    *ngIf="!item.activeDate && !checkExpiredCoupon(item.expireDate)">
                                                     <div class="coupon">
                                                         <div class="image-with-clipper">
                                                             <img [src]="apiBaseURL + item.pointStatement.product.coverPageURL + '/image'"
@@ -251,7 +262,7 @@
                                     </mat-tab>
                                     <mat-tab label="ใช้งานแล้ว">
                                         <div class="wrapper-coupon">
-                                            <ng-container *ngFor="let item of coupon">
+                                            <ng-container *ngFor="let item of coupon.use">
                                                 <ng-container *ngIf="!!item.activeDate">
                                                     <div class="coupon">
                                                         <div class="image-with-clipper">
@@ -268,6 +279,33 @@
                                                                 <span
                                                                     class="line-clamp-2">{{item.pointStatement.product.title}}</span>
                                                                 <span>{{'ใช้งานเมื่อ ' + (item.activeDate |
+                                                                    minimizeThDate)}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                    </mat-tab>
+                                    <mat-tab label="หมดอายุ">
+                                        <div class="wrapper-coupon">
+                                            <ng-container *ngFor="let item of coupon.expired">
+                                                <ng-container *ngIf="checkExpiredCoupon(item.expireDate)">
+                                                    <div class="coupon">
+                                                        <div class="image-with-clipper">
+                                                            <img [src]="apiBaseURL + item.pointStatement.product.coverPageURL + '/image'"
+                                                                alt="">
+                                                            <div class="clipper">
+                                                                <div *ngFor="let item of [0,1,2,3,4]"
+                                                                    class="semi-circle">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="wrapper-title">
+                                                            <div class="title">
+                                                                <span
+                                                                    class="line-clamp-2">{{item.pointStatement.product.title}}</span>
+                                                                <span>{{'หมดอายุเมื่อ ' + (item.expireDate |
                                                                     minimizeThDate)}}</span>
                                                             </div>
                                                         </div>
