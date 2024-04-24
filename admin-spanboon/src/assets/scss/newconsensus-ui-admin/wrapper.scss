@@ -899,33 +899,6 @@ html {
     > .form-body {
       position: relative;
       padding-bottom: 40pt;
-
-      .container-vote {
-        display: flex;
-        gap: 10px;
-        justify-content: space-between;
-        margin-bottom: 10px;
-        border: 1px solid #00000060;
-        padding: 10px 20px 10px 10px;
-        border-radius: 8px;
-
-        > .wrapper-vote {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-
-          > img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            flex: 0 0 auto;
-          }
-
-          > span {
-            word-break: break-word;
-          }
-        }
-      }
     }
 
     > .wrapper-action {
@@ -1183,6 +1156,36 @@ html {
     > .no-data {
       width: 100%;
       text-align: center;
+    }
+  }
+}
+
+.container-vote {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border: 1px solid #00000060;
+  padding: 10px 20px 10px 10px;
+  border-radius: 8px;
+  background-color: $white;
+  cursor: pointer;
+
+  > .wrapper-vote {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    > img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      flex: 0 0 auto;
+    }
+
+    > span {
+      word-break: break-word;
     }
   }
 }
