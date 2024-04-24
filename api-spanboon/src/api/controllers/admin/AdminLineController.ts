@@ -178,6 +178,10 @@ export class AdminPointController {
                         Accept: 'application/json, text/plain, */*',
                         Authorization: 'Bearer ' + tokenLine
                     }
+                }).then((respone) => {
+                    console.log('respone');
+                }).catch((error) => {
+                    return res.status(400).send(ResponseUtil.getSuccessResponse(error.response.data.message, undefined));
                 });
             }
             return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', undefined));
@@ -347,7 +351,7 @@ export class AdminPointController {
                                                     'action': {
                                                         'type': 'uri',
                                                         'label': 'อ่านเพิ่มเติม',
-                                                        'uri': kaokaiToday+'&openExternalBrowser=1'
+                                                        'uri': kaokaiToday + '&openExternalBrowser=1'
                                                     },
                                                     'color': '#F18805',
                                                     'scaling': false,
@@ -433,7 +437,7 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday+'&openExternalBrowser=1',
+                                'uri': kaokaiToday + '&openExternalBrowser=1',
                             }
                         },
                     );
@@ -493,7 +497,7 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday+'&openExternalBrowser=1',
+                                'uri': kaokaiToday + '&openExternalBrowser=1',
                             }
                         },
                     );
@@ -553,7 +557,7 @@ export class AdminPointController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday+'&openExternalBrowser=1',
+                                'uri': kaokaiToday + '&openExternalBrowser=1',
                             }
                         },
                     );
@@ -589,6 +593,10 @@ export class AdminPointController {
                                 Accept: 'application/json, text/plain, */*',
                                 Authorization: 'Bearer ' + tokenLine
                             }
+                        }).then((respone) => {
+                            console.log('respone');
+                        }).catch((error) => {
+                            return res.status(400).send(ResponseUtil.getSuccessResponse(error.data.message, undefined));
                         });
                     }
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', undefined));

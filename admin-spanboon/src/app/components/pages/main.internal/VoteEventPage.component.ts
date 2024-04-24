@@ -19,6 +19,7 @@ import { map, startWith } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { DialogAddNoti } from '../../shares/DialogAddNoti.component';
 import { LoadingService } from '../../../services/loading/loading.service';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 
 const PAGE_NAME: string = "vote";
@@ -366,19 +367,24 @@ export class VoteEventPage extends AbstractPage implements OnInit {
   public clickAddVoteEvent() {
     let dialogRef = this.dialog.open(DialogAddNoti, {
       data: {
+        item: this.listVoteEvent.length,
         isClose: false,
         isConfirm: true,
         confirm: {
           text: "ตกลง"
-        }
+        },
+        value: this.listVoteEvent
       }
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.listVoteEvent = result;
-        this.isHaveVoteEvent = true;
       }
     });
+  }
+
+  public removeVote(index) {
+    this.listVoteEvent.splice(index, 1);
   }
 
   public isWordCountOver(data: string): boolean {
@@ -387,6 +393,10 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     }
 
     return data.length > 220;
+  }
+
+  public drop(event: CdkDragDrop<{ title: string, poster: string }[]>) {
+    moveItemInArray(this.listVoteEvent, event.previousIndex, event.currentIndex);
   }
 
   public clickNoti() {
@@ -664,6 +674,11 @@ export class VoteEventPage extends AbstractPage implements OnInit {
     this.voteEventFacade.sendNoti(content).then((res) => {
       if (res) {
         this.drawer.toggle();
+      }
+    }).catch((error) => {
+      if (error) {
+        console.log("error", error);
+        this.dialogWarning(error.error.message);
       }
     });
   }

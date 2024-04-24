@@ -22,6 +22,7 @@ export class DialogAddNoti {
     public listVote: any[] = [];
     public isSeeMore: boolean = false;
     public valueVote: any[] = [];
+    public limit: number = 4;
 
     constructor(public dialogRef: MatDialogRef<DialogAddNoti>,
         @Inject(MAT_DIALOG_DATA) public data: any,
@@ -52,8 +53,33 @@ export class DialogAddNoti {
         filter.orderBy = {}
         this.voteFacade.search(filter).then((res: any) => {
             this.listVote = res;
+            if (!!this.listVote && !!this.data.value && this.data.value.length > 0) {
+                for (let i = 0; i < this.data.value.length; i++) {
+                    const matchingIndex = this.findIndexWithMatchingId(this.data.value[i].id, this.listVote);
+                    if (matchingIndex !== -1) {
+                        this.listVote[matchingIndex].checked = true;
+                        this._addValue(this.listVote[matchingIndex]);
+                    }
+                }
+            }
         }).catch((err: any) => {
         })
+    }
+
+    public findIndexWithMatchingId(id, array2: any[]) {
+        return array2.findIndex(item => item._id === id);
+    }
+
+    private _addValue(item: any) {
+        let data = {
+            id: item._id,
+            image: !!item.s3CoverPageURL ? !!item.s3CoverPageURL : item.coverPageURL,
+            title: item.title,
+            detail: item.detail,
+            status: item.status,
+            s3: !!item.s3CoverPageURL ? true : false
+        }
+        this.valueVote.push(data);
     }
 
     public isWordCountOver(data: string): boolean {
@@ -95,8 +121,8 @@ export class DialogAddNoti {
     }
 
     public addVoteEvent() {
-        if (this.valueVote.length >= 5) {
-            return this.dialogWarning('ไม่สามารถเลือกโหวตเกิน 4 ตัวเลือก');
+        if (this.valueVote.length >= (this.limit + 1)) {
+            return this.dialogWarning('ไม่สามารถเลือกโหวตเกิน ' + this.limit + ' ตัวเลือก');
         }
         if (this.valueVote.length < 1) {
             return this.dialogWarning('กรุณาเลือกโหวตมากกว่า 1 ตัวเลือก');

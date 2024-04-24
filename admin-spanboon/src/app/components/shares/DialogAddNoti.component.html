@@ -1,7 +1,7 @@
 <div class="header-add-noti">
-  <span>* สามารถเลือกส่งแจ้งเตือนโหวตได้แค่ 4 โหวตเท่านั้น *</span>
+  <span>* สามารถเลือกส่งแจ้งเตือนโหวตได้แค่ {{limit}} โหวตเท่านั้น *</span>
   <div class="wrapper-button-header">
-    <span>{{valueVote.length + ' / 4'}}</span>
+    <span>{{valueVote.length + ' / ' + limit}}</span>
     <button class="btn-top-table" mat-raised-button (click)="addVoteEvent()">ยืนยัน</button>
   </div>
 </div>
@@ -19,7 +19,8 @@
           </ng-template>
         </div>
         <div class="wrapper-checkbox">
-          <mat-checkbox class="example-margin" (change)="onChange($event)" [value]="item"></mat-checkbox>
+          <mat-checkbox class="example-margin" [checked]="item.checked ? item.checked : false"
+            (change)="onChange($event)" [value]="item"></mat-checkbox>
         </div>
       </div>
     </ng-container>
