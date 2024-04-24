@@ -113,7 +113,8 @@ import {
   SafePipe,
   ShortNumberPipe,
   PrefixNumberPipe,
-  PipeThDatetimePipe
+  PipeThDatetimePipe,
+  PipeSearchFilter
 } from './components/shares/pipes/pipes';
 import { InterceptorService } from './services/loading/interceptor.service';
 
@@ -179,6 +180,7 @@ const PIPE_CLASSES: any[] = [
   ShortNumberPipe,
   PrefixNumberPipe,
   PipeThDatetimePipe,
+  PipeSearchFilter,
 ]
 
 const SERVICE_CLASSES: any[] = [

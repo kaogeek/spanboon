@@ -23,6 +23,7 @@ export class DialogAddNoti {
     public isSeeMore: boolean = false;
     public valueVote: any[] = [];
     public limit: number = 4;
+    public searchText: string = '';
 
     constructor(public dialogRef: MatDialogRef<DialogAddNoti>,
         @Inject(MAT_DIALOG_DATA) public data: any,
@@ -66,8 +67,8 @@ export class DialogAddNoti {
         })
     }
 
-    public findIndexWithMatchingId(id, array2: any[]) {
-        return array2.findIndex(item => item._id === id);
+    public findIndexWithMatchingId(id, array: any[]) {
+        return array.findIndex(item => item._id === id);
     }
 
     private _addValue(item: any) {
@@ -101,12 +102,20 @@ export class DialogAddNoti {
                 status: (selectedOption.source.value as unknown as { status: string }).status,
                 s3: !!img ? true : false
             }
+            const matchingIndex = this.findIndexWithMatchingId(item.id, this.listVote);
+            if (matchingIndex !== -1) {
+                this.listVote[matchingIndex].checked = true;
+            }
             this.valueVote.push(item);
         } else {
             let id = (selectedOption.source.value as unknown as { _id: string })._id
             const index = this.valueVote.findIndex(
                 value => value.id === id
             );
+            const matchingIndex = this.findIndexWithMatchingId(id, this.listVote);
+            if (matchingIndex !== -1) {
+                this.listVote[matchingIndex].checked = false;
+            }
             this.valueVote.splice(index, 1);
         }
     }
