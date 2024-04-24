@@ -41,12 +41,17 @@ export class SettingAccount extends AbstractPage implements OnInit {
     public user: any;
     public pointEvent: any;
     public accumulate: any = undefined;
-    public coupon: any = undefined;
+    public coupon: any = {
+        total: undefined,
+        use: undefined,
+        expired: undefined
+    };
     public ranking: any = undefined;
     public bindingMember: boolean;
     public isMember: boolean = false;
     public isMemberShip: boolean = false;
     public pointLogo: string = '../../../../../assets/img/icons/pointpage/Point_mini_logo.svg';
+    public tabIndex: number = 0;
 
     minDate = new Date(1800, 0, 1);
     maxDate = new Date();
@@ -76,7 +81,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
             link: "",
             icon: "",
             image: "../../../../../assets/img/icons/pointpage/ticket.svg",
-            label: "โค้ดของฉัน",
+            label: "คูปองของฉัน",
             id: "coupon"
         },
         {
@@ -115,6 +120,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
     }
 
     public ngOnInit(): void {
+        this._checkLogin();
         this.seoService.updateTitle("จัดการบัญชี - " + this.getUser());
         this.dataUser = localStorage.getItem('pageUser');
     }
@@ -129,7 +135,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
         if (!!param) {
             let label;
             if (param === 'ranking') label = 'อันดับของฉัน';
-            if (param === 'coupon') label = 'โค้ดของฉัน';
+            if (param === 'coupon') label = 'คูปองของฉัน';
             if (param === 'myPoint') label = 'คะแนนของฉัน';
             if (param === 'settings') label = 'ทั่วไป';
             if (param === 'connect') label = 'การเชื่อมต่อ';
@@ -208,10 +214,46 @@ export class SettingAccount extends AbstractPage implements OnInit {
     }
 
     private _getCoupon() {
-        if (this.coupon === undefined && this.isMemberShip) {
+        // let whereCondition = {
+        //     type: "",
+        //     active: false,
+        //     activeDate: null
+        // }
+        // if (this.coupon.total === undefined && this.isMemberShip) {
+        //     whereCondition.type = "REDEEM";
+        //     this.pointFacade.coupon(SEARCH_LIMIT, SEARCH_OFFSET, whereCondition).then((res) => {
+        //         if (res) {
+        //             this.coupon.total = res.readyCoupon;
+        //         }
+        //     });
+        // }
+        // if (this.coupon.use === undefined && this.isMemberShip) {
+        //     whereCondition.type = "USE_COUPON";
+        //     whereCondition.active = true;
+        //     whereCondition.activeDate = "not_null";
+        //     this.pointFacade.coupon(SEARCH_LIMIT, SEARCH_OFFSET, whereCondition).then((res) => {
+        //         if (res) {
+        //             this.coupon.use = res.alreadyCoupon;
+        //         }
+        //     });
+        // }
+        // if (this.coupon.expired === undefined && this.isMemberShip) {
+        //     whereCondition.type = "COUPON_HAS_EXPIRED";
+        //     whereCondition.active = false;
+        //     whereCondition.activeDate = "not_null";
+        //     this.pointFacade.coupon(SEARCH_LIMIT, SEARCH_OFFSET, whereCondition).then((res) => {
+        //         if (res) {
+        //             this.coupon.expired = res.expireCoupon;
+        //         }
+        //     });
+        // }
+
+        if ((!this.coupon.total && !this.coupon.use && !this.coupon.expired) && this.isMemberShip) {
             this.pointFacade.coupon(SEARCH_LIMIT, SEARCH_OFFSET).then((res) => {
                 if (res) {
-                    this.coupon = res.userCoupon;
+                    this.coupon.total = res.readyCoupon;
+                    this.coupon.use = res.alreadyCoupon;
+                    this.coupon.expired = res.expireCoupon;
                 }
             });
         }
@@ -248,5 +290,20 @@ export class SettingAccount extends AbstractPage implements OnInit {
         const todayDate = new Date();
         const activeDate = new Date(date);
         return todayDate <= activeDate ? true : false;
+    }
+
+    public checkExpiredCoupon(date: string): boolean {
+        if (!date) {
+            return true;
+        }
+        const todayDate = new Date();
+        const expireDate = new Date(date);
+        return todayDate <= expireDate ? false : true;
+    }
+
+    private _checkLogin(): void {
+        if (!this.isLogin()) {
+            this.router.navigateByUrl("/home");
+        }
     }
 }

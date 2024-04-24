@@ -735,11 +735,11 @@ export class PointMfpController {
         if (typeCondition === undefined) {
             const redeem = await this.userCouponService.aggregate([
                 {
-                    $match:{
+                    $match: {
                         userId: userObjId,
                         active: false,
                         activeDate: null,
-                        expireDate:{$gte:today}
+                        expireDate: { $gte: today }
                     }
                 },
                 {
@@ -756,7 +756,7 @@ export class PointMfpController {
                             },
                             {
                                 $match: {
-                                    type:'REDEEM',
+                                    type: 'REDEEM',
                                     productId: { $ne: null },
                                     userId: userObjId
                                 }
@@ -837,11 +837,11 @@ export class PointMfpController {
 
             const redeemExpire = await this.userCouponService.aggregate([
                 {
-                    $match:{
+                    $match: {
                         userId: userObjId,
                         active: false,
                         activeDate: null,
-                        expireDate:{$lte:today}
+                        expireDate: { $lte: today }
                     }
                 },
                 {
@@ -858,7 +858,7 @@ export class PointMfpController {
                             },
                             {
                                 $match: {
-                                    type:'REDEEM',
+                                    type: 'REDEEM',
                                     productId: { $ne: null },
                                     userId: userObjId
                                 }
@@ -930,8 +930,8 @@ export class PointMfpController {
                     }
                 },
                 {
-                    $sort:{
-                        createdDate:-1
+                    $sort: {
+                        createdDate: -1
                     }
                 },
                 {
@@ -944,10 +944,10 @@ export class PointMfpController {
 
             const alreadyCoupon = await this.userCouponService.aggregate([
                 {
-                    $match:{
+                    $match: {
                         userId: userObjId,
                         active: true,
-                        activeDate: {$ne:null},
+                        activeDate: { $ne: null },
                     }
                 },
                 {
@@ -964,7 +964,7 @@ export class PointMfpController {
                             },
                             {
                                 $match: {
-                                    type:'USE_COUPON',
+                                    type: 'USE_COUPON',
                                     productId: { $ne: null },
                                     userId: userObjId
                                 }
@@ -1036,8 +1036,8 @@ export class PointMfpController {
                     }
                 },
                 {
-                    $sort:{
-                        createdDate:-1
+                    $sort: {
+                        createdDate: -1
                     }
                 },
                 {
@@ -1050,10 +1050,10 @@ export class PointMfpController {
 
             const expireCoupon = await this.userCouponService.aggregate([
                 {
-                    $match:{
+                    $match: {
                         userId: userObjId,
                         active: false,
-                        activeDate: {$ne:null},
+                        activeDate: { $ne: null },
                     }
                 },
                 {
@@ -1070,7 +1070,7 @@ export class PointMfpController {
                             },
                             {
                                 $match: {
-                                    type:'COUPON_HAS_EXPIRED',
+                                    type: 'COUPON_HAS_EXPIRED',
                                     productId: { $ne: null },
                                     userId: userObjId
                                 }
@@ -1142,8 +1142,8 @@ export class PointMfpController {
                     }
                 },
                 {
-                    $sort:{
-                        createdDate:-1
+                    $sort: {
+                        createdDate: -1
                     }
                 },
                 {
@@ -1154,7 +1154,7 @@ export class PointMfpController {
                 },
             ]);
 
-            if(pointLimitOffsetRequest.whereConditions === undefined) {
+            if (pointLimitOffsetRequest.whereConditions === undefined) {
                 result = {
                     'readyCoupon': redeem,
                     'alreadyCoupon': alreadyCoupon,
@@ -1252,8 +1252,8 @@ export class PointMfpController {
                     }
                 },
                 {
-                    $sort:{
-                        createdDate:-1
+                    $sort: {
+                        createdDate: -1
                     }
                 },
                 {
@@ -1305,11 +1305,11 @@ export class PointMfpController {
         ) {
             const redeemExpireCoupon = await this.userCouponService.aggregate([
                 {
-                    $match:{
+                    $match: {
                         userId: userObjId,
                         active: false,
                         activeDate: null,
-                        expireDate:{$lte:today}
+                        expireDate: { $lte: today }
                     }
                 },
                 {
@@ -1326,7 +1326,7 @@ export class PointMfpController {
                             },
                             {
                                 $match: {
-                                    type:'REDEEM',
+                                    type: 'REDEEM',
                                     productId: { $ne: null },
                                     userId: userObjId
                                 }
@@ -1398,8 +1398,8 @@ export class PointMfpController {
                     }
                 },
                 {
-                    $sort:{
-                        createdDate:-1
+                    $sort: {
+                        createdDate: -1
                     }
                 },
                 {
@@ -1411,10 +1411,10 @@ export class PointMfpController {
             ]);
 
             let counponExpireResult = search;
-            if(search.length > 0 && redeemExpireCoupon.length > 0) {
+            if (search.length > 0 && redeemExpireCoupon.length > 0) {
                 counponExpireResult.concat(redeemExpireCoupon);
             }
-            if(search.length === 0 && redeemExpireCoupon.length > 0) {
+            if (search.length === 0 && redeemExpireCoupon.length > 0) {
                 counponExpireResult = redeemExpireCoupon;
             }
 
@@ -1750,6 +1750,7 @@ export class PointMfpController {
                     $group: {
                         _id: '$_id',
                         title: { $first: '$title' }
+
                     }
                 },
                 {
@@ -1767,6 +1768,11 @@ export class PointMfpController {
                             {
                                 $match: {
                                     pin: true
+                                }
+                            },
+                            {
+                                $sort: {
+                                    createdDate: -1
                                 }
                             },
                             {

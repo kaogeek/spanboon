@@ -137,7 +137,7 @@ export class PointBannerPage extends AbstractPage implements OnInit {
             this.dataForm.point = data.point;
             this.dataForm.limit = data.maximumLimit;
             this.dataForm.link = data.link;
-            this.dataForm.id = data.id;
+            this.dataForm.id = data._id;
             this.dataForm.coverPageURL = data.coverPageURL;
             this.dataForm.pin = data.pin;
             this.image = {
@@ -268,10 +268,10 @@ export class PointBannerPage extends AbstractPage implements OnInit {
         if (!this.dataForm.detail || this.dataForm.detail.trim() === '') {
             return this.dialogWarning('กรุณาใส่รายละเอียด');
         }
-        if (!this.dataForm.point) {
+        if (!this.dataForm.point && this.dataForm.point !== 0) {
             return this.dialogWarning('กรุณาใส่จำนวนพอยท์');
         }
-        if (!this.dataForm.limit) {
+        if (!this.dataForm.limit && this.dataForm.point !== 0) {
             return this.dialogWarning('กรุณาใส่ลิมิตการแลก');
         }
         if (!this.dataForm.link) {

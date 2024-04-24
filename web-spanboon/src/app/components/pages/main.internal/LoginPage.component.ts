@@ -901,6 +901,7 @@ export class LoginPage extends AbstractPage implements OnInit {
                 });
                 this.login = true;
               }
+              this.login = true;
             });
         }
       }).catch((err) => {

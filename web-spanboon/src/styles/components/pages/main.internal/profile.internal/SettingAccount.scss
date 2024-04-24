@@ -564,6 +564,14 @@
                 }
 
                 &.point-history {
+                  @media (max-width: $small) {
+                    padding: 8px;
+
+                    > span {
+                      @include font-size-7($font-head-500);
+                    }
+                  }
+
                   > span {
                     @include font-size-6($font-head-500);
                     color: $black;
@@ -581,7 +589,12 @@
                     @include font-size-9($font-head-100);
                     color: $black;
                     border: 1px solid;
-                    height: 36px;
+                    height: 42px;
+
+                    @media (max-width: $small) {
+                      @include font-size-10($font-head-500);
+                      height: 36px;
+                    }
 
                     &:first-child {
                       border-top-left-radius: 32px;
@@ -600,6 +613,12 @@
                     opacity: 1 !important;
                     color: $white;
                     height: 42px;
+                    border: unset;
+
+                    @media (max-width: $small) {
+                      @include font-size-10($font-head-500);
+                      height: 36px;
+                    }
                   }
 
                   .mat-ink-bar {
@@ -620,6 +639,10 @@
 
                           &.active {
                             background-color: #fff7f2;
+                          }
+
+                          &.use-coupon {
+                            background-color: #f1f1f1;
                           }
 
                           > .title {
@@ -647,6 +670,18 @@
                                 color: #72d8a7;
                               }
                             }
+
+                            @media (max-width: $small) {
+                              > span {
+                                @include font-size-10($font-head-500);
+                              }
+
+                              > .point {
+                                > span {
+                                  @include font-size-10($font-head-500);
+                                }
+                              }
+                            }
                           }
 
                           > .date {
@@ -666,33 +701,83 @@
                 }
 
                 &.coupon {
-                  > .mat-tab-group {
-                    > .mat-tab-header {
-                      border-bottom: unset;
-                      border: 1px solid #113154;
-                      border-radius: 32px;
-                      overflow: hidden;
+                  // > .mat-tab-group {
+                  //   > .mat-tab-header {
+                  //     border-bottom: unset;
+                  //     border: 1px solid #113154;
+                  //     border-radius: 32px;
+                  //     overflow: hidden;
 
-                      .mat-tab-label {
-                        box-shadow: inset -2px -2px 12px -2px rgba($black, 0.5);
-                        height: 36px;
-                        @include font-size-9($font-head-300);
+                  //     .mat-tab-label {
+                  //       height: 36px;
+                  //       border: 1px solid;
+                  //       @include font-size-9($font-head-300);
 
-                        &.mat-tab-label-active {
-                          opacity: 1;
-                          color: $white;
-                          background-color: #113154;
-                        }
-                      }
-                      .mat-tab-label-container {
-                        > .mat-tab-list {
-                          > .mat-ink-bar {
-                            background-color: #113154 !important;
-                            height: 2px !important;
-                          }
-                        }
-                      }
+                  //       &.mat-tab-label-active {
+                  //         background-color: #113154;
+                  //   opacity: 1 !important;
+                  //   color: $white;
+                  //   height: 42px;
+                  //   border: unset;
+                  //       }
+                  //     }
+                  //     .mat-tab-label-container {
+                  //       > .mat-tab-list {
+                  //         > .mat-ink-bar {
+                  //           background-color: #113154 !important;
+                  //           height: 2px !important;
+                  //         }
+                  //       }
+                  //     }
+                  //   }
+                  // }
+
+                  .mat-tab-header {
+                    border-bottom: unset;
+                  }
+
+                  .mat-tab-labels {
+                    align-items: center;
+                  }
+
+                  .mat-tab-label {
+                    @include font-size-9($font-head-100);
+                    color: $black;
+                    border: 1px solid;
+                    height: 42px;
+
+                    @media (max-width: $small) {
+                      @include font-size-10($font-head-500);
+                      height: 36px;
                     }
+
+                    &:first-child {
+                      border-top-left-radius: 32px;
+                      border-bottom-left-radius: 32px;
+                    }
+
+                    &:last-child {
+                      border-top-right-radius: 32px;
+                      border-bottom-right-radius: 32px;
+                    }
+                  }
+
+                  .mat-tab-label.mat-tab-label-active {
+                    @include font-size-9($font-head-500);
+                    background-color: #113154;
+                    opacity: 1 !important;
+                    color: $white;
+                    height: 42px;
+                    border: unset;
+
+                    @media (max-width: $small) {
+                      @include font-size-10($font-head-500);
+                      height: 36px;
+                    }
+                  }
+
+                  .mat-ink-bar {
+                    display: none;
                   }
 
                   mat-tab-body {

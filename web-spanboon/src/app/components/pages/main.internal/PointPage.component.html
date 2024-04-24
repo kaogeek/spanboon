@@ -4,17 +4,26 @@
         <div class="wrapper-menu-point">
             <div class="menu statistic"
                 (click)="isLogin() ? (isMemberShip ? clickToSetting('ranking') : clickRanking()) : clickRanking()">
-                <img src="../../../../assets/img/icons/pointpage/statistic.svg" alt="">
-                <span>จัดอันดับ</span>
+                <div>
+                    <img src="../../../../assets/img/icons/pointpage/statistic.svg" alt="">
+                    <span>จัดอันดับ</span>
+                </div>
+                <span>การมีส่วนร่วม</span>
             </div>
             <div class="menu" *ngIf="isLogin() && isMemberShip" (click)="clickToSetting('coupon')">
-                <img src="../../../../assets/img/icons/pointpage/ticket.svg" alt="">
-                <span>{{content.userCoupon | shortNumber}}</span>
+                <div>
+                    <img src="../../../../assets/img/icons/pointpage/ticket.svg" alt="">
+                    <span>{{content.userCoupon | shortNumber}}</span>
+                </div>
+                <span>คูปองพร้อมใช้</span>
             </div>
             <div class="menu" *ngIf="isLogin() && isMemberShip" (click)="clickToSetting('myPoint')">
-                <img src="../../../../assets/img/icons/pointpage/Point_mini_logo.svg" alt="">
-                <span>{{content.accumulatePoint !== null ? (content.accumulatePoint.accumulatePoint |
-                    number:'1.0-0':'en-US') : '0'}}</span>
+                <div>
+                    <img src="../../../../assets/img/icons/pointpage/Point_mini_logo.svg" alt="">
+                    <span>{{content.accumulatePoint !== null ? (content.accumulatePoint.accumulatePoint | shortNumber:[{
+                        key: 'k', value: 1000 }, { key: 'm', value: 1000000 }]) : '0'}}</span>
+                </div>
+                <span>คะแนน</span>
             </div>
         </div>
     </div>
@@ -22,16 +31,16 @@
         <mat-icon>arrow_back_ios_new</mat-icon>
     </button>
     <div class="wrapper-content" *ngIf="!isCategory && !isRank">
-        <div class="banner">
+        <div class="banner" *ngIf="content.pointEvent.length > 0">
             <!-- <img src="https://cdn1.epicgames.com/offer/916bd3319edc4e0bbb57ed7e04ad851d/EGS_GodotEngine_TheGodotEngine_S1_2560x1440-44362dbc2924336fe280c96a8c1e2342"
                 alt=""> -->
             <img [src]="apiBaseURL + content.pointEvent[0].coverPageURL + '/image'"
-                (click)="clickDialogPoint(content.pointEvent[0])">
+                (click)="clickDialogPoint(content.pointEvent[0],'banner')">
         </div>
         <div class="container" *ngIf="content.categoryProduct.length > 0">
             <div appHorizontalScroll class="wrapper-category">
                 <ng-container *ngFor="let item of content.categoryProduct">
-                    <div class="category" (click)="clickDialogPoint(item,true)">
+                    <div class="category" (click)="clickDialogPoint(item,'category',true)">
                         <img [src]="apiBaseURL + item.coverPageURL + '/image'" alt="">
                         <!-- <img [src]="!!item.s3CoverPageURL ? item.s3CoverPageURL : apiBaseURL + item.coverPageURL + '/image'"
                             alt=""> -->
@@ -46,7 +55,7 @@
                     <span>{{data.title}}</span>
                     <div appHorizontalScroll class="wrapper-product">
                         <ng-container *ngFor="let item of data.product">
-                            <div class="card-content-product" (click)="clickDialogPoint(item)">
+                            <div class="card-content-product" (click)="clickDialogPoint(item,'product')">
                                 <div class="image-product">
                                     <img class="image" [src]="apiBaseURL + item.coverPageURL + '/image'">
                                 </div>
@@ -82,7 +91,7 @@
                     </div>
                     <div class="wrapper-product">
                         <ng-container *ngFor="let item of product.data.product">
-                            <div class="card-content-product" (click)="clickDialogPoint(item)">
+                            <div class="card-content-product" (click)="clickDialogPoint(item,'product')">
                                 <div class="image-product">
                                     <img class="image" [src]="apiBaseURL + item.coverPageURL + '/image'">
                                 </div>

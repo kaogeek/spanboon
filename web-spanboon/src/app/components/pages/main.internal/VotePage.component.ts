@@ -148,10 +148,15 @@ export class VotePage extends AbstractPage implements OnInit {
           })
 
           if (!!this.activeUrl['id'] && !this.checkOpenDialog) {
-            const data = await this.voteFacade.getVote(this.activeUrl['id']);
-            if (!!data) {
-              this.openDialogPost(data);
-            }
+            this.voteFacade.getVote(this.activeUrl['id']).then((res) => {
+              if (res) {
+                this.openDialogPost(res);
+              }
+            }).catch((err) => {
+              if (err) {
+                this._notFoundVote();
+              }
+            });
           }
 
           this.seoService.updateTitle(PAGE_TITLE);
@@ -232,6 +237,23 @@ export class VotePage extends AbstractPage implements OnInit {
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
     // throw new Error('Method not implemented.');
     return;
+  }
+
+  private _notFoundVote() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: "ไม่พบโหวตสำหรับแสดง",
+        bottomText2: "ตกลง",
+        bottomColorText2: "black",
+        btDisplay1: "none",
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.router.navigate(['', 'vote']);
+      }
+    });
   }
 
   private _getRanking() {
