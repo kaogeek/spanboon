@@ -327,7 +327,7 @@ export class PointMfpController {
 
         const updateUserCoupon = await this.userCouponService.update(query, newValues);
         if (updateUserCoupon) {
-            productModel.title = 'Use a Coupon.';
+            productModel.title = productObj.title;
             productModel.detail = null;
             productModel.point = productObj.point;
             productModel.type = POINT_TYPE.USE_COUPON;
@@ -1749,8 +1749,14 @@ export class PointMfpController {
                 {
                     $group: {
                         _id: '$_id',
-                        title: { $first: '$title' }
+                        title: { $first: '$title' },
+                        createdDate: { $first: '$createdDate'}
 
+                    }
+                },
+                {
+                    $sort: {
+                        createdDate: -1
                     }
                 },
                 {
@@ -1797,11 +1803,6 @@ export class PointMfpController {
                             }
                         ],
                         as: 'product'
-                    }
-                },
-                {
-                    $sort: {
-                        createdDate: -1
                     }
                 }
             ]
