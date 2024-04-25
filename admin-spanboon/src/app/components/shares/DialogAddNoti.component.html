@@ -7,7 +7,9 @@
 </div>
 <div class="dialog-add-noti">
   <div class="container">
-    <ng-container *ngFor="let item of listVote;let i = index">
+    <input class="form-control" type="text" name="search" [(ngModel)]="searchText" autocomplete="off"
+      placeholder="ค้นหาโหวต">
+    <ng-container *ngFor="let item of listVote | searchText:searchText;let i = index">
       <div class="wrapper-item">
         <div class="wrapper-left">
           <img [src]="baseURL + item.coverPageURL + '/image'" alt="">

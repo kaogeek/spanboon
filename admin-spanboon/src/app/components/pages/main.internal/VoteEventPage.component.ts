@@ -677,8 +677,8 @@ export class VoteEventPage extends AbstractPage implements OnInit {
       }
     }).catch((error) => {
       if (error) {
-        console.log("error", error);
         this.dialogWarning(error.error.message);
+        this.loadingService.isLoading.next(false);
       }
     });
   }
