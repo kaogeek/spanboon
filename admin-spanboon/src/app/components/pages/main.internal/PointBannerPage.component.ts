@@ -137,7 +137,7 @@ export class PointBannerPage extends AbstractPage implements OnInit {
             this.dataForm.point = data.point;
             this.dataForm.limit = data.maximumLimit;
             this.dataForm.link = data.link;
-            this.dataForm.id = data._id;
+            this.dataForm.id = data.id || data._id;
             this.dataForm.coverPageURL = data.coverPageURL;
             this.dataForm.pin = data.pin;
             this.image = {
@@ -240,7 +240,7 @@ export class PointBannerPage extends AbstractPage implements OnInit {
     }
 
     public clickDelete(data: any): void {
-        this.pointFacade.delete(data.id).then((res) => {
+        this.pointFacade.delete(data.id || data._id).then((res) => {
             let index = 0;
             let dataTable = this.table.data;
             for (let d of dataTable) {

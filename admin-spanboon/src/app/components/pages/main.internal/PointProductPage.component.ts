@@ -151,7 +151,7 @@ export class PointProductPage extends AbstractPage implements OnInit {
 
     private setFields(data?): void {
         if (!!data) {
-            this.dataForm.id = data.id;
+            this.dataForm.id = data.id || data._id;
             this.dataForm.title = data.title;
             this.dataForm.detail = data.detail;
             this.dataForm.point = data.point;
@@ -262,11 +262,11 @@ export class PointProductPage extends AbstractPage implements OnInit {
     }
 
     public clickDelete(data: any): void {
-        this.pointProductFacade.delete(data.id).then((res) => {
+        this.pointProductFacade.delete(data.id || data._id).then((res) => {
             let index = 0;
             let dataTable = this.table.data;
             for (let d of dataTable) {
-                if (d.id == data.id) {
+                if (d.id == data.id || data._id) {
                     dataTable.splice(index, 1);
                     this.table.setTableConfig(dataTable);
                     this.dialogWarning("ลบข้อมูลสำเร็จ");
@@ -325,7 +325,7 @@ export class PointProductPage extends AbstractPage implements OnInit {
             coverPageURL: this.image.coverPageURL,
             s3CoverPageURL: this.image.s3CoverPageURL,
             categoryName: this.categoryGroup.get('category').value.title,
-            categoryId: this.categoryGroup.get('category').value.id,
+            categoryId: this.categoryGroup.get('category').value.id || this.categoryGroup.get('category').value._id,
             expiringDate: this.dataForm.expiredDate,
             activeDate: this.dataForm.activeDate,
             pin: this.dataForm.pin ? true : false,
@@ -402,13 +402,6 @@ export class PointProductPage extends AbstractPage implements OnInit {
 
     private async _getCategory() {
         this.dataCategory = await this.pointCategoryFacade.search();
-    }
-
-    public onChange($event) {
-        this.dataForm.category = {
-            id: $event.value.id,
-            title: $event.value.title
-        }
     }
 
     public saveDate(event: any, type: any): void {
