@@ -104,7 +104,7 @@ export class PointCategoryPage extends AbstractPage implements OnInit {
     private setFields(data?): void {
         if (!!data) {
             this.dataForm.title = data.title;
-            this.dataForm.id = data.id;
+            this.dataForm.id = data.id || data._id;
             this.dataForm.coverPageURL = data.coverPageURL;
             this.dataForm.pin = data.pin;
             this.image = {
@@ -124,11 +124,11 @@ export class PointCategoryPage extends AbstractPage implements OnInit {
     }
 
     public clickDelete(data: any): void {
-        this.pointCategoryFacade.delete(data.id).then((res) => {
+        this.pointCategoryFacade.delete(data.id || data._id).then((res) => {
             let index = 0;
             let dataTable = this.table.data;
             for (let d of dataTable) {
-                if (d.id == data.id) {
+                if (d.id == data.id || data._id) {
                     dataTable.splice(index, 1);
                     this.table.setTableConfig(dataTable);
                     // alert("success");
