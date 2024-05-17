@@ -16,27 +16,26 @@
                     </div>
                     <div class="form-body">
                         <ng-container *ngIf="isSendNoti; else elseNotiTemplate">
-                            <form>
-                                <ng-container *ngIf="isHaveVoteEvent; else elseVoteEvent">
-                                    <ng-container *ngFor="let item of listVoteEvent">
-                                        <div class="container-vote">
-                                            <div class="wrapper-vote">
-                                                <img [src]="item.s3 ? item.image : baseURL + item.image + '/image'"
-                                                    alt="">
-                                                <ng-container *ngIf="!isWordCountOver(item.title); else elseWord">
-                                                    <span>{{item.title}}</span>
-                                                </ng-container>
-                                                <ng-template #elseWord>
-                                                    <span>{{item.title | slice:0:220}}....</span>
-                                                </ng-template>
-                                            </div>
-                                        </div>
-                                    </ng-container>
-                                </ng-container>
-                                <ng-template #elseVoteEvent>
-                                    <button class="btn-top-table" mat-raised-button style="width: 100%;"
-                                        (click)="clickAddVoteEvent()">เพิ่มโหวตอีเวนท์</button>
-                                </ng-template>
+                            <form cdkDropList (cdkDropListDropped)="drop($event)">
+                                <div *ngFor="let item of listVoteEvent; let index = index" cdkDragLockAxis="y" cdkDrag
+                                    class="container-vote">
+                                    <div class="wrapper-vote">
+                                        <img [src]="item.s3 ? item.image : baseURL + item.image + '/image'" alt="">
+                                        <ng-container *ngIf="!isWordCountOver(item.title); else elseWord">
+                                            <span>{{item.title}}</span>
+                                        </ng-container>
+                                        <ng-template #elseWord>
+                                            <span>{{item.title | slice:0:220}}....</span>
+                                        </ng-template>
+                                    </div>
+                                    <button mat-button matSuffix mat-icon-button aria-label="close"
+                                        (click)="removeVote(index)">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+                                </div>
+                                <button class="btn-top-table" mat-raised-button style="width: 100%;"
+                                    *ngIf="listVoteEvent.length < 4"
+                                    (click)="clickAddVoteEvent()">เพิ่มโหวตอีเวนท์</button>
                             </form>
                         </ng-container>
                         <ng-template #elseNotiTemplate>
