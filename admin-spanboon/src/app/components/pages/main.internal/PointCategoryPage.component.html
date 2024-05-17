@@ -68,7 +68,7 @@
             <div class="main-content">
                 <admin-table-component #table [orderBy]="orderBy" [facade]="pointCategoryFacade"
                     [isApprovePage]="'true'" [title]="'Point Category'" [fieldTable]="fieldTable" [actions]="actions"
-                    [isOfficialPage]="isOfficialPage" (edit)="clickEditForm($event)" (delete)="clickDelete($event)"
+                    (edit)="clickEditForm($event)" (delete)="clickDelete($event)"
                     (create)="clickCreateForm()"></admin-table-component>
             </div>
         </mat-drawer-content>
