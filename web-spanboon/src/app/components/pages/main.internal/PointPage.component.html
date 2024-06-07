@@ -80,6 +80,10 @@
                 </div>
             </ng-container>
         </div>
+        <div class="container no-data"
+            *ngIf="content.pointEvent.length === 0 && content.productAggr.length === 0 && content.categoryProduct.length === 0">
+            ไม่มีข้อมูล
+        </div>
     </div>
     <div class="wrapper-content product" *ngIf="isCategory && !isRank">
         <div class="container">

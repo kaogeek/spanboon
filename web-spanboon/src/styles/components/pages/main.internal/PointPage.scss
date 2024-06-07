@@ -180,6 +180,14 @@
     > .container {
       margin-bottom: 15pt;
 
+      &.no-data {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: unset !important;
+        @include font-size-8($font-head-500);
+      }
+
       @media (max-width: $small) {
         margin-bottom: unset;
         background-color: $white;
