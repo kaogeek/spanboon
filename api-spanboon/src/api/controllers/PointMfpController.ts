@@ -1438,7 +1438,6 @@ export class PointMfpController {
     ): Promise<any> {
         const userObjId = new ObjectID(req.headers.userid);
         let userCouponCount = undefined;
-        let selfPoint = undefined;
 
         userCouponCount = await this.userCouponService.aggregate(
             [
@@ -1452,67 +1451,63 @@ export class PointMfpController {
                 }
             ]
         );
-
-        if (userCouponCount !== undefined && userCouponCount.length > 0) {
-            selfPoint = await this.accumulateService.aggregate(
-                [
-                    {
-                        $match: {
-                            userId: userObjId
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'User',
-                            let: { 'userId': '$userId' },
-                            pipeline: [
-                                {
-                                    $match: {
-                                        $expr: {
-                                            $eq: ['$$userId', '$_id']
-                                        }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                        firstName: 1,
-                                        lastName: 1,
-                                        displayName: 1,
-                                        uniqueId: 1,
-                                        imageURL: 1,
-                                        s3ImageURL: 1,
-                                        province: 1,
-                                        membership: 1
-
+        const selfPoint = await this.accumulateService.aggregate(
+            [
+                {
+                    $match: {
+                        userId: userObjId
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'User',
+                        let: { 'userId': '$userId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$userId', '$_id']
                                     }
                                 }
+                            },
+                            {
+                                $project: {
+                                    firstName: 1,
+                                    lastName: 1,
+                                    displayName: 1,
+                                    uniqueId: 1,
+                                    imageURL: 1,
+                                    s3ImageURL: 1,
+                                    province: 1,
+                                    membership: 1
 
-                            ],
-                            as: 'user'
-                        }
-                    },
-                    {
-                        $unwind: '$user'
-                    },
-                    {
-                        '$addFields': {
-                            'accumulatePoint': {
-                                '$add': ['$accumulatePoint', '$usedPoint']
+                                }
                             }
-                        }
-                    },
-                    {
-                        $project: {
-                            createdDate: 1,
-                            userId: 1,
-                            user: 1,
-                            accumulatePoint: 1
+
+                        ],
+                        as: 'user'
+                    }
+                },
+                {
+                    $unwind: '$user'
+                },
+                {
+                    '$addFields': {
+                        'accumulatePoint': {
+                            '$add': ['$accumulatePoint', '$usedPoint']
                         }
                     }
-                ]
-            );
-        }
-
+                },
+                {
+                    $project: {
+                        createdDate: 1,
+                        userId: 1,
+                        user: 1,
+                        accumulatePoint: 1
+                    }
+                }
+            ]
+        );
         const sortUserPoint = await this.accumulateService.aggregate(
             [
                 {
