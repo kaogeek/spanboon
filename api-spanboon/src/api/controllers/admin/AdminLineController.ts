@@ -577,7 +577,6 @@ export class AdminPointController {
                         Authorization: 'Bearer ' + tokenLine
                     }
                 });
-                console.log('lineUsers',lineUsers);
                 // console.log('content',content['messages'][0].contents.body.contents);
                 if (lineUsers.data.userIds.length > 0 && content['messages'][0].contents.body.contents.length > 0) {
                     for (const user of lineUsers.data.userIds) {
@@ -586,7 +585,7 @@ export class AdminPointController {
                             'messages': content['messages']
                         };
 
-                        const message = await axios.post(
+                        await axios.post(
                             'https://api.line.me/v2/bot/message/push',
                             requestBody, {
                             headers: {
@@ -594,12 +593,7 @@ export class AdminPointController {
                                 Accept: 'application/json, text/plain, */*',
                                 Authorization: 'Bearer ' + tokenLine
                             }
-                        }).then((respone) => {
-                            console.log('respone');
-                        }).catch((error) => {
-                            return res.status(400).send(ResponseUtil.getSuccessResponse(error.data.message, undefined));
                         });
-                        console.log('message',message);
                     }
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', undefined));
                 }
@@ -949,8 +943,6 @@ export class AdminPointController {
             const lineNewMoveParty = new LineNewMoveParty();
             lineNewMoveParty.objIds = stackIds;
             const tokenLine = process.env.LINE_AUTHORIZATION;
-            console.log('process.env.LINE_AUTHORIZATION',process.env.LINE_AUTHORIZATION);
-            console.log('tokenLine',tokenLine);
             const create = await this.lineNewMovePartyService.create(lineNewMoveParty);
             // api.line.me/v2/bot/message/push
             if (create) {
@@ -960,7 +952,6 @@ export class AdminPointController {
                         Authorization: 'Bearer ' + tokenLine
                     }
                 });
-                console.log('lineUsers',lineUsers);
                 // console.log('content',content['messages'][0].contents.body.contents);
                 if (lineUsers.data.userIds.length > 0 && content['messages'][0].contents.body.contents.length > 0) {
                     const requestBody = {
@@ -968,7 +959,7 @@ export class AdminPointController {
                         'messages': content['messages']
                     };
 
-                    const messages = await axios.post(
+                    await axios.post(
                         'https://api.line.me/v2/bot/message/push',
                         requestBody, {
                         headers: {
@@ -977,7 +968,6 @@ export class AdminPointController {
                             Authorization: 'Bearer ' + tokenLine
                         }
                     });
-                    console.log('messages',messages);
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Line Flex message.', undefined));
                 }
             } else {
