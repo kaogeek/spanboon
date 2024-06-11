@@ -1437,20 +1437,7 @@ export class PointMfpController {
         @Req() req: any
     ): Promise<any> {
         const userObjId = new ObjectID(req.headers.userid);
-        let userCouponCount = undefined;
 
-        userCouponCount = await this.userCouponService.aggregate(
-            [
-                {
-                    $match: {
-                        userId: userObjId
-                    }
-                },
-                {
-                    $count: 'count'
-                }
-            ]
-        );
         const selfPoint = await this.accumulateService.aggregate(
             [
                 {
