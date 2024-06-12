@@ -1437,7 +1437,8 @@ export class PointMfpController {
         @Req() req: any
     ): Promise<any> {
         const userObjId = new ObjectID(req.headers.userid);
-
+        const takeLimit = req.body.limit === undefined || req.body.limit === null ? 50 : req.body.limit;
+        const takeOffset = req.body.offset === undefined || req.body.limit === null ? 0 : req.body.offset;
         const selfPoint = await this.accumulateService.aggregate(
             [
                 {
@@ -1498,11 +1499,6 @@ export class PointMfpController {
         const sortUserPoint = await this.accumulateService.aggregate(
             [
                 {
-                    $match: {
-                        accumulatePoint: { $ne: null }
-                    }
-                },
-                {
                     $lookup: {
                         from: 'User',
                         let: { 'userId': '$userId' },
@@ -1536,9 +1532,6 @@ export class PointMfpController {
                     $unwind: '$user'
                 },
                 {
-                    $limit: 50
-                },
-                {
                     '$addFields': {
                         'accumulatePoint': {
                             '$add': ['$accumulatePoint', '$usedPoint']
@@ -1557,10 +1550,16 @@ export class PointMfpController {
                     $sort: {
                         accumulatePoint: -1
                     }
-                }
+                },
+                {
+                    $limit: takeLimit
+                },
+                {
+                    $skip: takeOffset
+                },
             ]
         );
-        let count = 1;
+        let count = 0;
         if (sortUserPoint !== undefined && sortUserPoint.length > 0) {
             for (const content of sortUserPoint) {
                 const userString = String(content.userId);
