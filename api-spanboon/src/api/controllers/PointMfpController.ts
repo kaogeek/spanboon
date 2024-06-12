@@ -1439,6 +1439,21 @@ export class PointMfpController {
         const userObjId = new ObjectID(req.headers.userid);
         const takeLimit = req.body.limit === undefined || req.body.limit === null ? 50 : req.body.limit;
         const takeOffset = req.body.offset === undefined || req.body.limit === null ? 0 : req.body.offset;
+        const sortPoint:any = await this.accumulateService.aggregate(
+            [
+                {
+                    $sort:{
+                        accumulatePoint:-1
+                    }
+                },
+                {
+                    $project:{
+                        userId:1,
+                        accumulatePoint:1
+                    }
+                },
+            ]
+        );
         const selfPoint = await this.accumulateService.aggregate(
             [
                 {
@@ -1559,34 +1574,39 @@ export class PointMfpController {
                 },
             ]
         );
-        let count = 0;
-        if (sortUserPoint !== undefined && sortUserPoint.length > 0) {
-            for (const content of sortUserPoint) {
-                const userString = String(content.userId);
-                if (userString === String(userObjId)) {
-                    break;
-                } else {
-                    count += 1;
-                    continue;
-                }
+        const arrPoints:string[] = [];
+        if(sortPoint.length) { 
+            for(const content of sortPoint) {
+                arrPoints.push(String(content.userId));
             }
         }
-
-        const result = {
-            'sortAccumulatePoint': {
-                'selfOrder': selfPoint !== undefined && count !== undefined ? count : null,
-                'self': selfPoint !== undefined && selfPoint.length > 0 ? selfPoint[0] : null,
-                'rankingPoint': sortUserPoint !== undefined ? sortUserPoint : null
-            },
-        };
-        const successResponse = ResponseUtil.getSuccessResponse('Get content AcumulatePoint is success.', result);
-        return res.status(200).send(successResponse);
+        let result:any = {};
+        const selfRanking:number = arrPoints.indexOf(String(userObjId));
+        if(arrPoints.length > 0){
+            result = {
+                'sortAccumulatePoint': {
+                    'selfOrder': selfRanking === 0 ? selfRanking + 1 : 'UnRanking',
+                    'self': selfPoint !== undefined && selfPoint.length > 0 ? selfPoint[0] : null,
+                    'rankingPoint': sortUserPoint !== undefined ? sortUserPoint : null
+                },
+            };
+            const successResponse = ResponseUtil.getSuccessResponse('Get content AcumulatePoint is success.', result);
+            return res.status(200).send(successResponse);
+        } else {
+            result = {
+                'sortAccumulatePoint': {
+                    'selfOrder': selfRanking === 0 ? selfRanking + 1 : 'UnRanking',
+                    'self': selfPoint !== undefined && selfPoint.length > 0 ? selfPoint[0] : null,
+                    'rankingPoint': sortUserPoint !== undefined ? sortUserPoint : null
+                },
+            };
+            const successResponse = ResponseUtil.getSuccessResponse('Get content AcumulatePoint is success.', result);
+            return res.status(200).send(successResponse);
+        }
     }
 
     @Get('/mfp/content')
     public async getPointMfpContents(
-        @QueryParam('offset') offset: number,
-        @QueryParam('limit') limt: number,
         @Res() res: any,
         @Req() req: any): Promise<any> {
         const userObjId = req.headers.userid ? new ObjectID(req.headers.userid) : undefined;
