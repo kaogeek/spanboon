@@ -162,6 +162,9 @@ export class User extends BaseModel {
     @Column({ name: 'membership'})
     public membership: boolean;
 
+    @Column({ name: 'role'})
+    public role: string;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

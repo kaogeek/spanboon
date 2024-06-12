@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Post, Body, Req, Authorized, Delete, Param } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Authorized, Delete, Param, Put } from 'routing-controllers';
 import { ResponseUtil } from '../../../utils/ResponseUtil';
 import { UserService } from '../../services/UserService';
 import { User } from '../../models/User';
@@ -15,6 +15,7 @@ import { SearchFilter } from '../requests/SearchFilterRequest';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 import { BanRequest } from './requests/BanRequest';
+import { UpdateUser } from './requests/AdminUpdateUserRequest';
 import { AdminUserActionLogsService } from '../../services/AdminUserActionLogsService';
 import { AdminUserActionLogs } from '../../models/AdminUserActionLogs';
 import { USER_LOG_ACTION, LOG_TYPE } from '../../../constants/LogsAction';
@@ -242,5 +243,12 @@ export class AdminUserController {
             const errorResponse = ResponseUtil.getErrorResponse('Search User Failed', undefined);
             return res.status(400).send(errorResponse);
         }
+    }
+
+    @Put('/:id')
+    @Authorized()
+    public async updateUser(@Body({ validate: true }) user: UpdateUser, @Param('id') userId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const successResponse = ResponseUtil.getSuccessResponse('Update user.',null);
+        return res.status(200).send(successResponse);
     }
 } 

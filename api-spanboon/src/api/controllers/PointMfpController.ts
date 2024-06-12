@@ -1585,7 +1585,7 @@ export class PointMfpController {
         if(arrPoints.length > 0){
             result = {
                 'sortAccumulatePoint': {
-                    'selfOrder': selfRanking === 0 ? selfRanking + 1 : 'UnRanking',
+                    'selfOrder': selfRanking === 0 ? 0 : selfRanking + 1,
                     'self': selfPoint !== undefined && selfPoint.length > 0 ? selfPoint[0] : null,
                     'rankingPoint': sortUserPoint !== undefined ? sortUserPoint : null
                 },
@@ -1595,7 +1595,7 @@ export class PointMfpController {
         } else {
             result = {
                 'sortAccumulatePoint': {
-                    'selfOrder': selfRanking === 0 ? selfRanking + 1 : 'UnRanking',
+                    'selfOrder': selfRanking === 0 ? 0 : selfRanking + 1,
                     'self': selfPoint !== undefined && selfPoint.length > 0 ? selfPoint[0] : null,
                     'rankingPoint': sortUserPoint !== undefined ? sortUserPoint : null
                 },
