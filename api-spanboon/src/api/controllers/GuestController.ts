@@ -56,6 +56,7 @@ import { PointStatementModel } from '../models/PointStatementModel';
 import { PointStatementService } from '../services/PointStatementService';
 import { AccumulateModel } from '../models/AccumulatePointModel';
 import { AccumulateService } from '../services/AccumulateService';
+import { MfpActService } from '../services/MfpActService';
 import {
     DEFAULT_FIRST_LOGIN_POINT,
     FIRST_LOGIN_POINT,
@@ -82,7 +83,8 @@ export class GuestController {
         private s3Service: S3Service,
         private userEngagementService:UserEngagementService,
         private pointStatementService:PointStatementService,
-        private accumulateService:AccumulateService
+        private accumulateService:AccumulateService,
+        private mfpActService:MfpActService
     ) { }
 
     @Get('/register/date')
@@ -3437,13 +3439,11 @@ export class GuestController {
         delete user.createdByUsername;
         delete user.modifiedBy;
         delete user.modifiedByUsername;
-        let cloudfront = null;
-        if(user.s3ImageURL !== null) {
-            cloudfront = await this.s3Service.s3signCloudFront(user.s3ImageURL);
+        if(user.s3ImageURL !== null){
+            user.signUR = await this.s3Service.s3signCloudFront(user.s3ImageURL);
         }
-
-        user.signURL = cloudfront;
-        const successResponse: any = { status: 1, message: 'Account was valid.', data: { user, token: tokenParam, mode: isMode } };
+        const mfpActRes:any = await this.mfpActService.findOne({where:{users: new ObjectID(user.id)}});
+        const successResponse: any = { status: 1, message: 'Account was valid.', data: { user, token: tokenParam, mode: isMode, mfpAct:mfpActRes === undefined ? {} : mfpActRes } };
 
         return response.status(200).send(successResponse);
     }
