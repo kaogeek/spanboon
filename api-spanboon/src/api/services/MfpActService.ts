@@ -38,7 +38,7 @@ export class MfpActService {
     public async deleteMany(query: any, options?: any): Promise<any> {
         return await this.mfpActRepository.deleteMany(query, options);
     }
-    public async updateToken(query: any, newValue: any): Promise<any> {
+    public async update(query: any, newValue: any): Promise<any> {
         this.log.info('Update a MFP Act');
 
         return await this.mfpActRepository.updateOne(query, newValue);
