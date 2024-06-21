@@ -47,21 +47,34 @@ export class AssetController {
                 return res.status(400).send(successResponse);
             }
 
-            const phone:any = await this.mfpActService.findOne({where:{phone:Number(verifyToken.id.phone)}});
-            if(phone !== undefined) {
-                successResponse = ResponseUtil.getErrorResponse('This phone number is binding.', null);
-                return res.status(400).send(successResponse);
-            }
-
             if(users.banned === true) {
                 successResponse = ResponseUtil.getErrorResponse('User had banned.', null);
                 return res.status(400).send(successResponse);
             }
-
-            const mfpAct:any = await this.mfpActService.findOne({where:{users:users.id,actId:String(verifyToken.id.act_id)}});
+            // where:{actId:String(verifyToken.id.act_id)}
+            const mfpAct:any = await this.mfpActService.findOne(
+                { $or: [
+                    {users:ObjectID(verifyToken.id.users)},
+                    {phone:Number(verifyToken.id.phone)}
+                ]
+            });
             if(mfpAct !== undefined) {
-                successResponse = ResponseUtil.getErrorResponse('You have been binding mfp today.', null);
-                return res.status(400).send(successResponse);
+                const query = {_id: ObjectID(mfpAct.id)};
+                const newValues = 
+                {
+                    $set:
+                        {
+                            actId:String(verifyToken.id.act_id),
+                            phone:Number(verifyToken.id.phone),
+                            users:ObjectID(verifyToken.id.users)
+                        }
+                };
+                const update:any = await this.mfpActService.update(query,newValues);
+                if(update) {
+                    const findUpdated:any = await this.mfpActService.findOne({where:{users:ObjectID(verifyToken.id.users),actId:String(verifyToken.id.act_id),phone:Number(verifyToken.id.phone)}});
+                    successResponse = ResponseUtil.getSuccessResponse('Successfully binding mfp today.', findUpdated);
+                    return res.status(200).send(successResponse);
+                }
             }
 
             if(today.getTime() > new Date(verifyToken.id.expire_at).getTime()) {
