@@ -1,4 +1,4 @@
-<div class="member-process-box">
+<div class="member-process-box" *ngIf="status !== 'act'">
     <div class="member-process-wrapper" *ngIf="status === 'reject'">
         <img class="image" src="../../../../assets/img/status/deny.svg" alt="">
         <span [innerHTML]="'ลองใหม่อีกครั้ง'"></span>
@@ -9,5 +9,11 @@
         <img class="image" src="../../../../assets/img/status/approve.svg" alt="">
         <span [innerHTML]="'เยี่ยมไปเลย!'"></span>
         <span [innerHTML]="'คุณผูกสมาชิกสำเร็จ'"></span>
+    </div>
+</div>
+<div class="processing-page" *ngIf="status === 'act'">
+    <img src="../../../../assets/img/logo/mfp-white.svg" alt="logo">
+    <div class="text-processing">
+        กำลังโหลด<span>.</span><span>.</span><span>.</span>
     </div>
 </div>

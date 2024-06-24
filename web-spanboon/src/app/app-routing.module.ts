@@ -69,6 +69,10 @@ export const APP_ROUTES: Routes = [
         path: 'reject',
         component: MemberProcess,
       },
+      {
+        path: 'act',
+        component: MemberProcess,
+      },
     ]
   },
   {

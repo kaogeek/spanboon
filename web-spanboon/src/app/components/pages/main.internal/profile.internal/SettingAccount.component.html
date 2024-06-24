@@ -14,7 +14,7 @@
             <div class="settings-left">
                 <div class="settings-list">
                     <div class="list-item-menu" matRipple role="button" matTooltip="{{link.label}}"
-                        [matTooltipPosition]="'right'" *ngFor="let link of links.slice(0, 2)"
+                        [matTooltipPosition]="'right'" *ngFor="let link of (isMemberShip ? links : links.slice(0, 2))"
                         (click)="selecedInformation(link)" [class.active]="selected === link.label">
                         <!-- (isMemberShip ? links : links.slice(0, 2)) -->
                         <ng-container *ngIf="!!link.icon; else elseIconImage">
