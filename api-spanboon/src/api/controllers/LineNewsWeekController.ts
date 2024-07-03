@@ -17,10 +17,10 @@ import axios from 'axios';
 @JsonController('/line')
 export class PointMfpController {
     constructor(
-        private lineNewsWeekService:LineNewsWeekService,
-        private configService:ConfigService,
-        private lineNewMovePartyService:LineNewMovePartyService,
-        private kaokaiTodaySnapShotService:KaokaiTodaySnapShotService
+        private lineNewsWeekService: LineNewsWeekService,
+        private configService: ConfigService,
+        private lineNewMovePartyService: LineNewMovePartyService,
+        private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService
     ) { }
 
     @Post('/oa')
@@ -36,18 +36,18 @@ export class PointMfpController {
         const lineOa = await this.lineNewsWeekService.aggregate(
             [
                 {
-                    $match:{
-                        active:false
+                    $match: {
+                        active: false
                     }
                 },
                 {
-                    $limit:1
+                    $limit: 1
                 }
             ]
         );
         const twoWeeksAgo = new Date(today.getTime() - 24 * 60 * 60 * 1000 * pageLikePoint);
-        if(lineOa.length === 0){
-            const lineNewsWeek:LineNewsWeek = new LineNewsWeek();
+        if (lineOa.length === 0) {
+            const lineNewsWeek: LineNewsWeek = new LineNewsWeek();
             lineNewsWeek.todayDate = today;
             lineNewsWeek.newsWeek = new Date(today.getTime() + 24 * 60 * 60 * 1000 * pageLikePoint);
             lineNewsWeek.active = false;
@@ -60,49 +60,49 @@ export class PointMfpController {
                 return res.status(400).send(errorResponse);
             }
         } else {
-            if(lineOa.length > 0) {
-                for(const content of lineOa) {
-                    if(content.active === false && today.getTime() >= content.newsWeek.getTime()) {
+            if (lineOa.length > 0) {
+                for (const content of lineOa) {
+                    if (content.active === false && today.getTime() >= content.newsWeek.getTime()) {
                         const lineOaStack = await this.lineNewMovePartyService.aggregate([]);
                         if (lineOaStack.length > 0) {
-                            const lineMessage = await this.lineOaNoti(lineOaStack,today, twoWeeksAgo,content);
-                            if(lineMessage === 'Line Flex message is success.') {
+                            const lineMessage = await this.lineOaNoti(lineOaStack, today, twoWeeksAgo, content);
+                            if (lineMessage === 'Line Flex message is success.') {
                                 // Line Flex message is success.
                                 const successResponse = ResponseUtil.getSuccessResponse('Line Flex message is success.', undefined);
                                 return res.status(200).send(successResponse);
                             }
-                            if(lineMessage === 'Not found the contents.'){
+                            if (lineMessage === 'Not found the contents.') {
                                 const errorResponse = ResponseUtil.getErrorResponse('Not found the contents.', undefined);
                                 return res.status(400).send(errorResponse);
                             }
-                            
-                            if(lineMessage === 'Line Flex message undefined.'){
+
+                            if (lineMessage === 'Line Flex message undefined.') {
                                 const errorResponse = ResponseUtil.getErrorResponse('Line Flex message undefined.', undefined);
                                 return res.status(400).send(errorResponse);
                             }
 
-                            if(lineMessage === 'Line Flex message is empty array.'){
+                            if (lineMessage === 'Line Flex message is empty array.') {
                                 const errorResponse = ResponseUtil.getErrorResponse('Line Flex message is empty array.', undefined);
                                 return res.status(400).send(errorResponse);
                             }
                         } else {
-                            const lineMessage = await this.lineOaNoti(lineOaStack,today, twoWeeksAgo,content);
-                            if(lineMessage === 'Line Flex message is success.') {
+                            const lineMessage = await this.lineOaNoti(lineOaStack, today, twoWeeksAgo, content);
+                            if (lineMessage === 'Line Flex message is success.') {
                                 // Line Flex message is success.
                                 const successResponse = ResponseUtil.getSuccessResponse('Line Flex message is success.', undefined);
                                 return res.status(200).send(successResponse);
                             }
-                            if(lineMessage === 'Not found the contents.'){
+                            if (lineMessage === 'Not found the contents.') {
                                 const errorResponse = ResponseUtil.getErrorResponse('Not found the contents.', undefined);
                                 return res.status(400).send(errorResponse);
                             }
-                            
-                            if(lineMessage === 'Line Flex message undefined.'){
+
+                            if (lineMessage === 'Line Flex message undefined.') {
                                 const errorResponse = ResponseUtil.getErrorResponse('Line Flex message undefined.', undefined);
                                 return res.status(400).send(errorResponse);
                             }
 
-                            if(lineMessage === 'Line Flex message is empty array.'){
+                            if (lineMessage === 'Line Flex message is empty array.') {
                                 const errorResponse = ResponseUtil.getErrorResponse('Line Flex message is empty array.', undefined);
                                 return res.status(400).send(errorResponse);
                             }
@@ -119,7 +119,7 @@ export class PointMfpController {
         }
     }
 
-    private async lineOaNoti(data:any,today: any, rangeEnd: any,lineOa: any): Promise<any>{
+    private async lineOaNoti(data: any, today: any, rangeEnd: any, lineOa: any): Promise<any> {
         const objStackIds: any = [];
         for (const line of data) {
             line.objIds.map((ids) => objStackIds.push(new ObjectID(ids)));
@@ -241,7 +241,7 @@ export class PointMfpController {
                                                     'action': {
                                                         'type': 'uri',
                                                         'label': 'อ่านเพิ่มเติม',
-                                                        'uri': kaokaiToday+'&openExternalBrowser=1'
+                                                        'uri': kaokaiToday + '&openExternalBrowser=1'
                                                     },
                                                     'color': '#F18805',
                                                     'scaling': false,
@@ -252,18 +252,24 @@ export class PointMfpController {
                                                     'margin': '10px'
                                                 }
                                             ],
-                                            'position': 'relative'
+                                            'position': 'relative',
+                                            'height': '60px'
                                         }
                                     ],
-                                    'height': '130px',
-                                    'backgroundColor': '#F0F0F0',
+                                    'height': '150px',
                                     'paddingAll': '10px',
+                                    'backgroundColor': '#F0F0F0',
                                     'width': '100%'
                                 },
                                 {
                                     'type': 'box',
                                     'layout': 'vertical',
-                                    'contents': []
+                                    'contents': [],
+                                    'height': '250px',
+                                    'paddingAll': '10px',
+                                    'spacing': '10px',
+                                    'backgroundColor': '#F0F0F0',
+                                    'width': '100%'
                                 }
                             ],
                             'width': '100%',
@@ -319,8 +325,9 @@ export class PointMfpController {
                                             'size': '14px',
                                             'align': 'start',
                                             'gravity': 'center',
-                                            'maxLines': 3,
-                                            'margin': '5px'
+                                            'maxLines': 2,
+                                            'margin': '5px',
+                                            'lineSpacing': '2px'
                                         },
                                         {
                                             'type': 'text',
@@ -329,7 +336,8 @@ export class PointMfpController {
                                             'align': 'end',
                                             'size': '12px',
                                             'margin': '5px',
-                                            'offsetEnd': '5px'
+                                            'offsetEnd': '5px',
+                                            'adjustMode': 'shrink-to-fit'
                                         },
                                     ]
                                 }
@@ -341,7 +349,7 @@ export class PointMfpController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday+'&openExternalBrowser=1',
+                                'uri': kaokaiToday + '&openExternalBrowser=1',
                             }
                         },
                     );
@@ -393,8 +401,9 @@ export class PointMfpController {
                                             'size': '14px',
                                             'align': 'start',
                                             'gravity': 'center',
-                                            'maxLines': 3,
-                                            'margin': '5px'
+                                            'maxLines': 2,
+                                            'margin': '5px',
+                                            'lineSpacing': '2px'
                                         },
                                         {
                                             'type': 'text',
@@ -403,7 +412,9 @@ export class PointMfpController {
                                             'align': 'end',
                                             'size': '12px',
                                             'margin': '5px',
-                                            'offsetEnd': '5px'
+                                            'offsetEnd': '5px',
+                                            'adjustMode': 'shrink-to-fit',
+                                            'decoration': 'none'
                                         },
                                     ]
                                 }
@@ -415,7 +426,7 @@ export class PointMfpController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday+'&openExternalBrowser=1',
+                                'uri': kaokaiToday + '&openExternalBrowser=1',
                             }
                         },
                     );
@@ -467,8 +478,9 @@ export class PointMfpController {
                                             'size': '14px',
                                             'align': 'start',
                                             'gravity': 'center',
-                                            'maxLines': 3,
-                                            'margin': '5px'
+                                            'maxLines': 2,
+                                            'margin': '5px',
+                                            'lineSpacing': '2px'
                                         },
                                         {
                                             'type': 'text',
@@ -489,7 +501,7 @@ export class PointMfpController {
                             'action': {
                                 'type': 'uri',
                                 'label': 'action',
-                                'uri': kaokaiToday+'&openExternalBrowser=1',
+                                'uri': kaokaiToday + '&openExternalBrowser=1',
                             }
                         },
                     );
@@ -516,9 +528,9 @@ export class PointMfpController {
                             'to': String(user),
                             'messages': content['messages']
                         };
-                        
-                        await axios.post('https://api.line.me/v2/bot/message/push',requestBody, { headers: {'Content-Type': 'application/json', Accept: 'application/json, text/plain, */*',Authorization: 'Bearer ' + tokenLine}}).then((res) => {            
-                            console.log('response Axios');                
+
+                        await axios.post('https://api.line.me/v2/bot/message/push', requestBody, { headers: { 'Content-Type': 'application/json', Accept: 'application/json, text/plain, */*', Authorization: 'Bearer ' + tokenLine } }).then((res) => {
+                            console.log('response Axios');
                         }).catch((err) => {
                             return err.data.message;
                         });
@@ -528,17 +540,17 @@ export class PointMfpController {
                     if (pageLike) {
                         pageLikePoint = parseInt(pageLike.value, 10);
                     }
-                    const query = {_id: ObjectID(lineOa._id)};
-                    const newValues = { $set: {active:true }};
+                    const query = { _id: ObjectID(lineOa._id) };
+                    const newValues = { $set: { active: true } };
                     const update = await this.lineNewsWeekService.update(query, newValues);
-                    if(update){
+                    if (update) {
                         const twoWeeksAgo = new Date(today.getTime() + 24 * 60 * 60 * 1000 * pageLikePoint);
-                        const lineNewsWeek:LineNewsWeek = new LineNewsWeek();
+                        const lineNewsWeek: LineNewsWeek = new LineNewsWeek();
                         lineNewsWeek.todayDate = today;
                         lineNewsWeek.newsWeek = twoWeeksAgo;
                         lineNewsWeek.active = false;
                         const created = await this.lineNewsWeekService.create(lineNewsWeek);
-                        if(created){
+                        if (created) {
                             return 'Line Flex message is success.';
                         }
                     }
