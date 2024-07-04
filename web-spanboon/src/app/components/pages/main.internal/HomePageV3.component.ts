@@ -454,6 +454,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     if (!!this.queryParamsUrl) {
       this.mainPageModelFacade.getMainPageModelV3(userId, (this.queryParamsUrl ? this.queryParamsUrl : null)).then((res) => {
         if (res) {
+          this.isLoading = false;
           this.dateValues = new Date(this.queryParamsUrl).toISOString();
           this.model = res.data.data;
           if (!this.isConfirmTosUa) {

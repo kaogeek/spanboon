@@ -5,11 +5,9 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th > , Panupap-somprasong <panupap.s@absolute.co.th>
  */
 
-import { Component, EventEmitter, OnInit } from '@angular/core';
-import { AuthenManager, BindingMemberFacade, CheckMergeUserFacade } from '../../../services/services';
-import { MatDialog } from '@angular/material';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
-import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
+import { Component, OnInit } from '@angular/core';
+import { BindingMemberFacade, CheckMergeUserFacade } from '../../../services/services';
+import { ActivatedRoute, NavigationExtras, Params, Router } from '@angular/router';
 
 const PAGE_NAME: string = 'process';
 
@@ -17,10 +15,9 @@ const PAGE_NAME: string = 'process';
   selector: 'member-process',
   templateUrl: './MemberProcess.component.html',
 })
-export class MemberProcess extends AbstractPageImageLoader implements OnInit {
+export class MemberProcess implements OnInit {
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public params: any;
-  public route: ActivatedRoute;
   public checkMergeUserFacade: CheckMergeUserFacade;
   public bindingMemberFacade: BindingMemberFacade;
 
@@ -34,25 +31,23 @@ export class MemberProcess extends AbstractPageImageLoader implements OnInit {
   public param: any;
   public messageError: any;
 
+  public paramActId: any;
+  public paramUserId: any;
+
   public isLoading: boolean = true;
   constructor(
-    router: Router,
-    dialog: MatDialog,
-    authenManager: AuthenManager,
+    private router: Router,
+    private route: ActivatedRoute,
     checkMergeUserFacade: CheckMergeUserFacade,
     bindingMemberFacade: BindingMemberFacade) {
-    super(PAGE_NAME, authenManager, dialog, router);
     this.checkMergeUserFacade = checkMergeUserFacade;
     this.bindingMemberFacade = bindingMemberFacade;
 
     const splitUrl = this.router.url.split('/');
     const url = splitUrl[2].split('?');
-    if (url[0] === 'success') {
-      this.status = 'success';
-    }
-    if (url[0] === 'reject') {
-      this.status = 'reject';
-    }
+    if (url[0] === 'success') this.status = 'success';
+    if (url[0] === 'reject') this.status = 'reject';
+    if (url[0] === 'act') this.status = 'act';
 
     const navigation = this.router.getCurrentNavigation();
     const state = navigation.extras.state;
@@ -62,6 +57,13 @@ export class MemberProcess extends AbstractPageImageLoader implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.route.queryParams.subscribe(
+      (params: Params) => {
+        if (!!params['actid']) this.paramActId = +params['actid'];
+        if (!!params['userid']) this.paramUserId = +params['userid'];
+      }
+    );
+
     let methodMFP = localStorage.getItem('methodMFP');
     setTimeout(() => {
       if (this.status === 'success') {
@@ -77,6 +79,8 @@ export class MemberProcess extends AbstractPageImageLoader implements OnInit {
           this.router.navigateByUrl('/home');
         }
         localStorage.removeItem('methodMFP');
+      } else if (this.status === 'act') {
+        this.router.navigateByUrl('/home');
       } else {
         this.router.navigateByUrl('/home');
         localStorage.removeItem('methodMFP');
@@ -91,30 +95,5 @@ export class MemberProcess extends AbstractPageImageLoader implements OnInit {
 
   public ngOnDestroy(): void {
 
-  }
-
-  public getImageSelector(): string[] {
-    throw new Error('Method not implemented.');
-  }
-  public onSelectorImageElementLoaded(imageElement: any[]): void {
-    throw new Error('Method not implemented.');
-  }
-  public onImageElementLoadOK(imageElement: any): void {
-    throw new Error('Method not implemented.');
-  }
-  public onImageElementLoadError(imageElement: any): void {
-    throw new Error('Method not implemented.');
-  }
-  public onImageLoaded(imageElement: any[]): void {
-    throw new Error('Method not implemented.');
-  }
-  isPageDirty(): boolean {
-    throw new Error('Method not implemented.');
-  }
-  onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
-    throw new Error('Method not implemented.');
-  }
-  onDirtyDialogCancelButtonClick(): EventEmitter<any> {
-    throw new Error('Method not implemented.');
   }
 }
