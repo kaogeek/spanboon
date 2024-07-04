@@ -13,6 +13,7 @@ import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
 import { LineNewMoveParty } from '../models/LineNewMoveParty';
 import axios from 'axios';
+import { Worker} from 'worker_threads';
 // startVoteDatetime
 @JsonController('/line')
 export class PointMfpController {
@@ -521,20 +522,24 @@ export class PointMfpController {
                         Authorization: 'Bearer ' + tokenLine
                     }
                 });
-                // console.log('content',content['messages'][0].contents.body.contents);
+                
                 if (lineUsers.data.userIds.length > 0 && content['messages'][0].contents.body.contents.length > 0) {
-                    for (const user of lineUsers.data.userIds) {
-                        const requestBody = {
-                            'to': String(user),
-                            'messages': content['messages']
+                    const chunks: number[][] = checkify(lineUsers.data.userIds, Number(process.env.WORKER_THREAD_JOBS));
+                    chunks.forEach((user,i) => {
+                        const worker = new Worker(process.env.WORKER_THREAD_PATH);
+                        const messagePayload = {
+                            users: user,
+                            messages: JSON.stringify(content['messages']),
+                            token: tokenLine
                         };
-
-                        await axios.post('https://api.line.me/v2/bot/message/push', requestBody, { headers: { 'Content-Type': 'application/json', Accept: 'application/json, text/plain, */*', Authorization: 'Bearer ' + tokenLine } }).then((res) => {
-                            console.log('response Axios');
-                        }).catch((err) => {
-                            return err.data.message;
+                        worker.postMessage(messagePayload);
+                        worker.on('message', (message:string) => {
+                            if(message === 'done') {
+                                console.log(`Worker ${i} completed.`);
+                                logMemoryUsage();
+                            }
                         });
-                    }
+                    });
                     const pageLike = await this.configService.getConfig(LINE_NEWS_WEEK_OA);
                     let pageLikePoint = DEFAULT_LINE_NEWS_WEEK_OA;
                     if (pageLike) {
@@ -563,4 +568,26 @@ export class PointMfpController {
             return 'Not found the contents.';
         }
     }
+
+}
+
+interface MemoryUsage {
+    rss: number;
+    heapTotal: number;
+    heapUsed: number;
+    external: number;
+    arrayBuffers: number;
+}
+
+function checkify<T>(data: T[], n: number): T[][] {
+    const chunks: T[][] = [];
+    for(let i = n; i > 0; i--) {
+        chunks.push(data.splice(0, Math.ceil(data.length / i)));
+    }
+    return chunks;
+}
+
+function logMemoryUsage(): void {
+    const memoryUsage: MemoryUsage = process.memoryUsage();
+    console.log(`Memory Usage: ${JSON.stringify(memoryUsage, null, 2)}`);
 }
