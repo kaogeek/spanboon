@@ -172,13 +172,16 @@ export class PointMfpController {
                 stackIds.push(new ObjectID(kaokai._id));
                 let kaokaiToday = undefined;
                 let dateTime = undefined;
+                let endDate = undefined;
                 if (parseInt(key, 10) === 0 && kaokaiSnapshot.length > 0) {
                     let dd: any = kaokaiSnapshot[key].endDateTime.getDate() - 1;
                     let mm = kaokaiSnapshot[key].endDateTime.getMonth() + 1;
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
-                    dateTime = kaokaiSnapshot[key].endDateTime.toLocaleDateString('th-TH', {
+                    endDate = new Date(kaokaiSnapshot[key].endDateTime);
+                    endDate.setDate(endDate.getDate() - 1);
+                    dateTime = endDate.toLocaleDateString('th-TH', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
@@ -289,7 +292,9 @@ export class PointMfpController {
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
-                    dateTime = kaokaiSnapshot[key].endDateTime.toLocaleDateString('th-TH', {
+                    endDate = new Date(kaokaiSnapshot[key].endDateTime);
+                    endDate.setDate(endDate.getDate() - 1);
+                    dateTime = endDate.toLocaleDateString('th-TH', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
@@ -365,7 +370,9 @@ export class PointMfpController {
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
-                    dateTime = kaokaiSnapshot[key].endDateTime.toLocaleDateString('th-TH', {
+                    endDate = new Date(kaokaiSnapshot[key].endDateTime);
+                    endDate.setDate(endDate.getDate() - 1);
+                    dateTime = endDate.toLocaleDateString('th-TH', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
@@ -442,7 +449,9 @@ export class PointMfpController {
                     if (dd < 10) { dd = '0' + dd; }
                     if (mm < 10) { mm = '0' + mm; }
                     kaokaiToday = process.env.APP_HOME + `?date=${kaokaiSnapshot[key].endDateTime.getFullYear()}-${mm}-${dd}`;
-                    dateTime = kaokaiSnapshot[key].endDateTime.toLocaleDateString('th-TH', {
+                    endDate = new Date(kaokaiSnapshot[key].endDateTime);
+                    endDate.setDate(endDate.getDate() - 1);
+                    dateTime = endDate.toLocaleDateString('th-TH', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
