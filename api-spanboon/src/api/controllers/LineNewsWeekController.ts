@@ -200,24 +200,6 @@ export class PointMfpController {
                             'layout': 'vertical',
                             'contents': [
                                 {
-                                    'type': 'text',
-                                    'text': 'ก้าวไกลทูเดย์',
-                                    'color': '#ffffff',
-                                    'weight': 'bold',
-                                    'size': '34px'
-                                }
-                            ],
-                            'position': 'absolute',
-                            'alignItems': 'center',
-                            'justifyContent': 'center',
-                            'width': '100%',
-                            'offsetTop': '30px'
-                        },
-                        {
-                            'type': 'box',
-                            'layout': 'vertical',
-                            'contents': [
-                                {
                                     'type': 'box',
                                     'layout': 'vertical',
                                     'contents': [
